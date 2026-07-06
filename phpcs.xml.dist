@@ -12,12 +12,20 @@
 	<arg name="colors"/>
 	<arg value="sp"/>
 
+	<!-- Only errors fail the build; warnings are reported but non-blocking. -->
+	<config name="ignore_warnings_on_exit" value="1"/>
 	<config name="minimum_supported_wp_version" value="6.7"/>
 	<config name="testVersion" value="8.1-"/>
 
 	<rule ref="WordPress-Extra"/>
 	<rule ref="WordPress-Docs"/>
 	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- PSR-4 autoloading uses StudlyCase class filenames, so the WordPress
+	     file-name sniff does not apply to the src/ classes. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>/src/*</exclude-pattern>
+	</rule>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>

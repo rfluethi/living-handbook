@@ -29,13 +29,9 @@ define( 'LIVING_HANDBOOK_FILE', __FILE__ );
 define( 'LIVING_HANDBOOK_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LIVING_HANDBOOK_URL', plugin_dir_url( __FILE__ ) );
 
-/**
- * PSR-4-style autoloader for the LivingHandbook namespace, mapped to src/.
- *
+/*
+ * PSR-4 style autoloader for the LivingHandbook namespace, mapped to src/.
  * No Composer runtime dependency: the shipped plugin loads its own classes.
- *
- * @param string $class_name Fully qualified class name.
- * @return void
  */
 spl_autoload_register(
 	static function ( string $class_name ): void {

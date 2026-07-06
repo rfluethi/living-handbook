@@ -55,9 +55,11 @@ final class Plugin {
 			dirname( plugin_basename( LIVING_HANDBOOK_FILE ) ) . '/languages'
 		);
 
-		// Modules are registered here in later versions:
-		// content type, taxonomies, handbook grouping and access, metadata,
-		// menu generation, maintenance dashboard, settings.
+		/*
+		 * Modules are registered here in later versions: content type,
+		 * taxonomies, handbook grouping and access, metadata, menu
+		 * generation, maintenance dashboard, and settings.
+		 */
 	}
 
 	/**
