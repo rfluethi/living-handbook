@@ -1,0 +1,97 @@
+# German translation for Living Handbook.
+# Copyright (C) 2026 Rico F. Luethi
+# This file is distributed under the GPL-2.0-or-later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: Living Handbook 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/rfluethi/living-handbook/issues\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-06T00:00:00+00:00\n"
+"PO-Revision-Date: 2026-07-06T00:00:00+00:00\n"
+"Language: de_DE\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: living-handbook\n"
+
+msgid "Handbook"
+msgstr "Handbuch"
+
+msgid "Handbook page"
+msgstr "Handbuch-Seite"
+
+msgid "Add new handbook page"
+msgstr "Neue Handbuch-Seite"
+
+msgid "Edit handbook page"
+msgstr "Handbuch-Seite bearbeiten"
+
+msgid "Search handbook pages"
+msgstr "Handbuch-Seiten durchsuchen"
+
+msgid "Page types"
+msgstr "Seitentypen"
+
+msgid "Page type"
+msgstr "Seitentyp"
+
+msgid "Topics"
+msgstr "Themen"
+
+msgid "Topic"
+msgstr "Thema"
+
+msgid "Responsible roles"
+msgstr "Verantwortliche Rollen"
+
+msgid "Responsible role"
+msgstr "Verantwortliche Rolle"
+
+msgid "Audiences"
+msgstr "Zielgruppen"
+
+msgid "Audience"
+msgstr "Zielgruppe"
+
+msgid "Handbooks"
+msgstr "Handbücher"
+
+msgid "Guide"
+msgstr "Anleitung"
+
+msgid "Process description"
+msgstr "Prozessbeschreibung"
+
+msgid "Tool overview"
+msgstr "Tool-Übersicht"
+
+msgid "Role / Organisation"
+msgstr "Rolle / Organisation"
+
+msgid "Background / Concept"
+msgstr "Hintergrund / Konzept"
+
+msgid "FAQ"
+msgstr "FAQ"
+
+msgid "All members"
+msgstr "Alle Mitglieder"
+
+msgid "Content creators"
+msgstr "Inhalts-Erstellende"
+
+msgid "Coordination"
+msgstr "Koordination"
+
+msgid "Tech"
+msgstr "Technik"
+
+msgid "Handbook editors"
+msgstr "Handbuch-Redaktion"
+
+msgid "GitHub specialist"
+msgstr "GitHub-Spezialist"
+
+msgid "General"
+msgstr "Allgemein"

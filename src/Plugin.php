@@ -9,13 +9,17 @@ declare( strict_types=1 );
 
 namespace LivingHandbook;
 
+use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Setup\Seeder;
+use LivingHandbook\Taxonomy\Taxonomies;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Central plugin class. Modules (post type, taxonomies, access, maintenance)
- * are wired up here as the plugin grows.
+ * Central plugin class. Modules are wired up in boot().
  */
 final class Plugin {
 
@@ -55,22 +59,26 @@ final class Plugin {
 			dirname( plugin_basename( LIVING_HANDBOOK_FILE ) ) . '/languages'
 		);
 
-		/*
-		 * Modules are registered here in later versions: content type,
-		 * taxonomies, handbook grouping and access, metadata, menu
-		 * generation, maintenance dashboard, and settings.
-		 */
+		( new Handbook() )->register();
+		( new Taxonomies() )->register();
+		( new Handbooks() )->register();
 	}
 
 	/**
-	 * Activation callback.
-	 *
-	 * Once modules register their post types, this flushes rewrite rules so
-	 * the permalinks work immediately.
+	 * Activation callback: register the data model, seed the vocabulary, and
+	 * flush rewrite rules so the permalinks work immediately.
 	 *
 	 * @return void
 	 */
 	public static function activate(): void {
+		( new Handbook() )->register_post_type();
+		( new Taxonomies() )->register_taxonomies();
+		$handbooks = new Handbooks();
+		$handbooks->register_taxonomy();
+		$handbooks->register_meta();
+
+		Seeder::seed();
+
 		flush_rewrite_rules();
 	}
 
