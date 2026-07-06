@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Seeder;
@@ -62,6 +63,7 @@ final class Plugin {
 		( new Handbook() )->register();
 		( new Taxonomies() )->register();
 		( new Handbooks() )->register();
+		( new AccessController() )->register();
 	}
 
 	/**

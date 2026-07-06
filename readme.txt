@@ -36,4 +36,5 @@ Planned core features:
 * Initial scaffold: plugin bootstrap, PSR-4 autoloader, developer tooling (PHPCS with WordPress standards, PHPStan, PHPUnit), and continuous integration.
 * Data model: the `handbook` content type; taxonomies for page type, topic, responsible role, and audience; and the handbook grouping with per-handbook frontend access configuration (visibility plus optional roles and users, default members only).
 * Controlled vocabulary seeded on activation, using translatable term names.
+* Frontend access control: a single check enforces per-handbook visibility on single pages, result sets (archives, search, REST collections), and single REST reads. Editing in wp-admin stays unrestricted; pages without a handbook are fail-closed.
 * Internationalisation with a German translation (`languages/`).

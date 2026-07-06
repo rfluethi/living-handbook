@@ -1,0 +1,143 @@
+<?php
+/**
+ * Access control integration tests.
+ *
+ * These document and verify the security-critical visibility rules.
+ *
+ * @package LivingHandbook
+ */
+
+declare( strict_types=1 );
+
+namespace LivingHandbook\Tests\Integration;
+
+use LivingHandbook\Access\AccessController;
+use WP_UnitTestCase;
+
+/**
+ * Per-handbook frontend visibility.
+ */
+final class AccessTest extends WP_UnitTestCase {
+
+	/**
+	 * Create a handbook (grouping term) with an access configuration.
+	 *
+	 * @param string   $visibility Visibility value.
+	 * @param string[] $roles      Allowed roles.
+	 * @param int[]    $users      Allowed user IDs.
+	 * @return int Term ID.
+	 */
+	private function make_handbook( string $visibility, array $roles = array(), array $users = array() ): int {
+		$term_id = self::factory()->term->create(
+			array(
+				'taxonomy' => 'handbook_set',
+				'name'     => 'Handbook ' . wp_generate_password( 6, false ),
+			)
+		);
+		update_term_meta( $term_id, 'living_handbook_visibility', $visibility );
+		if ( array() !== $roles ) {
+			update_term_meta( $term_id, 'living_handbook_roles', $roles );
+		}
+		if ( array() !== $users ) {
+			update_term_meta( $term_id, 'living_handbook_users', $users );
+		}
+		return (int) $term_id;
+	}
+
+	/**
+	 * Create a handbook page assigned to a handbook.
+	 *
+	 * @param int $term_id Handbook term ID.
+	 * @return int Post ID.
+	 */
+	private function make_page( int $term_id ): int {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'   => 'handbook',
+				'post_status' => 'publish',
+			)
+		);
+		wp_set_object_terms( $post_id, array( $term_id ), 'handbook_set' );
+		return (int) $post_id;
+	}
+
+	/**
+	 * A public handbook is visible to a guest.
+	 *
+	 * @return void
+	 */
+	public function test_public_visible_to_guest(): void {
+		$page = $this->make_page( $this->make_handbook( 'public' ) );
+		$this->assertTrue( AccessController::can_view_post( $page, 0 ) );
+	}
+
+	/**
+	 * A members handbook is hidden from a guest.
+	 *
+	 * @return void
+	 */
+	public function test_members_hidden_from_guest(): void {
+		$page = $this->make_page( $this->make_handbook( 'members' ) );
+		$this->assertFalse( AccessController::can_view_post( $page, 0 ) );
+	}
+
+	/**
+	 * A members handbook is visible to any logged-in user.
+	 *
+	 * @return void
+	 */
+	public function test_members_visible_to_subscriber(): void {
+		$page = $this->make_page( $this->make_handbook( 'members' ) );
+		$user = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		$this->assertTrue( AccessController::can_view_post( $page, (int) $user ) );
+	}
+
+	/**
+	 * A restricted handbook is visible to a user with an allowed role.
+	 *
+	 * @return void
+	 */
+	public function test_restricted_allows_listed_role(): void {
+		$page = $this->make_page( $this->make_handbook( 'restricted', array( 'subscriber' ) ) );
+		$user = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		$this->assertTrue( AccessController::can_view_post( $page, (int) $user ) );
+	}
+
+	/**
+	 * A restricted handbook is hidden from a user without an allowed role.
+	 *
+	 * @return void
+	 */
+	public function test_restricted_denies_other_role(): void {
+		$page = $this->make_page( $this->make_handbook( 'restricted', array( 'author' ) ) );
+		$user = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		$this->assertFalse( AccessController::can_view_post( $page, (int) $user ) );
+	}
+
+	/**
+	 * A page without a handbook is fail-closed, even for a member.
+	 *
+	 * @return void
+	 */
+	public function test_no_handbook_is_fail_closed(): void {
+		$page = self::factory()->post->create(
+			array(
+				'post_type'   => 'handbook',
+				'post_status' => 'publish',
+			)
+		);
+		$user = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		$this->assertFalse( AccessController::can_view_post( (int) $page, (int) $user ) );
+	}
+
+	/**
+	 * A content manager (editor) sees everything.
+	 *
+	 * @return void
+	 */
+	public function test_editor_sees_restricted(): void {
+		$page = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
+		$user = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$this->assertTrue( AccessController::can_view_post( $page, (int) $user ) );
+	}
+}
