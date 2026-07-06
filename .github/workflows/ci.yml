@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  static:
+    name: Lint and static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: PHP lint
+        run: find living-handbook.php src -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+      - name: PHPCS
+        run: composer lint
+      - name: PHPStan
+        run: composer analyze
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.1', '8.2', '8.3' ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Unit tests
+        run: vendor/bin/phpunit --testsuite unit
+
+  # The integration job (WordPress test suite plus MySQL, running the
+  # activation smoke test) is added together with the first real module, once
+  # there is a post type and capabilities to assert. The test harness
+  # (tests/bootstrap.php, tests/Integration) is already in place.

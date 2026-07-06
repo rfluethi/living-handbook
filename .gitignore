@@ -1,0 +1,26 @@
+# Dependencies
+/vendor/
+/node_modules/
+
+# Build output
+/build/
+/dist/
+*.zip
+
+# Tooling caches
+.phpunit.result.cache
+.phpcs.cache
+
+# Local WordPress test library
+/wordpress/
+/tmp/
+
+# Compiled translations
+/languages/*.mo
+
+# Editor and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
