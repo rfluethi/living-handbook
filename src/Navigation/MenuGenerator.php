@@ -110,7 +110,7 @@ final class MenuGenerator {
 				'post_content' => $markup,
 			)
 		);
-		if ( is_wp_error( $new ) || 0 === $new ) {
+		if ( 0 === $new ) {
 			return 0;
 		}
 		update_option( self::OPTION, $new );
