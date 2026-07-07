@@ -4,7 +4,7 @@
  *
  * This appends a feedback prompt and a metadata footer to the page content,
  * and offers a navigation shortcode. It is the quick, testable rendering; the
- * polished UI moves to the dynamic blocks.
+ * production navigation is the VSN plugin styling the generated menu.
  *
  * @package LivingHandbook
  */
@@ -38,25 +38,32 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Enqueue the frontend stylesheet and feedback script on handbook pages.
+	 * Enqueue the stylesheet where handbook markup appears, and the feedback
+	 * script on single handbook pages.
 	 *
 	 * @return void
 	 */
 	public function enqueue(): void {
-		if ( ! is_singular( Handbook::POST_TYPE ) ) {
+		$single    = is_singular( Handbook::POST_TYPE );
+		$has_block = has_block( 'living-handbook/overview' ) || has_block( 'living-handbook/navigation' );
+		if ( ! $single && ! $has_block ) {
 			return;
 		}
+
 		wp_enqueue_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
-		wp_enqueue_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
-		wp_localize_script(
-			'living-handbook',
-			'livingHandbook',
-			array(
-				'rest'   => esc_url_raw( rest_url( 'living-handbook/v1/feedback' ) ),
-				'nonce'  => wp_create_nonce( 'wp_rest' ),
-				'thanks' => __( 'Thanks for your feedback.', 'living-handbook' ),
-			)
-		);
+
+		if ( $single ) {
+			wp_enqueue_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
+			wp_localize_script(
+				'living-handbook',
+				'livingHandbook',
+				array(
+					'rest'   => esc_url_raw( rest_url( 'living-handbook/v1/feedback' ) ),
+					'nonce'  => wp_create_nonce( 'wp_rest' ),
+					'thanks' => __( 'Thanks for your feedback.', 'living-handbook' ),
+				)
+			);
+		}
 	}
 
 	/**
@@ -151,7 +158,9 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Shortcode that renders the current handbook's page tree as navigation.
+	 * Fallback shortcode that renders the current handbook's page tree.
+	 *
+	 * Setups using the VSN plugin use the generated menu instead.
 	 *
 	 * @return string
 	 */

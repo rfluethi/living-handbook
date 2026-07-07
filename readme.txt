@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,8 +20,8 @@ Planned core features:
 * Ownership per page: a responsible role mapped to a current person.
 * Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages that go unchecked.
 * Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
-* Automatic navigation generated from the page hierarchy.
-* No external plugin dependencies, no cost.
+* Automatic navigation menu generated from the page hierarchy, styled by the VSN plugin.
+* No external plugin dependencies for the core, no cost.
 
 == Installation ==
 
@@ -31,25 +31,22 @@ Planned core features:
 
 == Changelog ==
 
+= 0.6.0 =
+* Fixed: the frontend stylesheet now loads on the overview page (a normal page with the overview block), so the cards are styled.
+* Navigation menu: a "Handbook" wp_navigation menu is generated from the page hierarchy and kept up to date, ready to be styled by the VSN plugin in a block template. The built-in navigation block and shortcode remain as a fallback for setups without VSN.
+
 = 0.5.0 =
-* Frontend design following the prototype: the overview shows page cards with a freshness dot, the navigation is a bordered tree, and the metadata footer, badges and feedback are styled to match.
-* Colours are exposed as CSS custom properties (`--lh-accent`, `--lh-ok`, `--lh-due`, `--lh-overdue`, `--lh-border`, `--lh-muted`) so you can adapt them to your theme; see docs/customization.md.
-* Fixed the navigation block icon.
+* Frontend design following the prototype: overview cards with a freshness dot, a bordered navigation tree, and styled metadata footer, badges and feedback.
+* Colours exposed as CSS custom properties for theme adaptation; see docs/customization.md.
 
 = 0.4.0 =
-* Overview block: place it on any page to build the handbook home.
-* Navigation block: the current handbook's page tree, for a single-page block template.
-* Own block category "Living Handbook" in the inserter.
+* Overview and navigation blocks, and a "Living Handbook" block category.
 
 = 0.3.0 =
-* Maintenance dashboard widget with the overdue share and a list of pages due or unchecked.
-* Handbook list columns for the last review (with status) and the feedback counts.
+* Maintenance dashboard widget and handbook list columns.
 
 = 0.2.0 =
-* Access configuration UI per handbook.
-* Maintenance metadata, freshness status, and a "was this helpful?" feedback counter.
-* Default frontend rendering and a navigation shortcode.
-* German translation.
+* Access configuration UI, maintenance metadata, freshness status, feedback counter, default frontend rendering, and a German translation.
 
 = 0.1.0 =
 * Initial scaffold, data model, frontend access control, and internationalisation.

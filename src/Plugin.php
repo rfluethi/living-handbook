@@ -17,6 +17,7 @@ use LivingHandbook\Frontend\FrontendRenderer;
 use LivingHandbook\Handbook\HandbookAdmin;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
+use LivingHandbook\Navigation\MenuGenerator;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Taxonomy\Taxonomies;
@@ -76,11 +77,12 @@ final class Plugin {
 		( new FrontendRenderer() )->register();
 		( new Maintenance() )->register();
 		( new Blocks() )->register();
+		( new MenuGenerator() )->register();
 	}
 
 	/**
-	 * Activation callback: register the data model, seed the vocabulary, and
-	 * flush rewrite rules so the permalinks work immediately.
+	 * Activation callback: register the data model, seed the vocabulary, build
+	 * the navigation menu, and flush rewrite rules.
 	 *
 	 * @return void
 	 */
@@ -92,6 +94,7 @@ final class Plugin {
 		$handbooks->register_meta();
 
 		Seeder::seed();
+		( new MenuGenerator() )->update();
 
 		flush_rewrite_rules();
 	}
