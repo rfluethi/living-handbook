@@ -1,0 +1,56 @@
+/* Living Handbook: default frontend styles. Override in theme.json or Additional CSS. */
+
+.living-handbook-nav ul {
+	list-style: none;
+	margin: 0;
+	padding-inline-start: 0.75rem;
+}
+
+.living-handbook-nav li.current > a {
+	font-weight: 600;
+}
+
+.living-handbook-meta {
+	margin-block-start: var(--wp--preset--spacing--50, 2rem);
+	padding: var(--wp--preset--spacing--30, 1rem);
+	border: 1px solid var(--wp--preset--color--contrast, #e0e0e0);
+	border-radius: 12px;
+}
+
+.living-handbook-meta dl {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 1rem;
+	margin: 0;
+}
+
+.living-handbook-meta__label {
+	font-size: 0.8rem;
+	opacity: 0.7;
+	margin: 0;
+}
+
+.living-handbook-meta__value {
+	margin: 0.15rem 0 0;
+}
+
+.living-handbook-badge {
+	display: inline-block;
+	border-radius: 999px;
+	padding: 0.1em 0.6em;
+	font-size: 0.75rem;
+	background: var(--wp--preset--color--accent-2, #f3e4c3);
+	color: var(--wp--preset--color--contrast, #5a4300);
+}
+
+.living-handbook-badge--overdue {
+	background: var(--wp--preset--color--accent-5, #f3d0c3);
+}
+
+.living-handbook-feedback {
+	margin-block-start: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}

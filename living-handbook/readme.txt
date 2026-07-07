@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 0.2.0
+Stable tag: 0.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,17 +32,9 @@ Planned core features:
 
 == Changelog ==
 
-= 0.2.0 =
-* Access configuration UI per handbook (visibility public, members, or restricted to roles and/or users).
-* Maintenance metadata: last updated (automatic), last reviewed, review interval, reviewer, with an editor meta box.
-* Freshness status: reviewed, review due, or unchecked (escalated past twice the interval).
-* "Was this helpful?" feedback counter with a REST endpoint.
-* Default frontend rendering: a metadata footer with a freshness badge and the feedback prompt are appended to handbook pages, plus a `[living_handbook_nav]` navigation shortcode. Styling follows the theme via theme.json; see docs/customization.md.
-* German translation extended to cover the new strings.
-
 = 0.1.0 =
 * Initial scaffold: plugin bootstrap, PSR-4 autoloader, developer tooling (PHPCS with WordPress standards, PHPStan, PHPUnit), and continuous integration.
-* Data model: the `handbook` content type; taxonomies for page type, topic, responsible role, and audience; and the handbook grouping.
+* Data model: the `handbook` content type; taxonomies for page type, topic, responsible role, and audience; and the handbook grouping with per-handbook frontend access configuration (visibility plus optional roles and users, default members only).
 * Controlled vocabulary seeded on activation, using translatable term names.
-* Frontend access control enforced per handbook on every read path.
-* Internationalisation with a German translation.
+* Frontend access control: a single check enforces per-handbook visibility on single pages, result sets (archives, search, REST collections), and single REST reads. Editing in wp-admin stays unrestricted; pages without a handbook are fail-closed.
+* Internationalisation with a German translation (`languages/`).

@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.2.0\n"
+"Project-Id-Version: Living Handbook 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rfluethi/living-handbook/issues\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -92,70 +92,4 @@ msgid "GitHub specialist"
 msgstr ""
 
 msgid "General"
-msgstr ""
-
-msgid "Frontend visibility"
-msgstr ""
-
-msgid "Allowed roles (restricted only)"
-msgstr ""
-
-msgid "Allowed users (restricted only)"
-msgstr ""
-
-msgid "Comma-separated user logins or IDs."
-msgstr ""
-
-msgid "Public (no login)"
-msgstr ""
-
-msgid "All members (logged in)"
-msgstr ""
-
-msgid "Restricted (roles and/or users)"
-msgstr ""
-
-msgid "Handbook maintenance"
-msgstr ""
-
-msgid "Last reviewed"
-msgstr ""
-
-msgid "Review interval (days)"
-msgstr ""
-
-msgid "Reviewed by"
-msgstr ""
-
-msgid "— none —"
-msgstr ""
-
-msgid "The last updated date is set automatically on save."
-msgstr ""
-
-msgid "Reviewed"
-msgstr ""
-
-msgid "Review due"
-msgstr ""
-
-msgid "Unchecked"
-msgstr ""
-
-msgid "Thanks for your feedback."
-msgstr ""
-
-msgid "Last updated"
-msgstr ""
-
-msgid "Responsible"
-msgstr ""
-
-msgid "Was this helpful?"
-msgstr ""
-
-msgid "Yes"
-msgstr ""
-
-msgid "No"
 msgstr ""

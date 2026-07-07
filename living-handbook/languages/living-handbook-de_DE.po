@@ -3,7 +3,7 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.2.0\n"
+"Project-Id-Version: Living Handbook 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/rfluethi/living-handbook/issues\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -95,69 +95,3 @@ msgstr "GitHub-Spezialist"
 
 msgid "General"
 msgstr "Allgemein"
-
-msgid "Frontend visibility"
-msgstr "Frontend-Sichtbarkeit"
-
-msgid "Allowed roles (restricted only)"
-msgstr "Erlaubte Rollen (nur bei beschränkt)"
-
-msgid "Allowed users (restricted only)"
-msgstr "Erlaubte Personen (nur bei beschränkt)"
-
-msgid "Comma-separated user logins or IDs."
-msgstr "Kommagetrennte Benutzernamen oder IDs."
-
-msgid "Public (no login)"
-msgstr "Öffentlich (ohne Login)"
-
-msgid "All members (logged in)"
-msgstr "Alle Mitglieder (eingeloggt)"
-
-msgid "Restricted (roles and/or users)"
-msgstr "Beschränkt (Rollen und/oder Personen)"
-
-msgid "Handbook maintenance"
-msgstr "Handbuch-Wartung"
-
-msgid "Last reviewed"
-msgstr "Zuletzt geprüft"
-
-msgid "Review interval (days)"
-msgstr "Prüfintervall (Tage)"
-
-msgid "Reviewed by"
-msgstr "Geprüft von"
-
-msgid "— none —"
-msgstr "— keine —"
-
-msgid "The last updated date is set automatically on save."
-msgstr "Das Aktualisierungsdatum wird beim Speichern automatisch gesetzt."
-
-msgid "Reviewed"
-msgstr "Geprüft"
-
-msgid "Review due"
-msgstr "Prüfung fällig"
-
-msgid "Unchecked"
-msgstr "Ungeprüft"
-
-msgid "Thanks for your feedback."
-msgstr "Danke für dein Feedback."
-
-msgid "Last updated"
-msgstr "Zuletzt aktualisiert"
-
-msgid "Responsible"
-msgstr "Verantwortlich"
-
-msgid "Was this helpful?"
-msgstr "War das hilfreich?"
-
-msgid "Yes"
-msgstr "Ja"
-
-msgid "No"
-msgstr "Nein"

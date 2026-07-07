@@ -10,11 +10,8 @@ declare( strict_types=1 );
 namespace LivingHandbook;
 
 use LivingHandbook\Access\AccessController;
-use LivingHandbook\Feedback\Feedback;
-use LivingHandbook\Frontend\FrontendRenderer;
 use LivingHandbook\Handbook\HandbookAdmin;
 use LivingHandbook\Handbook\Handbooks;
-use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Taxonomy\Taxonomies;
@@ -69,9 +66,6 @@ final class Plugin {
 		( new Handbooks() )->register();
 		( new HandbookAdmin() )->register();
 		( new AccessController() )->register();
-		( new Metadata() )->register();
-		( new Feedback() )->register();
-		( new FrontendRenderer() )->register();
 	}
 
 	/**
