@@ -1,70 +1,212 @@
-/* Living Handbook: default frontend styles. Override in theme.json or Additional CSS. */
+/*
+ * Living Handbook: default frontend styles, following the prototype design.
+ * Colours are set through custom properties so you can adapt them to your
+ * theme in theme.json or Additional CSS. See docs/customization.md.
+ */
+
+.living-handbook-overview,
+.living-handbook-cards,
+.living-handbook-card,
+.living-handbook-nav,
+.living-handbook-meta,
+.living-handbook-feedback {
+	--lh-accent: #2c5f8a;
+	--lh-ok: #1e8449;
+	--lh-due: #b26a00;
+	--lh-overdue: #c0392b;
+	--lh-border: #e2e6ea;
+	--lh-muted: #76828d;
+}
+
+/* Overview cards */
+
+.living-handbook-overview__group {
+	margin-block-end: 2rem;
+}
+
+.living-handbook-overview__title {
+	font-size: 1.1rem;
+	margin-block-end: 0.75rem;
+}
+
+.living-handbook-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 1rem;
+}
+
+.living-handbook-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 1rem;
+	border: 1px solid var(--lh-border);
+	border-radius: 10px;
+	text-decoration: none;
+	color: inherit;
+	transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.living-handbook-card:hover {
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+	transform: translateY(-2px);
+}
+
+.living-handbook-card__title {
+	font-weight: 600;
+	color: var(--lh-accent);
+}
+
+.living-handbook-card__dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	flex: 0 0 auto;
+	background: var(--lh-muted);
+}
+
+.living-handbook-card__dot--ok {
+	background: var(--lh-ok);
+}
+
+.living-handbook-card__dot--due {
+	background: var(--lh-due);
+}
+
+.living-handbook-card__dot--overdue {
+	background: var(--lh-overdue);
+}
+
+/* Navigation tree */
+
+.living-handbook-nav {
+	font-size: 0.9rem;
+	border: 1px solid var(--lh-border);
+	border-radius: 10px;
+	padding: 0.9rem 1rem;
+	position: sticky;
+	top: 1rem;
+}
+
+.living-handbook-nav__title {
+	font-size: 0.72rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--lh-muted);
+	margin: 0 0 0.6rem;
+}
 
 .living-handbook-nav ul {
 	list-style: none;
 	margin: 0;
-	padding-inline-start: 0.75rem;
+	padding-inline-start: 0.2rem;
 }
 
-.living-handbook-nav li.current > a {
-	font-weight: 600;
+.living-handbook-nav li {
+	margin: 0.15rem 0;
+	padding-inline-start: 0.7rem;
+	border-inline-start: 2px solid var(--lh-border);
 }
 
-.living-handbook-overview__group {
-	margin-block-end: 1.5rem;
+.living-handbook-nav a {
+	display: block;
+	padding: 0.15rem 0;
+	text-decoration: none;
+	color: inherit;
 }
 
-.living-handbook-overview__title {
-	margin-block-end: 0.25rem;
+.living-handbook-nav a:hover {
+	color: var(--lh-accent);
 }
 
-.living-handbook-overview ul {
-	list-style: none;
-	margin: 0;
-	padding-inline-start: 0.75rem;
+.living-handbook-nav li.is-current {
+	border-inline-start-color: var(--lh-accent);
 }
+
+.living-handbook-nav li.is-current > a {
+	color: var(--lh-accent);
+	font-weight: 700;
+}
+
+/* Metadata footer */
 
 .living-handbook-meta {
-	margin-block-start: var(--wp--preset--spacing--50, 2rem);
-	padding: var(--wp--preset--spacing--30, 1rem);
-	border: 1px solid var(--wp--preset--color--contrast, #e0e0e0);
-	border-radius: 12px;
+	margin-block-start: 1.5rem;
+	padding-block-start: 1rem;
+	border-top: 1px solid var(--lh-border);
 }
 
 .living-handbook-meta dl {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 	gap: 1rem;
 	margin: 0;
 }
 
 .living-handbook-meta__label {
-	font-size: 0.8rem;
-	opacity: 0.7;
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--lh-muted);
 	margin: 0;
 }
 
 .living-handbook-meta__value {
-	margin: 0.15rem 0 0;
+	font-weight: 600;
+	margin: 0.2rem 0 0;
 }
+
+/* Freshness badges */
 
 .living-handbook-badge {
 	display: inline-block;
 	border-radius: 999px;
-	padding: 0.1em 0.6em;
-	font-size: 0.75rem;
-	background: var(--wp--preset--color--accent-2, #f3e4c3);
-	color: var(--wp--preset--color--contrast, #5a4300);
+	padding: 0.15rem 0.5rem;
+	font-size: 0.72rem;
+	font-weight: 600;
+	background: #eef1f4;
+	color: var(--lh-muted);
+}
+
+.living-handbook-badge--ok {
+	background: #e7f6ec;
+	color: var(--lh-ok);
+}
+
+.living-handbook-badge--due {
+	background: #fdf0e0;
+	color: var(--lh-due);
 }
 
 .living-handbook-badge--overdue {
-	background: var(--wp--preset--color--accent-5, #f3d0c3);
+	background: #fdecea;
+	color: var(--lh-overdue);
 }
 
+/* Feedback */
+
 .living-handbook-feedback {
-	margin-block-start: 1rem;
+	margin-block-start: 1.25rem;
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.4rem;
 	flex-wrap: wrap;
+	font-size: 0.8rem;
+	color: var(--lh-muted);
+}
+
+.living-handbook-feedback button {
+	border: 1px solid var(--lh-border);
+	background: transparent;
+	color: inherit;
+	border-radius: 5px;
+	padding: 0.1rem 0.55rem;
+	cursor: pointer;
+	font-size: 0.78rem;
+}
+
+.living-handbook-feedback button:hover {
+	border-color: var(--lh-accent);
+	color: var(--lh-accent);
 }

@@ -42,11 +42,13 @@ final class Navigation {
 		if ( '' === $tree ) {
 			return '';
 		}
-		return '<nav class="living-handbook-nav" aria-label="' . esc_attr__( 'Handbook', 'living-handbook' ) . '"><ul>' . $tree . '</ul></nav>';
+		return '<nav class="living-handbook-nav" aria-label="' . esc_attr__( 'Handbook', 'living-handbook' ) . '">'
+			. '<p class="living-handbook-nav__title">' . esc_html__( 'Handbook', 'living-handbook' ) . '</p>'
+			. '<ul>' . $tree . '</ul></nav>';
 	}
 
 	/**
-	 * Render an overview of every handbook the current user may view.
+	 * Render an overview of every handbook the current user may view, as cards.
 	 *
 	 * @return string
 	 */
@@ -70,16 +72,65 @@ final class Navigation {
 			if ( ! AccessController::can_view_term( $term->term_id, $user_id ) ) {
 				continue;
 			}
-			$tree = self::render_tree( 0, $term->term_id, 0 );
+			$cards = self::render_cards( $term->term_id );
+			if ( '' === $cards ) {
+				continue;
+			}
 			$out .= '<section class="living-handbook-overview__group"><h2 class="living-handbook-overview__title">'
-				. esc_html( $term->name ) . '</h2>'
-				. ( '' !== $tree ? '<ul>' . $tree . '</ul>' : '' ) . '</section>';
+				. esc_html( $term->name ) . '</h2>' . $cards . '</section>';
 		}
 
 		if ( '' === $out ) {
 			return '';
 		}
 		return '<div class="living-handbook-overview">' . $out . '</div>';
+	}
+
+	/**
+	 * Render the pages of a handbook as a card grid.
+	 *
+	 * @param int $term_id Handbook term ID.
+	 * @return string
+	 */
+	private static function render_cards( int $term_id ): string {
+		$query = new WP_Query(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'no_found_rows'  => true,
+				'orderby'        => array(
+					'menu_order' => 'ASC',
+					'title'      => 'ASC',
+				),
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					array(
+						'taxonomy' => Handbooks::TAXONOMY,
+						'field'    => 'term_id',
+						'terms'    => $term_id,
+					),
+				),
+			)
+		);
+
+		$cards = '';
+		foreach ( $query->posts as $post ) {
+			if ( ! $post instanceof WP_Post ) {
+				continue;
+			}
+			$status = FreshnessStatus::for_post( $post->ID );
+			$dot    = FreshnessStatus::NONE !== $status
+				? '<span class="living-handbook-card__dot living-handbook-card__dot--' . esc_attr( $status ) . '" aria-hidden="true"></span>'
+				: '';
+			$cards .= '<a class="living-handbook-card" href="' . esc_url( (string) get_permalink( $post ) ) . '">'
+				. '<span class="living-handbook-card__title">' . esc_html( get_the_title( $post ) ) . '</span>'
+				. $dot . '</a>';
+		}
+
+		if ( '' === $cards ) {
+			return '';
+		}
+		return '<div class="living-handbook-cards">' . $cards . '</div>';
 	}
 
 	/**
@@ -119,7 +170,7 @@ final class Navigation {
 				continue;
 			}
 			$children = self::render_tree( $post->ID, $term_id, $current );
-			$class    = $post->ID === $current ? ' class="current"' : '';
+			$class    = $post->ID === $current ? ' class="is-current"' : '';
 			$out     .= '<li' . $class . '><a href="' . esc_url( (string) get_permalink( $post ) ) . '">' . esc_html( get_the_title( $post ) ) . '</a>'
 				. ( '' !== $children ? '<ul>' . $children . '</ul>' : '' ) . '</li>';
 		}

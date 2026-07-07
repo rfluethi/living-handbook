@@ -21,7 +21,7 @@
 		apiVersion: 3,
 		title: __( 'Handbook navigation', 'living-handbook' ),
 		category: 'living-handbook',
-		icon: 'list',
+		icon: 'list-view',
 		edit: function () {
 			return el(
 				'div',
