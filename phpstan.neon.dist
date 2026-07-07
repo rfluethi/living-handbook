@@ -6,3 +6,5 @@ parameters:
 	paths:
 		- living-handbook.php
 		- src
+	scanFiles:
+		- tests/phpstan/constants.php
