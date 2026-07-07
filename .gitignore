@@ -2,9 +2,11 @@
 /vendor/
 /node_modules/
 
-# Build output
+# Build artifacts (never commit the built zip or an extracted copy)
 /build/
 /dist/
+/living-handbook/
+living-handbook-*.zip
 *.zip
 
 # Tooling caches

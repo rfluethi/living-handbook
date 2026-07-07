@@ -179,15 +179,15 @@ final class FrontendRenderer {
 	/**
 	 * Recursively render the page tree of a handbook.
 	 *
-	 * @param int $parent  Parent post ID (0 for the top level).
-	 * @param int $term_id Handbook term ID (0 for all).
-	 * @param int $current Currently viewed post ID.
+	 * @param int $parent_id Parent post ID (0 for the top level).
+	 * @param int $term_id   Handbook term ID (0 for all).
+	 * @param int $current   Currently viewed post ID.
 	 * @return string
 	 */
-	private function render_tree( int $parent, int $term_id, int $current ): string {
+	private function render_tree( int $parent_id, int $term_id, int $current ): string {
 		$args = array(
 			'post_type'      => Handbook::POST_TYPE,
-			'post_parent'    => $parent,
+			'post_parent'    => $parent_id,
 			'posts_per_page' => -1,
 			'post_status'    => 'publish',
 			'orderby'        => array(

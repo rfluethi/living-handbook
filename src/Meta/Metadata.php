@@ -51,14 +51,18 @@ final class Metadata {
 			self::REVIEWER => 'integer',
 		);
 		foreach ( $fields as $key => $type ) {
-			register_post_meta( Handbook::POST_TYPE, $key, array(
-				'type'          => $type,
-				'single'        => true,
-				'show_in_rest'  => true,
-				'auth_callback' => static function (): bool {
-					return current_user_can( 'edit_posts' );
-				},
-			) );
+			register_post_meta(
+				Handbook::POST_TYPE,
+				$key,
+				array(
+					'type'          => $type,
+					'single'        => true,
+					'show_in_rest'  => true,
+					'auth_callback' => static function (): bool {
+						return current_user_can( 'edit_posts' );
+					},
+				)
+			);
 		}
 	}
 
@@ -100,13 +104,15 @@ final class Metadata {
 		<p>
 			<label for="living_handbook_reviewer"><strong><?php esc_html_e( 'Reviewed by', 'living-handbook' ); ?></strong></label><br>
 			<?php
-			wp_dropdown_users( array(
-				'name'             => 'living_handbook_reviewer',
-				'id'               => 'living_handbook_reviewer',
-				'selected'         => $reviewer,
-				'show_option_none' => __( '— none —', 'living-handbook' ),
-				'class'            => 'widefat',
-			) );
+			wp_dropdown_users(
+				array(
+					'name'             => 'living_handbook_reviewer',
+					'id'               => 'living_handbook_reviewer',
+					'selected'         => $reviewer,
+					'show_option_none' => __( '— none —', 'living-handbook' ),
+					'class'            => 'widefat',
+				)
+			);
 			?>
 		</p>
 		<p class="description"><?php esc_html_e( 'The last updated date is set automatically on save.', 'living-handbook' ); ?></p>

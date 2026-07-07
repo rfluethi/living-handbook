@@ -30,13 +30,19 @@
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="living-handbook"/>
+			<property name="text_domain" type="array">
+				<element value="living-handbook"/>
+			</property>
 		</properties>
 	</rule>
 
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
-			<property name="prefixes" type="array" value="LivingHandbook,living_handbook,LIVING_HANDBOOK"/>
+			<property name="prefixes" type="array">
+				<element value="LivingHandbook"/>
+				<element value="living_handbook"/>
+				<element value="LIVING_HANDBOOK"/>
+			</property>
 		</properties>
 	</rule>
 </ruleset>
