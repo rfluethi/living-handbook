@@ -44,14 +44,12 @@ final class Blocks {
 		register_block_type(
 			'living-handbook/overview',
 			array(
-				'api_version'     => 3,
 				'render_callback' => array( $this, 'render_overview' ),
 			)
 		);
 		register_block_type(
 			'living-handbook/navigation',
 			array(
-				'api_version'     => 3,
 				'render_callback' => array( $this, 'render_navigation' ),
 			)
 		);
