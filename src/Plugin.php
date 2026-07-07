@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook;
 
 use LivingHandbook\Access\AccessController;
+use LivingHandbook\Admin\Maintenance;
 use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\FrontendRenderer;
 use LivingHandbook\Handbook\HandbookAdmin;
@@ -72,6 +73,7 @@ final class Plugin {
 		( new Metadata() )->register();
 		( new Feedback() )->register();
 		( new FrontendRenderer() )->register();
+		( new Maintenance() )->register();
 	}
 
 	/**

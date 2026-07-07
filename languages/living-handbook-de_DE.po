@@ -161,3 +161,15 @@ msgstr "Ja"
 
 msgid "No"
 msgstr "Nein"
+
+msgid "Handbook: reviews overdue"
+msgstr "Handbuch: überfällige Prüfungen"
+
+msgid "%1$d of %2$d pages overdue (%3$d%%)."
+msgstr "%1$d von %2$d Seiten überfällig (%3$d%%)."
+
+msgid "All pages are currently reviewed."
+msgstr "Alle Seiten sind aktuell geprüft."
+
+msgid "Feedback"
+msgstr "Feedback"

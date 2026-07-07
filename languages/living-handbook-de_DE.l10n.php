@@ -62,5 +62,9 @@ return array(
 		'Was this helpful?'                                    => 'War das hilfreich?',
 		'Yes'                                                  => 'Ja',
 		'No'                                                   => 'Nein',
+		'Handbook: reviews overdue'                            => 'Handbuch: überfällige Prüfungen',
+		'%1$d of %2$d pages overdue (%3$d%%).'                 => '%1$d von %2$d Seiten überfällig (%3$d%%).',
+		'All pages are currently reviewed.'                    => 'Alle Seiten sind aktuell geprüft.',
+		'Feedback'                                             => 'Feedback',
 	),
 );

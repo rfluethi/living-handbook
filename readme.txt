@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 0.2.0
+Stable tag: 0.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,12 +32,17 @@ Planned core features:
 
 == Changelog ==
 
+= 0.3.0 =
+* Maintenance dashboard widget showing the share of overdue pages and a list of pages due or unchecked.
+* Handbook list columns for the last review (with status) and the feedback counts.
+* Frontend order fixed: the feedback prompt now sits above the metadata footer.
+
 = 0.2.0 =
 * Access configuration UI per handbook (visibility public, members, or restricted to roles and/or users).
 * Maintenance metadata: last updated (automatic), last reviewed, review interval, reviewer, with an editor meta box.
 * Freshness status: reviewed, review due, or unchecked (escalated past twice the interval).
 * "Was this helpful?" feedback counter with a REST endpoint.
-* Default frontend rendering: a metadata footer with a freshness badge and the feedback prompt are appended to handbook pages, plus a `[living_handbook_nav]` navigation shortcode. Styling follows the theme via theme.json; see docs/customization.md.
+* Default frontend rendering: a feedback prompt and a metadata footer with a freshness badge are appended to handbook pages, plus a `[living_handbook_nav]` navigation shortcode. Styling follows the theme via theme.json; see docs/customization.md.
 * German translation extended to cover the new strings.
 
 = 0.1.0 =

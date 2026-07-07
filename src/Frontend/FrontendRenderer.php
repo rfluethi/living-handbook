@@ -2,9 +2,9 @@
 /**
  * Simple frontend output for handbook pages.
  *
- * This appends a metadata footer, a freshness badge and a feedback prompt to
- * the page content, and offers a navigation shortcode. It is the quick,
- * testable rendering; the polished UI will move to dynamic blocks.
+ * This appends a feedback prompt and a metadata footer to the page content,
+ * and offers a navigation shortcode. It is the quick, testable rendering; the
+ * polished UI will move to dynamic blocks.
  *
  * @package LivingHandbook
  */
@@ -63,7 +63,7 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Append the metadata footer and feedback prompt to a handbook page.
+	 * Append the feedback prompt and the metadata footer to a handbook page.
 	 *
 	 * @param string $content The post content.
 	 * @return string
@@ -76,7 +76,7 @@ final class FrontendRenderer {
 		if ( false === $post_id ) {
 			return $content;
 		}
-		return $content . $this->render_footer( (int) $post_id ) . $this->render_feedback( (int) $post_id );
+		return $content . $this->render_feedback( (int) $post_id ) . $this->render_footer( (int) $post_id );
 	}
 
 	/**

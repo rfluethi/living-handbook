@@ -22,6 +22,6 @@ final class SmokeTest extends TestCase {
 	 * @return void
 	 */
 	public function test_version_is_semver(): void {
-		$this->assertMatchesRegularExpression( '/^\d+\.\d+\.\d+$/', '0.2.0' );
+		$this->assertMatchesRegularExpression( '/^\d+\.\d+\.\d+$/', '0.3.0' );
 	}
 }

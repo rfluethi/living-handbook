@@ -159,3 +159,15 @@ msgstr ""
 
 msgid "No"
 msgstr ""
+
+msgid "Handbook: reviews overdue"
+msgstr ""
+
+msgid "%1$d of %2$d pages overdue (%3$d%%)."
+msgstr ""
+
+msgid "All pages are currently reviewed."
+msgstr ""
+
+msgid "Feedback"
+msgstr ""
