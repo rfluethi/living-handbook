@@ -21,9 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers the overview and navigation blocks.
+ * Registers the overview and navigation blocks and their editor category.
  */
 final class Blocks {
+
+	public const CATEGORY = 'living-handbook';
 
 	/**
 	 * Hook registration into WordPress.
@@ -33,6 +35,7 @@ final class Blocks {
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_blocks' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor' ) );
+		add_filter( 'block_categories_all', array( $this, 'block_category' ) );
 	}
 
 	/**
@@ -53,6 +56,21 @@ final class Blocks {
 				'render_callback' => array( $this, 'render_navigation' ),
 			)
 		);
+	}
+
+	/**
+	 * Add a dedicated block category so the blocks group together.
+	 *
+	 * @param array<int, array<string, mixed>> $categories Existing categories.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function block_category( array $categories ): array {
+		$categories[] = array(
+			'slug'  => self::CATEGORY,
+			'title' => __( 'Living Handbook', 'living-handbook' ),
+			'icon'  => null,
+		);
+		return $categories;
 	}
 
 	/**

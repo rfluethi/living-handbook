@@ -18,6 +18,18 @@ composer analyze   # PHPStan
 composer test      # PHPUnit
 ```
 
+## Building an installable zip
+
+To produce a plugin zip for manual installation in WordPress:
+
+```bash
+bash bin/build.sh
+```
+
+This uses `git archive`, which respects the `export-ignore` rules in `.gitattributes`, so development files (tests, CI config, tooling) are left out. The result is `living-handbook-<version>.zip`, built from the current `HEAD` commit.
+
+Do not extract the zip inside the repository; that would commit a second copy of the plugin. Install it in WordPress under Plugins, Add new, Upload plugin.
+
 ## Conventions
 
 - Target PHP 8.1 and WordPress 6.7 or newer.
