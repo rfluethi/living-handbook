@@ -10,6 +10,20 @@
 	font-weight: 600;
 }
 
+.living-handbook-overview__group {
+	margin-block-end: 1.5rem;
+}
+
+.living-handbook-overview__title {
+	margin-block-end: 0.25rem;
+}
+
+.living-handbook-overview ul {
+	list-style: none;
+	margin: 0;
+	padding-inline-start: 0.75rem;
+}
+
 .living-handbook-meta {
 	margin-block-start: var(--wp--preset--spacing--50, 2rem);
 	padding: var(--wp--preset--spacing--30, 1rem);

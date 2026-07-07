@@ -11,6 +11,7 @@ namespace LivingHandbook;
 
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Admin\Maintenance;
+use LivingHandbook\Blocks\Blocks;
 use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\FrontendRenderer;
 use LivingHandbook\Handbook\HandbookAdmin;
@@ -74,6 +75,7 @@ final class Plugin {
 		( new Feedback() )->register();
 		( new FrontendRenderer() )->register();
 		( new Maintenance() )->register();
+		( new Blocks() )->register();
 	}
 
 	/**

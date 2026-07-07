@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,8 +20,7 @@ Planned core features:
 * Ownership per page: a responsible role mapped to a current person.
 * Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages that go unchecked.
 * Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
-* Automatic navigation menus generated from the page hierarchy.
-* Markdown and ZIP import.
+* Automatic navigation generated from the page hierarchy.
 * No external plugin dependencies, no cost.
 
 == Installation ==
@@ -31,6 +30,11 @@ Planned core features:
 3. Visit Settings then Permalinks once so the handbook URLs work.
 
 == Changelog ==
+
+= 0.4.0 =
+* Overview block: place it on any page to build the handbook home, listing every handbook you may view and its pages.
+* Navigation block: the current handbook's page tree, for use in a single-page block template.
+* Both blocks render server-side; navigation logic is shared with the `[living_handbook_nav]` shortcode.
 
 = 0.3.0 =
 * Maintenance dashboard widget showing the share of overdue pages and a list of pages due or unchecked.
@@ -42,12 +46,11 @@ Planned core features:
 * Maintenance metadata: last updated (automatic), last reviewed, review interval, reviewer, with an editor meta box.
 * Freshness status: reviewed, review due, or unchecked (escalated past twice the interval).
 * "Was this helpful?" feedback counter with a REST endpoint.
-* Default frontend rendering: a feedback prompt and a metadata footer with a freshness badge are appended to handbook pages, plus a `[living_handbook_nav]` navigation shortcode. Styling follows the theme via theme.json; see docs/customization.md.
-* German translation extended to cover the new strings.
+* Default frontend rendering: a feedback prompt and a metadata footer with a freshness badge, plus a navigation shortcode.
+* German translation.
 
 = 0.1.0 =
-* Initial scaffold: plugin bootstrap, PSR-4 autoloader, developer tooling (PHPCS with WordPress standards, PHPStan, PHPUnit), and continuous integration.
-* Data model: the `handbook` content type; taxonomies for page type, topic, responsible role, and audience; and the handbook grouping.
-* Controlled vocabulary seeded on activation, using translatable term names.
+* Initial scaffold: plugin bootstrap, PSR-4 autoloader, developer tooling (PHPCS, PHPStan, PHPUnit), and continuous integration.
+* Data model: the `handbook` content type; taxonomies; and the handbook grouping.
 * Frontend access control enforced per handbook on every read path.
 * Internationalisation with a German translation.

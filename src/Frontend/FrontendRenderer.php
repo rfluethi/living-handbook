@@ -4,7 +4,7 @@
  *
  * This appends a feedback prompt and a metadata footer to the page content,
  * and offers a navigation shortcode. It is the quick, testable rendering; the
- * polished UI will move to dynamic blocks.
+ * polished UI moves to the dynamic blocks.
  *
  * @package LivingHandbook
  */
@@ -13,12 +13,9 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Frontend;
 
-use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
-use WP_Post;
-use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -163,60 +160,6 @@ final class FrontendRenderer {
 			return '';
 		}
 		$post_id = get_the_ID();
-		if ( false === $post_id ) {
-			return '';
-		}
-		$handbook = wp_get_object_terms( (int) $post_id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
-		$term_id  = ( ! is_wp_error( $handbook ) && ! empty( $handbook ) ) ? (int) $handbook[0] : 0;
-
-		$tree = $this->render_tree( 0, $term_id, (int) $post_id );
-		if ( '' === $tree ) {
-			return '';
-		}
-		return '<nav class="living-handbook-nav" aria-label="' . esc_attr__( 'Handbook', 'living-handbook' ) . '"><ul>' . $tree . '</ul></nav>';
-	}
-
-	/**
-	 * Recursively render the page tree of a handbook.
-	 *
-	 * @param int $parent_id Parent post ID (0 for the top level).
-	 * @param int $term_id   Handbook term ID (0 for all).
-	 * @param int $current   Currently viewed post ID.
-	 * @return string
-	 */
-	private function render_tree( int $parent_id, int $term_id, int $current ): string {
-		$args = array(
-			'post_type'      => Handbook::POST_TYPE,
-			'post_parent'    => $parent_id,
-			'posts_per_page' => -1,
-			'post_status'    => 'publish',
-			'orderby'        => array(
-				'menu_order' => 'ASC',
-				'title'      => 'ASC',
-			),
-			'no_found_rows'  => true,
-		);
-		if ( $term_id > 0 ) {
-			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-				array(
-					'taxonomy' => Handbooks::TAXONOMY,
-					'field'    => 'term_id',
-					'terms'    => $term_id,
-				),
-			);
-		}
-
-		$query = new WP_Query( $args );
-		$out   = '';
-		foreach ( $query->posts as $post ) {
-			if ( ! $post instanceof WP_Post ) {
-				continue;
-			}
-			$children = $this->render_tree( $post->ID, $term_id, $current );
-			$class    = $post->ID === $current ? ' class="current"' : '';
-			$out     .= '<li' . $class . '><a href="' . esc_url( (string) get_permalink( $post ) ) . '">' . esc_html( get_the_title( $post ) ) . '</a>'
-				. ( '' !== $children ? '<ul>' . $children . '</ul>' : '' ) . '</li>';
-		}
-		return $out;
+		return false !== $post_id ? Navigation::render_for_post( (int) $post_id ) : '';
 	}
 }
