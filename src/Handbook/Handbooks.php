@@ -19,6 +19,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Registers the `handbook_set` grouping taxonomy. Each handbook page belongs to
  * exactly one handbook. Every handbook carries a frontend access configuration
  * (visibility plus optional roles and users); the Access module enforces it.
+ *
+ * The taxonomy is publicly queryable so that each handbook has its own entry
+ * page at the term archive (/handbook-set/<slug>/). Access to that page is
+ * guarded by the Access module.
  */
 final class Handbooks {
 
@@ -52,16 +56,21 @@ final class Handbooks {
 			self::TAXONOMY,
 			array( Handbook::POST_TYPE ),
 			array(
-				'labels'            => array(
+				'labels'             => array(
 					'name'          => __( 'Handbooks', 'living-handbook' ),
 					'singular_name' => __( 'Handbook', 'living-handbook' ),
 				),
-				'hierarchical'      => false,
-				'public'            => false,
-				'show_ui'           => true,
-				'show_admin_column' => true,
-				'show_in_rest'      => true,
-				'rewrite'           => false,
+				'hierarchical'       => false,
+				'public'             => false,
+				'publicly_queryable' => true,
+				'show_ui'            => true,
+				'show_admin_column'  => true,
+				'show_in_rest'       => true,
+				'query_var'          => true,
+				'rewrite'            => array(
+					'slug'       => 'handbook-set',
+					'with_front' => false,
+				),
 			)
 		);
 	}

@@ -20,8 +20,9 @@
 	"scripts": {
 		"lint": "phpcs",
 		"fix": "phpcbf",
-		"analyze": "phpstan analyse",
-		"test": "phpunit"
+		"analyze": "phpstan analyse --memory-limit=1G",
+		"test": "phpunit --testsuite unit",
+		"test:integration": "phpunit --testsuite integration"
 	},
 	"config": {
 		"allow-plugins": {

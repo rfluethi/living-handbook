@@ -13,11 +13,12 @@ use LivingHandbook\Access\AccessController;
 use LivingHandbook\Admin\Maintenance;
 use LivingHandbook\Blocks\Blocks;
 use LivingHandbook\Feedback\Feedback;
+use LivingHandbook\Frontend\Filters;
 use LivingHandbook\Frontend\FrontendRenderer;
+use LivingHandbook\Frontend\Templates;
 use LivingHandbook\Handbook\HandbookAdmin;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
-use LivingHandbook\Navigation\MenuGenerator;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Taxonomy\Taxonomies;
@@ -75,14 +76,15 @@ final class Plugin {
 		( new Metadata() )->register();
 		( new Feedback() )->register();
 		( new FrontendRenderer() )->register();
+		( new Templates() )->register();
+		( new Filters() )->register();
 		( new Maintenance() )->register();
 		( new Blocks() )->register();
-		( new MenuGenerator() )->register();
 	}
 
 	/**
-	 * Activation callback: register the data model, seed the vocabulary, build
-	 * the navigation menu, and flush rewrite rules.
+	 * Activation callback: register the data model, seed the vocabulary, and
+	 * flush rewrite rules.
 	 *
 	 * @return void
 	 */
@@ -94,7 +96,6 @@ final class Plugin {
 		$handbooks->register_meta();
 
 		Seeder::seed();
-		( new MenuGenerator() )->update();
 
 		flush_rewrite_rules();
 	}

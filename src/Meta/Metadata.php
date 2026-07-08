@@ -21,10 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Metadata {
 
-	public const UPDATED  = 'living_handbook_last_updated';
-	public const REVIEWED = 'living_handbook_last_reviewed';
-	public const INTERVAL = 'living_handbook_review_interval';
-	public const REVIEWER = 'living_handbook_reviewer';
+	public const UPDATED   = 'living_handbook_last_updated';
+	public const REVIEWED  = 'living_handbook_last_reviewed';
+	public const INTERVAL  = 'living_handbook_review_interval';
+	public const REVIEWER  = 'living_handbook_reviewer';
+	public const TOC_DEPTH = 'living_handbook_toc_depth';
 
 	/**
 	 * Hook registration into WordPress.
@@ -45,10 +46,11 @@ final class Metadata {
 	 */
 	public function register_meta(): void {
 		$fields = array(
-			self::UPDATED  => 'string',
-			self::REVIEWED => 'string',
-			self::INTERVAL => 'integer',
-			self::REVIEWER => 'integer',
+			self::UPDATED   => 'string',
+			self::REVIEWED  => 'string',
+			self::INTERVAL  => 'integer',
+			self::REVIEWER  => 'integer',
+			self::TOC_DEPTH => 'integer',
 		);
 		foreach ( $fields as $key => $type ) {
 			register_post_meta(
@@ -92,6 +94,7 @@ final class Metadata {
 		$reviewed = (string) get_post_meta( $post->ID, self::REVIEWED, true );
 		$interval = (int) get_post_meta( $post->ID, self::INTERVAL, true );
 		$reviewer = (int) get_post_meta( $post->ID, self::REVIEWER, true );
+		$depth    = (int) get_post_meta( $post->ID, self::TOC_DEPTH, true );
 		?>
 		<p>
 			<label for="living_handbook_reviewed"><strong><?php esc_html_e( 'Last reviewed', 'living-handbook' ); ?></strong></label><br>
@@ -114,6 +117,20 @@ final class Metadata {
 				)
 			);
 			?>
+		</p>
+		<p>
+			<label for="living_handbook_toc_depth"><strong><?php esc_html_e( 'On this page: heading depth', 'living-handbook' ); ?></strong></label><br>
+			<select id="living_handbook_toc_depth" name="living_handbook_toc_depth" class="widefat">
+				<option value="0" <?php selected( 0, $depth ); ?>><?php esc_html_e( 'Use the block default', 'living-handbook' ); ?></option>
+				<?php for ( $level = 1; $level <= 6; $level++ ) : ?>
+					<option value="<?php echo esc_attr( (string) $level ); ?>" <?php selected( $level, $depth ); ?>>
+						<?php
+						/* translators: %d: heading level, e.g. up to H2. */
+						echo esc_html( sprintf( __( 'Up to H%d', 'living-handbook' ), $level ) );
+						?>
+					</option>
+				<?php endfor; ?>
+			</select>
 		</p>
 		<p class="description"><?php esc_html_e( 'The last updated date is set automatically on save.', 'living-handbook' ); ?></p>
 		<?php
@@ -148,6 +165,12 @@ final class Metadata {
 
 		$reviewer = isset( $_POST['living_handbook_reviewer'] ) ? absint( $_POST['living_handbook_reviewer'] ) : 0;
 		update_post_meta( $post_id, self::REVIEWER, $reviewer );
+
+		$depth = isset( $_POST['living_handbook_toc_depth'] ) ? absint( $_POST['living_handbook_toc_depth'] ) : 0;
+		if ( $depth > 6 ) {
+			$depth = 0;
+		}
+		update_post_meta( $post_id, self::TOC_DEPTH, $depth );
 	}
 
 	/**

@@ -5,46 +5,160 @@
  */
 
 .living-handbook-overview,
+.living-handbook-entry,
 .living-handbook-cards,
 .living-handbook-card,
+.living-handbook-layout,
+.living-handbook-sidebar,
+.living-handbook-aside,
 .living-handbook-nav,
+.living-handbook-toc,
+.living-handbook-badges,
 .living-handbook-meta,
-.living-handbook-feedback {
+.living-handbook-feedback,
+.living-handbook-badge,
+.living-handbook-count,
+.living-handbook-empty {
 	--lh-accent: #2c5f8a;
+	--lh-accent-soft: #eaf1f8;
 	--lh-ok: #1e8449;
 	--lh-due: #b26a00;
 	--lh-overdue: #c0392b;
 	--lh-border: #e2e6ea;
 	--lh-muted: #76828d;
+	--lh-sticky-top: 2rem;
 }
 
-/* Overview cards */
+/* Give headings room below a sticky header when jumped to from the TOC. */
 
-.living-handbook-overview__group {
-	margin-block-end: 2rem;
+.wp-block-post-content :is(h1, h2, h3, h4, h5, h6),
+.entry-content :is(h1, h2, h3, h4, h5, h6) {
+	scroll-margin-top: var(--lh-sticky-top, 2rem);
 }
 
-.living-handbook-overview__title {
+/* Entry page: search, layout, headings */
+
+.living-handbook-start__search {
+	display: flex;
+	gap: 0.5rem;
+	margin: 0 0 1.5rem;
+}
+
+.living-handbook-start__search .living-handbook-search__input {
+	flex: 1;
+	padding: 0.85rem 1rem;
+	font-size: 1.05rem;
+	border: 1px solid var(--lh-border);
+	border-radius: 10px;
+}
+
+.living-handbook-start__search button {
+	padding: 0.85rem 1.4rem;
+	border: 0;
+	border-radius: 10px;
+	background: var(--lh-accent);
+	color: #fff;
+	cursor: pointer;
+}
+
+.living-handbook-layout {
+	display: grid;
+	grid-template-columns: 1fr 250px;
+	gap: 1.75rem;
+	align-items: start;
+}
+
+@media (max-width: 781px) {
+	.living-handbook-layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+.living-handbook-entry__h {
 	font-size: 1.1rem;
-	margin-block-end: 0.75rem;
+	margin: 1.5rem 0 0.75rem;
 }
+
+.living-handbook-entry__h:first-child {
+	margin-top: 0;
+}
+
+.living-handbook-count {
+	color: #5a6772;
+	font-size: 0.85rem;
+	margin: 0 0 0.75rem;
+}
+
+/* Filter sidebar */
+
+.living-handbook-aside {
+	font-size: 0.9rem;
+	border: 1px solid var(--lh-border);
+	border-radius: 10px;
+	padding: 0.75rem 0.9rem;
+	background: #fff;
+	position: sticky;
+	top: var(--lh-sticky-top, 2rem);
+}
+
+.living-handbook-facet {
+	border: 0;
+	border-top: 1px solid var(--lh-border);
+	padding: 0.75rem 0 0;
+	margin: 0 0 0.75rem;
+}
+
+.living-handbook-facet:first-child {
+	border-top: 0;
+	padding-top: 0;
+}
+
+.living-handbook-facet legend {
+	font-weight: 600;
+	padding: 0;
+	margin-bottom: 0.4rem;
+}
+
+.living-handbook-facet__opt {
+	display: block;
+	margin: 0.25rem 0;
+	cursor: pointer;
+}
+
+.living-handbook-reset {
+	background: none;
+	border: 1px solid var(--lh-border);
+	border-radius: 6px;
+	padding: 0.4rem 0.7rem;
+	cursor: pointer;
+	font-size: 0.82rem;
+	color: inherit;
+	text-decoration: none;
+	display: inline-block;
+}
+
+.living-handbook-reset--link {
+	border: 0;
+}
+
+/* Card grids */
 
 .living-handbook-cards {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 	gap: 1rem;
 }
 
+.living-handbook-cards--areas,
+.living-handbook-cards--books {
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
 .living-handbook-card {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.5rem;
-	padding: 1rem;
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
-	text-decoration: none;
-	color: inherit;
+	overflow: hidden;
+	background: #fff;
 	transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
@@ -53,9 +167,39 @@
 	transform: translateY(-2px);
 }
 
+.living-handbook-card__link {
+	display: block;
+	padding: 1rem;
+	text-decoration: none;
+	color: inherit;
+}
+
 .living-handbook-card__title {
-	font-weight: 600;
+	font-size: 1.05rem;
+	margin: 0.5rem 0 0.4rem;
 	color: var(--lh-accent);
+}
+
+.living-handbook-card--area .living-handbook-card__title,
+.living-handbook-card--book .living-handbook-card__title {
+	font-size: 1.15rem;
+	margin-top: 0;
+}
+
+.living-handbook-card__excerpt {
+	font-size: 0.85rem;
+	color: #5a6772;
+	margin: 0 0 0.6rem;
+}
+
+.living-handbook-card__meta {
+	font-size: 0.78rem;
+	color: var(--lh-muted);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin: 0;
 }
 
 .living-handbook-card__dot {
@@ -78,7 +222,34 @@
 	background: var(--lh-overdue);
 }
 
-/* Navigation tree */
+.living-handbook-empty {
+	padding: 1.5rem;
+	text-align: center;
+	color: #5a6772;
+	border: 1px dashed var(--lh-border);
+	border-radius: 8px;
+}
+
+/* Single page: badges */
+
+.living-handbook-badges {
+	display: flex;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+	margin: 0 0 0.5rem;
+}
+
+/* Navigation: keep the VSN sidebar left-aligned, top level bold */
+
+.living-handbook-navwrap .wp-block-navigation,
+.living-handbook-navwrap .wp-block-navigation__container {
+	justify-content: flex-start;
+	text-align: start;
+}
+
+.living-handbook-navwrap .living-handbook-nav-top .wp-block-navigation-item__content {
+	font-weight: var(--lh-nav-top-weight, 700);
+}
 
 .living-handbook-nav {
 	font-size: 0.9rem;
@@ -86,7 +257,7 @@
 	border-radius: 10px;
 	padding: 0.9rem 1rem;
 	position: sticky;
-	top: 1rem;
+	top: var(--lh-sticky-top, 2rem);
 }
 
 .living-handbook-nav__title {
@@ -129,6 +300,69 @@
 	font-weight: 700;
 }
 
+/* On-this-page table of contents (collapsible box) */
+
+.living-handbook-toc {
+	font-size: 0.84rem;
+	border: 1px solid var(--lh-border);
+	border-radius: 10px;
+	padding: 0.6rem 0.9rem;
+	background: #fff;
+}
+
+.living-handbook-toc--desktop {
+	position: sticky;
+	top: var(--lh-sticky-top, 2rem);
+}
+
+.living-handbook-toc--mobile {
+	margin: 0 0 1rem;
+}
+
+.living-handbook-toc__summary {
+	cursor: pointer;
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--lh-muted);
+}
+
+.living-handbook-toc__list {
+	list-style: none;
+	margin: 0.5rem 0 0;
+	padding: 0;
+}
+
+.living-handbook-toc__item {
+	margin: 0.3rem 0;
+}
+
+.living-handbook-toc__list a {
+	display: block;
+	padding: 0.1rem 0;
+	text-decoration: none;
+	color: inherit;
+}
+
+.living-handbook-toc__list a:hover,
+.living-handbook-toc__list a.is-active {
+	color: var(--lh-accent);
+	font-weight: 600;
+}
+
+@media (min-width: 1000px) {
+	.living-handbook-toc--mobile {
+		display: none;
+	}
+}
+
+@media (max-width: 999px) {
+	.living-handbook-toc--desktop {
+		display: none;
+	}
+}
+
 /* Metadata footer */
 
 .living-handbook-meta {
@@ -137,27 +371,46 @@
 	border-top: 1px solid var(--lh-border);
 }
 
-.living-handbook-meta dl {
+.living-handbook-metagrid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 	gap: 1rem;
-	margin: 0;
 }
 
-.living-handbook-meta__label {
+.living-handbook-metagrid__item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	font-size: 0.85rem;
+}
+
+.living-handbook-metagrid__label {
 	font-size: 0.7rem;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	color: var(--lh-muted);
-	margin: 0;
 }
 
-.living-handbook-meta__value {
+.living-handbook-metagrid__date {
 	font-weight: 600;
-	margin: 0.2rem 0 0;
 }
 
-/* Freshness badges */
+.living-handbook-person {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+}
+
+.living-handbook-person__avatar {
+	border-radius: 50%;
+}
+
+.living-handbook-person__name {
+	font-size: 0.82rem;
+	color: var(--lh-muted);
+}
+
+/* Badges */
 
 .living-handbook-badge {
 	display: inline-block;
@@ -167,6 +420,16 @@
 	font-weight: 600;
 	background: #eef1f4;
 	color: var(--lh-muted);
+}
+
+.living-handbook-badge--type {
+	background: var(--lh-accent-soft);
+	color: var(--lh-accent);
+}
+
+.living-handbook-badge--audience {
+	background: #f3eafc;
+	color: #6b3fa0;
 }
 
 .living-handbook-badge--ok {

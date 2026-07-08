@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 6.7
 Requires PHP: 8.1
-Stable tag: 0.6.0
+Stable tag: 0.9.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,26 +14,45 @@ An internal team handbook for WordPress: structured page types, clear ownership,
 
 Living Handbook turns WordPress into an internal team handbook that is built to stay current. Unlike customer-facing knowledge base plugins, it focuses on the thing that makes internal documentation fail over time: maintenance.
 
-Planned core features:
+Core features:
 
 * A dedicated handbook content type with structured page types (Diataxis plus FAQ).
 * Ownership per page: a responsible role mapped to a current person.
 * Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages that go unchecked.
 * Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
-* Automatic navigation menu generated from the page hierarchy, styled by the VSN plugin.
-* No external plugin dependencies for the core, no cost.
+* Several handbooks side by side, each with its own access group, its own entry page, and its own navigation.
+* An entry page per handbook with full-text search, taxonomy filters, area tiles and recently updated pages.
+* A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
+* Per-handbook navigation built from the page hierarchy and rendered as a core Navigation block, styled by the VSN plugin (Vertical Sidebar Navigation).
+* No external plugin dependencies for the core, no cost. A block theme is required.
 
 == Installation ==
 
 1. Upload the plugin to `wp-content/plugins/living-handbook`.
 2. Activate it through the Plugins screen in WordPress.
-3. Visit Settings then Permalinks once so the handbook URLs work.
+3. Deactivate and reactivate once, or visit Settings then Permalinks, so the handbook URLs work.
+4. For the sidebar navigation, install and activate the Vertical Sidebar Navigation (VSN) plugin.
 
 == Changelog ==
 
+= 0.9.0 =
+* Navigation is now available on handbook entry pages as well as single pages, and offers a Menu or Accordion display.
+* Feedback and metadata are now two separate blocks.
+* On-this-page is a collapsible box covering H1 to H6, with a depth setting (overridable per page), a mobile placement above the content, and smooth scrolling.
+* The metadata block can show or hide the people (avatar and name); the top navigation item is bold and adjustable via CSS.
+* New documentation for the blocks and templates, with CSS customization examples.
+
+= 0.8.0 =
+* The navigation is rendered as a core Navigation block with a VSN block style, built fresh per handbook from the page hierarchy. Removed the single global generated menu.
+
+= 0.7.0 =
+* Multi-handbook structure: the handbook archive is a chooser of readable handbooks; each handbook has its own entry page (term archive) with search, taxonomy filters, area tiles and recently updated cards.
+* Single-page template with navigation, badges, an on-this-page column, feedback and a metadata footer, provided as block templates.
+* Access is enforced on the handbook entry pages as well as single pages.
+
 = 0.6.0 =
-* Fixed: the frontend stylesheet now loads on the overview page (a normal page with the overview block), so the cards are styled.
-* Navigation menu: a "Handbook" wp_navigation menu is generated from the page hierarchy and kept up to date, ready to be styled by the VSN plugin in a block template. The built-in navigation block and shortcode remain as a fallback for setups without VSN.
+* Fixed: the frontend stylesheet now loads on the overview page, so the cards are styled.
+* Navigation menu generated from the page hierarchy, ready to be styled by the VSN plugin.
 
 = 0.5.0 =
 * Frontend design following the prototype: overview cards with a freshness dot, a bordered navigation tree, and styled metadata footer, badges and feedback.

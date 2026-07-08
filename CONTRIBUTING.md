@@ -15,18 +15,30 @@ Run the checks locally; the same checks run in CI and must pass:
 ```bash
 composer lint      # PHPCS, WordPress coding standards
 composer analyze   # PHPStan
-composer test      # PHPUnit
+composer test      # PHPUnit, unit tests only
+```
+
+The integration tests need the WordPress test suite and are kept separate. Run them only in an environment where that suite is installed:
+
+```bash
+composer test:integration
 ```
 
 ## Building an installable zip
 
-To produce a plugin zip for manual installation in WordPress:
+To run every check and, if they all pass, build the zip in one step:
+
+```bash
+bash bin/check-and-build.sh
+```
+
+To build the zip on its own:
 
 ```bash
 bash bin/build.sh
 ```
 
-This uses `git archive`, which respects the `export-ignore` rules in `.gitattributes`, so development files (tests, CI config, tooling) are left out. The result is `living-handbook-<version>.zip`, built from the current `HEAD` commit.
+The build packages the current working tree, so you can build, install and test in WordPress before committing. Only the runtime files ship (the main file, `src`, `assets`, `languages`, `README`, `LICENSE`); development files (tests, CI config, tooling) are left out. The result is `living-handbook-<version>.zip`.
 
 Do not extract the zip inside the repository; that would commit a second copy of the plugin. Install it in WordPress under Plugins, Add new, Upload plugin.
 

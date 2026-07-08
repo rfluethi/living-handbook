@@ -18,6 +18,7 @@ use LivingHandbook\PostType\Handbook;
 use WP_Post;
 use WP_Query;
 use WP_REST_Response;
+use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -25,8 +26,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * The single place that decides who may read handbook content, wired into
- * every frontend read path: single pages, result sets (archives, search, REST
- * collections, custom loops), and single REST reads.
+ * every frontend read path: single pages, handbook entry pages (term
+ * archives), result sets (archives, search, REST collections, custom loops),
+ * and single REST reads.
  */
 final class AccessController {
 
@@ -37,6 +39,7 @@ final class AccessController {
 	 */
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'guard_singular' ) );
+		add_action( 'template_redirect', array( $this, 'guard_term_archive' ) );
 		add_filter( 'the_posts', array( $this, 'filter_posts' ), 10, 2 );
 		add_filter( 'rest_prepare_' . Handbook::POST_TYPE, array( $this, 'guard_rest_item' ), 10, 2 );
 	}
@@ -60,6 +63,38 @@ final class AccessController {
 			return;
 		}
 
+		$this->deny();
+	}
+
+	/**
+	 * Block direct access to a handbook entry page (term archive) the user may
+	 * not view.
+	 *
+	 * @return void
+	 */
+	public function guard_term_archive(): void {
+		if ( ! is_tax( Handbooks::TAXONOMY ) ) {
+			return;
+		}
+
+		$term = get_queried_object();
+		if ( ! $term instanceof WP_Term ) {
+			return;
+		}
+
+		if ( self::can_view_term( $term->term_id, get_current_user_id() ) ) {
+			return;
+		}
+
+		$this->deny();
+	}
+
+	/**
+	 * Deny the current request: send guests to the login, show a 404 to others.
+	 *
+	 * @return void
+	 */
+	private function deny(): void {
 		if ( ! is_user_logged_in() ) {
 			auth_redirect();
 		}

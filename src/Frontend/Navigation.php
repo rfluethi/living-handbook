@@ -1,6 +1,11 @@
 <?php
 /**
- * Navigation and overview rendering, shared by the shortcode and the blocks.
+ * Per-handbook sidebar navigation.
+ *
+ * Builds the page tree of a handbook as a core navigation block with a VSN
+ * block style, so the VSN plugin styles it and handles the open path, active
+ * marker and mobile burger. The tree is built fresh per request and scoped to
+ * one handbook, so it never lists pages of another handbook.
  *
  * @package LivingHandbook
  */
@@ -9,7 +14,6 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Frontend;
 
-use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use WP_Post;
@@ -21,88 +25,100 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Builds the per-handbook page tree and the overview of all viewable handbooks.
+ * Builds the VSN-styled navigation for a handbook.
  */
 final class Navigation {
 
 	/**
-	 * Render the page tree of the handbook a page belongs to.
+	 * Render the sidebar navigation for a handbook.
 	 *
-	 * @param int $post_id Current post ID.
+	 * @param int    $term_id Handbook term ID.
+	 * @param string $variant Either 'sidebar' (menu) or 'accordion'.
 	 * @return string
 	 */
-	public static function render_for_post( int $post_id ): string {
+	public static function render( int $term_id, string $variant = 'sidebar' ): string {
+		if ( $term_id <= 0 ) {
+			return '';
+		}
+
+		$inner = self::top_link( $term_id ) . self::branch( 0, $term_id );
+		if ( '' === $inner ) {
+			return '';
+		}
+
+		$accordion = 'accordion' === $variant;
+		$class     = $accordion ? 'is-style-vsn-sidebar-accordion' : 'is-style-vsn-sidebar';
+		$on_click  = $accordion ? ',"openSubmenusOnClick":true' : '';
+
+		$markup = '<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}' . $on_click . ',"className":"' . $class . '"} -->'
+			. $inner
+			. '<!-- /wp:navigation -->';
+
+		return '<div class="living-handbook-navwrap">' . do_blocks( $markup ) . '</div>';
+	}
+
+	/**
+	 * Render the navigation for the handbook a page belongs to.
+	 *
+	 * @param int    $post_id Current post ID.
+	 * @param string $variant Either 'sidebar' (menu) or 'accordion'.
+	 * @return string
+	 */
+	public static function render_for_post( int $post_id, string $variant = 'sidebar' ): string {
 		if ( $post_id <= 0 ) {
 			return '';
 		}
 		$terms   = wp_get_object_terms( $post_id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
 		$term_id = ( ! is_wp_error( $terms ) && ! empty( $terms ) ) ? (int) $terms[0] : 0;
-
-		$tree = self::render_tree( 0, $term_id, $post_id );
-		if ( '' === $tree ) {
-			return '';
-		}
-		return '<nav class="living-handbook-nav" aria-label="' . esc_attr__( 'Handbook', 'living-handbook' ) . '">'
-			. '<p class="living-handbook-nav__title">' . esc_html__( 'Handbook', 'living-handbook' ) . '</p>'
-			. '<ul>' . $tree . '</ul></nav>';
+		return self::render( $term_id, $variant );
 	}
 
 	/**
-	 * Render an overview of every handbook the current user may view, as cards.
+	 * A link to the handbook entry page, shown at the top of the navigation.
 	 *
-	 * @return string
-	 */
-	public static function render_overview(): string {
-		$terms = get_terms(
-			array(
-				'taxonomy'   => Handbooks::TAXONOMY,
-				'hide_empty' => false,
-			)
-		);
-		if ( is_wp_error( $terms ) ) {
-			return '';
-		}
-
-		$user_id = get_current_user_id();
-		$out     = '';
-		foreach ( $terms as $term ) {
-			if ( ! $term instanceof WP_Term ) {
-				continue;
-			}
-			if ( ! AccessController::can_view_term( $term->term_id, $user_id ) ) {
-				continue;
-			}
-			$cards = self::render_cards( $term->term_id );
-			if ( '' === $cards ) {
-				continue;
-			}
-			$out .= '<section class="living-handbook-overview__group"><h2 class="living-handbook-overview__title">'
-				. esc_html( $term->name ) . '</h2>' . $cards . '</section>';
-		}
-
-		if ( '' === $out ) {
-			return '';
-		}
-		return '<div class="living-handbook-overview">' . $out . '</div>';
-	}
-
-	/**
-	 * Render the pages of a handbook as a card grid.
+	 * It carries the class living-handbook-nav-top so the top level can be
+	 * styled (bold by default, adjustable with the --lh-nav-top-weight
+	 * variable).
 	 *
 	 * @param int $term_id Handbook term ID.
 	 * @return string
 	 */
-	private static function render_cards( int $term_id ): string {
+	private static function top_link( int $term_id ): string {
+		$term = get_term( $term_id );
+		if ( ! $term instanceof WP_Term ) {
+			return '';
+		}
+		$link = get_term_link( $term );
+		if ( is_wp_error( $link ) ) {
+			return '';
+		}
+
+		return sprintf(
+			'<!-- wp:navigation-link {"label":%1$s,"url":%2$s,"kind":"custom","className":"living-handbook-nav-top"} /-->',
+			(string) wp_json_encode( $term->name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
+			(string) wp_json_encode( (string) $link, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
+		);
+	}
+
+	/**
+	 * Recursively build the navigation block markup for one branch of the tree.
+	 *
+	 * @param int $parent_id Parent post ID (0 for the top level).
+	 * @param int $term_id   Handbook term ID.
+	 * @return string
+	 */
+	private static function branch( int $parent_id, int $term_id ): string {
 		$query = new WP_Query(
 			array(
 				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'publish',
+				'post_parent'    => $parent_id,
 				'posts_per_page' => -1,
-				'no_found_rows'  => true,
+				'post_status'    => 'publish',
 				'orderby'        => array(
 					'menu_order' => 'ASC',
 					'title'      => 'ASC',
 				),
+				'no_found_rows'  => true,
 				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					array(
 						'taxonomy' => Handbooks::TAXONOMY,
@@ -113,66 +129,33 @@ final class Navigation {
 			)
 		);
 
-		$cards = '';
+		$out = '';
 		foreach ( $query->posts as $post ) {
 			if ( ! $post instanceof WP_Post ) {
 				continue;
 			}
-			$status = FreshnessStatus::for_post( $post->ID );
-			$dot    = FreshnessStatus::NONE !== $status
-				? '<span class="living-handbook-card__dot living-handbook-card__dot--' . esc_attr( $status ) . '" aria-hidden="true"></span>'
-				: '';
-			$cards .= '<a class="living-handbook-card" href="' . esc_url( (string) get_permalink( $post ) ) . '">'
-				. '<span class="living-handbook-card__title">' . esc_html( get_the_title( $post ) ) . '</span>'
-				. $dot . '</a>';
-		}
+			$children = self::branch( $post->ID, $term_id );
+			$label    = (string) wp_json_encode( get_the_title( $post ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+			$url      = (string) wp_json_encode( (string) get_permalink( $post ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 
-		if ( '' === $cards ) {
-			return '';
-		}
-		return '<div class="living-handbook-cards">' . $cards . '</div>';
-	}
-
-	/**
-	 * Recursively render the page tree of a handbook.
-	 *
-	 * @param int $parent_id Parent post ID (0 for the top level).
-	 * @param int $term_id   Handbook term ID (0 for all).
-	 * @param int $current   Currently viewed post ID (0 if none).
-	 * @return string
-	 */
-	private static function render_tree( int $parent_id, int $term_id, int $current ): string {
-		$args = array(
-			'post_type'      => Handbook::POST_TYPE,
-			'post_parent'    => $parent_id,
-			'posts_per_page' => -1,
-			'post_status'    => 'publish',
-			'orderby'        => array(
-				'menu_order' => 'ASC',
-				'title'      => 'ASC',
-			),
-			'no_found_rows'  => true,
-		);
-		if ( $term_id > 0 ) {
-			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-				array(
-					'taxonomy' => Handbooks::TAXONOMY,
-					'field'    => 'term_id',
-					'terms'    => $term_id,
-				),
-			);
-		}
-
-		$query = new WP_Query( $args );
-		$out   = '';
-		foreach ( $query->posts as $post ) {
-			if ( ! $post instanceof WP_Post ) {
-				continue;
+			if ( '' !== $children ) {
+				$out .= sprintf(
+					'<!-- wp:navigation-submenu {"label":%1$s,"type":"%2$s","id":%3$d,"url":%4$s,"kind":"post-type"} -->%5$s<!-- /wp:navigation-submenu -->',
+					$label,
+					Handbook::POST_TYPE,
+					$post->ID,
+					$url,
+					$children
+				);
+			} else {
+				$out .= sprintf(
+					'<!-- wp:navigation-link {"label":%1$s,"type":"%2$s","id":%3$d,"url":%4$s,"kind":"post-type"} /-->',
+					$label,
+					Handbook::POST_TYPE,
+					$post->ID,
+					$url
+				);
 			}
-			$children = self::render_tree( $post->ID, $term_id, $current );
-			$class    = $post->ID === $current ? ' class="is-current"' : '';
-			$out     .= '<li' . $class . '><a href="' . esc_url( (string) get_permalink( $post ) ) . '">' . esc_html( get_the_title( $post ) ) . '</a>'
-				. ( '' !== $children ? '<ul>' . $children . '</ul>' : '' ) . '</li>';
 		}
 		return $out;
 	}
