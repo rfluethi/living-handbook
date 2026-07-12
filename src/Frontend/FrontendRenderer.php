@@ -68,7 +68,9 @@ final class FrontendRenderer {
 	/**
 	 * Fallback shortcode that renders the current handbook's page tree.
 	 *
-	 * Setups using the VSN plugin use the generated menu instead.
+	 * The primary navigation is the living-handbook/navigation block placed in
+	 * the single template. This shortcode covers classic templates that cannot
+	 * place the block; it renders the same per-handbook tree.
 	 *
 	 * @return string
 	 */

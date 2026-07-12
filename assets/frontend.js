@@ -1,7 +1,9 @@
 /*
- * Living Handbook frontend: live card filtering and search, server-side facet
- * submit, feedback, and the on-this-page table of contents with depth limit,
- * smooth scrolling and scroll-spy.
+ * Living Handbook frontend: live card filtering and search, feedback, and the
+ * on-this-page table of contents with depth limit, smooth scrolling and
+ * scroll-spy. The taxonomy facets submit only via their Filter button (no full
+ * reload on every checkbox), and the search and facet forms carry each other's
+ * values so a submit keeps both.
  */
 ( function () {
 	'use strict';
@@ -154,14 +156,8 @@
 			input.addEventListener( 'input', applyFilter );
 		} );
 
-		document.querySelectorAll( '.living-handbook-facet__cb' ).forEach( function ( cb ) {
-			cb.addEventListener( 'change', function () {
-				var form = cb.closest( 'form' );
-				if ( form ) {
-					form.submit();
-				}
-			} );
-		} );
+		// Facets submit only via their Filter button, not on every checkbox, so
+		// several facets can be set with a single reload.
 
 		document.querySelectorAll( '.living-handbook-feedback' ).forEach( function ( box ) {
 			box.querySelectorAll( 'button[data-value]' ).forEach( function ( button ) {

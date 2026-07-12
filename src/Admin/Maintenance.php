@@ -13,8 +13,6 @@ use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\FreshnessStatus;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
-use WP_Post;
-use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -56,30 +54,32 @@ final class Maintenance {
 	/**
 	 * Render the dashboard widget.
 	 *
+	 * Loads only post IDs and reads the freshness meta per page; the title and
+	 * edit link are fetched only for the overdue pages, not for all pages.
+	 *
 	 * @return void
 	 */
 	public function render_widget(): void {
-		$query = new WP_Query(
+		$ids = get_posts(
 			array(
 				'post_type'      => Handbook::POST_TYPE,
 				'post_status'    => 'publish',
 				'posts_per_page' => -1,
+				'fields'         => 'ids',
 				'no_found_rows'  => true,
 			)
 		);
 
 		$total   = 0;
 		$overdue = array();
-		foreach ( $query->posts as $post ) {
-			if ( ! $post instanceof WP_Post ) {
-				continue;
-			}
+		foreach ( $ids as $id ) {
+			$id = (int) $id;
 			++$total;
-			$status = FreshnessStatus::for_post( $post->ID );
+			$status = FreshnessStatus::for_post( $id );
 			if ( FreshnessStatus::DUE === $status || FreshnessStatus::OVERDUE === $status ) {
 				$overdue[] = array(
-					'title'  => get_the_title( $post ),
-					'link'   => (string) get_edit_post_link( $post ),
+					'title'  => get_the_title( $id ),
+					'link'   => (string) get_edit_post_link( $id ),
 					'status' => $status,
 				);
 			}
@@ -109,7 +109,7 @@ final class Maintenance {
 		echo '<ul>';
 		foreach ( $overdue as $item ) {
 			printf(
-				'<li><a href="%1$s">%2$s</a> — %3$s</li>',
+				'<li><a href="%1$s">%2$s</a> (%3$s)</li>',
 				esc_url( $item['link'] ),
 				esc_html( $item['title'] ),
 				esc_html( FreshnessStatus::label( $item['status'] ) )

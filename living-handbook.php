@@ -3,7 +3,7 @@
  * Plugin Name:       Living Handbook
  * Plugin URI:        https://github.com/rfluethi/living-handbook
  * Description:       An internal team handbook for WordPress: structured page types, clear ownership, and freshness tracking so docs don't rot.
- * Version:           0.9.0
+ * Version:           0.11.0
  * Requires at least: 6.7
  * Requires PHP:      8.1
  * Author:            Rico F. Luethi
@@ -24,14 +24,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LIVING_HANDBOOK_VERSION', '0.9.0' );
+define( 'LIVING_HANDBOOK_VERSION', '0.11.0' );
 define( 'LIVING_HANDBOOK_FILE', __FILE__ );
 define( 'LIVING_HANDBOOK_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LIVING_HANDBOOK_URL', plugin_dir_url( __FILE__ ) );
 
 /*
  * PSR-4 style autoloader for the LivingHandbook namespace, mapped to src/.
- * No Composer runtime dependency: the shipped plugin loads its own classes.
+ * The plugin's own classes need no Composer. The Markdown import and GitHub sync
+ * additionally use two Composer libraries (league/commonmark, symfony/yaml); the
+ * build ships them in vendor/ and MarkdownConverter loads vendor/autoload.php on
+ * demand. If vendor/ is absent, only import and sync are disabled.
  */
 spl_autoload_register(
 	static function ( string $class_name ): void {

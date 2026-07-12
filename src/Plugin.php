@@ -12,12 +12,16 @@ namespace LivingHandbook;
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Admin\Maintenance;
 use LivingHandbook\Blocks\Blocks;
+use LivingHandbook\Blocks\MermaidBlock;
+use LivingHandbook\Blocks\SourceNoteBlock;
 use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\Filters;
 use LivingHandbook\Frontend\FrontendRenderer;
 use LivingHandbook\Frontend\Templates;
+use LivingHandbook\Git\GitSync;
 use LivingHandbook\Handbook\HandbookAdmin;
 use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Seeder;
@@ -79,12 +83,16 @@ final class Plugin {
 		( new Templates() )->register();
 		( new Filters() )->register();
 		( new Maintenance() )->register();
+		( new MarkdownImportPage() )->register();
+		( new GitSync() )->register();
 		( new Blocks() )->register();
+		( new MermaidBlock() )->register();
+		( new SourceNoteBlock() )->register();
 	}
 
 	/**
-	 * Activation callback: register the data model, seed the vocabulary, and
-	 * flush rewrite rules.
+	 * Activation callback: register the data model, seed the vocabulary, schedule
+	 * the GitHub sync, and flush rewrite rules.
 	 *
 	 * @return void
 	 */
@@ -96,6 +104,7 @@ final class Plugin {
 		$handbooks->register_meta();
 
 		Seeder::seed();
+		GitSync::schedule();
 
 		flush_rewrite_rules();
 	}
@@ -106,6 +115,7 @@ final class Plugin {
 	 * @return void
 	 */
 	public static function deactivate(): void {
+		GitSync::unschedule();
 		flush_rewrite_rules();
 	}
 }

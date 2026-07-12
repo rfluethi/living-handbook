@@ -18,7 +18,9 @@ Active development (0.x). The plugin is usable end to end: multiple handbooks, p
 - An entry page per handbook with full-text search, taxonomy filters, area tiles and recently updated pages.
 - A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
 - Per-handbook navigation built from the page hierarchy, rendered as a core Navigation block and styled by the [VSN plugin](https://github.com/rfluethi/vertical-sidebar-navigation).
-- No external plugin dependencies for the core, no cost.
+- Markdown import: paste, a ZIP of `.md` files (flat or MkDocs-structured), or a GitHub file or folder URL.
+- GitHub sync: a page can be sourced from a Markdown URL, pulled on save, on demand and on a schedule, with a locked editor.
+- No external WordPress plugin dependency for the core; the import and sync bundle two Composer libraries in `vendor/`.
 
 ## Requirements
 
@@ -45,7 +47,7 @@ Continuous integration runs linting, static analysis, and unit tests on every pu
 
 ## Documentation
 
-Developer documentation lives in [`docs/`](docs/): [blocks](docs/blocks.md), [templates](docs/templates.md), [customization](docs/customization.md), [architecture](docs/architecture.md) and [hooks](docs/hooks.md).
+Developer documentation lives in [`docs/`](docs/): [blocks](docs/blocks.md), [templates](docs/templates.md), [customization](docs/customization.md), [architecture](docs/architecture.md), [hooks](docs/hooks.md) and [import and sync](docs/import-and-sync.md).
 
 ## License
 

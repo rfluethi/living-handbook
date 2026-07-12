@@ -1,0 +1,526 @@
+<?php
+/**
+ * The import page: paste a draft, upload a ZIP, or link a GitHub page or folder.
+ *
+ * @package LivingHandbook
+ */
+
+declare( strict_types=1 );
+
+namespace LivingHandbook\Import;
+
+use LivingHandbook\Git\GitSync;
+use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\PostType\Handbook;
+use WP_Post;
+use WP_REST_Request;
+use WP_Term;
+use ZipArchive;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Admin page and REST routes for importing Markdown into handbook pages. Pasted
+ * drafts and ZIPs become editable block pages; a ZIP that carries a mkdocs.yml is
+ * imported along its nav so the folder structure, titles, and order are kept. A
+ * GitHub file URL creates one locked, synced page; a GitHub folder (tree) URL
+ * creates one per Markdown file. Postprocessor applies the transport metadata and
+ * resolves parents and internal links.
+ */
+final class MarkdownImportPage {
+
+	private const MENU_SLUG = 'living-handbook-import';
+
+	private const IMAGE_EXTENSIONS = array( 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg' );
+
+	/**
+	 * Hook registration into WordPress.
+	 *
+	 * @return void
+	 */
+	public function register(): void {
+		add_action( 'admin_menu', array( $this, 'add_page' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+	}
+
+	/**
+	 * Add the submenu under the handbook menu.
+	 *
+	 * @return void
+	 */
+	public function add_page(): void {
+		add_submenu_page(
+			'edit.php?post_type=' . Handbook::POST_TYPE,
+			__( 'Markdown import', 'living-handbook' ),
+			__( 'Import', 'living-handbook' ),
+			'edit_posts',
+			self::MENU_SLUG,
+			array( $this, 'render' )
+		);
+	}
+
+	/**
+	 * A shared permission callback: the user may edit posts.
+	 *
+	 * @return bool
+	 */
+	public static function can_import(): bool {
+		return current_user_can( 'edit_posts' );
+	}
+
+	/**
+	 * Register the REST routes.
+	 *
+	 * @return void
+	 */
+	public function register_routes(): void {
+		register_rest_route(
+			'living-handbook/v1',
+			'/convert',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'convert_callback' ),
+				'permission_callback' => array( __CLASS__, 'can_import' ),
+				'args'                => array(
+					'markdown' => array(
+						'type'     => 'string',
+						'required' => true,
+					),
+				),
+			)
+		);
+		register_rest_route(
+			'living-handbook/v1',
+			'/import-zip',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'import_zip_callback' ),
+				'permission_callback' => static function (): bool {
+					return current_user_can( 'upload_files' );
+				},
+			)
+		);
+		register_rest_route(
+			'living-handbook/v1',
+			'/import-github',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'import_github_callback' ),
+				'permission_callback' => array( __CLASS__, 'can_import' ),
+			)
+		);
+		register_rest_route(
+			'living-handbook/v1',
+			'/create',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'create_callback' ),
+				'permission_callback' => array( __CLASS__, 'can_import' ),
+			)
+		);
+		register_rest_route(
+			'living-handbook/v1',
+			'/finalize',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'finalize_callback' ),
+				'permission_callback' => array( __CLASS__, 'can_import' ),
+			)
+		);
+	}
+
+	/**
+	 * REST callback: convert one pasted Markdown draft.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return array<string, mixed>
+	 */
+	public function convert_callback( WP_REST_Request $request ): array {
+		if ( ! MarkdownConverter::available() ) {
+			return array( 'error' => 'CommonMark is not installed. Run: composer require league/commonmark' );
+		}
+		return ( new MarkdownConverter() )->convert( (string) $request->get_param( 'markdown' ) );
+	}
+
+	/**
+	 * REST callback: unpack a ZIP. With a mkdocs.yml it returns the nav-ordered
+	 * page specs; otherwise it returns each Markdown file as a flat page.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return array<string, mixed>
+	 */
+	public function import_zip_callback( WP_REST_Request $request ): array {
+		if ( ! MarkdownConverter::available() ) {
+			return array( 'error' => 'CommonMark is not installed. Run: composer require league/commonmark' );
+		}
+		if ( ! class_exists( 'ZipArchive' ) ) {
+			return array( 'error' => 'ZipArchive is not available on the server.' );
+		}
+
+		$params = $request->get_file_params();
+		$tmp    = ( isset( $params['zip']['tmp_name'] ) && is_string( $params['zip']['tmp_name'] ) ) ? $params['zip']['tmp_name'] : '';
+		if ( '' === $tmp ) {
+			return array( 'error' => 'No ZIP file received.' );
+		}
+
+		$zip = new ZipArchive();
+		if ( true !== $zip->open( $tmp ) ) {
+			return array( 'error' => 'Could not open the ZIP file.' );
+		}
+
+		$markdown_files = array();
+		$image_files    = array();
+		$mkdocs_yaml    = '';
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- ZipArchive::$numFiles is a PHP core property.
+		$file_count = $zip->numFiles;
+		for ( $i = 0; $i < $file_count; $i++ ) {
+			$name = (string) $zip->getNameIndex( $i );
+			$base = basename( $name );
+			if ( '' === $base || 0 === strpos( $base, '.' ) || false !== strpos( $name, '__MACOSX' ) ) {
+				continue;
+			}
+			$content = $zip->getFromIndex( $i );
+			if ( false === $content ) {
+				continue;
+			}
+			$ext = strtolower( pathinfo( $base, PATHINFO_EXTENSION ) );
+			if ( 'md' === $ext ) {
+				$markdown_files[ $name ] = $content;
+			} elseif ( in_array( $ext, self::IMAGE_EXTENSIONS, true ) ) {
+				$image_files[ $base ] = $content;
+			} elseif ( '' === $mkdocs_yaml && ( 'mkdocs.yml' === strtolower( $base ) || 'mkdocs.yaml' === strtolower( $base ) ) ) {
+				$mkdocs_yaml = $content;
+			}
+		}
+		$zip->close();
+
+		if ( empty( $markdown_files ) ) {
+			return array( 'error' => 'No .md files found in the ZIP.' );
+		}
+
+		$image_map = array();
+		foreach ( $image_files as $file_name => $data ) {
+			$url = $this->sideload_image( $file_name, $data );
+			if ( '' !== $url ) {
+				$image_map[ $file_name ] = $url;
+			}
+		}
+
+		if ( '' !== $mkdocs_yaml && MkDocsImport::available() ) {
+			$specs = MkDocsImport::build_specs( $mkdocs_yaml, $markdown_files, $image_map, new MarkdownConverter() );
+			if ( ! empty( $specs ) ) {
+				return array(
+					'mode'   => 'mkdocs',
+					'pages'  => $specs,
+					'images' => count( $image_map ),
+				);
+			}
+		}
+
+		$converter = new MarkdownConverter();
+		$out       = array();
+		foreach ( $markdown_files as $path => $markdown ) {
+			$file_name = basename( $path );
+			$result    = $converter->convert( $markdown, $image_map );
+			$slug      = sanitize_title( pathinfo( $file_name, PATHINFO_FILENAME ) );
+			$out[]     = array(
+				'name'      => $file_name,
+				'slug'      => $slug,
+				'title'     => '' !== $result['title'] ? $result['title'] : $slug,
+				'html'      => $result['html'],
+				'transport' => $result['transport'],
+			);
+		}
+
+		return array(
+			'files'  => $out,
+			'images' => count( $image_map ),
+		);
+	}
+
+	/**
+	 * REST callback: create locked GitHub pages from a file URL or a folder URL.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return array<string, mixed>
+	 */
+	public function import_github_callback( WP_REST_Request $request ): array {
+		if ( ! MarkdownConverter::available() ) {
+			return array( 'error' => 'CommonMark is not installed. Run: composer require league/commonmark' );
+		}
+		$url = trim( (string) $request->get_param( 'url' ) );
+		if ( '' === $url ) {
+			return array( 'error' => 'No GitHub URL given.' );
+		}
+		$title       = sanitize_text_field( (string) $request->get_param( 'title' ) );
+		$handbook_id = absint( $request->get_param( 'handbook' ) );
+		$git         = new GitSync();
+
+		if ( false !== strpos( $url, '/tree/' ) ) {
+			return $git->import_folder( $url, $handbook_id );
+		}
+
+		$post_id = $git->create_github_page( $url, $handbook_id, $title );
+		if ( 0 === $post_id ) {
+			return array( 'error' => 'Could not create the page. Check the URL.' );
+		}
+		Postprocessor::finalize( array( $post_id ) );
+		return array(
+			'pages' => array(
+				array(
+					'id'      => $post_id,
+					'title'   => get_the_title( $post_id ),
+					'editUrl' => add_query_arg(
+						array(
+							'post'   => $post_id,
+							'action' => 'edit',
+						),
+						admin_url( 'post.php' )
+					),
+				),
+			),
+		);
+	}
+
+	/**
+	 * REST callback: create one handbook draft from converted block content.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return array<string, mixed>
+	 */
+	public function create_callback( WP_REST_Request $request ): array {
+		$title       = sanitize_text_field( (string) $request->get_param( 'title' ) );
+		$content     = (string) $request->get_param( 'content' );
+		$handbook_id = absint( $request->get_param( 'handbook' ) );
+		$transport   = (array) $request->get_param( 'transport' );
+		$parent      = absint( $request->get_param( 'parent' ) );
+		$source_path = sanitize_text_field( (string) $request->get_param( 'sourcePath' ) );
+		$slug        = sanitize_title( (string) $request->get_param( 'slug' ) );
+
+		if ( '' === $slug && '' !== $source_path ) {
+			$slug = sanitize_title( str_replace( '/', '-', (string) preg_replace( '/\.md$/i', '', $source_path ) ) );
+		}
+		if ( '' === $title ) {
+			$title = '' !== $slug ? $slug : __( 'Imported page', 'living-handbook' );
+		}
+		if ( '' === $slug ) {
+			$slug = sanitize_title( $title );
+		}
+
+		// wp_insert_post expects slashed data and unslashes it; slash the block
+		// markup so escape sequences like \n and > survive.
+		$post_id = wp_insert_post(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'draft',
+				'post_title'     => $title,
+				'post_name'      => $slug,
+				'post_parent'    => $parent,
+				'post_content'   => (string) wp_slash( $content ),
+				'comment_status' => 'open',
+			),
+			true
+		);
+		if ( is_wp_error( $post_id ) ) {
+			return array( 'error' => $post_id->get_error_message() );
+		}
+		$post_id = (int) $post_id;
+
+		Postprocessor::apply_transport( $post_id, $transport, $handbook_id );
+
+		if ( '' !== $source_path ) {
+			update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $source_path );
+		}
+		if ( null !== $request->get_param( 'order' ) ) {
+			wp_update_post(
+				array(
+					'ID'         => $post_id,
+					'menu_order' => absint( $request->get_param( 'order' ) ),
+				)
+			);
+		}
+
+		return array(
+			'id'         => $post_id,
+			'sourcePath' => $source_path,
+			'editUrl'    => add_query_arg(
+				array(
+					'post'   => $post_id,
+					'action' => 'edit',
+				),
+				admin_url( 'post.php' )
+			),
+		);
+	}
+
+	/**
+	 * REST callback: resolve parents and convert internal .md links.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return array<string, mixed>
+	 */
+	public function finalize_callback( WP_REST_Request $request ): array {
+		$ids = array_map( 'absint', (array) $request->get_param( 'ids' ) );
+		return array( 'converted' => Postprocessor::finalize( $ids ) );
+	}
+
+	/**
+	 * Sideload one image into the media library, reusing an existing attachment
+	 * with the same slug if present.
+	 *
+	 * @param string $file_name Image file name.
+	 * @param string $data      Binary data.
+	 * @return string Media URL, or an empty string on failure.
+	 */
+	private function sideload_image( string $file_name, string $data ): string {
+		$slug     = sanitize_title( pathinfo( $file_name, PATHINFO_FILENAME ) );
+		$existing = get_posts(
+			array(
+				'post_type'   => 'attachment',
+				'name'        => $slug,
+				'post_status' => 'inherit',
+				'numberposts' => 1,
+			)
+		);
+		$found    = $existing[0] ?? null;
+		if ( $found instanceof WP_Post ) {
+			$url = wp_get_attachment_url( (int) $found->ID );
+			return is_string( $url ) ? $url : '';
+		}
+
+		$upload = wp_upload_bits( sanitize_file_name( $file_name ), null, $data );
+		if ( ! empty( $upload['error'] ) ) {
+			return '';
+		}
+
+		$type          = wp_check_filetype( (string) $upload['file'] );
+		$attachment_id = wp_insert_attachment(
+			array(
+				'post_mime_type' => is_string( $type['type'] ) ? $type['type'] : '',
+				'post_title'     => pathinfo( $file_name, PATHINFO_FILENAME ),
+				'post_status'    => 'inherit',
+			),
+			(string) $upload['file']
+		);
+		if ( 0 === $attachment_id ) {
+			return '';
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, (string) $upload['file'] ) );
+
+		$url = wp_get_attachment_url( $attachment_id );
+		return is_string( $url ) ? $url : '';
+	}
+
+	/**
+	 * Enqueue the import app on this page only.
+	 *
+	 * @param string $hook Current admin page hook suffix.
+	 * @return void
+	 */
+	public function enqueue( string $hook ): void {
+		if ( false === strpos( $hook, self::MENU_SLUG ) ) {
+			return;
+		}
+
+		wp_register_script(
+			'living-handbook-markdown-import',
+			LIVING_HANDBOOK_URL . 'assets/js/markdown-import.js',
+			array( 'wp-blocks', 'wp-block-library', 'wp-api-fetch', 'wp-dom-ready' ),
+			LIVING_HANDBOOK_VERSION,
+			true
+		);
+		wp_enqueue_script( 'living-handbook-markdown-import' );
+		wp_localize_script(
+			'living-handbook-markdown-import',
+			'lhImport',
+			array(
+				'convertPath'  => '/living-handbook/v1/convert',
+				'zipPath'      => '/living-handbook/v1/import-zip',
+				'githubPath'   => '/living-handbook/v1/import-github',
+				'createPath'   => '/living-handbook/v1/create',
+				'finalizePath' => '/living-handbook/v1/finalize',
+			)
+		);
+	}
+
+	/**
+	 * Render the import page.
+	 *
+	 * @return void
+	 */
+	public function render(): void {
+		if ( ! MarkdownConverter::available() ) {
+			echo '<div class="wrap"><h1>' . esc_html__( 'Import', 'living-handbook' ) . '</h1>';
+			echo '<div class="notice notice-error"><p>' . esc_html__( 'The Markdown library is missing. Run in the plugin folder: composer require league/commonmark', 'living-handbook' ) . '</p></div></div>';
+			return;
+		}
+		$handbooks = get_terms(
+			array(
+				'taxonomy'   => Handbooks::TAXONOMY,
+				'hide_empty' => false,
+			)
+		);
+		$handbooks = is_array( $handbooks ) ? $handbooks : array();
+		?>
+		<div class="wrap">
+			<h1><?php esc_html_e( 'Import', 'living-handbook' ); ?></h1>
+			<p><?php esc_html_e( 'Import Markdown into handbook pages. Paste a single draft or upload a ZIP of .md files: these become editable pages. If the ZIP contains a mkdocs.yml, its navigation defines the page structure, titles, and order (the ZIP must also hold the referenced files). Or give a GitHub URL: a file URL becomes one locked page, a folder (tree) URL imports every .md file in the folder as locked pages pulled from the repository. Front matter is dropped, transport metadata and the parent and order are applied, Mermaid diagrams and collapsible details become blocks, images in the ZIP are added to the media library, and internal .md links are pointed at the imported pages.', 'living-handbook' ); ?></p>
+
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="lh-import-handbook"><?php esc_html_e( 'Target handbook', 'living-handbook' ); ?></label></th>
+					<td>
+						<select id="lh-import-handbook">
+							<option value="0"><?php esc_html_e( '— select a handbook —', 'living-handbook' ); ?></option>
+							<?php foreach ( $handbooks as $term ) : ?>
+								<?php if ( $term instanceof WP_Term ) : ?>
+									<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
+								<?php endif; ?>
+							<?php endforeach; ?>
+						</select>
+						<p class="description"><?php esc_html_e( 'Applied to the imported page(s). A "Handbuch" line in the transport block overrides it.', 'living-handbook' ); ?></p>
+						<?php if ( empty( $handbooks ) ) : ?>
+							<p class="description"><?php esc_html_e( 'No handbooks yet. Create one first under Handbook, Handbooks.', 'living-handbook' ); ?></p>
+						<?php endif; ?>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="lh-import-title"><?php esc_html_e( 'Page title (optional)', 'living-handbook' ); ?></label></th>
+					<td>
+						<input type="text" id="lh-import-title" class="regular-text">
+						<p class="description"><?php esc_html_e( 'For a pasted draft or a single GitHub file. If empty, the first heading is used. For a ZIP, a GitHub folder, or a mkdocs.yml, each file keeps its own title.', 'living-handbook' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="lh-import-md"><?php esc_html_e( 'Paste Markdown', 'living-handbook' ); ?></label></th>
+					<td><textarea id="lh-import-md" rows="14" class="large-text code"></textarea></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="lh-import-zip"><?php esc_html_e( 'or upload a ZIP', 'living-handbook' ); ?></label></th>
+					<td>
+						<input type="file" id="lh-import-zip" accept=".zip">
+						<p class="description"><?php esc_html_e( 'Flat set of .md files, or a repository export with a mkdocs.yml for a structured import.', 'living-handbook' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="lh-import-github"><?php esc_html_e( 'or import from GitHub', 'living-handbook' ); ?></label></th>
+					<td>
+						<input type="url" id="lh-import-github" class="large-text code" placeholder="https://github.com/.../file.md or .../tree/main/folder">
+						<p class="description"><?php esc_html_e( 'Creates locked pages pulled from a public GitHub repository.', 'living-handbook' ); ?></p>
+					</td>
+				</tr>
+			</table>
+			<p>
+				<button type="button" class="button button-primary" id="lh-import-run"><?php esc_html_e( 'Import', 'living-handbook' ); ?></button>
+				<span id="lh-import-status" style="margin-left:1em;"></span>
+			</p>
+			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
+		</div>
+		<?php
+	}
+}

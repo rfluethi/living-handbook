@@ -4,8 +4,14 @@
  *
  * Builds the page tree of a handbook as a core navigation block with a VSN
  * block style, so the VSN plugin styles it and handles the open path, active
- * marker and mobile burger. The tree is built fresh per request and scoped to
- * one handbook, so it never lists pages of another handbook.
+ * marker and mobile burger. The tree is scoped to one handbook, so it never
+ * lists pages of another handbook.
+ *
+ * Building the tree walks the page hierarchy with one query per branch, so the
+ * assembled block markup is cached per handbook and variant and reused until a
+ * handbook page or a handbook term changes (a version counter is bumped, see
+ * invalidate()). The cached markup still runs through do_blocks on each request,
+ * so the current-page marker stays correct.
  *
  * @package LivingHandbook
  */
@@ -30,6 +36,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Navigation {
 
 	/**
+	 * Option holding the cache version; bumped to invalidate the nav markup.
+	 */
+	private const CACHE_VERSION_OPTION = 'living_handbook_nav_version';
+
+	/**
 	 * Render the sidebar navigation for a handbook.
 	 *
 	 * @param int    $term_id Handbook term ID.
@@ -41,8 +52,33 @@ final class Navigation {
 			return '';
 		}
 
+		$markup = self::markup( $term_id, $variant );
+		if ( '' === $markup ) {
+			return '';
+		}
+
+		return '<div class="living-handbook-navwrap">' . do_blocks( $markup ) . '</div>';
+	}
+
+	/**
+	 * The cached navigation block markup for a handbook and variant.
+	 *
+	 * @param int    $term_id Handbook term ID.
+	 * @param string $variant Either 'sidebar' (menu) or 'accordion'.
+	 * @return string Block markup, or '' when the handbook has no pages.
+	 */
+	private static function markup( int $term_id, string $variant ): string {
+		$version   = (int) get_option( self::CACHE_VERSION_OPTION, 0 );
+		$cache_key = 'lh_nav_' . $version . '_' . $term_id . '_' . $variant;
+
+		$cached = get_transient( $cache_key );
+		if ( is_string( $cached ) ) {
+			return $cached;
+		}
+
 		$inner = self::top_link( $term_id ) . self::branch( 0, $term_id );
 		if ( '' === $inner ) {
+			set_transient( $cache_key, '', HOUR_IN_SECONDS );
 			return '';
 		}
 
@@ -54,7 +90,17 @@ final class Navigation {
 			. $inner
 			. '<!-- /wp:navigation -->';
 
-		return '<div class="living-handbook-navwrap">' . do_blocks( $markup ) . '</div>';
+		set_transient( $cache_key, $markup, DAY_IN_SECONDS );
+		return $markup;
+	}
+
+	/**
+	 * Invalidate the cached navigation markup by bumping the version counter.
+	 *
+	 * @return void
+	 */
+	public static function invalidate(): void {
+		update_option( self::CACHE_VERSION_OPTION, (int) get_option( self::CACHE_VERSION_OPTION, 0 ) + 1 );
 	}
 
 	/**

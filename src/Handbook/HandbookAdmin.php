@@ -4,7 +4,8 @@
  *
  * Adds fields to the `handbook_set` term add and edit screens so an editor can
  * set the visibility (public, members, restricted) and, for restricted
- * handbooks, the allowed roles and users.
+ * handbooks, the allowed roles and users. The roles and users fields are only
+ * shown when the visibility is restricted (toggled by a small inline script).
  *
  * @package LivingHandbook
  */
@@ -48,16 +49,17 @@ final class HandbookAdmin {
 			<label for="living_handbook_visibility"><?php esc_html_e( 'Frontend visibility', 'living-handbook' ); ?></label>
 			<?php $this->visibility_select( Handbooks::VISIBILITY_MEMBERS ); ?>
 		</div>
-		<div class="form-field">
+		<div class="form-field js-lh-restricted">
 			<label><?php esc_html_e( 'Allowed roles (restricted only)', 'living-handbook' ); ?></label>
 			<?php $this->roles_checkboxes( array() ); ?>
 		</div>
-		<div class="form-field">
+		<div class="form-field js-lh-restricted">
 			<label for="living_handbook_users_raw"><?php esc_html_e( 'Allowed users (restricted only)', 'living-handbook' ); ?></label>
 			<input type="text" name="living_handbook_users_raw" id="living_handbook_users_raw" value="">
 			<p class="description"><?php esc_html_e( 'Comma-separated user logins or IDs.', 'living-handbook' ); ?></p>
 		</div>
 		<?php
+		$this->toggle_script();
 	}
 
 	/**
@@ -87,17 +89,46 @@ final class HandbookAdmin {
 			<th scope="row"><label for="living_handbook_visibility"><?php esc_html_e( 'Frontend visibility', 'living-handbook' ); ?></label></th>
 			<td><?php $this->visibility_select( $visibility ); ?></td>
 		</tr>
-		<tr class="form-field">
+		<tr class="form-field js-lh-restricted">
 			<th scope="row"><?php esc_html_e( 'Allowed roles (restricted only)', 'living-handbook' ); ?></th>
 			<td><?php $this->roles_checkboxes( $roles ); ?></td>
 		</tr>
-		<tr class="form-field">
+		<tr class="form-field js-lh-restricted">
 			<th scope="row"><label for="living_handbook_users_raw"><?php esc_html_e( 'Allowed users (restricted only)', 'living-handbook' ); ?></label></th>
 			<td>
 				<input type="text" name="living_handbook_users_raw" id="living_handbook_users_raw" value="<?php echo esc_attr( implode( ', ', $logins ) ); ?>" class="regular-text">
 				<p class="description"><?php esc_html_e( 'Comma-separated user logins or IDs.', 'living-handbook' ); ?></p>
 			</td>
 		</tr>
+		<?php
+		$this->toggle_script();
+	}
+
+	/**
+	 * Print the inline script that shows the roles/users fields only when the
+	 * visibility is restricted.
+	 *
+	 * @return void
+	 */
+	private function toggle_script(): void {
+		?>
+		<script>
+		( function () {
+			var sel = document.getElementById( 'living_handbook_visibility' );
+			if ( ! sel ) {
+				return;
+			}
+			var rows = document.querySelectorAll( '.js-lh-restricted' );
+			function update() {
+				var restricted = 'restricted' === sel.value;
+				rows.forEach( function ( row ) {
+					row.style.display = restricted ? '' : 'none';
+				} );
+			}
+			sel.addEventListener( 'change', update );
+			update();
+		}() );
+		</script>
 		<?php
 	}
 

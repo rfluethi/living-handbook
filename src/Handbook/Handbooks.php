@@ -20,9 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * exactly one handbook. Every handbook carries a frontend access configuration
  * (visibility plus optional roles and users); the Access module enforces it.
  *
- * The taxonomy is publicly queryable so that each handbook has its own entry
- * page at the term archive (/handbook-set/<slug>/). Access to that page is
- * guarded by the Access module.
+ * The taxonomy is registered hierarchical so the block editor shows a selectable
+ * list of the existing handbooks, and publicly queryable so that each handbook
+ * has its own entry page at the term archive (/handbook-set/<slug>/). Access to
+ * that page is guarded by the Access module.
  */
 final class Handbooks {
 
@@ -60,7 +61,7 @@ final class Handbooks {
 					'name'          => __( 'Handbooks', 'living-handbook' ),
 					'singular_name' => __( 'Handbook', 'living-handbook' ),
 				),
-				'hierarchical'       => false,
+				'hierarchical'       => true,
 				'public'             => false,
 				'publicly_queryable' => true,
 				'show_ui'            => true,

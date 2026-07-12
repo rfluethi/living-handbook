@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Meta;
 
+use LivingHandbook\Frontend\FreshnessStatus;
 use LivingHandbook\PostType\Handbook;
 use WP_Post;
 
@@ -21,11 +22,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Metadata {
 
-	public const UPDATED   = 'living_handbook_last_updated';
-	public const REVIEWED  = 'living_handbook_last_reviewed';
-	public const INTERVAL  = 'living_handbook_review_interval';
-	public const REVIEWER  = 'living_handbook_reviewer';
-	public const TOC_DEPTH = 'living_handbook_toc_depth';
+	public const UPDATED    = 'living_handbook_last_updated';
+	public const REVIEWED   = 'living_handbook_last_reviewed';
+	public const INTERVAL   = 'living_handbook_review_interval';
+	public const REVIEWER   = 'living_handbook_reviewer';
+	public const TOC_DEPTH  = 'living_handbook_toc_depth';
+	public const AI_EXCLUDE = 'living_handbook_ai_exclude';
 
 	/**
 	 * Hook registration into WordPress.
@@ -34,6 +36,7 @@ final class Metadata {
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_meta' ) );
+		add_action( 'rest_api_init', array( $this, 'register_rest_field' ) );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
 		add_action( 'save_post_' . Handbook::POST_TYPE, array( $this, 'save' ) );
 		add_action( 'save_post_' . Handbook::POST_TYPE, array( $this, 'set_updated' ) );
@@ -45,6 +48,10 @@ final class Metadata {
 	 * @return void
 	 */
 	public function register_meta(): void {
+		$auth = static function (): bool {
+			return current_user_can( 'edit_posts' );
+		};
+
 		$fields = array(
 			self::UPDATED   => 'string',
 			self::REVIEWED  => 'string',
@@ -60,12 +67,60 @@ final class Metadata {
 					'type'          => $type,
 					'single'        => true,
 					'show_in_rest'  => true,
-					'auth_callback' => static function (): bool {
-						return current_user_can( 'edit_posts' );
-					},
+					'auth_callback' => $auth,
 				)
 			);
 		}
+
+		register_post_meta(
+			Handbook::POST_TYPE,
+			self::AI_EXCLUDE,
+			array(
+				'type'          => 'boolean',
+				'single'        => true,
+				'default'       => false,
+				'show_in_rest'  => true,
+				'auth_callback' => $auth,
+			)
+		);
+	}
+
+	/**
+	 * Expose an aggregated, read-only status field over REST so a later AI
+	 * reader gets the derived freshness (due/overdue), the permalink and the
+	 * AI-exclusion flag in one place, next to the raw meta.
+	 *
+	 * @return void
+	 */
+	public function register_rest_field(): void {
+		register_rest_field(
+			Handbook::POST_TYPE,
+			'living_handbook_status',
+			array(
+				'get_callback' => static function ( array $post ): array {
+					$post_id = isset( $post['id'] ) ? (int) $post['id'] : 0;
+					return array(
+						'freshness'  => FreshnessStatus::for_post( $post_id ),
+						'reviewed'   => (string) get_post_meta( $post_id, self::REVIEWED, true ),
+						'interval'   => (int) get_post_meta( $post_id, self::INTERVAL, true ),
+						'permalink'  => (string) get_permalink( $post_id ),
+						'ai_exclude' => (bool) get_post_meta( $post_id, self::AI_EXCLUDE, true ),
+					);
+				},
+				'schema'       => array(
+					'type'        => 'object',
+					'description' => 'Derived handbook status: freshness, review data, permalink and AI-exclusion.',
+					'context'     => array( 'view', 'edit' ),
+					'properties'  => array(
+						'freshness'  => array( 'type' => 'string' ),
+						'reviewed'   => array( 'type' => 'string' ),
+						'interval'   => array( 'type' => 'integer' ),
+						'permalink'  => array( 'type' => 'string' ),
+						'ai_exclude' => array( 'type' => 'boolean' ),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -91,10 +146,11 @@ final class Metadata {
 	 */
 	public function render( WP_Post $post ): void {
 		wp_nonce_field( 'living_handbook_meta', 'living_handbook_meta_nonce' );
-		$reviewed = (string) get_post_meta( $post->ID, self::REVIEWED, true );
-		$interval = (int) get_post_meta( $post->ID, self::INTERVAL, true );
-		$reviewer = (int) get_post_meta( $post->ID, self::REVIEWER, true );
-		$depth    = (int) get_post_meta( $post->ID, self::TOC_DEPTH, true );
+		$reviewed   = (string) get_post_meta( $post->ID, self::REVIEWED, true );
+		$interval   = (int) get_post_meta( $post->ID, self::INTERVAL, true );
+		$reviewer   = (int) get_post_meta( $post->ID, self::REVIEWER, true );
+		$depth      = (int) get_post_meta( $post->ID, self::TOC_DEPTH, true );
+		$ai_exclude = (bool) get_post_meta( $post->ID, self::AI_EXCLUDE, true );
 		?>
 		<p>
 			<label for="living_handbook_reviewed"><strong><?php esc_html_e( 'Last reviewed', 'living-handbook' ); ?></strong></label><br>
@@ -112,7 +168,7 @@ final class Metadata {
 					'name'             => 'living_handbook_reviewer',
 					'id'               => 'living_handbook_reviewer',
 					'selected'         => $reviewer,
-					'show_option_none' => __( '— none —', 'living-handbook' ),
+					'show_option_none' => __( 'none', 'living-handbook' ),
 					'class'            => 'widefat',
 				)
 			);
@@ -131,6 +187,12 @@ final class Metadata {
 					</option>
 				<?php endfor; ?>
 			</select>
+		</p>
+		<p>
+			<label>
+				<input type="checkbox" name="living_handbook_ai_exclude" value="1" <?php checked( $ai_exclude ); ?>>
+				<?php esc_html_e( 'Exclude this page from AI use', 'living-handbook' ); ?>
+			</label>
 		</p>
 		<p class="description"><?php esc_html_e( 'The last updated date is set automatically on save.', 'living-handbook' ); ?></p>
 		<?php
@@ -171,6 +233,9 @@ final class Metadata {
 			$depth = 0;
 		}
 		update_post_meta( $post_id, self::TOC_DEPTH, $depth );
+
+		$ai_exclude = isset( $_POST['living_handbook_ai_exclude'] );
+		update_post_meta( $post_id, self::AI_EXCLUDE, $ai_exclude );
 	}
 
 	/**

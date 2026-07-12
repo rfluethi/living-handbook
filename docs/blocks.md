@@ -1,8 +1,8 @@
 # Blocks
 
-Living Handbook ships seven dynamic blocks, grouped under the **Living Handbook** category in the block inserter. They are server-rendered: each one produces its markup on page load, based on the current context. Most only output something in the context they are meant for (a single handbook page or a handbook entry page); placed elsewhere they render nothing.
+Living Handbook ships nine dynamic blocks, grouped under the **Living Handbook** category in the block inserter. They are server-rendered: each one produces its markup on page load, based on the current context. Most only output something in the context they are meant for (a single handbook page or a handbook entry page); placed elsewhere they render nothing.
 
-You normally do not place these blocks by hand. The plugin registers three block templates that place them for you: the handbook overview, the handbook entry and the single handbook page. You can still add or rearrange the blocks yourself in the Site Editor.
+You normally do not place most of these blocks by hand. The plugin registers three block templates that place them for you: the handbook overview, the handbook entry and the single handbook page. You can still add or rearrange the blocks yourself in the Site Editor.
 
 ## Handbook overview (`living-handbook/overview`)
 
@@ -18,7 +18,7 @@ Renders on: a handbook entry page (the `handbook_set` term archive, e.g. `/handb
 
 ## Handbook navigation (`living-handbook/navigation`)
 
-The page tree of the current handbook, output as a core Navigation block carrying a VSN block style. The tree is built fresh on each request and scoped to the current handbook, so it never lists pages of another handbook. The current page is marked automatically.
+The page tree of the current handbook, output as a core Navigation block carrying a VSN block style. The tree is scoped to the current handbook, so it never lists pages of another handbook, and its assembled markup is cached per handbook (invalidated when a page or handbook changes). The current page is marked automatically.
 
 Settings: **Display** chooses between *Menu* (`is-style-vsn-sidebar`, parent pages stay clickable links, the path to the current page opens) and *Accordion* (`is-style-vsn-sidebar-accordion`, submenus open on click and only one stays open per level; parent items become buttons and are no longer direct links).
 
@@ -32,13 +32,15 @@ Renders on: single handbook pages only.
 
 ## On this page (`living-handbook/toc`)
 
-A table of contents for the current page. The block outputs an empty, hidden container; a small script fills it from the `h2` and `h3` headings of the content and highlights the current section while scrolling. If the page has no `h2`/`h3` headings, the container stays hidden and nothing is shown.
+A table of contents for the current page. The block outputs an empty, hidden container; a small script fills it from the content headings up to the configured depth (H1 to H6) and highlights the current section while scrolling. The depth is a block setting, and a page can override it in the maintenance meta box. If the page has no headings within the depth, the container stays hidden and nothing is shown.
+
+Settings: **Placement** (desktop or mobile) and **Maximum depth** (H1 to H6). The templates place two instances, a sticky desktop one at the side and a mobile one above the content; CSS shows only the one that fits the screen.
 
 Renders on: single handbook pages only.
 
 ## Handbook feedback (`living-handbook/feedback`)
 
-The "Was this helpful?" prompt with Yes and No buttons. The answer is stored per page and counted; the maintenance dashboard reports it.
+The "Was this helpful?" prompt with Yes and No buttons. The answer is stored per page and counted (one vote per logged-in user and page); the maintenance dashboard reports it.
 
 Renders on: single handbook pages only.
 
@@ -46,7 +48,17 @@ Renders on: single handbook pages only.
 
 The metadata footer for a single page: created, last updated, last reviewed (with a freshness badge) and the responsible role, each with the person (avatar and name) where available.
 
+Settings: **Show people** toggles the avatar and name.
+
 Renders on: single handbook pages only.
+
+## Mermaid diagram (`living-handbook/mermaid`)
+
+Renders a diagram written in [Mermaid](https://mermaid.js.org/) syntax, drawn live in the browser. The import creates this block automatically from a ```` ```mermaid ```` code fence; you can also add it by hand and paste the diagram source. Unlike the other blocks it is not context-bound, so it renders wherever you place it (including inside the page content).
+
+## GitHub source note (`living-handbook/git-source-note`)
+
+A short, placeable note that marks a page as maintained on GitHub and updated automatically. It only outputs on a page whose source is GitHub; on a page maintained in WordPress it renders nothing. Place it in the single template (or in the content) wherever the note should appear.
 
 ## Customizing with CSS
 

@@ -5,7 +5,8 @@
  * The facets are a GET form that constrains the term archive's main query
  * server-side (over the whole handbook, not just the rendered cards). The
  * search field filters the shown cards live and, on submit, runs a full-text
- * search within the handbook. Ported from the prototype.
+ * search within the handbook. The two forms carry each other's values as hidden
+ * fields, so submitting one keeps the other. Ported from the prototype.
  *
  * @package LivingHandbook
  */
@@ -106,6 +107,9 @@ final class Filters {
 	/**
 	 * Render the prominent search form for a handbook.
 	 *
+	 * Carries the active facet selections as hidden fields so a search submit
+	 * keeps the current filters.
+	 *
 	 * @param WP_Term $term Handbook term.
 	 * @return string
 	 */
@@ -118,11 +122,15 @@ final class Filters {
 		return '<form class="living-handbook-start__search" role="search" method="get" action="' . esc_url( (string) $action ) . '">'
 			. '<label class="screen-reader-text" for="living-handbook-search">' . esc_html__( 'Search this handbook', 'living-handbook' ) . '</label>'
 			. '<input type="search" id="living-handbook-search" name="' . esc_attr( self::SEARCH_PARAM ) . '" value="' . esc_attr( self::search_value() ) . '" class="living-handbook-search__input" placeholder="' . esc_attr__( 'Search this handbook …', 'living-handbook' ) . '" autocomplete="off">'
+			. self::hidden_facet_fields()
 			. '<button type="submit">' . esc_html__( 'Search', 'living-handbook' ) . '</button></form>';
 	}
 
 	/**
 	 * Render the taxonomy facet form for a handbook.
+	 *
+	 * Carries the active search as a hidden field so a filter submit keeps the
+	 * current search.
 	 *
 	 * @param WP_Term $term Handbook term.
 	 * @return string
@@ -167,10 +175,39 @@ final class Filters {
 		}
 
 		return '<form class="living-handbook-filterform" method="get" action="' . esc_url( $action ) . '">'
+			. self::hidden_search_field()
 			. $fields
 			. '<button type="submit" class="living-handbook-reset">' . esc_html__( 'Filter', 'living-handbook' ) . '</button> '
 			. '<a class="living-handbook-reset living-handbook-reset--link" href="' . esc_url( $action ) . '">' . esc_html__( 'Reset', 'living-handbook' ) . '</a>'
 			. '</form>';
+	}
+
+	/**
+	 * Hidden inputs carrying the active facet selections (for the search form).
+	 *
+	 * @return string
+	 */
+	private static function hidden_facet_fields(): string {
+		$out = '';
+		foreach ( array_keys( self::facet_map() ) as $param ) {
+			foreach ( self::param_values( $param ) as $value ) {
+				$out .= '<input type="hidden" name="' . esc_attr( $param ) . '[]" value="' . esc_attr( $value ) . '">';
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Hidden input carrying the active search (for the facet form).
+	 *
+	 * @return string
+	 */
+	private static function hidden_search_field(): string {
+		$search = self::search_value();
+		if ( '' === $search ) {
+			return '';
+		}
+		return '<input type="hidden" name="' . esc_attr( self::SEARCH_PARAM ) . '" value="' . esc_attr( $search ) . '">';
 	}
 
 	/**

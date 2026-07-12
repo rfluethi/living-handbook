@@ -152,12 +152,28 @@ final class Cards {
 	/**
 	 * Render the top-level pages of a handbook as area tiles.
 	 *
+	 * The tiles walk the hierarchy (one query for the top level plus one per top
+	 * page to count children), so the rendered markup is cached per handbook and
+	 * reused until a handbook page or term changes. The cache shares the version
+	 * counter that Navigation::invalidate() bumps.
+	 *
 	 * @param int $term_id Handbook term ID.
 	 * @return string
 	 */
 	public static function areas( int $term_id ): string {
+		// Shared cache version, bumped by Navigation::invalidate() on page and
+		// term changes.
+		$version   = (int) get_option( 'living_handbook_nav_version', 0 );
+		$cache_key = 'lh_areas_' . $version . '_' . $term_id;
+
+		$cached = get_transient( $cache_key );
+		if ( is_string( $cached ) ) {
+			return $cached;
+		}
+
 		$tops = self::child_pages( 0, $term_id );
 		if ( empty( $tops ) ) {
+			set_transient( $cache_key, '', HOUR_IN_SECONDS );
 			return '';
 		}
 
@@ -181,7 +197,10 @@ final class Cards {
 				esc_html( $count_label )
 			);
 		}
-		return $out . '</div>';
+		$out .= '</div>';
+
+		set_transient( $cache_key, $out, DAY_IN_SECONDS );
+		return $out;
 	}
 
 	/**

@@ -33,6 +33,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class AccessController {
 
 	/**
+	 * Per-request memo of term visibility decisions, keyed "term_id:user_id".
+	 *
+	 * A result set of one handbook shares one term, so the same decision is
+	 * asked for many times per request; this avoids repeating the term-meta and
+	 * user lookups.
+	 *
+	 * @var array<string, bool>
+	 */
+	private static array $term_cache = array();
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -180,11 +191,33 @@ final class AccessController {
 	/**
 	 * Whether a user may view a handbook (the grouping term).
 	 *
+	 * Memoized per request: the same term/user decision is reused rather than
+	 * re-reading term meta and user data for every page of the handbook.
+	 *
 	 * @param int $term_id Handbook term ID.
 	 * @param int $user_id User ID (0 for a guest).
 	 * @return bool
 	 */
 	public static function can_view_term( int $term_id, int $user_id ): bool {
+		$cache_key = $term_id . ':' . $user_id;
+		if ( isset( self::$term_cache[ $cache_key ] ) ) {
+			return self::$term_cache[ $cache_key ];
+		}
+
+		$result = self::evaluate_term( $term_id, $user_id );
+
+		self::$term_cache[ $cache_key ] = $result;
+		return $result;
+	}
+
+	/**
+	 * Compute (uncached) whether a user may view a handbook term.
+	 *
+	 * @param int $term_id Handbook term ID.
+	 * @param int $user_id User ID (0 for a guest).
+	 * @return bool
+	 */
+	private static function evaluate_term( int $term_id, int $user_id ): bool {
 		$visibility = (string) get_term_meta( $term_id, Handbooks::META_VISIBILITY, true );
 		if ( '' === $visibility ) {
 			$visibility = Handbooks::VISIBILITY_MEMBERS;

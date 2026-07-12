@@ -20,11 +20,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Stores per-page yes/no counts and exposes a REST endpoint to increment them.
+ *
+ * The endpoint is limited to logged-in users (the handbook is internal) and
+ * counts one vote per user and page: a second submit from the same user is
+ * accepted but does not change the counters.
  */
 final class Feedback {
 
 	public const YES = 'living_handbook_feedback_yes';
 	public const NO  = 'living_handbook_feedback_no';
+
+	/**
+	 * Meta key holding the list of user IDs that already voted on a page.
+	 */
+	public const VOTERS = 'living_handbook_feedback_voters';
 
 	/**
 	 * Hook registration into WordPress.
@@ -47,7 +56,9 @@ final class Feedback {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'handle' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => static function () {
+					return is_user_logged_in();
+				},
 				'args'                => array(
 					'post_id' => array(
 						'required' => true,
@@ -63,7 +74,7 @@ final class Feedback {
 	}
 
 	/**
-	 * Increment the relevant counter.
+	 * Increment the relevant counter, once per user and page.
 	 *
 	 * @param WP_REST_Request $request REST request.
 	 * @return WP_REST_Response
@@ -87,9 +98,32 @@ final class Feedback {
 			return new WP_REST_Response( array( 'ok' => false ), 400 );
 		}
 
+		$user_id = get_current_user_id();
+		$voters  = get_post_meta( $post_id, self::VOTERS, true );
+		if ( ! is_array( $voters ) ) {
+			$voters = array();
+		}
+
+		if ( in_array( $user_id, $voters, true ) ) {
+			return new WP_REST_Response(
+				array(
+					'ok'      => true,
+					'counted' => false,
+				)
+			);
+		}
+
 		$count = (int) get_post_meta( $post_id, $key, true ) + 1;
 		update_post_meta( $post_id, $key, $count );
 
-		return new WP_REST_Response( array( 'ok' => true ) );
+		$voters[] = $user_id;
+		update_post_meta( $post_id, self::VOTERS, $voters );
+
+		return new WP_REST_Response(
+			array(
+				'ok'      => true,
+				'counted' => true,
+			)
+		);
 	}
 }

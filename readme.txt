@@ -2,9 +2,9 @@
 Contributors: rfluethi
 Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 0.9.0
+Stable tag: 0.11.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,9 @@ Core features:
 * An entry page per handbook with full-text search, taxonomy filters, area tiles and recently updated pages.
 * A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
 * Per-handbook navigation built from the page hierarchy and rendered as a core Navigation block, styled by the VSN plugin (Vertical Sidebar Navigation).
-* No external plugin dependencies for the core, no cost. A block theme is required.
+* Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks.
+* GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
+* No external WordPress plugin is required for the core (a block theme is, and VSN for the sidebar). The import and sync use two bundled Composer libraries (league/commonmark, symfony/yaml), shipped in vendor/.
 
 == Installation ==
 
@@ -34,6 +36,14 @@ Core features:
 4. For the sidebar navigation, install and activate the Vertical Sidebar Navigation (VSN) plugin.
 
 == Changelog ==
+
+= 0.11.0 =
+* GitHub sync (concept 06, way 1): a page can carry a Markdown source URL and is pulled on save, via Sync now, and on a schedule set on a new settings page (off, hourly, twice daily, daily, weekly; default daily). Its content editor is locked, the page overview shows the source, and a placeable block marks the public page. A whole GitHub folder can be imported from a tree URL via the contents API.
+* Security: the handbook content type is now registered non-public (kept out of the XML sitemap, feeds and oEmbed) while single pages and the archive stay reachable and access-guarded. The feedback endpoint now requires a logged-in user and counts one vote per user and page. Synced GitHub HTML is filtered through wp_kses before it is stored.
+* The build now ships the production Composer dependencies (vendor/) so import and sync work in an installed copy.
+
+= 0.10.0 =
+* Markdown import overhaul: one import UI (paste, ZIP, or a GitHub file/folder URL), support for github.com blob URLs and raw URLs, whole-folder import, and MkDocs nav-driven structure from mkdocs.yml (titles, order, parents). Transport metadata and README are applied on import and sync; internal .md links and their visible titles are resolved across a directory import; Mermaid diagrams and collapsible details render correctly. New blocks appear under a "Living Handbook" category.
 
 = 0.9.0 =
 * Navigation is now available on handbook entry pages as well as single pages, and offers a Menu or Accordion display.
