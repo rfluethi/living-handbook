@@ -1,4 +1,12 @@
 ( function () {
+	var i18n = ( window.wp && window.wp.i18n ) ? window.wp.i18n : null;
+	var __ = i18n ? i18n.__ : function ( s ) { return s; };
+	var sprintf = i18n ? i18n.sprintf : function ( fmt ) {
+		var args = Array.prototype.slice.call( arguments, 1 );
+		var i = 0;
+		return String( fmt ).replace( /%(\d+\$)?[ds]/g, function () { return args[ i++ ]; } );
+	};
+
 	function ready( fn ) {
 		if ( window.wp && wp.domReady ) {
 			wp.domReady( fn );
@@ -107,6 +115,10 @@
 			}
 		}
 
+		function errorMessage( err ) {
+			return sprintf( __( 'Error: %s', 'living-handbook' ), ( err && err.message ) ? err.message : __( 'unknown', 'living-handbook' ) );
+		}
+
 		function trimVal( field ) {
 			return field ? field.value.replace( /^\s+|\s+$/g, '' ) : '';
 		}
@@ -122,7 +134,7 @@
 			var li = document.createElement( 'li' );
 			var a = document.createElement( 'a' );
 			a.href = created.editUrl || '#';
-			a.textContent = title || ( 'Seite ' + created.id );
+			a.textContent = title || sprintf( __( 'Page %d', 'living-handbook' ), created.id );
 			li.appendChild( a );
 			results.appendChild( li );
 		}
@@ -151,10 +163,10 @@
 		function importPaste() {
 			var md = mdField ? mdField.value : '';
 			if ( ! md.replace( /\s+/g, '' ) ) {
-				setStatus( 'Nichts einzugeben: Markdown, ZIP oder GitHub-URL fehlt.' );
+				setStatus( __( 'Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL.', 'living-handbook' ) );
 				return;
 			}
-			setStatus( 'Wandle um ...' );
+			setStatus( __( 'Converting…', 'living-handbook' ) );
 			wp.apiFetch( { path: lhImport.convertPath, method: 'POST', data: { markdown: md } } ).then( function ( res ) {
 				if ( res && res.error ) {
 					setStatus( res.error );
@@ -162,29 +174,29 @@
 				}
 				var markup = libraryHtmlToMarkup( res.html || '' );
 				var userTitle = trimVal( titleField );
-				var title = userTitle || res.title || 'Import';
-				setStatus( 'Lege Entwurf an ...' );
+				var title = userTitle || res.title || __( 'Imported page', 'living-handbook' );
+				setStatus( __( 'Creating draft…', 'living-handbook' ) );
 				return createPage( title, markup, res.transport, '' ).then( function ( created ) {
 					if ( created && created.error ) {
-						setStatus( 'Fehler: ' + created.error );
+						setStatus( sprintf( __( 'Error: %s', 'living-handbook' ), created.error ) );
 						return;
 					}
 					addResult( created, title );
 					return finalize( [ created.id ] ).then( function ( fin ) {
-						setStatus( 'Fertig: 1 Seite, ' + ( ( fin && fin.converted ) || 0 ) + ' Links umgewandelt.' );
+						setStatus( sprintf( __( 'Done: 1 page, %d links converted.', 'living-handbook' ), ( fin && fin.converted ) || 0 ) );
 					} );
 				} );
 			} ).catch( function ( err ) {
-				setStatus( 'Fehler: ' + ( err && err.message ? err.message : 'unbekannt' ) );
+				setStatus( errorMessage( err ) );
 			} );
 		}
 
 		function importMkdocs( pages, images ) {
 			if ( ! pages.length ) {
-				setStatus( 'Keine Seiten im mkdocs.yml gefunden.' );
+				setStatus( __( 'No pages found in the mkdocs.yml.', 'living-handbook' ) );
 				return Promise.resolve();
 			}
-			setStatus( 'Lege ' + pages.length + ' Seite(n) an ...' );
+			setStatus( sprintf( __( 'Creating %d page(s)…', 'living-handbook' ), pages.length ) );
 			var byPath = {};
 			var ids = [];
 			var chain = Promise.resolve();
@@ -218,15 +230,15 @@
 				} );
 			} );
 			return chain.then( function () {
-				setStatus( 'Verlinke ...' );
+				setStatus( __( 'Linking…', 'living-handbook' ) );
 				return finalize( ids ).then( function ( fin ) {
-					setStatus( 'Fertig: ' + ids.length + ' Seite(n), ' + ( images || 0 ) + ' Bild(er), ' + ( ( fin && fin.converted ) || 0 ) + ' Links umgewandelt.' );
+					setStatus( sprintf( __( 'Done: %1$d page(s), %2$d image(s), %3$d links converted.', 'living-handbook' ), ids.length, images || 0, ( fin && fin.converted ) || 0 ) );
 				} );
 			} );
 		}
 
 		function importZip( file ) {
-			setStatus( 'Lade ZIP hoch ...' );
+			setStatus( __( 'Uploading ZIP…', 'living-handbook' ) );
 			var fd = new FormData();
 			fd.append( 'zip', file );
 			wp.apiFetch( { path: lhImport.zipPath, method: 'POST', body: fd } ).then( function ( res ) {
@@ -239,10 +251,10 @@
 				}
 				var files = ( res && res.files ) ? res.files : [];
 				if ( ! files.length ) {
-					setStatus( 'Keine Seiten im ZIP.' );
+					setStatus( __( 'No pages in the ZIP.', 'living-handbook' ) );
 					return;
 				}
-				setStatus( 'Lege ' + files.length + ' Entwuerfe an ...' );
+				setStatus( sprintf( __( 'Creating %d drafts…', 'living-handbook' ), files.length ) );
 				var ids = [];
 				var chain = Promise.resolve();
 				files.forEach( function ( f ) {
@@ -260,18 +272,18 @@
 					} );
 				} );
 				return chain.then( function () {
-					setStatus( 'Verlinke ...' );
+					setStatus( __( 'Linking…', 'living-handbook' ) );
 					return finalize( ids ).then( function ( fin ) {
-						setStatus( 'Fertig: ' + ids.length + ' Seite(n), ' + ( res.images || 0 ) + ' Bild(er), ' + ( ( fin && fin.converted ) || 0 ) + ' Links umgewandelt.' );
+						setStatus( sprintf( __( 'Done: %1$d page(s), %2$d image(s), %3$d links converted.', 'living-handbook' ), ids.length, res.images || 0, ( fin && fin.converted ) || 0 ) );
 					} );
 				} );
 			} ).catch( function ( err ) {
-				setStatus( 'Fehler: ' + ( err && err.message ? err.message : 'unbekannt' ) );
+				setStatus( errorMessage( err ) );
 			} );
 		}
 
 		function importGithub( url ) {
-			setStatus( 'Hole Seite(n) von GitHub ...' );
+			setStatus( __( 'Fetching page(s) from GitHub…', 'living-handbook' ) );
 			wp.apiFetch( {
 				path: lhImport.githubPath,
 				method: 'POST',
@@ -283,15 +295,15 @@
 				}
 				var pages = ( res && res.pages ) ? res.pages : [];
 				if ( ! pages.length ) {
-					setStatus( 'Keine Markdown-Seiten gefunden.' );
+					setStatus( __( 'No Markdown pages found.', 'living-handbook' ) );
 					return;
 				}
 				pages.forEach( function ( p ) {
 					addResult( p, p.title );
 				} );
-				setStatus( 'Fertig: ' + pages.length + ' GitHub-Seite(n) angelegt.' );
+				setStatus( sprintf( __( 'Done: created %d GitHub page(s).', 'living-handbook' ), pages.length ) );
 			} ).catch( function ( err ) {
-				setStatus( 'Fehler: ' + ( err && err.message ? err.message : 'unbekannt' ) );
+				setStatus( errorMessage( err ) );
 			} );
 		}
 
@@ -300,7 +312,7 @@
 				results.innerHTML = '';
 			}
 			if ( ! window.wp || ! wp.blocks ) {
-				setStatus( 'wp.blocks nicht geladen.' );
+				setStatus( __( 'wp.blocks is not loaded.', 'living-handbook' ) );
 				return;
 			}
 			ensureCoreBlocks();

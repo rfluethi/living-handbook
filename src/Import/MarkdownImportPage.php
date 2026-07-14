@@ -140,7 +140,7 @@ final class MarkdownImportPage {
 	 */
 	public function convert_callback( WP_REST_Request $request ): array {
 		if ( ! MarkdownConverter::available() ) {
-			return array( 'error' => 'CommonMark is not installed. Run: composer require league/commonmark' );
+			return array( 'error' => __( 'CommonMark is not installed. Run: composer require league/commonmark', 'living-handbook' ) );
 		}
 		return ( new MarkdownConverter() )->convert( (string) $request->get_param( 'markdown' ) );
 	}
@@ -154,21 +154,21 @@ final class MarkdownImportPage {
 	 */
 	public function import_zip_callback( WP_REST_Request $request ): array {
 		if ( ! MarkdownConverter::available() ) {
-			return array( 'error' => 'CommonMark is not installed. Run: composer require league/commonmark' );
+			return array( 'error' => __( 'CommonMark is not installed. Run: composer require league/commonmark', 'living-handbook' ) );
 		}
 		if ( ! class_exists( 'ZipArchive' ) ) {
-			return array( 'error' => 'ZipArchive is not available on the server.' );
+			return array( 'error' => __( 'ZipArchive is not available on the server.', 'living-handbook' ) );
 		}
 
 		$params = $request->get_file_params();
 		$tmp    = ( isset( $params['zip']['tmp_name'] ) && is_string( $params['zip']['tmp_name'] ) ) ? $params['zip']['tmp_name'] : '';
 		if ( '' === $tmp ) {
-			return array( 'error' => 'No ZIP file received.' );
+			return array( 'error' => __( 'No ZIP file received.', 'living-handbook' ) );
 		}
 
 		$zip = new ZipArchive();
 		if ( true !== $zip->open( $tmp ) ) {
-			return array( 'error' => 'Could not open the ZIP file.' );
+			return array( 'error' => __( 'Could not open the ZIP file.', 'living-handbook' ) );
 		}
 
 		$markdown_files = array();
@@ -198,7 +198,7 @@ final class MarkdownImportPage {
 		$zip->close();
 
 		if ( empty( $markdown_files ) ) {
-			return array( 'error' => 'No .md files found in the ZIP.' );
+			return array( 'error' => __( 'No .md files found in the ZIP.', 'living-handbook' ) );
 		}
 
 		$image_map = array();
@@ -252,11 +252,11 @@ final class MarkdownImportPage {
 	 */
 	public function import_github_callback( WP_REST_Request $request ): array {
 		if ( ! MarkdownConverter::available() ) {
-			return array( 'error' => 'CommonMark is not installed. Run: composer require league/commonmark' );
+			return array( 'error' => __( 'CommonMark is not installed. Run: composer require league/commonmark', 'living-handbook' ) );
 		}
 		$url = trim( (string) $request->get_param( 'url' ) );
 		if ( '' === $url ) {
-			return array( 'error' => 'No GitHub URL given.' );
+			return array( 'error' => __( 'No GitHub URL given.', 'living-handbook' ) );
 		}
 		$title       = sanitize_text_field( (string) $request->get_param( 'title' ) );
 		$handbook_id = absint( $request->get_param( 'handbook' ) );
@@ -268,7 +268,7 @@ final class MarkdownImportPage {
 
 		$post_id = $git->create_github_page( $url, $handbook_id, $title );
 		if ( 0 === $post_id ) {
-			return array( 'error' => 'Could not create the page. Check the URL.' );
+			return array( 'error' => __( 'Could not create the page. Check the URL.', 'living-handbook' ) );
 		}
 		Postprocessor::finalize( array( $post_id ) );
 		return array(
@@ -477,7 +477,9 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Enqueue the import app on this page only.
+	 * Enqueue the import app on this page only, and bridge the script's label
+	 * translations into wp.i18n (same approach as the block editor: look up the
+	 * current locale's translations in PHP and hand them to the editor).
 	 *
 	 * @param string $hook Current admin page hook suffix.
 	 * @return void
@@ -490,7 +492,7 @@ final class MarkdownImportPage {
 		wp_register_script(
 			'living-handbook-markdown-import',
 			LIVING_HANDBOOK_URL . 'assets/js/markdown-import.js',
-			array( 'wp-blocks', 'wp-block-library', 'wp-api-fetch', 'wp-dom-ready' ),
+			array( 'wp-blocks', 'wp-block-library', 'wp-api-fetch', 'wp-dom-ready', 'wp-i18n' ),
 			LIVING_HANDBOOK_VERSION,
 			true
 		);
@@ -505,6 +507,62 @@ final class MarkdownImportPage {
 				'createPath'   => '/living-handbook/v1/create',
 				'finalizePath' => '/living-handbook/v1/finalize',
 			)
+		);
+
+		$locale = determine_locale();
+		if ( 0 === strpos( $locale, 'en' ) ) {
+			return;
+		}
+		$data = array(
+			'' => array(
+				'domain' => 'living-handbook',
+				'lang'   => $locale,
+			),
+		);
+		foreach ( self::import_js_strings() as $string ) {
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Bridging already-extracted JS strings to the import script; source strings are extracted from markdown-import.js.
+			$translated = __( $string, 'living-handbook' );
+			if ( $translated !== $string ) {
+				$data[ $string ] = array( $translated );
+			}
+		}
+		if ( count( $data ) > 1 ) {
+			wp_add_inline_script(
+				'wp-i18n',
+				'wp.i18n.setLocaleData( ' . wp_json_encode( $data ) . ', "living-handbook" );',
+				'after'
+			);
+		}
+	}
+
+	/**
+	 * The English source strings used by the import script (markdown-import.js).
+	 * Keep in sync with the __() calls there; used only by the translation
+	 * bridge in enqueue().
+	 *
+	 * @return string[]
+	 */
+	private static function import_js_strings(): array {
+		return array(
+			'Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL.',
+			'Converting…',
+			'Creating draft…',
+			'Error: %s',
+			'unknown',
+			'Done: 1 page, %d links converted.',
+			'Page %d',
+			'Imported page',
+			'No pages found in the mkdocs.yml.',
+			'Creating %d page(s)…',
+			'Linking…',
+			'Done: %1$d page(s), %2$d image(s), %3$d links converted.',
+			'Uploading ZIP…',
+			'No pages in the ZIP.',
+			'Creating %d drafts…',
+			'Fetching page(s) from GitHub…',
+			'No Markdown pages found.',
+			'Done: created %d GitHub page(s).',
+			'wp.blocks is not loaded.',
 		);
 	}
 

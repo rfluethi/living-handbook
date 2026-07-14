@@ -6,6 +6,7 @@
 	var blockEditor = wp.blockEditor;
 	var element = wp.element;
 	var components = wp.components;
+	var __ = wp.i18n ? wp.i18n.__ : function ( s ) { return s; };
 	var el = element.createElement;
 	var useBlockProps = blockEditor.useBlockProps;
 	var useEffect = element.useEffect;
@@ -28,7 +29,7 @@
 					return;
 				}
 				if ( ! window.mermaid ) {
-					node.textContent = 'mermaid.min.js fehlt in assets/js/.';
+					node.textContent = __( 'mermaid.min.js is missing in assets/js/.', 'living-handbook' );
 					return;
 				}
 				node.innerHTML = '';
@@ -55,7 +56,7 @@
 				'div',
 				blockProps,
 				el( components.TextareaControl, {
-					label: 'Mermaid-Code',
+					label: __( 'Mermaid code', 'living-handbook' ),
 					value: code,
 					rows: 8,
 					onChange: function ( v ) {

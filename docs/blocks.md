@@ -8,17 +8,23 @@ You normally do not place most of these blocks by hand. The plugin registers thr
 
 ## Handbook overview (`living-handbook/overview`)
 
+![](_attachments/handbook-overview-en.png)
+
 The landing page of all handbooks. It lists every handbook the current visitor may read as a card (name, description, page count), each linking to that handbook's entry page. Handbooks the visitor may not read are omitted.
 
 Renders on: the handbook archive (`/handbook/`), placed by the "Handbook overview" template. Outputs nothing elsewhere.
 
 ## Handbook entry (`living-handbook/entry`)
 
+![](_attachments/handbook-entry-en.png)
+
 The entry page of one handbook. It shows a prominent search field, then the areas (the top-level pages of the handbook, with a subpage count) and the most recently updated pages as cards, with a facet filter (page type, topic, responsible role, audience) on the right. When a search or a facet is active, it shows a paginated result list instead of areas and recent pages.
 
 Renders on: a handbook entry page (the `handbook_set` term archive, e.g. `/handbook-set/general/`), placed by the "Handbook entry" template. It reads the queried handbook from the URL, so it only works on a term archive.
 
 ## Handbook navigation (`living-handbook/navigation`)
+
+![](_attachments/handbook-navigation-en.png)
 
 The page tree of the current handbook, output as a core Navigation block carrying a VSN block style. The tree is scoped to the current handbook, so it never lists pages of another handbook, and its assembled markup is cached per handbook (invalidated when a page or handbook changes). The current page is marked automatically.
 
@@ -28,11 +34,15 @@ Renders on: single handbook pages and handbook entry pages. Requires the **Verti
 
 ## Handbook badges (`living-handbook/badges`)
 
+![](_attachments/handbook-badges-en.png)
+
 The badge row for a single page: page type, topic and audience.
 
 Renders on: single handbook pages only.
 
-## On this page (`living-handbook/toc`)
+## Table of Contents (`living-handbook/toc`)
+
+![](_attachments/table-of-contents-en.png)
 
 A table of contents for the current page. The block outputs an empty, hidden container; a small script fills it from the content headings up to the configured depth (H1 to H6) and highlights the current section while scrolling. The depth is a block setting, and a page can override it in the maintenance meta box. If the page has no headings within the depth, the container stays hidden and nothing is shown.
 
@@ -42,11 +52,15 @@ Renders on: single handbook pages only.
 
 ## Handbook feedback (`living-handbook/feedback`)
 
+![](_attachments/handbook-feedback-en.png)
+
 The "Was this helpful?" prompt with Yes and No buttons. The answer is stored per page and counted (one vote per logged-in user and page); the maintenance dashboard reports it.
 
 Renders on: single handbook pages only.
 
 ## Handbook page meta (`living-handbook/pagemeta`)
+
+![](_attachments/handbook-page-meta-en.png)
 
 The metadata footer for a single page: created, last updated, last reviewed (with a freshness badge) and the responsible role, each with the person (avatar and name) where available.
 
@@ -56,9 +70,13 @@ Renders on: single handbook pages only.
 
 ## Mermaid diagram (`living-handbook/mermaid`)
 
+![](_attachments/mermaid-en.png)
+
 Renders a diagram written in [Mermaid](https://mermaid.js.org/) syntax, drawn live in the browser. The import creates this block automatically from a ```` ```mermaid ```` code fence; you can also add it by hand and paste the diagram source. Unlike the other blocks it is not context-bound, so it renders wherever you place it (including inside the page content).
 
 ## GitHub source note (`living-handbook/git-source-note`)
+
+![](_attachments/github-source-notes-en.png)
 
 A short, placeable note that marks a page as maintained on GitHub and updated automatically. It only outputs on a page whose source is GitHub; on a page maintained in WordPress it renders nothing. Place it in the single template (or in the content) wherever the note should appear.
 

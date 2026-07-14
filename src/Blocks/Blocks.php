@@ -197,15 +197,17 @@ final class Blocks {
 	}
 
 	/**
-	 * Enqueue the hand-written editor script that registers the blocks.
+	 * Enqueue the hand-written editor script that registers the blocks, and
+	 * bridge the editor label translations into wp.i18n.
 	 *
-	 * The script uses wp.i18n.__ for its labels. Because it is hand-written
-	 * rather than built with a JSON translation file, the current locale's
-	 * translations of those labels are looked up in PHP (from the loaded text
-	 * domain) and handed to the editor with setLocaleData. This keeps the
-	 * editor translatable in any language through the .po files, without a
-	 * compiled JSON per script. The English source strings live in blocks.js,
-	 * so `wp i18n make-pot` extracts them into the template.
+	 * The block scripts are hand-written and use wp.i18n.__ for their labels.
+	 * Rather than ship a compiled JSON translation per script, the current
+	 * locale's translations are looked up in PHP (from the loaded text domain)
+	 * and handed to the editor with setLocaleData. It is attached to the shared
+	 * wp-i18n handle so it runs before every handbook block script, whichever
+	 * one registers first. The English source strings live in the JS files, so
+	 * `wp i18n make-pot` extracts them into the template, and the plugin is
+	 * translatable into any language through the .po files.
 	 *
 	 * @return void
 	 */
@@ -230,7 +232,7 @@ final class Blocks {
 			),
 		);
 		foreach ( self::editor_js_strings() as $string ) {
-			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Bridging already-extracted JS strings to the editor; source strings are extracted from blocks.js.
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Bridging already-extracted JS strings to the editor; source strings are extracted from the JS files.
 			$translated = __( $string, 'living-handbook' );
 			if ( $translated !== $string ) {
 				$data[ $string ] = array( $translated );
@@ -239,18 +241,18 @@ final class Blocks {
 
 		if ( count( $data ) > 1 ) {
 			wp_add_inline_script(
-				'living-handbook-blocks',
+				'wp-i18n',
 				'wp.i18n.setLocaleData( ' . wp_json_encode( $data ) . ', "living-handbook" );',
-				'before'
+				'after'
 			);
 		}
 	}
 
 	/**
-	 * The English source strings used by the editor script (blocks.js). They are
-	 * translated in the .po files like any other string; this list only tells
-	 * the bridge which ones to hand to the editor. Keep it in sync with the
-	 * __() calls in blocks.js.
+	 * The English source strings used by the editor scripts (blocks.js,
+	 * git-source-note-block.js, mermaid-block.js). They are translated in the
+	 * .po files like any other string; this list only tells the bridge which
+	 * ones to hand to the editor. Keep it in sync with the __() calls in the JS.
 	 *
 	 * @return string[]
 	 */
@@ -285,6 +287,12 @@ final class Blocks {
 			'Handbook badges: page type, topic and audience of the current page.',
 			'Handbook feedback',
 			'Handbook feedback: the "Was this helpful?" prompt for the current page.',
+			'GitHub source note',
+			'Shows a note on pages synced from GitHub; renders nothing on other pages.',
+			'Note text (shown only on GitHub pages)',
+			'This page is maintained on GitHub and updated automatically.',
+			'Mermaid code',
+			'mermaid.min.js is missing in assets/js/.',
 		);
 	}
 

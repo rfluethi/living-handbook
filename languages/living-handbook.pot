@@ -1,173 +1,954 @@
 # Copyright (C) 2026 Rico F. Luethi
-# This file is distributed under the GPL-2.0-or-later license.
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.2.0\n"
-"Report-Msgid-Bugs-To: https://github.com/rfluethi/living-handbook/issues\n"
+"Project-Id-Version: Living Handbook 0.12.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-06T00:00:00+00:00\n"
+"POT-Creation-Date: 2026-07-14T13:56:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Language: \n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
 
-msgid "Handbook"
+#. Plugin Name of the plugin
+#: living-handbook.php
+#: src/Blocks/Blocks.php:193
+msgid "Living Handbook"
 msgstr ""
 
-msgid "Handbook page"
+#. Plugin URI of the plugin
+#: living-handbook.php
+msgid "https://github.com/rfluethi/living-handbook"
 msgstr ""
 
-msgid "Add new handbook page"
+#. Description of the plugin
+#: living-handbook.php
+msgid "An internal team handbook for WordPress: structured page types, clear ownership, and freshness tracking so docs don't rot."
 msgstr ""
 
-msgid "Edit handbook page"
+#. Author of the plugin
+#: living-handbook.php
+msgid "Rico F. Luethi"
 msgstr ""
 
-msgid "Search handbook pages"
+#. Author URI of the plugin
+#: living-handbook.php
+msgid "https://rfluethi.com"
 msgstr ""
 
-msgid "Page types"
-msgstr ""
-
-msgid "Page type"
-msgstr ""
-
-msgid "Topics"
-msgstr ""
-
-msgid "Topic"
-msgstr ""
-
-msgid "Responsible roles"
-msgstr ""
-
-msgid "Responsible role"
-msgstr ""
-
-msgid "Audiences"
-msgstr ""
-
-msgid "Audience"
-msgstr ""
-
-msgid "Handbooks"
-msgstr ""
-
-msgid "Guide"
-msgstr ""
-
-msgid "Process description"
-msgstr ""
-
-msgid "Tool overview"
-msgstr ""
-
-msgid "Role / Organisation"
-msgstr ""
-
-msgid "Background / Concept"
-msgstr ""
-
-msgid "FAQ"
-msgstr ""
-
-msgid "All members"
-msgstr ""
-
-msgid "Content creators"
-msgstr ""
-
-msgid "Coordination"
-msgstr ""
-
-msgid "Tech"
-msgstr ""
-
-msgid "Handbook editors"
-msgstr ""
-
-msgid "GitHub specialist"
-msgstr ""
-
-msgid "General"
-msgstr ""
-
-msgid "Frontend visibility"
-msgstr ""
-
-msgid "Allowed roles (restricted only)"
-msgstr ""
-
-msgid "Allowed users (restricted only)"
-msgstr ""
-
-msgid "Comma-separated user logins or IDs."
-msgstr ""
-
-msgid "Public (no login)"
-msgstr ""
-
-msgid "All members (logged in)"
-msgstr ""
-
-msgid "Restricted (roles and/or users)"
-msgstr ""
-
-msgid "Handbook maintenance"
-msgstr ""
-
-msgid "Last reviewed"
-msgstr ""
-
-msgid "Review interval (days)"
-msgstr ""
-
-msgid "Reviewed by"
-msgstr ""
-
-msgid "— none —"
-msgstr ""
-
-msgid "The last updated date is set automatically on save."
-msgstr ""
-
-msgid "Reviewed"
-msgstr ""
-
-msgid "Review due"
-msgstr ""
-
-msgid "Unchecked"
-msgstr ""
-
-msgid "Thanks for your feedback."
-msgstr ""
-
-msgid "Last updated"
-msgstr ""
-
-msgid "Responsible"
-msgstr ""
-
-msgid "Was this helpful?"
-msgstr ""
-
-msgid "Yes"
-msgstr ""
-
-msgid "No"
-msgstr ""
-
+#: src/Admin/Maintenance.php:49
 msgid "Handbook: reviews overdue"
 msgstr ""
 
+#. translators: 1: overdue count, 2: total count, 3: percentage.
+#: src/Admin/Maintenance.php:96
+#, php-format
 msgid "%1$d of %2$d pages overdue (%3$d%%)."
 msgstr ""
 
+#: src/Admin/Maintenance.php:105
 msgid "All pages are currently reviewed."
 msgstr ""
 
+#: src/Admin/Maintenance.php:128
+#: src/Frontend/PageMeta.php:73
+#: src/Meta/Metadata.php:156
+msgid "Last reviewed"
+msgstr ""
+
+#: src/Admin/Maintenance.php:129
 msgid "Feedback"
+msgstr ""
+
+#: src/Blocks/Blocks.php:373
+#: src/Blocks/Blocks.php:374
+#: assets/blocks.js:134
+#: assets/blocks.js:173
+msgid "Table of Contents"
+msgstr ""
+
+#: src/Blocks/SourceNoteBlock.php:83
+#: assets/js/git-source-note-block.js:5
+msgid "This page is maintained on GitHub and updated automatically."
+msgstr ""
+
+#. translators: %s: name of the responsible role.
+#: src/Frontend/Cards.php:62
+#, php-format
+msgid "Role: %s"
+msgstr ""
+
+#. translators: %s: audience name.
+#: src/Frontend/Cards.php:105
+#, php-format
+msgid "Audience: %s"
+msgstr ""
+
+#. translators: %d: number of subpages.
+#: src/Frontend/Cards.php:188
+#, php-format
+msgid "%d subpage"
+msgid_plural "%d subpages"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of pages in a handbook.
+#: src/Frontend/Cards.php:224
+#, php-format
+msgid "%d page"
+msgid_plural "%d pages"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Frontend/Entry.php:54
+msgid "No handbooks available."
+msgstr ""
+
+#: src/Frontend/Entry.php:96
+#: src/Frontend/Entry.php:98
+#: src/Frontend/FrontendRenderer.php:230
+#: src/Frontend/FrontendRenderer.php:253
+msgid "Handbooks"
+msgstr ""
+
+#: src/Frontend/Entry.php:160
+#: src/Frontend/Filters.php:454
+#: src/Taxonomy/Taxonomies.php:62
+msgid "Areas"
+msgstr ""
+
+#: src/Frontend/Entry.php:165
+msgid "Recently updated"
+msgstr ""
+
+#: src/Frontend/Entry.php:169
+msgid "This handbook has no pages yet."
+msgstr ""
+
+#: src/Frontend/Filters.php:166
+msgid "Search this handbook"
+msgstr ""
+
+#: src/Frontend/Filters.php:167
+msgid "Search this handbook …"
+msgstr ""
+
+#: src/Frontend/Filters.php:169
+msgid "Search"
+msgstr ""
+
+#: src/Frontend/Filters.php:230
+msgid "Reset"
+msgstr ""
+
+#. translators: %d: number of matching pages.
+#: src/Frontend/Filters.php:315
+#, php-format
+msgid "%d page found"
+msgid_plural "%d pages found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Frontend/Filters.php:318
+msgid "No matches. Adjust the filters or the search."
+msgstr ""
+
+#: src/Frontend/Filters.php:452
+#: src/Taxonomy/Taxonomies.php:52
+msgid "Page type"
+msgstr ""
+
+#: src/Frontend/Filters.php:456
+#: src/Taxonomy/Taxonomies.php:73
+#: src/Taxonomy/Taxonomies.php:74
+msgid "Responsibility"
+msgstr ""
+
+#: src/Frontend/Filters.php:458
+#: src/Taxonomy/Taxonomies.php:85
+msgid "Audience"
+msgstr ""
+
+#: src/Frontend/FreshnessStatus.php:68
+msgid "Reviewed"
+msgstr ""
+
+#: src/Frontend/FreshnessStatus.php:70
+msgid "Review due"
+msgstr ""
+
+#: src/Frontend/FreshnessStatus.php:72
+msgid "Unchecked"
+msgstr ""
+
+#: src/Frontend/FrontendRenderer.php:73
+msgid "Thanks for your feedback."
+msgstr ""
+
+#: src/Frontend/PageMeta.php:37
+msgid "Was this helpful?"
+msgstr ""
+
+#: src/Frontend/PageMeta.php:38
+msgid "Yes"
+msgstr ""
+
+#: src/Frontend/PageMeta.php:39
+msgid "No"
+msgstr ""
+
+#: src/Frontend/PageMeta.php:69
+msgid "never"
+msgstr ""
+
+#: src/Frontend/PageMeta.php:71
+msgid "Created"
+msgstr ""
+
+#: src/Frontend/PageMeta.php:72
+msgid "Last updated"
+msgstr ""
+
+#: src/Frontend/PageMeta.php:74
+msgid "Responsible role"
+msgstr ""
+
+#: src/Frontend/Templates.php:51
+#: assets/blocks.js:79
+msgid "Handbook overview"
+msgstr ""
+
+#: src/Frontend/Templates.php:52
+msgid "Landing page listing the handbooks a visitor may read."
+msgstr ""
+
+#: src/Frontend/Templates.php:60
+#: assets/blocks.js:213
+msgid "Handbook entry"
+msgstr ""
+
+#: src/Frontend/Templates.php:61
+msgid "Entry page of a single handbook: navigation, search, filters, areas and recently updated pages."
+msgstr ""
+
+#: src/Frontend/Templates.php:69
+#: src/PostType/Handbook.php:54
+msgid "Handbook page"
+msgstr ""
+
+#: src/Frontend/Templates.php:70
+msgid "Single handbook page: navigation left, content centre, on-this-page right."
+msgstr ""
+
+#: src/Git/GitSync.php:120
+msgid "Once weekly"
+msgstr ""
+
+#: src/Git/GitSync.php:235
+msgid "GitHub page"
+msgstr ""
+
+#: src/Git/GitSync.php:268
+msgid "Not a GitHub folder URL."
+msgstr ""
+
+#: src/Git/GitSync.php:290
+msgid "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later."
+msgstr ""
+
+#. translators: %d: HTTP status code returned by the GitHub API.
+#: src/Git/GitSync.php:293
+#, php-format
+msgid "GitHub API HTTP %d"
+msgstr ""
+
+#: src/Git/GitSync.php:297
+msgid "Unexpected GitHub API response."
+msgstr ""
+
+#: src/Git/GitSync.php:399
+#: src/Git/GitSync.php:774
+msgid "Source"
+msgstr ""
+
+#: src/Git/GitSync.php:421
+msgid "Maintained in WordPress"
+msgstr ""
+
+#: src/Git/GitSync.php:422
+msgid "Synced from GitHub"
+msgstr ""
+
+#: src/Git/GitSync.php:424
+msgid "Markdown source (raw or blob URL)"
+msgstr ""
+
+#: src/Git/GitSync.php:429
+msgid "Sync now"
+msgstr ""
+
+#: src/Git/GitSync.php:433
+msgid "Last sync:"
+msgstr ""
+
+#: src/Git/GitSync.php:435
+msgid "A GitHub page is pulled when you save it, and its content editor is locked. Change the source here."
+msgstr ""
+
+#: src/Git/GitSync.php:508
+msgid "This page is synced from GitHub. Its content is managed in the repository and cannot be edited here."
+msgstr ""
+
+#. translators: %d: number of GitHub pages that failed to sync.
+#: src/Git/GitSync.php:550
+#, php-format
+msgid "Living Handbook: %d GitHub page could not be synced. Open it to see the error."
+msgid_plural "Living Handbook: %d GitHub pages could not be synced. Open them to see the error."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Git/GitSync.php:560
+#: src/PostType/Handbook.php:56
+msgid "Handbook pages"
+msgstr ""
+
+#: src/Git/GitSync.php:573
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: src/Git/GitSync.php:639
+msgid "Error: CommonMark is not installed."
+msgstr ""
+
+#: src/Git/GitSync.php:647
+msgid "Error: source host not allowed."
+msgstr ""
+
+#. translators: %s: error message from the HTTP request.
+#: src/Git/GitSync.php:653
+#: assets/js/markdown-import.js:119
+#: assets/js/markdown-import.js:181
+#, php-format,js-format
+msgid "Error: %s"
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: src/Git/GitSync.php:659
+#, php-format
+msgid "Error: HTTP %d"
+msgstr ""
+
+#: src/Git/GitSync.php:685
+msgid "OK "
+msgstr ""
+
+#: src/Git/GitSync.php:790
+msgid "GitHub"
+msgstr ""
+
+#: src/Git/GitSync.php:790
+msgid "WordPress"
+msgstr ""
+
+#: src/Git/GitSync.php:801
+#: src/Git/GitSync.php:802
+#: src/Git/GitSync.php:844
+msgid "Settings"
+msgstr ""
+
+#: src/Git/GitSync.php:829
+msgid "Saved."
+msgstr ""
+
+#: src/Git/GitSync.php:835
+msgid "Off (only on save and Sync now)"
+msgstr ""
+
+#: src/Git/GitSync.php:836
+msgid "Hourly"
+msgstr ""
+
+#: src/Git/GitSync.php:837
+msgid "Twice daily"
+msgstr ""
+
+#: src/Git/GitSync.php:838
+msgid "Daily"
+msgstr ""
+
+#: src/Git/GitSync.php:839
+msgid "Weekly"
+msgstr ""
+
+#: src/Git/GitSync.php:848
+msgid "GitHub sync"
+msgstr ""
+
+#: src/Git/GitSync.php:851
+msgid "Automatic sync"
+msgstr ""
+
+#: src/Git/GitSync.php:858
+msgid "How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits."
+msgstr ""
+
+#: src/Git/GitSync.php:860
+msgid "Next scheduled sync:"
+msgstr ""
+
+#: src/Git/GitSync.php:862
+msgid "No background sync scheduled."
+msgstr ""
+
+#: src/Git/GitSync.php:868
+msgid "Uninstall"
+msgstr ""
+
+#: src/Git/GitSync.php:871
+msgid "When the plugin is deleted"
+msgstr ""
+
+#: src/Git/GitSync.php:873
+msgid "Also delete all handbook pages, handbooks and their data"
+msgstr ""
+
+#: src/Git/GitSync.php:874
+msgid "Off by default: your content is kept when the plugin is deleted, only the plugin settings and caches are removed. Turn this on to remove everything the plugin created."
+msgstr ""
+
+#: src/Git/GitSync.php:875
+msgid "This also removes templates you edited in the Site Editor."
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:52
+#: src/Handbook/HandbookAdmin.php:92
+msgid "Frontend visibility"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:56
+#: src/Handbook/HandbookAdmin.php:96
+msgid "Allowed roles (restricted only)"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:60
+#: src/Handbook/HandbookAdmin.php:100
+msgid "Allowed users (restricted only)"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:62
+#: src/Handbook/HandbookAdmin.php:103
+msgid "Comma-separated user logins or IDs."
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:145
+msgid "Access"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:167
+msgid "Public"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:170
+#: src/Setup/Seeder.php:49
+msgid "All members"
+msgstr ""
+
+#. translators: %d: number of allowed users.
+#: src/Handbook/HandbookAdmin.php:188
+#, php-format
+msgid "%d user"
+msgid_plural "%d users"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Handbook/HandbookAdmin.php:192
+msgid "Restricted"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:203
+msgid "Public (no login)"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:204
+msgid "All members (logged in)"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:205
+msgid "Restricted (roles and/or users)"
+msgstr ""
+
+#: src/Handbook/Handbooks.php:63
+msgid "Handbook types"
+msgstr ""
+
+#: src/Handbook/Handbooks.php:64
+msgid "Handbook type"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:57
+msgid "Markdown import"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:58
+#: src/Import/MarkdownImportPage.php:576
+#: src/Import/MarkdownImportPage.php:589
+#: src/Import/MarkdownImportPage.php:637
+msgid "Import"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:143
+#: src/Import/MarkdownImportPage.php:157
+#: src/Import/MarkdownImportPage.php:255
+msgid "CommonMark is not installed. Run: composer require league/commonmark"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:160
+msgid "ZipArchive is not available on the server."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:166
+msgid "No ZIP file received."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:171
+msgid "Could not open the ZIP file."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:201
+msgid "No .md files found in the ZIP."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:259
+msgid "No GitHub URL given."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:271
+msgid "Could not create the page. Check the URL."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:320
+#: assets/js/markdown-import.js:177
+msgid "Imported page"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:577
+msgid "The Markdown library is missing. Run in the plugin folder: composer require league/commonmark"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:590
+msgid "Import Markdown into handbook pages. Paste a single draft or upload a ZIP of .md files: these become editable pages. If the ZIP contains a mkdocs.yml, its navigation defines the page structure, titles, and order (the ZIP must also hold the referenced files). Or give a GitHub URL: a file URL becomes one locked page, a folder (tree) URL imports every .md file in the folder as locked pages pulled from the repository. Front matter is dropped, transport metadata and the parent and order are applied, Mermaid diagrams and collapsible details become blocks, images in the ZIP are added to the media library, and internal .md links are pointed at the imported pages."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:594
+msgid "Target handbook"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:597
+msgid "— select a handbook —"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:604
+msgid "Applied to the imported page(s). A \"Handbuch\" line in the transport block overrides it."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:606
+msgid "No handbooks yet. Create one first under Handbook, Handbooks."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:611
+msgid "Page title (optional)"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:614
+msgid "For a pasted draft or a single GitHub file. If empty, the first heading is used. For a ZIP, a GitHub folder, or a mkdocs.yml, each file keeps its own title."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:618
+msgid "Paste Markdown"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:622
+msgid "or upload a ZIP"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:625
+msgid "Flat set of .md files, or a repository export with a mkdocs.yml for a structured import."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:629
+msgid "or import from GitHub"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:632
+msgid "Creates locked pages pulled from a public GitHub repository."
+msgstr ""
+
+#: src/Meta/Metadata.php:134
+msgid "Handbook maintenance"
+msgstr ""
+
+#: src/Meta/Metadata.php:160
+msgid "Review interval (days)"
+msgstr ""
+
+#: src/Meta/Metadata.php:164
+msgid "Reviewed by"
+msgstr ""
+
+#: src/Meta/Metadata.php:171
+msgid "none"
+msgstr ""
+
+#: src/Meta/Metadata.php:178
+msgid "On this page: heading depth"
+msgstr ""
+
+#: src/Meta/Metadata.php:180
+msgid "Use the block default"
+msgstr ""
+
+#. translators: %d: heading level, e.g. up to H2.
+#: src/Meta/Metadata.php:185
+#, php-format
+msgid "Up to H%d"
+msgstr ""
+
+#: src/Meta/Metadata.php:194
+msgid "Exclude this page from AI use"
+msgstr ""
+
+#: src/Meta/Metadata.php:197
+msgid "The last updated date is set automatically on save."
+msgstr ""
+
+#: src/PostType/Handbook.php:53
+#: src/PostType/Handbook.php:55
+msgid "Handbook"
+msgstr ""
+
+#: src/PostType/Handbook.php:57
+msgid "New pages"
+msgstr ""
+
+#: src/PostType/Handbook.php:58
+msgid "Add new handbook page"
+msgstr ""
+
+#: src/PostType/Handbook.php:59
+msgid "Edit handbook page"
+msgstr ""
+
+#: src/PostType/Handbook.php:60
+msgid "Search handbook pages"
+msgstr ""
+
+#: src/Setup/Seeder.php:36
+msgid "Guide"
+msgstr ""
+
+#: src/Setup/Seeder.php:37
+msgid "Process description"
+msgstr ""
+
+#: src/Setup/Seeder.php:38
+msgid "Tool overview"
+msgstr ""
+
+#: src/Setup/Seeder.php:39
+msgid "Role / Organisation"
+msgstr ""
+
+#: src/Setup/Seeder.php:40
+msgid "Background / Concept"
+msgstr ""
+
+#: src/Setup/Seeder.php:41
+msgid "FAQ"
+msgstr ""
+
+#: src/Setup/Seeder.php:42
+msgid "Area overview"
+msgstr ""
+
+#: src/Setup/Seeder.php:50
+msgid "Content creators"
+msgstr ""
+
+#: src/Setup/Seeder.php:51
+msgid "Coordination"
+msgstr ""
+
+#: src/Setup/Seeder.php:52
+msgid "Tech"
+msgstr ""
+
+#: src/Setup/Seeder.php:59
+msgid "Handbook editors"
+msgstr ""
+
+#: src/Setup/Seeder.php:60
+msgid "GitHub specialist"
+msgstr ""
+
+#: src/Setup/Seeder.php:67
+msgid "General"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:51
+msgid "Page types"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:63
+msgid "Area"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:84
+msgid "Audiences"
+msgstr ""
+
+#. translators: %s: singular taxonomy name.
+#: src/Taxonomy/Taxonomies.php:128
+#, php-format
+msgid "Edit %s"
+msgstr ""
+
+#. translators: %s: singular taxonomy name.
+#: src/Taxonomy/Taxonomies.php:130
+#, php-format
+msgid "View %s"
+msgstr ""
+
+#. translators: %s: singular taxonomy name.
+#: src/Taxonomy/Taxonomies.php:132
+#, php-format
+msgid "Update %s"
+msgstr ""
+
+#. translators: %s: singular taxonomy name.
+#: src/Taxonomy/Taxonomies.php:134
+#, php-format
+msgid "Add new %s"
+msgstr ""
+
+#. translators: %s: singular taxonomy name.
+#: src/Taxonomy/Taxonomies.php:136
+#, php-format
+msgid "New %s name"
+msgstr ""
+
+#. translators: %s: plural taxonomy name.
+#: src/Taxonomy/Taxonomies.php:138
+#, php-format
+msgid "Search %s"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:139
+msgid "None found."
+msgstr ""
+
+#. translators: %s: plural taxonomy name.
+#: src/Taxonomy/Taxonomies.php:141
+#, php-format
+msgid "Back to %s"
+msgstr ""
+
+#: assets/blocks.js:49
+#: assets/blocks.js:110
+msgid "Display"
+msgstr ""
+
+#: assets/blocks.js:52
+msgid "Cards"
+msgstr ""
+
+#: assets/blocks.js:53
+msgid "List"
+msgstr ""
+
+#: assets/blocks.js:90
+msgid "Overview"
+msgstr ""
+
+#: assets/blocks.js:101
+msgid "Handbook navigation"
+msgstr ""
+
+#: assets/blocks.js:113
+msgid "Menu"
+msgstr ""
+
+#: assets/blocks.js:114
+msgid "Accordion"
+msgstr ""
+
+#: assets/blocks.js:123
+msgid "Navigation"
+msgstr ""
+
+#: assets/blocks.js:124
+msgid "Handbook navigation: the page tree of the current handbook, styled by the VSN plugin. Choose Menu or Accordion in the block settings."
+msgstr ""
+
+#: assets/blocks.js:147
+msgid "Placement"
+msgstr ""
+
+#: assets/blocks.js:150
+msgid "Desktop (side column, open)"
+msgstr ""
+
+#: assets/blocks.js:151
+msgid "Mobile (above content, collapsed)"
+msgstr ""
+
+#: assets/blocks.js:161
+msgid "Heading depth (up to H…)"
+msgstr ""
+
+#: assets/blocks.js:174
+msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
+msgstr ""
+
+#: assets/blocks.js:184
+msgid "Handbook page meta"
+msgstr ""
+
+#: assets/blocks.js:193
+msgid "Show people (avatar and name)"
+msgstr ""
+
+#: assets/blocks.js:202
+msgid "Page meta"
+msgstr ""
+
+#: assets/blocks.js:203
+msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
+msgstr ""
+
+#: assets/blocks.js:224
+msgid "Entry"
+msgstr ""
+
+#: assets/blocks.js:225
+msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
+msgstr ""
+
+#: assets/blocks.js:235
+msgid "Handbook menu"
+msgstr ""
+
+#: assets/blocks.js:249
+msgid "Handbook badges"
+msgstr ""
+
+#: assets/blocks.js:251
+msgid "Handbook badges: page type, topic and audience of the current page."
+msgstr ""
+
+#: assets/blocks.js:256
+msgid "Handbook feedback"
+msgstr ""
+
+#: assets/blocks.js:258
+msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
+msgstr ""
+
+#: assets/js/git-source-note-block.js:9
+msgid "GitHub source note"
+msgstr ""
+
+#: assets/js/git-source-note-block.js:10
+msgid "Shows a note on pages synced from GitHub; renders nothing on other pages."
+msgstr ""
+
+#: assets/js/git-source-note-block.js:22
+msgid "Note text (shown only on GitHub pages)"
+msgstr ""
+
+#: assets/js/markdown-import.js:119
+msgid "unknown"
+msgstr ""
+
+#: assets/js/markdown-import.js:137
+#, js-format
+msgid "Page %d"
+msgstr ""
+
+#: assets/js/markdown-import.js:166
+msgid "Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL."
+msgstr ""
+
+#: assets/js/markdown-import.js:169
+msgid "Converting…"
+msgstr ""
+
+#: assets/js/markdown-import.js:178
+msgid "Creating draft…"
+msgstr ""
+
+#: assets/js/markdown-import.js:186
+#, js-format
+msgid "Done: 1 page, %d links converted."
+msgstr ""
+
+#: assets/js/markdown-import.js:196
+msgid "No pages found in the mkdocs.yml."
+msgstr ""
+
+#: assets/js/markdown-import.js:199
+#, js-format
+msgid "Creating %d page(s)…"
+msgstr ""
+
+#: assets/js/markdown-import.js:233
+#: assets/js/markdown-import.js:275
+msgid "Linking…"
+msgstr ""
+
+#: assets/js/markdown-import.js:235
+#: assets/js/markdown-import.js:277
+#, js-format
+msgid "Done: %1$d page(s), %2$d image(s), %3$d links converted."
+msgstr ""
+
+#: assets/js/markdown-import.js:241
+msgid "Uploading ZIP…"
+msgstr ""
+
+#: assets/js/markdown-import.js:254
+msgid "No pages in the ZIP."
+msgstr ""
+
+#: assets/js/markdown-import.js:257
+#, js-format
+msgid "Creating %d drafts…"
+msgstr ""
+
+#: assets/js/markdown-import.js:286
+msgid "Fetching page(s) from GitHub…"
+msgstr ""
+
+#: assets/js/markdown-import.js:298
+msgid "No Markdown pages found."
+msgstr ""
+
+#: assets/js/markdown-import.js:304
+#, js-format
+msgid "Done: created %d GitHub page(s)."
+msgstr ""
+
+#: assets/js/markdown-import.js:315
+msgid "wp.blocks is not loaded."
+msgstr ""
+
+#: assets/js/mermaid-block.js:32
+msgid "mermaid.min.js is missing in assets/js/."
+msgstr ""
+
+#: assets/js/mermaid-block.js:59
+msgid "Mermaid code"
 msgstr ""

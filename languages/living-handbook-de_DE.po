@@ -602,3 +602,114 @@ msgstr "Handbuch-Feedback"
 
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr "Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite."
+
+msgid "GitHub source note"
+msgstr "GitHub-Quellenhinweis"
+
+msgid "Shows a note on pages synced from GitHub; renders nothing on other pages."
+msgstr "Zeigt auf aus GitHub synchronisierten Seiten einen Hinweis; auf anderen Seiten wird nichts angezeigt."
+
+msgid "Note text (shown only on GitHub pages)"
+msgstr "Hinweistext (nur auf GitHub-Seiten sichtbar)"
+
+msgid "Mermaid code"
+msgstr "Mermaid-Code"
+
+msgid "mermaid.min.js is missing in assets/js/."
+msgstr "mermaid.min.js fehlt in assets/js/."
+
+# Import script status messages. Source strings live in assets/js/markdown-import.js.
+
+msgid "Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL."
+msgstr "Nichts zu importieren: Markdown einfügen, ein ZIP wählen oder eine GitHub-URL eingeben."
+
+msgid "Converting…"
+msgstr "Konvertiere …"
+
+msgid "Creating draft…"
+msgstr "Erstelle Entwurf …"
+
+msgid "Error: %s"
+msgstr "Fehler: %s"
+
+msgid "unknown"
+msgstr "unbekannt"
+
+msgid "Done: 1 page, %d links converted."
+msgstr "Fertig: 1 Seite, %d Links konvertiert."
+
+msgid "Page %d"
+msgstr "Seite %d"
+
+msgid "No pages found in the mkdocs.yml."
+msgstr "Keine Seiten in der mkdocs.yml gefunden."
+
+msgid "Creating %d page(s)…"
+msgstr "Erstelle %d Seite(n) …"
+
+msgid "Linking…"
+msgstr "Verknüpfe …"
+
+msgid "Done: %1$d page(s), %2$d image(s), %3$d links converted."
+msgstr "Fertig: %1$d Seite(n), %2$d Bild(er), %3$d Links konvertiert."
+
+msgid "Uploading ZIP…"
+msgstr "Lade ZIP hoch …"
+
+msgid "No pages in the ZIP."
+msgstr "Keine Seiten im ZIP."
+
+msgid "Creating %d drafts…"
+msgstr "Erstelle %d Entwürfe …"
+
+msgid "Fetching page(s) from GitHub…"
+msgstr "Hole Seite(n) von GitHub …"
+
+msgid "No Markdown pages found."
+msgstr "Keine Markdown-Seiten gefunden."
+
+msgid "Done: created %d GitHub page(s)."
+msgstr "Fertig: %d GitHub-Seite(n) erstellt."
+
+msgid "wp.blocks is not loaded."
+msgstr "wp.blocks ist nicht geladen."
+
+# Import page: server-side error messages. Source strings live in src/Import/MarkdownImportPage.php.
+
+msgid "CommonMark is not installed. Run: composer require league/commonmark"
+msgstr "CommonMark ist nicht installiert. Ausführen: composer require league/commonmark"
+
+msgid "ZipArchive is not available on the server."
+msgstr "ZipArchive ist auf dem Server nicht verfügbar."
+
+msgid "No ZIP file received."
+msgstr "Keine ZIP-Datei empfangen."
+
+msgid "Could not open the ZIP file."
+msgstr "ZIP-Datei konnte nicht geöffnet werden."
+
+msgid "No .md files found in the ZIP."
+msgstr "Keine .md-Dateien im ZIP gefunden."
+
+msgid "No GitHub URL given."
+msgstr "Keine GitHub-URL angegeben."
+
+msgid "Could not create the page. Check the URL."
+msgstr "Seite konnte nicht erstellt werden. Prüfe die URL."
+
+# GitHub sync: folder import and pull errors. Source strings live in src/Git/GitSync.php.
+
+msgid "Not a GitHub folder URL."
+msgstr "Keine GitHub-Ordner-URL."
+
+msgid "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later."
+msgstr "GitHub-API-Limit erreicht (unauthentifiziert, 60 Anfragen pro Stunde). Versuche es später erneut."
+
+msgid "GitHub API HTTP %d"
+msgstr "GitHub-API HTTP %d"
+
+msgid "Unexpected GitHub API response."
+msgstr "Unerwartete Antwort der GitHub-API."
+
+msgid "Error: HTTP %d"
+msgstr "Fehler: HTTP %d"

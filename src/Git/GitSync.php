@@ -265,7 +265,7 @@ final class GitSync {
 	public function import_folder( string $tree_url, int $handbook_id = 0 ): array {
 		$parsed = self::parse_tree_url( $tree_url );
 		if ( null === $parsed ) {
-			return array( 'error' => 'Not a GitHub folder URL.' );
+			return array( 'error' => __( 'Not a GitHub folder URL.', 'living-handbook' ) );
 		}
 
 		$api = 'https://api.github.com/repos/' . $parsed['owner'] . '/' . $parsed['repo']
@@ -287,13 +287,14 @@ final class GitSync {
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
 			if ( 403 === $code && '0' === (string) wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' ) ) {
-				return array( 'error' => 'GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later.' );
+				return array( 'error' => __( 'GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later.', 'living-handbook' ) );
 			}
-			return array( 'error' => 'GitHub API HTTP ' . $code );
+			/* translators: %d: HTTP status code returned by the GitHub API. */
+			return array( 'error' => sprintf( __( 'GitHub API HTTP %d', 'living-handbook' ), $code ) );
 		}
 		$items = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 		if ( ! is_array( $items ) ) {
-			return array( 'error' => 'Unexpected GitHub API response.' );
+			return array( 'error' => __( 'Unexpected GitHub API response.', 'living-handbook' ) );
 		}
 
 		$pages = array();
@@ -648,12 +649,14 @@ final class GitSync {
 		}
 		$response = wp_remote_get( $url, array( 'timeout' => 15 ) );
 		if ( is_wp_error( $response ) ) {
-			$this->set_sync_error( $post_id, __( 'Error: ', 'living-handbook' ) . $response->get_error_message() );
+			/* translators: %s: error message from the HTTP request. */
+			$this->set_sync_error( $post_id, sprintf( __( 'Error: %s', 'living-handbook' ), $response->get_error_message() ) );
 			return;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			$this->set_sync_error( $post_id, __( 'Error: HTTP ', 'living-handbook' ) . $code );
+			/* translators: %d: HTTP status code. */
+			$this->set_sync_error( $post_id, sprintf( __( 'Error: HTTP %d', 'living-handbook' ), $code ) );
 			return;
 		}
 		$markdown = (string) wp_remote_retrieve_body( $response );

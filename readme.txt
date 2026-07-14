@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 0.11.0
+Stable tag: 0.12.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,12 +21,14 @@ Core features:
 * Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages that go unchecked.
 * Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
 * Several handbooks side by side, each with its own access group, its own entry page, and its own navigation.
-* An entry page per handbook with full-text search, taxonomy filters, area tiles and recently updated pages.
+* An entry page per handbook with full-text search, taxonomy filters that apply without a reload, area tiles and recently updated pages.
 * A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
 * Per-handbook navigation built from the page hierarchy and rendered as a core Navigation block, styled by the VSN plugin (Vertical Sidebar Navigation).
+* A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
-* No external WordPress plugin is required for the core (a block theme is, and VSN for the sidebar). The import and sync use two bundled Composer libraries (league/commonmark, symfony/yaml), shipped in vendor/.
+* Fully translatable (English source), with a German translation included.
+* No external WordPress plugin is required for the core (a block theme is, and VSN for the sidebar). The import and sync use two bundled Composer libraries (league/commonmark, symfony/yaml), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
 
 == Installation ==
 
@@ -35,7 +37,47 @@ Core features:
 3. Deactivate and reactivate once, or visit Settings then Permalinks, so the handbook URLs work.
 4. For the sidebar navigation, install and activate the Vertical Sidebar Navigation (VSN) plugin.
 
+== Frequently Asked Questions ==
+
+= Do I need another plugin? =
+
+The core works on its own, but it expects a block theme. For the sidebar navigation styling, install the Vertical Sidebar Navigation (VSN) plugin.
+
+= Does the plugin connect to any external services? =
+
+Only when you use the GitHub features, and only to addresses you enter yourself. The Markdown import and the GitHub sync read files from GitHub (github.com, raw.githubusercontent.com and the GitHub contents API at api.github.com). The plugin only reads the public files you point it at; it does not send any of your data anywhere, and it contacts nothing when you do not use those features.
+
+= What third-party libraries does the plugin bundle? =
+
+The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also bundle the PHP libraries league/commonmark and symfony/yaml (both under the MIT license) in vendor/.
+
+= Who can see a handbook? =
+
+Access is set per handbook: public (no login), all logged-in members, or restricted to specific roles and/or people. It is enforced on the entry page and on single pages.
+
+= What happens when I uninstall the plugin? =
+
+By default your content is kept and only the plugin's own settings and caches are removed. On the settings page you can opt in to remove everything the plugin created, including any templates you edited in the Site Editor.
+
+== Screenshots ==
+
+1. The handbook overview: a card for each handbook a visitor may read.
+2. A handbook entry page with search, facet filters, area tiles and recently updated pages.
+3. A single handbook page: navigation, on-this-page, badges and the metadata footer.
+4. The maintenance dashboard listing pages whose review is overdue.
+5. The Markdown and GitHub import screen.
+
 == Changelog ==
+
+= 0.12.0 =
+* Interface polish: the admin menu is ordered and clearly labelled, taxonomy edit screens use the right labels, the handbook list shows each handbook's access, the on-this-page block is titled "Table of Contents", and the overview and entry blocks can show their items as cards or as a list. Block controls that had no effect were removed, and a body class lets a site style the handbook without affecting the rest.
+* Facets now filter without a page reload through an access-checked REST endpoint, so the separate filter button is gone; search still works without JavaScript.
+* New "Handbook menu" block that lists the handbooks a visitor may read, collapsing behind a toggle on small screens. Optionally, the accessible handbooks are injected into a core Navigation block, or one of its submenus, that carries the "has-handbook-menu" class, so they ride the theme's own navigation and mobile menu.
+* Settings: an uninstall option to keep or delete all handbook content (including templates you edited in the Site Editor). Sync failures are surfaced as an admin notice.
+* The duplicate post type archive was disabled; the overview lives on a normal page holding the overview block.
+* Internationalisation: the editor labels and the import screen's status messages are now translatable in any language (English source), and the build generates the translation template (living-handbook.pot).
+* Renamed the GitHub source meta keys to the living_handbook_ prefix for clean, unique naming.
+* Disclosed the bundled mermaid.js library (version 11.16.0, MIT license) in the readme.
 
 = 0.11.0 =
 * GitHub sync (concept 06, way 1): a page can carry a Markdown source URL and is pulled on save, via Sync now, and on a schedule set on a new settings page (off, hourly, twice daily, daily, weekly; default daily). Its content editor is locked, the page overview shows the source, and a placeable block marks the public page. A whole GitHub folder can be imported from a tree URL via the contents API.
@@ -80,3 +122,8 @@ Core features:
 
 = 0.1.0 =
 * Initial scaffold, data model, frontend access control, and internationalisation.
+
+== Upgrade Notice ==
+
+= 0.12.0 =
+Interface polish, AJAX facet filtering, a handbook menu block, an uninstall data option, full translatability, and renamed source meta keys. Best installed on a fresh database while pre-release.

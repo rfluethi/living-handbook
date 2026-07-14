@@ -46,7 +46,7 @@ final class MermaidBlock {
 		wp_register_script(
 			'living-handbook-mermaid-block',
 			LIVING_HANDBOOK_URL . 'assets/js/mermaid-block.js',
-			array( 'wp-blocks', 'wp-block-editor', 'wp-element', 'wp-components', 'living-handbook-mermaid' ),
+			array( 'wp-blocks', 'wp-block-editor', 'wp-element', 'wp-components', 'wp-i18n', 'living-handbook-mermaid' ),
 			LIVING_HANDBOOK_VERSION,
 			true
 		);
