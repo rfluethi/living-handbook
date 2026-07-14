@@ -198,7 +198,7 @@
 						data: {
 							title: spec.navTitle,
 							content: markup,
-							slug: '',
+							slug: spec.slug || '',
 							handbook: handbookId(),
 							transport: {},
 							parent: parentId,

@@ -10,6 +10,22 @@
 	var ToggleControl = components ? components.ToggleControl : null;
 	var RangeControl = components ? components.RangeControl : null;
 
+	// These blocks render their own markup in PHP and do not apply the editor's
+	// design controls, so the design panels (colour, typography, spacing,
+	// additional CSS class, HTML edit, anchor) are turned off. The editor reads
+	// supports from this client registration, so they must be set here, not only
+	// in the PHP registration.
+	var SUPPORTS = {
+		html: false,
+		anchor: false,
+		customClassName: false,
+		color: false,
+		typography: false,
+		spacing: false,
+		dimensions: false,
+		border: false
+	};
+
 	function note( text ) {
 		return el(
 			'div',
@@ -25,12 +41,30 @@
 		return el( InspectorControls, {}, el( PanelBody, { title: title }, children ) );
 	}
 
+	function displayControl( props ) {
+		if ( ! SelectControl ) {
+			return null;
+		}
+		return el( SelectControl, {
+			label: __( 'Display', 'living-handbook' ),
+			value: props.attributes.display,
+			options: [
+				{ label: __( 'Cards', 'living-handbook' ), value: 'cards' },
+				{ label: __( 'List', 'living-handbook' ), value: 'list' }
+			],
+			onChange: function ( value ) {
+				props.setAttributes( { display: value } );
+			}
+		} );
+	}
+
 	function dynamic( name, title, icon, text ) {
 		blocks.registerBlockType( name, {
 			apiVersion: 3,
 			title: title,
 			category: 'living-handbook',
 			icon: icon,
+			supports: SUPPORTS,
 			edit: function () {
 				return note( text );
 			},
@@ -45,8 +79,17 @@
 		title: __( 'Handbook overview', 'living-handbook' ),
 		category: 'living-handbook',
 		icon: 'book',
-		edit: function () {
-			return el( serverSideRender, { block: 'living-handbook/overview' } );
+		supports: SUPPORTS,
+		attributes: {
+			display: { type: 'string', default: 'cards' }
+		},
+		edit: function ( props ) {
+			return el(
+				Fragment,
+				{},
+				panel( __( 'Overview', 'living-handbook' ), displayControl( props ) ),
+				el( serverSideRender, { block: 'living-handbook/overview', attributes: props.attributes } )
+			);
 		},
 		save: function () {
 			return null;
@@ -58,6 +101,7 @@
 		title: __( 'Handbook navigation', 'living-handbook' ),
 		category: 'living-handbook',
 		icon: 'list-view',
+		supports: SUPPORTS,
 		attributes: {
 			variant: { type: 'string', default: 'sidebar' }
 		},
@@ -87,9 +131,10 @@
 
 	blocks.registerBlockType( 'living-handbook/toc', {
 		apiVersion: 3,
-		title: __( 'On this page', 'living-handbook' ),
+		title: __( 'Table of Contents', 'living-handbook' ),
 		category: 'living-handbook',
 		icon: 'editor-ol',
+		supports: SUPPORTS,
 		attributes: {
 			variant: { type: 'string', default: 'desktop' },
 			maxDepth: { type: 'number', default: 6 }
@@ -125,8 +170,8 @@
 			return el(
 				Fragment,
 				{},
-				panel( __( 'On this page', 'living-handbook' ), controls ),
-				note( __( 'On this page: a collapsible table of contents built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.', 'living-handbook' ) )
+				panel( __( 'Table of Contents', 'living-handbook' ), controls ),
+				note( __( 'Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.', 'living-handbook' ) )
 			);
 		},
 		save: function () {
@@ -139,6 +184,7 @@
 		title: __( 'Handbook page meta', 'living-handbook' ),
 		category: 'living-handbook',
 		icon: 'info-outline',
+		supports: SUPPORTS,
 		attributes: {
 			showPeople: { type: 'boolean', default: true }
 		},
@@ -162,12 +208,41 @@
 		}
 	} );
 
-	dynamic(
-		'living-handbook/entry',
-		__( 'Handbook entry', 'living-handbook' ),
-		'welcome-learn-more',
-		__( 'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.', 'living-handbook' )
-	);
+	blocks.registerBlockType( 'living-handbook/entry', {
+		apiVersion: 3,
+		title: __( 'Handbook entry', 'living-handbook' ),
+		category: 'living-handbook',
+		icon: 'welcome-learn-more',
+		supports: SUPPORTS,
+		attributes: {
+			display: { type: 'string', default: 'cards' }
+		},
+		edit: function ( props ) {
+			return el(
+				Fragment,
+				{},
+				panel( __( 'Entry', 'living-handbook' ), displayControl( props ) ),
+				note( __( 'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.', 'living-handbook' ) )
+			);
+		},
+		save: function () {
+			return null;
+		}
+	} );
+
+	blocks.registerBlockType( 'living-handbook/menu', {
+		apiVersion: 3,
+		title: __( 'Handbook menu', 'living-handbook' ),
+		category: 'living-handbook',
+		icon: 'menu',
+		supports: SUPPORTS,
+		edit: function () {
+			return el( serverSideRender, { block: 'living-handbook/menu' } );
+		},
+		save: function () {
+			return null;
+		}
+	} );
 
 	dynamic(
 		'living-handbook/badges',

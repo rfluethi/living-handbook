@@ -21,10 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * by this plugin.
  *
  * The type is registered with `public => false` and `publicly_queryable => true`:
- * single pages and the archive stay reachable (guarded by the Access module),
- * but the type is kept out of the XML sitemap, feeds and oEmbed so that titles
- * and URLs of an internal handbook do not leak to logged-out visitors or search
- * engines.
+ * single pages stay reachable (guarded by the Access module), but the type is
+ * kept out of the XML sitemap, feeds and oEmbed so that titles and URLs of an
+ * internal handbook do not leak to logged-out visitors or search engines. The
+ * post type archive is disabled (`has_archive => false`): the overview is a
+ * normal page holding the living-handbook/overview block, so there is no second,
+ * duplicate overview at /handbook/.
  */
 final class Handbook {
 
@@ -38,6 +40,7 @@ final class Handbook {
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_filter( 'wp_sitemaps_post_types', array( $this, 'exclude_from_sitemap' ) );
+		add_action( 'admin_menu', array( $this, 'reorder_submenu' ), 999 );
 	}
 
 	/**
@@ -50,6 +53,8 @@ final class Handbook {
 			'name'          => __( 'Handbook', 'living-handbook' ),
 			'singular_name' => __( 'Handbook page', 'living-handbook' ),
 			'menu_name'     => __( 'Handbook', 'living-handbook' ),
+			'all_items'     => __( 'Handbook pages', 'living-handbook' ),
+			'add_new'       => __( 'New pages', 'living-handbook' ),
 			'add_new_item'  => __( 'Add new handbook page', 'living-handbook' ),
 			'edit_item'     => __( 'Edit handbook page', 'living-handbook' ),
 			'search_items'  => __( 'Search handbook pages', 'living-handbook' ),
@@ -68,7 +73,7 @@ final class Handbook {
 				'show_in_rest'        => true,
 				'menu_icon'           => 'dashicons-book',
 				'hierarchical'        => true,
-				'has_archive'         => true,
+				'has_archive'         => false,
 				'rewrite'             => array( 'slug' => 'handbook' ),
 				'supports'            => array( 'title', 'editor', 'excerpt', 'revisions', 'page-attributes', 'comments', 'author', 'custom-fields' ),
 			)
@@ -85,5 +90,58 @@ final class Handbook {
 		unset( $post_types[ self::POST_TYPE ] );
 
 		return $post_types;
+	}
+
+	/**
+	 * Put the handbook submenu into a task-oriented order: pages, add new,
+	 * import, the handbook types, the four vocabularies, then the settings.
+	 *
+	 * @return void
+	 */
+	public function reorder_submenu(): void {
+		global $submenu;
+		$parent = 'edit.php?post_type=' . self::POST_TYPE;
+		if ( empty( $submenu[ $parent ] ) || ! is_array( $submenu[ $parent ] ) ) {
+			return;
+		}
+
+		// Match each submenu by a stable part of its slug (index 2).
+		$order = array(
+			'edit.php?post_type=' . self::POST_TYPE,
+			'post-new.php?post_type=' . self::POST_TYPE,
+			'living-handbook-import',
+			'taxonomy=handbook_set',
+			'taxonomy=handbook_type',
+			'taxonomy=handbook_topic',
+			'taxonomy=handbook_audience',
+			'taxonomy=handbook_role',
+			'living-handbook-sync',
+		);
+
+		$items = $submenu[ $parent ];
+		usort(
+			$items,
+			static function ( $a, $b ) use ( $order ): int {
+				return self::submenu_rank( (string) ( $a[2] ?? '' ), $order ) <=> self::submenu_rank( (string) ( $b[2] ?? '' ), $order );
+			}
+		);
+		// Reordering the admin submenu requires writing to the $submenu global; core does the same.
+		$submenu[ $parent ] = array_values( $items ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+	}
+
+	/**
+	 * Rank a submenu slug against the desired order.
+	 *
+	 * @param string   $slug  Submenu slug.
+	 * @param string[] $order Ordered list of slug fragments.
+	 * @return int
+	 */
+	private static function submenu_rank( string $slug, array $order ): int {
+		foreach ( $order as $index => $needle ) {
+			if ( $slug === $needle || false !== strpos( $slug, $needle ) ) {
+				return $index;
+			}
+		}
+		return count( $order );
 	}
 }

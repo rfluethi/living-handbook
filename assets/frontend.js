@@ -1,14 +1,16 @@
 /*
- * Living Handbook frontend: live card filtering and search, feedback, and the
+ * Living Handbook frontend: AJAX card filtering and search, feedback, the
  * on-this-page table of contents with depth limit, smooth scrolling and
- * scroll-spy. The taxonomy facets submit only via their Filter button (no full
- * reload on every checkbox), and the search and facet forms carry each other's
- * values so a submit keeps both.
+ * scroll-spy, and the mobile toggle for the handbook menu. Selecting a taxonomy
+ * facet or submitting the search filters the handbook through a REST request
+ * and swaps the result list in place, so no full page reload and no separate
+ * filter button are needed. Typing in the search box also narrows the shown
+ * cards live for instant feedback.
  */
 ( function () {
 	'use strict';
 
-	/* ---------- Overview and entry: live card filtering ---------- */
+	/* ---------- Overview and entry: live card narrowing while typing ---------- */
 
 	function cards() {
 		return document.querySelectorAll( '.living-handbook-card' );
@@ -36,6 +38,80 @@
 				}
 			}
 			card.style.display = show ? '' : 'none';
+		} );
+	}
+
+	/* ---------- Overview and entry: AJAX facet and search filtering ---------- */
+
+	function canAjax() {
+		return window.livingHandbook && window.livingHandbook.filter;
+	}
+
+	function ajaxFilter( entry ) {
+		if ( ! canAjax() ) {
+			return;
+		}
+		var main = entry.querySelector( '.living-handbook-main' );
+		var termId = entry.getAttribute( 'data-term-id' );
+		if ( ! main || ! termId ) {
+			return;
+		}
+
+		var params = new URLSearchParams();
+		params.set( 'term_id', termId );
+
+		var input = entry.querySelector( '.living-handbook-search__input' );
+		if ( input && input.value.trim() ) {
+			params.set( 'lh_s', input.value.trim() );
+		}
+		entry.querySelectorAll( '.living-handbook-facet__cb:checked' ).forEach( function ( cb ) {
+			params.append( cb.name, cb.value );
+		} );
+
+		main.setAttribute( 'aria-busy', 'true' );
+		fetch( window.livingHandbook.filter + '?' + params.toString(), {
+			headers: { 'X-WP-Nonce': window.livingHandbook.nonce },
+			credentials: 'same-origin'
+		} ).then( function ( response ) {
+			return response.json();
+		} ).then( function ( data ) {
+			if ( data && typeof data.html === 'string' ) {
+				main.innerHTML = data.html;
+			}
+			main.removeAttribute( 'aria-busy' );
+		} ).catch( function () {
+			main.removeAttribute( 'aria-busy' );
+		} );
+	}
+
+	function wireEntry( entry ) {
+		entry.addEventListener( 'change', function ( event ) {
+			if ( event.target && event.target.classList && event.target.classList.contains( 'living-handbook-facet__cb' ) ) {
+				ajaxFilter( entry );
+			}
+		} );
+
+		var searchForm = entry.querySelector( '.living-handbook-start__search' );
+		if ( searchForm && canAjax() ) {
+			searchForm.addEventListener( 'submit', function ( event ) {
+				event.preventDefault();
+				ajaxFilter( entry );
+			} );
+		}
+	}
+
+	/* ---------- Handbook menu: mobile toggle ---------- */
+
+	function wireMenus() {
+		document.querySelectorAll( '.living-handbook-menu__toggle' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				var nav = btn.closest( '.living-handbook-menu' );
+				if ( ! nav ) {
+					return;
+				}
+				var open = nav.classList.toggle( 'is-open' );
+				btn.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			} );
 		} );
 	}
 
@@ -151,13 +227,13 @@
 	document.addEventListener( 'DOMContentLoaded', function () {
 		applyFilter();
 		buildToc();
+		wireMenus();
 
 		document.querySelectorAll( '.living-handbook-search__input' ).forEach( function ( input ) {
 			input.addEventListener( 'input', applyFilter );
 		} );
 
-		// Facets submit only via their Filter button, not on every checkbox, so
-		// several facets can be set with a single reload.
+		document.querySelectorAll( '.living-handbook-entry' ).forEach( wireEntry );
 
 		document.querySelectorAll( '.living-handbook-feedback' ).forEach( function ( box ) {
 			box.querySelectorAll( 'button[data-value]' ).forEach( function ( button ) {

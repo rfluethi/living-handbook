@@ -10,15 +10,17 @@ declare( strict_types=1 );
 namespace LivingHandbook\Handbook;
 
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Taxonomy\Taxonomies;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Registers the `handbook_set` grouping taxonomy. Each handbook page belongs to
- * exactly one handbook. Every handbook carries a frontend access configuration
- * (visibility plus optional roles and users); the Access module enforces it.
+ * Registers the `handbook_set` grouping taxonomy (shown as "Handbook types").
+ * Each handbook page belongs to exactly one handbook. Every handbook carries a
+ * frontend access configuration (visibility plus optional roles and users); the
+ * Access module enforces it.
  *
  * The taxonomy is registered hierarchical so the block editor shows a selectable
  * list of the existing handbooks, and publicly queryable so that each handbook
@@ -57,9 +59,9 @@ final class Handbooks {
 			self::TAXONOMY,
 			array( Handbook::POST_TYPE ),
 			array(
-				'labels'             => array(
-					'name'          => __( 'Handbooks', 'living-handbook' ),
-					'singular_name' => __( 'Handbook', 'living-handbook' ),
+				'labels'             => Taxonomies::labels(
+					__( 'Handbook types', 'living-handbook' ),
+					__( 'Handbook type', 'living-handbook' )
 				),
 				'hierarchical'       => true,
 				'public'             => false,

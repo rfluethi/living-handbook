@@ -23,6 +23,14 @@ composer analyze
 echo "==> Unit tests (phpunit)"
 composer test
 
+echo "==> Compile translations (.po -> .l10n.php)"
+if command -v wp >/dev/null 2>&1; then
+	wp i18n make-php languages/
+else
+	echo "wp-cli not found; skipping. The committed .l10n.php is used as is."
+	echo "Install wp-cli so the .l10n.php is generated from the .po automatically."
+fi
+
 echo "==> Build"
 bash bin/build.sh
 

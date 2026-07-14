@@ -17,10 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Turns a mkdocs.yml navigation tree into an ordered, flat list of page specs
  * (parents before children) that the browser then creates. The nav gives the
  * title, the nesting (parent), and the order of every page; a section whose
- * first child is an index.md uses that file as the section page, otherwise a
- * synthetic container page is emitted. Markdown files are located inside the ZIP
- * by matching the nav path against the end of each entry, so the ZIP layout and
- * the configured docs_dir do not have to line up.
+ * first child is an index.md or README.md uses that file as the section page,
+ * otherwise a synthetic container page is emitted. Markdown files are located
+ * inside the ZIP by matching the nav path against the end of each entry, so the
+ * ZIP layout and the configured docs_dir do not have to line up. Each real page
+ * carries the slug from its transport block, so an area start page keeps its
+ * intended URL instead of a file-name slug like "readme".
  */
 final class MkDocsImport {
 
@@ -96,6 +98,7 @@ final class MkDocsImport {
 						'parentPath' => $parent_path,
 						'order'      => $order,
 						'html'       => '',
+						'slug'       => '',
 						'synthetic'  => true,
 					);
 					$children     = $value;
@@ -107,7 +110,7 @@ final class MkDocsImport {
 	}
 
 	/**
-	 * Find the first child that is an index.md file.
+	 * Find the first child that is a section index file (index.md or README.md).
 	 *
 	 * @param array<int, mixed> $children Nav children.
 	 * @return string|null The index path, or null.
@@ -119,8 +122,11 @@ final class MkDocsImport {
 			}
 			$key   = (string) array_key_first( $child );
 			$value = $child[ $key ];
-			if ( is_string( $value ) && 'index.md' === strtolower( basename( $value ) ) ) {
-				return $value;
+			if ( is_string( $value ) ) {
+				$base = strtolower( basename( $value ) );
+				if ( 'index.md' === $base || 'readme.md' === $base ) {
+					return $value;
+				}
 			}
 		}
 		return null;
@@ -162,9 +168,13 @@ final class MkDocsImport {
 	private static function page_spec( string $title, string $nav_path, string $parent_path, int $order, array $files, array $image_map, MarkdownConverter $converter ): array {
 		$content = self::find_content( $nav_path, $files );
 		$html    = '';
+		$slug    = '';
 		if ( null !== $content ) {
 			$result = $converter->convert( $content, $image_map );
 			$html   = (string) $result['html'];
+			if ( is_array( $result['transport'] ) && isset( $result['transport']['slug'] ) ) {
+				$slug = (string) $result['transport']['slug'];
+			}
 		}
 		return array(
 			'navTitle'   => $title,
@@ -172,6 +182,7 @@ final class MkDocsImport {
 			'parentPath' => $parent_path,
 			'order'      => $order,
 			'html'       => $html,
+			'slug'       => $slug,
 			'synthetic'  => false,
 		);
 	}

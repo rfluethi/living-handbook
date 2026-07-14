@@ -2,11 +2,15 @@
 /**
  * Search and taxonomy filters for the handbook entry page.
  *
- * The facets are a GET form that constrains the term archive's main query
- * server-side (over the whole handbook, not just the rendered cards). The
- * search field filters the shown cards live and, on submit, runs a full-text
- * search within the handbook. The two forms carry each other's values as hidden
- * fields, so submitting one keeps the other. Ported from the prototype.
+ * The facets filter the whole handbook (not just the rendered cards). Only the
+ * terms actually used by pages of the current handbook are offered. Selecting a
+ * facet, or submitting the search, sends a REST request that returns the
+ * filtered result list, which the frontend script swaps in place, so there is
+ * no full page reload and no separate filter button. When JavaScript is off the
+ * search form still submits normally and the result list is rendered on the
+ * server from the request. The result list runs its own query, scoped to the
+ * handbook, rather than modifying the term archive's main query (which is
+ * fragile on a taxonomy archive).
  *
  * @package LivingHandbook
  */
@@ -15,10 +19,14 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Frontend;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
 use WP_Post;
 use WP_Query;
+use WP_REST_Request;
+use WP_REST_Response;
 use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,11 +34,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Applies the entry-page filters to the main query and renders the controls.
+ * Renders the entry-page search and facet controls and the filtered result list.
  */
 final class Filters {
 
 	private const SEARCH_PARAM = 'lh_s';
+
+	public const REST_NAMESPACE = 'living-handbook/v1';
+	public const REST_ROUTE     = '/filter';
 
 	/**
 	 * Hook registration into WordPress.
@@ -38,77 +49,109 @@ final class Filters {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( 'pre_get_posts', array( $this, 'apply' ) );
+		add_action( 'rest_api_init', array( $this, 'register_rest' ) );
 	}
 
 	/**
-	 * Constrain the handbook term archive's main query by the active filters.
+	 * Register the REST route that returns the filtered result list.
 	 *
-	 * @param WP_Query $query The query.
 	 * @return void
 	 */
-	public function apply( WP_Query $query ): void {
-		if ( is_admin() || ! $query->is_main_query() ) {
-			return;
-		}
-		if ( ! $query->is_tax( Handbooks::TAXONOMY ) || ! self::is_active() ) {
-			return;
-		}
-
-		$tax_query = array( 'relation' => 'AND' );
-		$term_slug = (string) $query->get( Handbooks::TAXONOMY );
-		if ( '' !== $term_slug ) {
-			$tax_query[] = array(
-				'taxonomy' => Handbooks::TAXONOMY,
-				'field'    => 'slug',
-				'terms'    => $term_slug,
-			);
-		}
-		foreach ( self::facet_map() as $param => $taxonomy ) {
-			$values = self::param_values( $param );
-			if ( ! empty( $values ) ) {
-				$tax_query[] = array(
-					'taxonomy' => $taxonomy,
-					'field'    => 'slug',
-					'terms'    => $values,
-				);
-			}
-		}
-
-		$query->set( 'tax_query', $tax_query ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-
-		$search = self::search_value();
-		if ( '' !== $search ) {
-			$query->set( 's', $search );
-		}
-		$query->set( 'posts_per_page', 24 );
-		$query->set( 'orderby', 'modified' );
-		$query->set( 'order', 'DESC' );
+	public function register_rest(): void {
+		register_rest_route(
+			self::REST_NAMESPACE,
+			self::REST_ROUTE,
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'rest_filter' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'term_id' => array(
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
 	}
 
 	/**
-	 * Whether any filter or the search is active in the request.
+	 * REST handler: return the main-column HTML for a handbook and the given
+	 * selections and search. Access to the handbook is checked, so the endpoint
+	 * cannot be used to read a handbook the current user may not see.
 	 *
-	 * @return bool
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response
 	 */
-	public static function is_active(): bool {
-		if ( '' !== self::search_value() ) {
-			return true;
+	public function rest_filter( WP_REST_Request $request ): WP_REST_Response {
+		$term_id = (int) $request->get_param( 'term_id' );
+		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
+		if ( ! $term instanceof WP_Term || ! AccessController::can_view_term( $term_id, get_current_user_id() ) ) {
+			return new WP_REST_Response( array( 'html' => '' ), 200 );
 		}
+
+		$search     = sanitize_text_field( (string) $request->get_param( self::SEARCH_PARAM ) );
+		$selections = array();
 		foreach ( array_keys( self::facet_map() ) as $param ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( ! empty( $_GET[ $param ] ) ) {
-				return true;
+			$raw = $request->get_param( $param );
+			if ( is_array( $raw ) ) {
+				$slugs = array_values( array_filter( array_map( 'sanitize_title', $raw ) ) );
+				if ( ! empty( $slugs ) ) {
+					$selections[ $param ] = $slugs;
+				}
 			}
 		}
-		return false;
+		$paged = max( 1, (int) $request->get_param( 'paged' ) );
+
+		return new WP_REST_Response( array( 'html' => Entry::main_body( $term, $selections, $search, $paged ) ), 200 );
+	}
+
+	/**
+	 * Whether any filter or the search is active for the given selections.
+	 *
+	 * @param array<string, string[]> $selections Facet selections.
+	 * @param string                  $search     Search term.
+	 * @return bool
+	 */
+	public static function is_active( array $selections, string $search ): bool {
+		return '' !== $search || ! empty( $selections );
+	}
+
+	/**
+	 * The current facet selections from the request (parameter to slugs).
+	 *
+	 * @return array<string, string[]>
+	 */
+	public static function current_selections(): array {
+		$out = array();
+		foreach ( array_keys( self::facet_map() ) as $param ) {
+			$values = self::param_values( $param );
+			if ( ! empty( $values ) ) {
+				$out[ $param ] = $values;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * The current page number from the request, at least 1.
+	 *
+	 * @return int
+	 */
+	public static function current_paged(): int {
+		$paged = (int) get_query_var( 'paged' );
+		if ( $paged < 1 ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$paged = isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : 0;
+		}
+		return max( 1, $paged );
 	}
 
 	/**
 	 * Render the prominent search form for a handbook.
 	 *
-	 * Carries the active facet selections as hidden fields so a search submit
-	 * keeps the current filters.
+	 * Carries the active facet selections as hidden fields so a no-JS search
+	 * submit keeps the current filters.
 	 *
 	 * @param WP_Term $term Handbook term.
 	 * @return string
@@ -129,8 +172,9 @@ final class Filters {
 	/**
 	 * Render the taxonomy facet form for a handbook.
 	 *
-	 * Carries the active search as a hidden field so a filter submit keeps the
-	 * current search.
+	 * Only the terms used by pages of this handbook are offered. Selecting a
+	 * facet filters through the REST route (handled by the frontend script), so
+	 * the form has no submit button; a Reset link clears the filters.
 	 *
 	 * @param WP_Term $term Handbook term.
 	 * @return string
@@ -142,11 +186,17 @@ final class Filters {
 		}
 		$action = (string) $action;
 
+		$post_ids = self::handbook_post_ids( $term );
+		if ( empty( $post_ids ) ) {
+			return '';
+		}
+
 		$fields = '';
 		foreach ( self::facet_map() as $param => $taxonomy ) {
 			$terms = get_terms(
 				array(
 					'taxonomy'   => $taxonomy,
+					'object_ids' => $post_ids,
 					'hide_empty' => true,
 				)
 			);
@@ -177,7 +227,6 @@ final class Filters {
 		return '<form class="living-handbook-filterform" method="get" action="' . esc_url( $action ) . '">'
 			. self::hidden_search_field()
 			. $fields
-			. '<button type="submit" class="living-handbook-reset">' . esc_html__( 'Filter', 'living-handbook' ) . '</button> '
 			. '<a class="living-handbook-reset living-handbook-reset--link" href="' . esc_url( $action ) . '">' . esc_html__( 'Reset', 'living-handbook' ) . '</a>'
 			. '</form>';
 	}
@@ -211,13 +260,56 @@ final class Filters {
 	}
 
 	/**
-	 * Render the filtered result cards from the main query, with pagination.
+	 * Render the filtered result cards for a handbook, with pagination.
 	 *
+	 * Runs its own query scoped to the handbook (by term id) plus the given
+	 * facet selections (by slug) and the search, so it does not depend on
+	 * modifying the term archive's main query. Pagination links point back to
+	 * the term archive with the active filters in the URL, so page two loads as
+	 * a normal request that renders the same list.
+	 *
+	 * @param WP_Term                 $term       Handbook term.
+	 * @param array<string, string[]> $selections Facet selections (parameter to slugs).
+	 * @param string                  $search     Search term.
+	 * @param int                     $paged      Page number (1-based).
 	 * @return string
 	 */
-	public static function filtered_results(): string {
-		global $wp_query;
-		$count = (int) $wp_query->found_posts;
+	public static function filtered_results( WP_Term $term, array $selections, string $search, int $paged ): string {
+		$map       = self::facet_map();
+		$tax_query = array(
+			'relation' => 'AND',
+			array(
+				'taxonomy' => Handbooks::TAXONOMY,
+				'field'    => 'term_id',
+				'terms'    => $term->term_id,
+			),
+		);
+		foreach ( $selections as $param => $slugs ) {
+			if ( isset( $map[ $param ] ) && ! empty( $slugs ) ) {
+				$tax_query[] = array(
+					'taxonomy' => $map[ $param ],
+					'field'    => 'slug',
+					'terms'    => $slugs,
+				);
+			}
+		}
+
+		$paged = max( 1, $paged );
+		$args  = array(
+			'post_type'      => Handbook::POST_TYPE,
+			'post_status'    => 'publish',
+			'posts_per_page' => 24,
+			'paged'          => $paged,
+			'orderby'        => 'modified',
+			'order'          => 'DESC',
+			'tax_query'      => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+		);
+		if ( '' !== $search ) {
+			$args['s'] = $search;
+		}
+
+		$query = new WP_Query( $args );
+		$count = (int) $query->found_posts;
 
 		/* translators: %d: number of matching pages. */
 		$out = '<p class="living-handbook-count">' . esc_html( sprintf( _n( '%d page found', '%d pages found', $count, 'living-handbook' ), $count ) ) . '</p>';
@@ -227,14 +319,81 @@ final class Filters {
 		}
 
 		$cards = '';
-		foreach ( $wp_query->posts as $post ) {
+		foreach ( $query->posts as $post ) {
 			if ( $post instanceof WP_Post ) {
 				$cards .= Cards::page_card( $post->ID );
 			}
 		}
-
 		$out .= '<div class="living-handbook-cards">' . $cards . '</div>';
-		return $out . get_the_posts_pagination();
+
+		if ( $query->max_num_pages > 1 ) {
+			$links = paginate_links(
+				array(
+					'base'    => self::pagination_base( $term, $selections, $search ),
+					'format'  => '',
+					'current' => $paged,
+					'total'   => (int) $query->max_num_pages,
+				)
+			);
+			if ( is_string( $links ) && '' !== $links ) {
+				$out .= '<nav class="living-handbook-pagination">' . $links . '</nav>';
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Build the paginate_links base URL: the term archive with the active
+	 * search and facets kept, and a %#% placeholder for the page number.
+	 *
+	 * @param WP_Term                 $term       Handbook term.
+	 * @param array<string, string[]> $selections Facet selections.
+	 * @param string                  $search     Search term.
+	 * @return string
+	 */
+	private static function pagination_base( WP_Term $term, array $selections, string $search ): string {
+		$term_link = get_term_link( $term );
+		$term_link = is_wp_error( $term_link ) ? '' : (string) $term_link;
+
+		$query_args = array();
+		if ( '' !== $search ) {
+			$query_args[ self::SEARCH_PARAM ] = $search;
+		}
+		foreach ( $selections as $param => $slugs ) {
+			if ( ! empty( $slugs ) ) {
+				$query_args[ $param ] = $slugs;
+			}
+		}
+
+		$base = add_query_arg( array_merge( $query_args, array( 'paged' => 'LHPAGENUM' ) ), $term_link );
+		return str_replace( 'LHPAGENUM', '%#%', $base );
+	}
+
+	/**
+	 * Published page IDs of a handbook.
+	 *
+	 * @param WP_Term $term Handbook term.
+	 * @return int[]
+	 */
+	private static function handbook_post_ids( WP_Term $term ): array {
+		$ids = get_posts(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					array(
+						'taxonomy' => Handbooks::TAXONOMY,
+						'field'    => 'term_id',
+						'terms'    => $term->term_id,
+					),
+				),
+			)
+		);
+		return array_map( 'intval', $ids );
 	}
 
 	/**
@@ -281,7 +440,8 @@ final class Filters {
 	}
 
 	/**
-	 * Human-readable label for a facet parameter.
+	 * Human-readable label for a facet parameter. Mirrors the taxonomy display
+	 * names so the filter reads the same as the rest of the interface.
 	 *
 	 * @param string $param Request parameter name.
 	 * @return string
@@ -291,9 +451,9 @@ final class Filters {
 			case 'lh_type':
 				return __( 'Page type', 'living-handbook' );
 			case 'lh_topic':
-				return __( 'Topic', 'living-handbook' );
+				return __( 'Areas', 'living-handbook' );
 			case 'lh_role':
-				return __( 'Responsible role', 'living-handbook' );
+				return __( 'Responsibility', 'living-handbook' );
 			case 'lh_audience':
 				return __( 'Audience', 'living-handbook' );
 			default:

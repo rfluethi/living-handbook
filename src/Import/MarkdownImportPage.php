@@ -225,7 +225,10 @@ final class MarkdownImportPage {
 		foreach ( $markdown_files as $path => $markdown ) {
 			$file_name = basename( $path );
 			$result    = $converter->convert( $markdown, $image_map );
-			$slug      = sanitize_title( pathinfo( $file_name, PATHINFO_FILENAME ) );
+			$transport = (array) $result['transport'];
+			$slug      = ( isset( $transport['slug'] ) && '' !== (string) $transport['slug'] )
+				? sanitize_title( (string) $transport['slug'] )
+				: sanitize_title( pathinfo( $file_name, PATHINFO_FILENAME ) );
 			$out[]     = array(
 				'name'      => $file_name,
 				'slug'      => $slug,
@@ -300,8 +303,18 @@ final class MarkdownImportPage {
 		$source_path = sanitize_text_field( (string) $request->get_param( 'sourcePath' ) );
 		$slug        = sanitize_title( (string) $request->get_param( 'slug' ) );
 
+		// A "Slug:" line in the transport block is authoritative, so an area
+		// start page keeps its intended URL.
+		if ( isset( $transport['slug'] ) && '' !== (string) $transport['slug'] ) {
+			$slug = sanitize_title( (string) $transport['slug'] );
+		}
+
 		if ( '' === $slug && '' !== $source_path ) {
-			$slug = sanitize_title( str_replace( '/', '-', (string) preg_replace( '/\.md$/i', '', $source_path ) ) );
+			$path = (string) preg_replace( '/\.md$/i', '', $source_path );
+			// Section start pages are index.md or README.md; take the folder
+			// name, not the file name, so the slug is not "...-index".
+			$path = (string) preg_replace( '#(^|/)(index|readme)$#i', '', $path );
+			$slug = sanitize_title( str_replace( '/', '-', $path ) );
 		}
 		if ( '' === $title ) {
 			$title = '' !== $slug ? $slug : __( 'Imported page', 'living-handbook' );
@@ -309,6 +322,10 @@ final class MarkdownImportPage {
 		if ( '' === $slug ) {
 			$slug = sanitize_title( $title );
 		}
+
+		// Drop a leading heading or paragraph that only repeats the page title,
+		// so the page does not show its title twice.
+		$content = self::strip_leading_title_repeat( $content, $title );
 
 		// wp_insert_post expects slashed data and unslashes it; slash the block
 		// markup so escape sequences like \n and > survive.
@@ -354,6 +371,49 @@ final class MarkdownImportPage {
 				admin_url( 'post.php' )
 			),
 		);
+	}
+
+	/**
+	 * Strip a leading heading or paragraph whose text only repeats the page
+	 * title, so the imported page does not show its title twice (once as the
+	 * post title, once as the first line of the content). A leading numbering
+	 * such as "01 " is ignored when comparing, so a nav title "01 Was ist ein
+	 * Projekt?" matches a body line "Was ist ein Projekt?". Only the very first
+	 * block is considered, and only when its whole text equals the title, so a
+	 * real first heading or lead paragraph is left untouched.
+	 *
+	 * @param string $content Block markup content.
+	 * @param string $title   Page title.
+	 * @return string
+	 */
+	private static function strip_leading_title_repeat( string $content, string $title ): string {
+		if ( '' === trim( $title ) ) {
+			return $content;
+		}
+		if ( 1 !== preg_match( '/^\s*<!--\s*wp:(heading|paragraph)\b[^>]*-->\s*<(h[1-6]|p)[^>]*>(.*?)<\/\2>\s*<!--\s*\/wp:\1\s*-->\s*/is', $content, $found ) ) {
+			return $content;
+		}
+		$first = self::normalize_heading( wp_strip_all_tags( $found[3] ) );
+		if ( '' === $first || self::normalize_heading( $title ) !== $first ) {
+			return $content;
+		}
+		return (string) substr( $content, strlen( $found[0] ) );
+	}
+
+	/**
+	 * Normalise a heading or title for comparison: lower-case, drop a leading
+	 * numbering prefix, strip punctuation, and collapse whitespace.
+	 *
+	 * @param string $text Text.
+	 * @return string
+	 */
+	private static function normalize_heading( string $text ): string {
+		$text = html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
+		$text = (string) mb_strtolower( trim( $text ) );
+		$text = (string) preg_replace( '/^\d+[.\)]?\s+/', '', $text );
+		$text = (string) preg_replace( '/[^\p{L}\p{N} ]+/u', '', $text );
+		$text = (string) preg_replace( '/\s+/', ' ', $text );
+		return trim( $text );
 	}
 
 	/**

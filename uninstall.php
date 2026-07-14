@@ -5,9 +5,16 @@
  * Runs when the plugin is deleted from the Plugins screen. By default only the
  * plugin's own operational data is removed (its options, the scheduled sync,
  * and the navigation/area caches); user content (handbook pages, handbooks, and
- * their metadata) is kept. To also remove the content, opt in deliberately by
- * returning true from the `living_handbook_uninstall_remove_content` filter
- * (for example from a small must-use plugin), which is off by default.
+ * their metadata) is kept. To also remove the content, turn on the "Also delete
+ * all handbook pages, handbooks and their data" option on the plugin settings
+ * page before deleting, or return true from the
+ * `living_handbook_uninstall_remove_content` filter (for example from a small
+ * must-use plugin). Both are off by default.
+ *
+ * The plugin's block templates are registered in code, so they disappear on
+ * their own once the plugin is gone; nothing needs to be removed for them. Only
+ * templates a user customised in the Site Editor are stored in the database, and
+ * those are removed together with the content when the option above is on.
  *
  * @package LivingHandbook
  */
@@ -29,10 +36,16 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function living_handbook_run_uninstall(): void {
 	global $wpdb;
 
+	// Read the content-removal choice before the options are deleted below.
+	$remove_content = (bool) get_option( 'living_handbook_uninstall_content', false );
+
 	// Always: clear the scheduled sync and the plugin's own options.
 	wp_clear_scheduled_hook( 'living_handbook_git_sync' );
 	delete_option( 'living_handbook_sync_schedule' );
+	delete_option( 'living_handbook_sync_offset' );
 	delete_option( 'living_handbook_nav_version' );
+	delete_option( 'living_handbook_db_version' );
+	delete_option( 'living_handbook_uninstall_content' );
 
 	// Always: remove the navigation and area caches (transients keyed by version).
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
@@ -50,7 +63,7 @@ function living_handbook_run_uninstall(): void {
 	 *
 	 * @param bool $remove Whether to delete handbook pages, handbooks and their meta.
 	 */
-	if ( ! apply_filters( 'living_handbook_uninstall_remove_content', false ) ) {
+	if ( ! $remove_content && ! apply_filters( 'living_handbook_uninstall_remove_content', false ) ) {
 		return;
 	}
 
@@ -85,6 +98,29 @@ function living_handbook_run_uninstall(): void {
 		foreach ( $handbook_terms as $handbook_term_id ) {
 			wp_delete_term( (int) $handbook_term_id, 'handbook_set' );
 		}
+	}
+
+	// Remove any Site Editor customisations of the plugin's block templates.
+	// They are stored as wp_template / wp_template_part posts assigned to this
+	// plugin's theme identifier via the wp_theme taxonomy.
+	$template_ids = get_posts(
+		array(
+			'post_type'      => array( 'wp_template', 'wp_template_part' ),
+			'post_status'    => 'any',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				array(
+					'taxonomy' => 'wp_theme',
+					'field'    => 'name',
+					'terms'    => 'living-handbook',
+				),
+			),
+		)
+	);
+	foreach ( $template_ids as $template_id ) {
+		wp_delete_post( (int) $template_id, true );
 	}
 }
 

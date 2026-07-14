@@ -37,6 +37,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Plugin {
 
 	/**
+	 * Option that stores the version the database was last set up for.
+	 */
+	private const DB_VERSION_OPTION = 'living_handbook_db_version';
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var Plugin|null
@@ -88,11 +93,35 @@ final class Plugin {
 		( new Blocks() )->register();
 		( new MermaidBlock() )->register();
 		( new SourceNoteBlock() )->register();
+
+		add_action( 'admin_init', array( $this, 'maybe_upgrade' ) );
+	}
+
+	/**
+	 * Run version-keyed migrations after a plugin update.
+	 *
+	 * Updating a plugin replaces its files without running the activation hook,
+	 * so this compares the stored database version against the code version and
+	 * runs any migrations once. There are none yet; the hook re-applies the sync
+	 * schedule and records the version so later migrations have an anchor.
+	 *
+	 * @return void
+	 */
+	public function maybe_upgrade(): void {
+		$installed = (string) get_option( self::DB_VERSION_OPTION, '' );
+		if ( LIVING_HANDBOOK_VERSION === $installed ) {
+			return;
+		}
+
+		// Future migrations keyed by the previously installed version go here.
+
+		GitSync::reschedule();
+		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 	}
 
 	/**
 	 * Activation callback: register the data model, seed the vocabulary, schedule
-	 * the GitHub sync, and flush rewrite rules.
+	 * the GitHub sync, record the version, and flush rewrite rules.
 	 *
 	 * @return void
 	 */
@@ -105,6 +134,7 @@ final class Plugin {
 
 		Seeder::seed();
 		GitSync::schedule();
+		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 
 		flush_rewrite_rules();
 	}

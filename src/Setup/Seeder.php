@@ -39,6 +39,7 @@ final class Seeder {
 				__( 'Role / Organisation', 'living-handbook' ),
 				__( 'Background / Concept', 'living-handbook' ),
 				__( 'FAQ', 'living-handbook' ),
+				__( 'Area overview', 'living-handbook' ),
 			)
 		);
 

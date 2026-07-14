@@ -6,6 +6,7 @@
  * set the visibility (public, members, restricted) and, for restricted
  * handbooks, the allowed roles and users. The roles and users fields are only
  * shown when the visibility is restricted (toggled by a small inline script).
+ * The term list table shows an Access column with the configured visibility.
  *
  * @package LivingHandbook
  */
@@ -35,6 +36,8 @@ final class HandbookAdmin {
 		add_action( Handbooks::TAXONOMY . '_edit_form_fields', array( $this, 'render_edit_fields' ) );
 		add_action( 'created_' . Handbooks::TAXONOMY, array( $this, 'save' ) );
 		add_action( 'edited_' . Handbooks::TAXONOMY, array( $this, 'save' ) );
+		add_filter( 'manage_edit-' . Handbooks::TAXONOMY . '_columns', array( $this, 'access_column' ) );
+		add_filter( 'manage_' . Handbooks::TAXONOMY . '_custom_column', array( $this, 'access_column_value' ), 10, 3 );
 	}
 
 	/**
@@ -130,6 +133,63 @@ final class HandbookAdmin {
 		}() );
 		</script>
 		<?php
+	}
+
+	/**
+	 * Add the Access column to the handbook list table.
+	 *
+	 * @param array<string, string> $columns Columns.
+	 * @return array<string, string>
+	 */
+	public function access_column( array $columns ): array {
+		$columns['lh_access'] = __( 'Access', 'living-handbook' );
+		return $columns;
+	}
+
+	/**
+	 * Render the Access column value for a handbook.
+	 *
+	 * @param string $content Existing content.
+	 * @param string $column  Column key.
+	 * @param int    $term_id Term ID.
+	 * @return string
+	 */
+	public function access_column_value( string $content, string $column, int $term_id ): string {
+		if ( 'lh_access' !== $column ) {
+			return $content;
+		}
+
+		$visibility = (string) get_term_meta( $term_id, Handbooks::META_VISIBILITY, true );
+		if ( '' === $visibility ) {
+			$visibility = Handbooks::VISIBILITY_MEMBERS;
+		}
+		if ( Handbooks::VISIBILITY_PUBLIC === $visibility ) {
+			return esc_html__( 'Public', 'living-handbook' );
+		}
+		if ( Handbooks::VISIBILITY_MEMBERS === $visibility ) {
+			return esc_html__( 'All members', 'living-handbook' );
+		}
+
+		$names  = wp_roles()->get_names();
+		$labels = array();
+		foreach ( (array) get_term_meta( $term_id, Handbooks::META_ROLES, true ) as $role ) {
+			if ( isset( $names[ $role ] ) ) {
+				$labels[] = translate_user_role( $names[ $role ] );
+			}
+		}
+		$users = array_filter( array_map( 'intval', (array) get_term_meta( $term_id, Handbooks::META_USERS, true ) ) );
+
+		$extra = array();
+		if ( ! empty( $labels ) ) {
+			$extra[] = implode( ', ', $labels );
+		}
+		if ( ! empty( $users ) ) {
+			/* translators: %d: number of allowed users. */
+			$extra[] = sprintf( _n( '%d user', '%d users', count( $users ), 'living-handbook' ), count( $users ) );
+		}
+
+		$detail = empty( $extra ) ? '' : ': ' . implode( ', ', $extra );
+		return esc_html( __( 'Restricted', 'living-handbook' ) . $detail );
 	}
 
 	/**

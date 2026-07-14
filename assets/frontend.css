@@ -113,7 +113,11 @@
 	padding-top: 0;
 }
 
+/* Float the legend into normal flow so it sits below the divider line
+ * instead of being anchored on top of the fieldset border. */
 .living-handbook-facet legend {
+	float: left;
+	width: 100%;
 	font-weight: 600;
 	padding: 0;
 	margin-bottom: 0.4rem;
@@ -121,6 +125,7 @@
 
 .living-handbook-facet__opt {
 	display: block;
+	clear: both;
 	margin: 0.25rem 0;
 	cursor: pointer;
 }
@@ -472,4 +477,128 @@
 .living-handbook-feedback button:hover {
 	border-color: var(--lh-accent);
 	color: var(--lh-accent);
+}
+
+/* List display: overview and entry can render their cards as a single column
+ * instead of a grid (block setting "Display: List"). */
+
+.living-handbook-overview--list .living-handbook-cards,
+.living-handbook-entry--list .living-handbook-cards {
+	display: block;
+}
+
+.living-handbook-overview--list .living-handbook-card,
+.living-handbook-entry--list .living-handbook-card {
+	margin: 0 0 0.6rem;
+}
+
+.living-handbook-overview--list .living-handbook-card__link,
+.living-handbook-entry--list .living-handbook-card__link {
+	padding: 0.6rem 0.9rem;
+}
+
+/* AJAX filtering: dim the result column while the new list is loading. */
+
+.living-handbook-main[aria-busy="true"] {
+	opacity: 0.5;
+	transition: opacity 0.15s ease;
+}
+
+/* Handbook menu: the accessible handbooks as a compact inline list, meant for
+ * a site header or navigation area. */
+
+.living-handbook-menu__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.25rem;
+}
+
+.living-handbook-menu__link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.living-handbook-menu__link:hover {
+	color: var(--lh-accent, #2c5f8a);
+}
+
+/* List display, distinct look: flat, compact rows instead of card boxes, so
+ * "List" is clearly different from "Cards" even when the grid already collapses
+ * to a single column on a narrow container. */
+
+.living-handbook-overview--list .living-handbook-card,
+.living-handbook-entry--list .living-handbook-card {
+	border: 0;
+	border-bottom: 1px solid var(--lh-border, #e2e6ea);
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	transform: none;
+	margin: 0;
+}
+
+.living-handbook-overview--list .living-handbook-card:hover,
+.living-handbook-entry--list .living-handbook-card:hover {
+	box-shadow: none;
+	transform: none;
+	background: var(--lh-accent-soft, #eaf1f8);
+}
+
+.living-handbook-overview--list .living-handbook-card__link,
+.living-handbook-entry--list .living-handbook-card__link {
+	padding: 0.55rem 0.4rem;
+}
+
+.living-handbook-overview--list .living-handbook-card__title,
+.living-handbook-entry--list .living-handbook-card__title {
+	font-size: 1rem;
+	margin: 0 0 0.1rem;
+}
+
+.living-handbook-overview--list .living-handbook-card__excerpt,
+.living-handbook-entry--list .living-handbook-card__excerpt {
+	display: none;
+}
+
+/* Handbook menu: mobile toggle. On wide screens the list shows inline and the
+ * toggle is hidden; on narrow screens the list collapses behind the toggle. */
+
+.living-handbook-menu__toggle {
+	display: none;
+	background: none;
+	border: 1px solid var(--lh-border, #e2e6ea);
+	border-radius: 6px;
+	padding: 0.35rem 0.7rem;
+	cursor: pointer;
+	color: inherit;
+	font: inherit;
+}
+
+@media (max-width: 781px) {
+	.living-handbook-menu__toggle {
+		display: inline-flex;
+	}
+
+	.living-handbook-menu__list {
+		display: none;
+	}
+
+	.living-handbook-menu.is-open .living-handbook-menu__list {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		margin-top: 0.5rem;
+		gap: 0.4rem;
+	}
+}
+
+/* List display: show the handbook description in the list too, like the cards. */
+
+.living-handbook-overview--list .living-handbook-card__excerpt,
+.living-handbook-entry--list .living-handbook-card__excerpt {
+	display: block;
+	margin: 0.1rem 0 0.15rem;
 }

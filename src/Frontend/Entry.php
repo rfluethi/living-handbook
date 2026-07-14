@@ -1,6 +1,7 @@
 <?php
 /**
- * The handbook overview (chooser) and the per-handbook entry page.
+ * The handbook overview (chooser), the per-handbook entry page, and the
+ * handbook menu.
  *
  * @package LivingHandbook
  */
@@ -18,17 +19,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Builds the two landing views: the overview of readable handbooks and the
- * entry page of one handbook (search, filters, areas, recently updated).
+ * Builds the landing views: the overview of readable handbooks, the entry page
+ * of one handbook (search, filters, areas, recently updated), and a compact
+ * menu of the handbooks the current user may read.
  */
 final class Entry {
 
 	/**
 	 * Render the overview: a card per handbook the current user may read.
 	 *
+	 * @param string $display 'cards' (grid) or 'list' (single column).
 	 * @return string
 	 */
-	public static function render_chooser(): string {
+	public static function render_chooser( string $display = 'cards' ): string {
 		$terms = get_terms(
 			array(
 				'taxonomy'   => Handbooks::TAXONOMY,
@@ -50,7 +53,52 @@ final class Entry {
 		if ( '' === $cards ) {
 			return '<p class="living-handbook-empty">' . esc_html__( 'No handbooks available.', 'living-handbook' ) . '</p>';
 		}
-		return '<div class="living-handbook-overview"><div class="living-handbook-cards living-handbook-cards--books">' . $cards . '</div></div>';
+		$modifier = 'list' === $display ? ' living-handbook-overview--list' : '';
+		return '<div class="living-handbook-overview' . $modifier . '"><div class="living-handbook-cards living-handbook-cards--books">' . $cards . '</div></div>';
+	}
+
+	/**
+	 * Render a compact menu of the handbooks the current user may read, for use
+	 * in a site header or navigation area. On narrow screens the list collapses
+	 * behind a toggle button, so the block works on mobile like a menu.
+	 *
+	 * @return string
+	 */
+	public static function render_menu(): string {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => Handbooks::TAXONOMY,
+				'hide_empty' => false,
+			)
+		);
+		if ( is_wp_error( $terms ) ) {
+			return '';
+		}
+
+		$user_id = get_current_user_id();
+		$items   = '';
+		foreach ( $terms as $term ) {
+			if ( ! $term instanceof WP_Term || ! AccessController::can_view_term( $term->term_id, $user_id ) ) {
+				continue;
+			}
+			$link = get_term_link( $term );
+			if ( is_wp_error( $link ) ) {
+				continue;
+			}
+			$items .= '<li class="living-handbook-menu__item"><a class="living-handbook-menu__link" href="' . esc_url( (string) $link ) . '">' . esc_html( $term->name ) . '</a></li>';
+		}
+
+		if ( '' === $items ) {
+			return '';
+		}
+
+		$list_id = wp_unique_id( 'living-handbook-menu-' );
+		$label   = esc_html__( 'Handbooks', 'living-handbook' );
+
+		return '<nav class="living-handbook-menu" aria-label="' . esc_attr__( 'Handbooks', 'living-handbook' ) . '">'
+			. '<button type="button" class="living-handbook-menu__toggle" aria-expanded="false" aria-controls="' . esc_attr( $list_id ) . '">' . $label . '</button>'
+			. '<ul id="' . esc_attr( $list_id ) . '" class="living-handbook-menu__list">' . $items . '</ul>'
+			. '</nav>';
 	}
 
 	/**
@@ -58,26 +106,44 @@ final class Entry {
 	 *
 	 * Shows a prominent search, then either the filtered result list (when a
 	 * search or facet is active) or the areas and recently updated pages, with
-	 * the facet sidebar on the right.
+	 * the facet sidebar on the right. The wrapper carries the handbook term id
+	 * so the frontend script can filter through the REST route; the result
+	 * column is a polite live region so screen readers announce AJAX updates.
 	 *
-	 * @param WP_Term $term Handbook term.
+	 * @param WP_Term $term    Handbook term.
+	 * @param string  $display 'cards' (grid) or 'list' (single column).
 	 * @return string
 	 */
-	public static function render_entry( WP_Term $term ): string {
-		$term_id = $term->term_id;
+	public static function render_entry( WP_Term $term, string $display = 'cards' ): string {
+		$selections = Filters::current_selections();
+		$search     = Filters::search_value();
+		$paged      = Filters::current_paged();
 
-		$out  = '<div class="living-handbook-entry">';
-		$out .= Filters::search_form( $term );
-		$out .= '<div class="living-handbook-layout"><div class="living-handbook-main">';
-
-		if ( Filters::is_active() ) {
-			$out .= Filters::filtered_results();
-		} else {
-			$out .= self::default_body( $term_id );
-		}
-
-		$out .= '</div><aside class="living-handbook-aside">' . Filters::facets( $term ) . '</aside></div>';
+		$modifier = 'list' === $display ? ' living-handbook-entry--list' : '';
+		$out      = '<div class="living-handbook-entry' . $modifier . '" data-term-id="' . esc_attr( (string) $term->term_id ) . '">';
+		$out     .= Filters::search_form( $term );
+		$out     .= '<div class="living-handbook-layout"><div class="living-handbook-main" aria-live="polite">';
+		$out     .= self::main_body( $term, $selections, $search, $paged );
+		$out     .= '</div><aside class="living-handbook-aside">' . Filters::facets( $term ) . '</aside></div>';
 		return $out . '</div>';
+	}
+
+	/**
+	 * The main-column content of a handbook entry: the filtered result list when
+	 * a search or facet is active, otherwise the areas and recently updated
+	 * pages. Shared by the server render and the REST filter route.
+	 *
+	 * @param WP_Term                 $term       Handbook term.
+	 * @param array<string, string[]> $selections Facet selections (parameter to slugs).
+	 * @param string                  $search     Search term.
+	 * @param int                     $paged      Page number (1-based).
+	 * @return string
+	 */
+	public static function main_body( WP_Term $term, array $selections, string $search, int $paged ): string {
+		if ( Filters::is_active( $selections, $search ) ) {
+			return Filters::filtered_results( $term, $selections, $search, $paged );
+		}
+		return self::default_body( $term->term_id );
 	}
 
 	/**

@@ -1,0 +1,56 @@
+name: Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  integration:
+    name: Integration tests (wp-phpunit + MySQL)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mysqli, zip, mbstring
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      # wp-phpunit needs a test config that defines the database constants.
+      # It ships a sample; copy it and point the DB settings at the service.
+      - name: Prepare wp-tests-config
+        run: |
+          cp vendor/wp-phpunit/wp-phpunit/wp-tests-config-sample.php wp-tests-config.php
+          sed -i "s/youremptytestdbnamehere/wordpress_test/" wp-tests-config.php
+          sed -i "s/yourusernamehere/root/" wp-tests-config.php
+          sed -i "s/yourpasswordhere/root/" wp-tests-config.php
+          sed -i "s|localhost|127.0.0.1:3306|" wp-tests-config.php
+
+      - name: Run integration tests
+        env:
+          LH_INTEGRATION: 1
+          WP_TESTS_CONFIG_FILE_PATH: ${{ github.workspace }}/wp-tests-config.php
+        run: vendor/bin/phpunit --testsuite integration

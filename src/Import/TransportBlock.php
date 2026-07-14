@@ -24,7 +24,7 @@ final class TransportBlock {
 	 * Parse the raw transport section.
 	 *
 	 * @param string $text The transport section (from its heading to the end).
-	 * @return array{page_type:string,role:string,topic:string,audiences:array<int,string>,handbook:string,parent:string,order:int,excerpt:string,reviewed:string,interval:int}
+	 * @return array{page_type:string,role:string,topic:string,audiences:array<int,string>,handbook:string,parent:string,order:int,excerpt:string,reviewed:string,interval:int,slug:string}
 	 */
 	public function parse( string $text ): array {
 		$values = array();
@@ -63,6 +63,7 @@ final class TransportBlock {
 			'excerpt'   => $this->value( $values, 'textauszug' ),
 			'reviewed'  => $reviewed,
 			'interval'  => $interval,
+			'slug'      => $this->value( $values, 'slug' ),
 		);
 	}
 

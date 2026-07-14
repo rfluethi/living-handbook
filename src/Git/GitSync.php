@@ -34,6 +34,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The pulled HTML comes from an external repository, so it is run through
  * wp_kses with a fixed allowlist before it is stored, which strips scripts,
  * event handlers and unsafe URLs while keeping the Mermaid and details markup.
+ * The source URL is restricted to an allowlist of hosts, so an editor cannot
+ * point the server at an arbitrary internal address. The scheduled sync works in
+ * bounded batches, so a large handbook does not fetch every page in one request.
+ *
+ * The plugin's single settings page lives here too: the sync frequency and the
+ * uninstall behaviour (keep or remove content when the plugin is deleted). Sync
+ * failures are flagged per page and surfaced as an admin notice.
  */
 final class GitSync {
 
@@ -43,15 +50,34 @@ final class GitSync {
 	public const SOURCE_WORDPRESS = 'wordpress';
 	public const SOURCE_GITHUB    = 'github';
 
+	/**
+	 * Option that decides whether uninstall removes all handbook content.
+	 */
+	public const OPTION_UNINSTALL = 'living_handbook_uninstall_content';
+
 	private const META_STATUS = '_lh_sync_status';
+
+	private const META_ERROR = '_lh_sync_error';
 
 	private const CRON_HOOK = 'living_handbook_git_sync';
 
 	private const OPTION_SCHEDULE = 'living_handbook_sync_schedule';
 
+	private const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
+
 	private const SETTINGS_SLUG = 'living-handbook-sync';
 
 	private const SCHEDULES = array( 'off', 'hourly', 'twicedaily', 'daily', 'weekly' );
+
+	/**
+	 * Hosts a Markdown source may be fetched from (guards against SSRF).
+	 */
+	private const ALLOWED_HOSTS = array( 'raw.githubusercontent.com' );
+
+	/**
+	 * Maximum number of GitHub pages the scheduled sync pulls per run.
+	 */
+	private const CRON_BATCH = 20;
 
 	/**
 	 * Guard against recursion while sync_page or a finalize pass writes the post.
@@ -71,6 +97,7 @@ final class GitSync {
 		add_action( 'save_post_' . Handbook::POST_TYPE, array( $this, 'save_meta' ) );
 		add_action( 'load-post.php', array( $this, 'maybe_lock_editor' ) );
 		add_action( 'admin_notices', array( $this, 'locked_notice' ) );
+		add_action( 'admin_notices', array( $this, 'sync_error_notice' ) );
 		add_action( 'admin_post_living_handbook_git_sync_now', array( $this, 'sync_now' ) );
 		add_action( 'admin_menu', array( $this, 'add_settings_page' ) );
 		add_filter( 'cron_schedules', array( $this, 'add_schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
@@ -161,6 +188,28 @@ final class GitSync {
 	}
 
 	/**
+	 * Whether a (normalized) source URL points at an allowed host.
+	 *
+	 * @param string $url URL.
+	 * @return bool
+	 */
+	private static function is_allowed_source( string $url ): bool {
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+		if ( ! is_string( $host ) ) {
+			return false;
+		}
+
+		/**
+		 * Filter the hosts a Markdown source may be fetched from.
+		 *
+		 * @param string[] $hosts Allowed host names.
+		 */
+		$allowed = apply_filters( 'living_handbook_sync_allowed_hosts', self::ALLOWED_HOSTS );
+
+		return in_array( strtolower( $host ), array_map( 'strtolower', (array) $allowed ), true );
+	}
+
+	/**
 	 * Create a locked GitHub page from a source URL and pull it once.
 	 *
 	 * The slug is taken from the source file name so that internal .md links,
@@ -173,7 +222,7 @@ final class GitSync {
 	 */
 	public function create_github_page( string $url, int $handbook_id = 0, string $title = '' ): int {
 		$url = self::normalize_url( $url );
-		if ( '' === $url ) {
+		if ( '' === $url || ! self::is_allowed_source( $url ) ) {
 			return 0;
 		}
 		$path = wp_parse_url( $url, PHP_URL_PATH );
@@ -237,6 +286,9 @@ final class GitSync {
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
+			if ( 403 === $code && '0' === (string) wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' ) ) {
+				return array( 'error' => 'GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later.' );
+			}
 			return array( 'error' => 'GitHub API HTTP ' . $code );
 		}
 		$items = json_decode( (string) wp_remote_retrieve_body( $response ), true );
@@ -456,6 +508,59 @@ final class GitSync {
 	}
 
 	/**
+	 * Show an admin notice listing GitHub pages whose last sync failed.
+	 *
+	 * @return void
+	 */
+	public function sync_error_notice(): void {
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( null === $screen ) {
+			return;
+		}
+		$relevant = Handbook::POST_TYPE === $screen->post_type || false !== strpos( (string) $screen->id, self::SETTINGS_SLUG );
+		if ( ! $relevant ) {
+			return;
+		}
+
+		$ids   = get_posts(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => 50,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'meta_key'       => self::META_ERROR, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			)
+		);
+		$count = count( $ids );
+		if ( 0 === $count ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-warning"><p>%1$s <a href="%2$s">%3$s</a></p></div>',
+			esc_html(
+				sprintf(
+					/* translators: %d: number of GitHub pages that failed to sync. */
+					_n(
+						'Living Handbook: %d GitHub page could not be synced. Open it to see the error.',
+						'Living Handbook: %d GitHub pages could not be synced. Open them to see the error.',
+						$count,
+						'living-handbook'
+					),
+					$count
+				)
+			),
+			esc_url( admin_url( 'edit.php?post_type=' . Handbook::POST_TYPE ) ),
+			esc_html__( 'Handbook pages', 'living-handbook' )
+		);
+	}
+
+	/**
 	 * Handle the "Sync now" action.
 	 *
 	 * @return void
@@ -474,28 +579,49 @@ final class GitSync {
 	}
 
 	/**
-	 * Cron handler: sync every GitHub-sourced page.
+	 * Cron handler: sync GitHub-sourced pages in bounded batches.
+	 *
+	 * Each run pulls at most CRON_BATCH pages, advancing a stored offset so that,
+	 * over several runs, every page is covered without one run fetching them all.
 	 *
 	 * @return void
 	 */
 	public function run_sync(): void {
-		$posts = get_posts(
+		$ids = get_posts(
 			array(
-				'post_type'   => Handbook::POST_TYPE,
-				'post_status' => 'any',
-				'numberposts' => -1,
-				'meta_key'    => self::META_SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value'  => self::SOURCE_GITHUB, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+				'meta_key'       => self::META_SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => self::SOURCE_GITHUB, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 			)
 		);
-		$ids   = array();
-		foreach ( $posts as $post ) {
-			if ( $post instanceof WP_Post ) {
-				$this->sync_page( (int) $post->ID );
-				$ids[] = (int) $post->ID;
-			}
+
+		$total = count( $ids );
+		if ( 0 === $total ) {
+			delete_option( self::OPTION_CRON_OFFSET );
+			return;
 		}
-		Postprocessor::finalize( $ids );
+
+		$offset = (int) get_option( self::OPTION_CRON_OFFSET, 0 );
+		if ( $offset >= $total ) {
+			$offset = 0;
+		}
+
+		$batch = array_slice( $ids, $offset, self::CRON_BATCH );
+		$done  = array();
+		foreach ( $batch as $id ) {
+			$this->sync_page( (int) $id );
+			$done[] = (int) $id;
+		}
+		Postprocessor::finalize( $done );
+
+		$next = $offset + self::CRON_BATCH;
+		update_option( self::OPTION_CRON_OFFSET, $next >= $total ? 0 : $next );
 	}
 
 	/**
@@ -509,21 +635,25 @@ final class GitSync {
 			return;
 		}
 		if ( ! MarkdownConverter::available() ) {
-			$this->set_status( $post_id, __( 'Error: CommonMark is not installed.', 'living-handbook' ) );
+			$this->set_sync_error( $post_id, __( 'Error: CommonMark is not installed.', 'living-handbook' ) );
 			return;
 		}
 		$url = (string) get_post_meta( $post_id, self::META_URL, true );
 		if ( '' === $url ) {
 			return;
 		}
+		if ( ! self::is_allowed_source( $url ) ) {
+			$this->set_sync_error( $post_id, __( 'Error: source host not allowed.', 'living-handbook' ) );
+			return;
+		}
 		$response = wp_remote_get( $url, array( 'timeout' => 15 ) );
 		if ( is_wp_error( $response ) ) {
-			$this->set_status( $post_id, __( 'Error: ', 'living-handbook' ) . $response->get_error_message() );
+			$this->set_sync_error( $post_id, __( 'Error: ', 'living-handbook' ) . $response->get_error_message() );
 			return;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			$this->set_status( $post_id, __( 'Error: HTTP ', 'living-handbook' ) . $code );
+			$this->set_sync_error( $post_id, __( 'Error: HTTP ', 'living-handbook' ) . $code );
 			return;
 		}
 		$markdown = (string) wp_remote_retrieve_body( $response );
@@ -548,6 +678,7 @@ final class GitSync {
 		self::$is_syncing = false;
 
 		update_post_meta( $post_id, Metadata::UPDATED, current_time( 'Y-m-d' ) );
+		delete_post_meta( $post_id, self::META_ERROR );
 		$this->set_status( $post_id, __( 'OK ', 'living-handbook' ) . current_time( 'Y-m-d H:i' ) );
 	}
 
@@ -586,6 +717,19 @@ final class GitSync {
 	 */
 	private function set_status( int $post_id, string $message ): void {
 		update_post_meta( $post_id, self::META_STATUS, $message );
+	}
+
+	/**
+	 * Record a sync error: store the message and flag the page so the admin
+	 * notice can list it.
+	 *
+	 * @param int    $post_id Post id.
+	 * @param string $message Error message.
+	 * @return void
+	 */
+	private function set_sync_error( int $post_id, string $message ): void {
+		$this->set_status( $post_id, $message );
+		update_post_meta( $post_id, self::META_ERROR, '1' );
 	}
 
 	/**
@@ -644,15 +788,15 @@ final class GitSync {
 	}
 
 	/**
-	 * Register the sync settings page.
+	 * Register the plugin settings page (sync frequency and uninstall behaviour).
 	 *
 	 * @return void
 	 */
 	public function add_settings_page(): void {
 		add_submenu_page(
 			'edit.php?post_type=' . Handbook::POST_TYPE,
-			__( 'GitHub sync settings', 'living-handbook' ),
-			__( 'Sync settings', 'living-handbook' ),
+			__( 'Settings', 'living-handbook' ),
+			__( 'Settings', 'living-handbook' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
 			array( $this, 'render_settings' )
@@ -660,7 +804,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Render the sync settings page and handle its form.
+	 * Render the settings page and handle its form.
 	 *
 	 * @return void
 	 */
@@ -676,23 +820,29 @@ final class GitSync {
 			}
 			update_option( self::OPTION_SCHEDULE, $value );
 			self::reschedule();
+
+			update_option( self::OPTION_UNINSTALL, isset( $_POST['living_handbook_uninstall_content'] ) ? 1 : 0 );
+
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Saved.', 'living-handbook' ) . '</p></div>';
 		}
 
-		$current = self::current_schedule();
-		$labels  = array(
+		$current        = self::current_schedule();
+		$remove_content = (bool) get_option( self::OPTION_UNINSTALL, false );
+		$labels         = array(
 			'off'        => __( 'Off (only on save and Sync now)', 'living-handbook' ),
 			'hourly'     => __( 'Hourly', 'living-handbook' ),
 			'twicedaily' => __( 'Twice daily', 'living-handbook' ),
 			'daily'      => __( 'Daily', 'living-handbook' ),
 			'weekly'     => __( 'Weekly', 'living-handbook' ),
 		);
-		$next    = wp_next_scheduled( self::CRON_HOOK );
+		$next           = wp_next_scheduled( self::CRON_HOOK );
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'GitHub sync settings', 'living-handbook' ); ?></h1>
+			<h1><?php esc_html_e( 'Settings', 'living-handbook' ); ?></h1>
 			<form method="post">
 				<?php wp_nonce_field( 'living_handbook_sync', 'living_handbook_sync_nonce' ); ?>
+
+				<h2><?php esc_html_e( 'GitHub sync', 'living-handbook' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row"><label for="living_handbook_sync_schedule"><?php esc_html_e( 'Automatic sync', 'living-handbook' ); ?></label></th>
@@ -702,17 +852,30 @@ final class GitSync {
 									<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $key, $current ); ?>><?php echo esc_html( $label ); ?></option>
 								<?php endforeach; ?>
 							</select>
-							<p class="description"><?php esc_html_e( 'How often WordPress pulls GitHub pages in the background. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits.', 'living-handbook' ); ?></p>
+							<p class="description"><?php esc_html_e( 'How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits.', 'living-handbook' ); ?></p>
+							<?php if ( false !== $next ) : ?>
+								<p class="description"><?php esc_html_e( 'Next scheduled sync:', 'living-handbook' ); ?> <?php echo esc_html( wp_date( 'Y-m-d H:i', $next ) ); ?></p>
+							<?php else : ?>
+								<p class="description"><?php esc_html_e( 'No background sync scheduled.', 'living-handbook' ); ?></p>
+							<?php endif; ?>
 						</td>
 					</tr>
 				</table>
+
+				<h2><?php esc_html_e( 'Uninstall', 'living-handbook' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php esc_html_e( 'When the plugin is deleted', 'living-handbook' ); ?></th>
+						<td>
+							<label><input type="checkbox" name="living_handbook_uninstall_content" value="1" <?php checked( $remove_content ); ?>> <?php esc_html_e( 'Also delete all handbook pages, handbooks and their data', 'living-handbook' ); ?></label>
+							<p class="description"><?php esc_html_e( 'Off by default: your content is kept when the plugin is deleted, only the plugin settings and caches are removed. Turn this on to remove everything the plugin created.', 'living-handbook' ); ?></p>
+							<p class="description"><?php esc_html_e( 'This also removes templates you edited in the Site Editor.', 'living-handbook' ); ?></p>
+						</td>
+					</tr>
+				</table>
+
 				<?php submit_button(); ?>
 			</form>
-			<?php if ( false !== $next ) : ?>
-				<p class="description"><?php esc_html_e( 'Next scheduled sync:', 'living-handbook' ); ?> <?php echo esc_html( wp_date( 'Y-m-d H:i', $next ) ); ?></p>
-			<?php else : ?>
-				<p class="description"><?php esc_html_e( 'No background sync scheduled.', 'living-handbook' ); ?></p>
-			<?php endif; ?>
 		</div>
 		<?php
 	}
