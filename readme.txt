@@ -49,7 +49,7 @@ Only when you use the GitHub features, and only to addresses you enter yourself.
 
 = What third-party libraries does the plugin bundle? =
 
-The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also bundle the PHP libraries league/commonmark and symfony/yaml (both under the MIT license) in vendor/.
+The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also bundle two PHP libraries in vendor/: league/commonmark (BSD-3-Clause license) and symfony/yaml (MIT license). All bundled libraries use GPL-compatible licenses.
 
 = Who can see a handbook? =
 
@@ -77,7 +77,7 @@ By default your content is kept and only the plugin's own settings and caches ar
 * The duplicate post type archive was disabled; the overview lives on a normal page holding the overview block.
 * Internationalisation: the editor labels and the import screen's status messages are now translatable in any language (English source), and the build generates the translation template (living-handbook.pot).
 * Renamed the GitHub source meta keys to the living_handbook_ prefix for clean, unique naming.
-* Disclosed the bundled mermaid.js library (version 11.16.0, MIT license) in the readme.
+* Disclosed the bundled third-party libraries in the readme (mermaid.js 11.16.0 MIT, league/commonmark BSD-3-Clause, symfony/yaml MIT).
 
 = 0.11.0 =
 * GitHub sync (concept 06, way 1): a page can carry a Markdown source URL and is pulled on save, via Sync now, and on a schedule set on a new settings page (off, hourly, twice daily, daily, weekly; default daily). Its content editor is locked, the page overview shows the source, and a placeable block marks the public page. A whole GitHub folder can be imported from a tree URL via the contents API.
