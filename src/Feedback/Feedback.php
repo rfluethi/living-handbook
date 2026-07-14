@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Feedback;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\PostType\Handbook;
 use WP_Post;
 use WP_REST_Request;
@@ -21,9 +22,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Stores per-page yes/no counts and exposes a REST endpoint to increment them.
  *
- * The endpoint is limited to logged-in users (the handbook is internal) and
- * counts one vote per user and page: a second submit from the same user is
- * accepted but does not change the counters.
+ * The endpoint is limited to logged-in users who may view the page (the
+ * handbook is internal and access is enforced per handbook), and counts one
+ * vote per user and page: a second submit from the same user is accepted but
+ * does not change the counters.
  */
 final class Feedback {
 
@@ -86,6 +88,12 @@ final class Feedback {
 
 		if ( ! $post instanceof WP_Post || Handbook::POST_TYPE !== $post->post_type ) {
 			return new WP_REST_Response( array( 'ok' => false ), 400 );
+		}
+
+		// Only accept feedback for a page the user is actually allowed to read,
+		// so voting follows the same per-handbook access rules as viewing.
+		if ( ! AccessController::can_view_post( $post_id, get_current_user_id() ) ) {
+			return new WP_REST_Response( array( 'ok' => false ), 403 );
 		}
 
 		$key = '';

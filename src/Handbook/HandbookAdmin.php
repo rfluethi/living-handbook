@@ -5,8 +5,9 @@
  * Adds fields to the `handbook_set` term add and edit screens so an editor can
  * set the visibility (public, members, restricted) and, for restricted
  * handbooks, the allowed roles and users. The roles and users fields are only
- * shown when the visibility is restricted (toggled by a small inline script).
- * The term list table shows an Access column with the configured visibility.
+ * shown when the visibility is restricted (toggled by an enqueued script on the
+ * term screens). The term list table shows an Access column with the configured
+ * visibility.
  *
  * @package LivingHandbook
  */
@@ -36,8 +37,33 @@ final class HandbookAdmin {
 		add_action( Handbooks::TAXONOMY . '_edit_form_fields', array( $this, 'render_edit_fields' ) );
 		add_action( 'created_' . Handbooks::TAXONOMY, array( $this, 'save' ) );
 		add_action( 'edited_' . Handbooks::TAXONOMY, array( $this, 'save' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_toggle' ) );
 		add_filter( 'manage_edit-' . Handbooks::TAXONOMY . '_columns', array( $this, 'access_column' ) );
 		add_filter( 'manage_' . Handbooks::TAXONOMY . '_custom_column', array( $this, 'access_column_value' ), 10, 3 );
+	}
+
+	/**
+	 * Enqueue the visibility toggle script on the handbook term add and edit
+	 * screens only. Replaces the former inline script.
+	 *
+	 * @param string $hook Current admin page hook suffix.
+	 * @return void
+	 */
+	public function enqueue_toggle( string $hook ): void {
+		if ( 'edit-tags.php' !== $hook && 'term.php' !== $hook ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( null === $screen || Handbooks::TAXONOMY !== $screen->taxonomy ) {
+			return;
+		}
+		wp_enqueue_script(
+			'living-handbook-access',
+			LIVING_HANDBOOK_URL . 'assets/js/handbook-access.js',
+			array(),
+			LIVING_HANDBOOK_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -62,7 +88,6 @@ final class HandbookAdmin {
 			<p class="description"><?php esc_html_e( 'Comma-separated user logins or IDs.', 'living-handbook' ); ?></p>
 		</div>
 		<?php
-		$this->toggle_script();
 	}
 
 	/**
@@ -103,35 +128,6 @@ final class HandbookAdmin {
 				<p class="description"><?php esc_html_e( 'Comma-separated user logins or IDs.', 'living-handbook' ); ?></p>
 			</td>
 		</tr>
-		<?php
-		$this->toggle_script();
-	}
-
-	/**
-	 * Print the inline script that shows the roles/users fields only when the
-	 * visibility is restricted.
-	 *
-	 * @return void
-	 */
-	private function toggle_script(): void {
-		?>
-		<script>
-		( function () {
-			var sel = document.getElementById( 'living_handbook_visibility' );
-			if ( ! sel ) {
-				return;
-			}
-			var rows = document.querySelectorAll( '.js-lh-restricted' );
-			function update() {
-				var restricted = 'restricted' === sel.value;
-				rows.forEach( function ( row ) {
-					row.style.display = restricted ? '' : 'none';
-				} );
-			}
-			sel.addEventListener( 'change', update );
-			update();
-		}() );
-		</script>
 		<?php
 	}
 
