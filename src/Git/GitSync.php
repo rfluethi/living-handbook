@@ -44,8 +44,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class GitSync {
 
-	public const META_SOURCE = 'hb_quelle';
-	public const META_URL    = 'hb_markdown_source';
+	public const META_SOURCE = 'living_handbook_source';
+	public const META_URL    = 'living_handbook_markdown_source';
 
 	public const SOURCE_WORDPRESS = 'wordpress';
 	public const SOURCE_GITHUB    = 'github';
@@ -417,11 +417,11 @@ final class GitSync {
 		$url    = (string) get_post_meta( $post->ID, self::META_URL, true );
 		$status = (string) get_post_meta( $post->ID, self::META_STATUS, true );
 		?>
-		<p><label><input type="radio" name="hb_quelle" value="wordpress" <?php checked( self::SOURCE_WORDPRESS, $source ); ?>> <?php esc_html_e( 'Maintained in WordPress', 'living-handbook' ); ?></label></p>
-		<p><label><input type="radio" name="hb_quelle" value="github" <?php checked( self::SOURCE_GITHUB, $source ); ?>> <?php esc_html_e( 'Synced from GitHub', 'living-handbook' ); ?></label></p>
+		<p><label><input type="radio" name="living_handbook_source" value="wordpress" <?php checked( self::SOURCE_WORDPRESS, $source ); ?>> <?php esc_html_e( 'Maintained in WordPress', 'living-handbook' ); ?></label></p>
+		<p><label><input type="radio" name="living_handbook_source" value="github" <?php checked( self::SOURCE_GITHUB, $source ); ?>> <?php esc_html_e( 'Synced from GitHub', 'living-handbook' ); ?></label></p>
 		<p>
-			<label for="hb_markdown_source"><?php esc_html_e( 'Markdown source (raw or blob URL)', 'living-handbook' ); ?></label>
-			<input type="url" id="hb_markdown_source" name="hb_markdown_source" value="<?php echo esc_attr( $url ); ?>" class="widefat" placeholder="https://github.com/... or https://raw.githubusercontent.com/...">
+			<label for="living_handbook_markdown_source"><?php esc_html_e( 'Markdown source (raw or blob URL)', 'living-handbook' ); ?></label>
+			<input type="url" id="living_handbook_markdown_source" name="living_handbook_markdown_source" value="<?php echo esc_attr( $url ); ?>" class="widefat" placeholder="https://github.com/... or https://raw.githubusercontent.com/...">
 		</p>
 		<?php if ( self::SOURCE_GITHUB === $source && '' !== $url ) : ?>
 			<p>
@@ -453,11 +453,11 @@ final class GitSync {
 			return;
 		}
 
-		$raw    = isset( $_POST['hb_quelle'] ) ? sanitize_text_field( wp_unslash( $_POST['hb_quelle'] ) ) : '';
+		$raw    = isset( $_POST['living_handbook_source'] ) ? sanitize_text_field( wp_unslash( $_POST['living_handbook_source'] ) ) : '';
 		$source = self::SOURCE_GITHUB === $raw ? self::SOURCE_GITHUB : self::SOURCE_WORDPRESS;
 		update_post_meta( $post_id, self::META_SOURCE, $source );
 
-		$raw_url = isset( $_POST['hb_markdown_source'] ) ? wp_unslash( $_POST['hb_markdown_source'] ) : '';
+		$raw_url = isset( $_POST['living_handbook_markdown_source'] ) ? wp_unslash( $_POST['living_handbook_markdown_source'] ) : '';
 		$url     = esc_url_raw( self::normalize_url( is_string( $raw_url ) ? $raw_url : '' ) );
 		update_post_meta( $post_id, self::META_URL, $url );
 
