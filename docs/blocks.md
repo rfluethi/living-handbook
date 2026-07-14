@@ -2,7 +2,7 @@
 
 Living Handbook ships nine dynamic blocks, grouped under the **Living Handbook** category in the block inserter. They are server-rendered: each one produces its markup on page load, based on the current context. Most only output something in the context they are meant for (a single handbook page or a handbook entry page); placed elsewhere they render nothing.
 
-![](living-handbook-blocks.png)
+![Living Handbook Blocks](_attachments/living-handbook-blocks.png)
 
 You normally do not place most of these blocks by hand. The plugin registers three block templates that place them for you: the handbook overview, the handbook entry and the single handbook page. You can still add or rearrange the blocks yourself in the Site Editor.
 

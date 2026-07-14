@@ -516,3 +516,89 @@ msgid "Living Handbook: %d GitHub page could not be synced. Open it to see the e
 msgid_plural "Living Handbook: %d GitHub pages could not be synced. Open them to see the error."
 msgstr[0] "Living Handbook: %d GitHub-Seite konnte nicht synchronisiert werden. Öffne sie, um den Fehler zu sehen."
 msgstr[1] "Living Handbook: %d GitHub-Seiten konnten nicht synchronisiert werden. Öffne sie, um den Fehler zu sehen."
+
+# Editor (block) labels. Source strings live in assets/blocks.js.
+
+msgid "Handbook overview"
+msgstr "Handbuch-Übersicht"
+
+msgid "Overview"
+msgstr "Übersicht"
+
+msgid "Display"
+msgstr "Anzeige"
+
+msgid "Cards"
+msgstr "Karten"
+
+msgid "List"
+msgstr "Liste"
+
+msgid "Handbook navigation"
+msgstr "Handbuch-Navigation"
+
+msgid "Navigation"
+msgstr "Navigation"
+
+msgid "Menu"
+msgstr "Menü"
+
+msgid "Accordion"
+msgstr "Akkordeon"
+
+msgid "Handbook navigation: the page tree of the current handbook, styled by the VSN plugin. Choose Menu or Accordion in the block settings."
+msgstr "Handbuch-Navigation: der Seitenbaum des aktuellen Handbuchs, gestaltet vom VSN-Plugin. Wähle in den Blockeinstellungen Menü oder Akkordeon."
+
+msgid "Placement"
+msgstr "Platzierung"
+
+msgid "Desktop (side column, open)"
+msgstr "Desktop (Seitenspalte, offen)"
+
+msgid "Mobile (above content, collapsed)"
+msgstr "Mobil (über dem Inhalt, eingeklappt)"
+
+msgid "Heading depth (up to H…)"
+msgstr "Überschriftentiefe (bis H…)"
+
+msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
+msgstr "Inhaltsverzeichnis: eine aufklappbare Liste aus den Überschriften der aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine Überschriften hat."
+
+msgid "Handbook page meta"
+msgstr "Handbuch-Seiten-Meta"
+
+msgid "Page meta"
+msgstr "Seiten-Meta"
+
+msgid "Show people (avatar and name)"
+msgstr "Personen anzeigen (Avatar und Name)"
+
+msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
+msgstr "Handbuch-Seiten-Meta: die Fußzeile mit Erstellt, Aktualisiert, Geprüft und verantwortlicher Rolle. Schalte die Personen in den Blockeinstellungen ein oder aus."
+
+msgid "Handbook entry"
+msgstr "Handbuch-Eintrag"
+
+msgid "Entry"
+msgstr "Eintrag"
+
+msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
+msgstr "Handbuch-Eintrag: auf einer Handbuch-Seite zeigt er Suche, Filter, Bereiche und zuletzt aktualisierte Seiten dieses Handbuchs."
+
+msgid "Handbook menu"
+msgstr "Handbuch-Menü"
+
+msgid "Handbook menu: a compact list of the handbooks the visitor may read, for a header or navigation area."
+msgstr "Handbuch-Menü: eine kompakte Liste der Handbücher, die der Besucher lesen darf, für Kopfbereich oder Navigation."
+
+msgid "Handbook badges"
+msgstr "Handbuch-Badges"
+
+msgid "Handbook badges: page type, topic and audience of the current page."
+msgstr "Handbuch-Badges: Seitentyp, Thema und Zielgruppe der aktuellen Seite."
+
+msgid "Handbook feedback"
+msgstr "Handbuch-Feedback"
+
+msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
+msgstr "Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite."

@@ -23,12 +23,13 @@ composer analyze
 echo "==> Unit tests (phpunit)"
 composer test
 
-echo "==> Compile translations (.po -> .l10n.php)"
+echo "==> Translations: update .pot template and compile .l10n.php"
 if command -v wp >/dev/null 2>&1; then
+	wp i18n make-pot . languages/living-handbook.pot --exclude=vendor,node_modules,tests --slug=living-handbook
 	wp i18n make-php languages/
 else
-	echo "wp-cli not found; skipping. The committed .l10n.php is used as is."
-	echo "Install wp-cli so the .l10n.php is generated from the .po automatically."
+	echo "wp-cli not found; skipping .pot and .l10n.php generation. The committed files are used as is."
+	echo "Install wp-cli so the .pot template and the .l10n.php are generated from source automatically."
 fi
 
 echo "==> Build"

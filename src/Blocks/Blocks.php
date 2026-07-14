@@ -200,9 +200,12 @@ final class Blocks {
 	 * Enqueue the hand-written editor script that registers the blocks.
 	 *
 	 * The script uses wp.i18n.__ for its labels. Because it is hand-written
-	 * rather than built, its strings are provided to the editor with an inline
-	 * setLocaleData call (only for German locales) instead of a compiled JSON
-	 * translation file.
+	 * rather than built with a JSON translation file, the current locale's
+	 * translations of those labels are looked up in PHP (from the loaded text
+	 * domain) and handed to the editor with setLocaleData. This keeps the
+	 * editor translatable in any language through the .po files, without a
+	 * compiled JSON per script. The English source strings live in blocks.js,
+	 * so `wp i18n make-pot` extracts them into the template.
 	 *
 	 * @return void
 	 */
@@ -215,56 +218,73 @@ final class Blocks {
 			true
 		);
 
-		if ( 0 === strpos( determine_locale(), 'de' ) ) {
+		$locale = determine_locale();
+		if ( 0 === strpos( $locale, 'en' ) ) {
+			return;
+		}
+
+		$data = array(
+			'' => array(
+				'domain' => 'living-handbook',
+				'lang'   => $locale,
+			),
+		);
+		foreach ( self::editor_js_strings() as $string ) {
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Bridging already-extracted JS strings to the editor; source strings are extracted from blocks.js.
+			$translated = __( $string, 'living-handbook' );
+			if ( $translated !== $string ) {
+				$data[ $string ] = array( $translated );
+			}
+		}
+
+		if ( count( $data ) > 1 ) {
 			wp_add_inline_script(
 				'living-handbook-blocks',
-				'wp.i18n.setLocaleData( ' . wp_json_encode( self::editor_locale_data() ) . ', "living-handbook" );',
+				'wp.i18n.setLocaleData( ' . wp_json_encode( $data ) . ', "living-handbook" );',
 				'before'
 			);
 		}
 	}
 
 	/**
-	 * German translations for the editor script labels, in the Jed locale-data
-	 * shape that wp.i18n.setLocaleData expects.
+	 * The English source strings used by the editor script (blocks.js). They are
+	 * translated in the .po files like any other string; this list only tells
+	 * the bridge which ones to hand to the editor. Keep it in sync with the
+	 * __() calls in blocks.js.
 	 *
-	 * @return array<string, mixed>
+	 * @return string[]
 	 */
-	private static function editor_locale_data(): array {
+	private static function editor_js_strings(): array {
 		return array(
-			''                                  => array(
-				'domain' => 'living-handbook',
-				'lang'   => 'de_DE',
-			),
-			'Handbook overview'                 => array( 'Handbuch-Übersicht' ),
-			'Overview'                          => array( 'Übersicht' ),
-			'Display'                           => array( 'Anzeige' ),
-			'Cards'                             => array( 'Karten' ),
-			'List'                              => array( 'Liste' ),
-			'Handbook navigation'               => array( 'Handbuch-Navigation' ),
-			'Navigation'                        => array( 'Navigation' ),
-			'Menu'                              => array( 'Menü' ),
-			'Accordion'                         => array( 'Akkordeon' ),
-			'Handbook navigation: the page tree of the current handbook, styled by the VSN plugin. Choose Menu or Accordion in the block settings.' => array( 'Handbuch-Navigation: der Seitenbaum des aktuellen Handbuchs, gestaltet vom VSN-Plugin. Wähle in den Blockeinstellungen Menü oder Akkordeon.' ),
-			'Table of Contents'                 => array( 'Inhaltsverzeichnis' ),
-			'Placement'                         => array( 'Platzierung' ),
-			'Desktop (side column, open)'       => array( 'Desktop (Seitenspalte, offen)' ),
-			'Mobile (above content, collapsed)' => array( 'Mobil (über dem Inhalt, eingeklappt)' ),
-			'Heading depth (up to H…)'          => array( 'Überschriftentiefe (bis H…)' ),
-			'Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.' => array( 'Inhaltsverzeichnis: eine aufklappbare Liste aus den Überschriften der aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine Überschriften hat.' ),
-			'Handbook page meta'                => array( 'Handbuch-Seiten-Meta' ),
-			'Page meta'                         => array( 'Seiten-Meta' ),
-			'Show people (avatar and name)'     => array( 'Personen anzeigen (Avatar und Name)' ),
-			'Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings.' => array( 'Handbuch-Seiten-Meta: die Fußzeile mit Erstellt, Aktualisiert, Geprüft und verantwortlicher Rolle. Schalte die Personen in den Blockeinstellungen ein oder aus.' ),
-			'Handbook entry'                    => array( 'Handbuch-Eintrag' ),
-			'Entry'                             => array( 'Eintrag' ),
-			'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.' => array( 'Handbuch-Eintrag: auf einer Handbuch-Seite zeigt er Suche, Filter, Bereiche und zuletzt aktualisierte Seiten dieses Handbuchs.' ),
-			'Handbook menu'                     => array( 'Handbuch-Menü' ),
-			'Handbook menu: a compact list of the handbooks the visitor may read, for a header or navigation area.' => array( 'Handbuch-Menü: eine kompakte Liste der Handbücher, die der Besucher lesen darf, für Kopfbereich oder Navigation.' ),
-			'Handbook badges'                   => array( 'Handbuch-Badges' ),
-			'Handbook badges: page type, topic and audience of the current page.' => array( 'Handbuch-Badges: Seitentyp, Thema und Zielgruppe der aktuellen Seite.' ),
-			'Handbook feedback'                 => array( 'Handbuch-Feedback' ),
-			'Handbook feedback: the "Was this helpful?" prompt for the current page.' => array( 'Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite.' ),
+			'Handbook overview',
+			'Overview',
+			'Display',
+			'Cards',
+			'List',
+			'Handbook navigation',
+			'Navigation',
+			'Menu',
+			'Accordion',
+			'Handbook navigation: the page tree of the current handbook, styled by the VSN plugin. Choose Menu or Accordion in the block settings.',
+			'Table of Contents',
+			'Placement',
+			'Desktop (side column, open)',
+			'Mobile (above content, collapsed)',
+			'Heading depth (up to H…)',
+			'Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.',
+			'Handbook page meta',
+			'Page meta',
+			'Show people (avatar and name)',
+			'Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings.',
+			'Handbook entry',
+			'Entry',
+			'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.',
+			'Handbook menu',
+			'Handbook menu: a compact list of the handbooks the visitor may read, for a header or navigation area.',
+			'Handbook badges',
+			'Handbook badges: page type, topic and audience of the current page.',
+			'Handbook feedback',
+			'Handbook feedback: the "Was this helpful?" prompt for the current page.',
 		);
 	}
 

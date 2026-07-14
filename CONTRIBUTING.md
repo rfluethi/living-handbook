@@ -44,9 +44,10 @@ Do not extract the zip inside the repository; that would commit a second copy of
 
 ## Conventions
 
+- **English is the language of the repository.** Code, comments, commit messages, pull request and issue text, `readme.txt` and the English `docs/` are written in English, so the project stays open to contributors who do not speak German. The German localisation is the only exception: `docs-de/` and the `languages/*-de_DE.*` files are the German translation and stay German.
 - Target PHP 8.1 and WordPress 6.7 or newer.
 - Follow the WordPress coding standards (enforced by PHPCS).
-- All user-facing strings use the `living-handbook` text domain.
+- All user-facing strings use the `living-handbook` text domain, and English is the source language, so the plugin is translatable into any language.
 - Escape on output, sanitize on input, check capabilities and nonces.
 - Keep the changelog in `readme.txt`.
 - Branch off `main`, keep pull requests focused, and make sure CI is green.
