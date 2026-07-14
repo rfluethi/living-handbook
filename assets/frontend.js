@@ -10,6 +10,10 @@
 ( function () {
 	'use strict';
 
+	function prefersReducedMotion() {
+		return window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+	}
+
 	/* ---------- Overview and entry: live card narrowing while typing ---------- */
 
 	function cards() {
@@ -164,7 +168,13 @@
 				a.textContent = h.textContent;
 				a.addEventListener( 'click', function ( event ) {
 					event.preventDefault();
-					h.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+					h.scrollIntoView( { behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' } );
+					// Move keyboard focus to the target heading so keyboard and
+					// screen-reader users land at the section, not back at the top.
+					if ( ! h.hasAttribute( 'tabindex' ) ) {
+						h.setAttribute( 'tabindex', '-1' );
+					}
+					h.focus( { preventScroll: true } );
 					if ( window.history && window.history.pushState ) {
 						window.history.pushState( null, '', '#' + h.id );
 					}
@@ -236,6 +246,9 @@
 		document.querySelectorAll( '.living-handbook-entry' ).forEach( wireEntry );
 
 		document.querySelectorAll( '.living-handbook-feedback' ).forEach( function ( box ) {
+			// Announce the confirmation to assistive technology when the buttons
+			// are replaced by the thank-you text.
+			box.setAttribute( 'aria-live', 'polite' );
 			box.querySelectorAll( 'button[data-value]' ).forEach( function ( button ) {
 				button.addEventListener( 'click', function () {
 					sendFeedback( box, button.getAttribute( 'data-value' ) );

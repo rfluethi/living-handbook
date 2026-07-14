@@ -602,3 +602,64 @@
 	display: block;
 	margin: 0.1rem 0 0.15rem;
 }
+
+/* ---------- Accessibility pass (WCAG) ---------- */
+
+/* Visible keyboard focus for every interactive handbook control (WCAG 2.4.7).
+ * Themes frequently strip the browser default; restore an explicit outline. */
+.living-handbook-card__link:focus-visible,
+.living-handbook-nav a:focus-visible,
+.living-handbook-toc__list a:focus-visible,
+.living-handbook-toc__summary:focus-visible,
+.living-handbook-menu__link:focus-visible,
+.living-handbook-menu__toggle:focus-visible,
+.living-handbook-start__search .living-handbook-search__input:focus-visible,
+.living-handbook-start__search button:focus-visible,
+.living-handbook-reset:focus-visible,
+.living-handbook-facet__cb:focus-visible,
+.living-handbook-feedback button:focus-visible {
+	outline: 2px solid var(--lh-accent, #2c5f8a);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+/* A heading focused programmatically from the table of contents is not part of
+ * the tab order, so it needs no persistent focus ring. */
+.wp-block-post-content :is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:focus,
+.entry-content :is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:focus {
+	outline: none;
+}
+
+/* Respect a reduced-motion preference (WCAG 2.3.3): drop the card hover motion
+ * and the loading fade. The table-of-contents scroll is handled in JavaScript. */
+@media (prefers-reduced-motion: reduce) {
+	.living-handbook-card,
+	.living-handbook-main {
+		transition: none;
+	}
+
+	.living-handbook-card:hover {
+		transform: none;
+	}
+}
+
+/* Contrast (WCAG 1.4.3): darken the muted grey so small secondary text clears
+ * AA (4.5:1 on white). The previous value #76828d was about 3.9:1. Revert this
+ * block if it clashes with your theme. */
+.living-handbook-overview,
+.living-handbook-entry,
+.living-handbook-cards,
+.living-handbook-card,
+.living-handbook-layout,
+.living-handbook-sidebar,
+.living-handbook-aside,
+.living-handbook-nav,
+.living-handbook-toc,
+.living-handbook-badges,
+.living-handbook-meta,
+.living-handbook-feedback,
+.living-handbook-badge,
+.living-handbook-count,
+.living-handbook-empty {
+	--lh-muted: #5f6b75;
+}
