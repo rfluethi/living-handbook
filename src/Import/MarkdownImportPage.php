@@ -28,6 +28,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * GitHub file URL creates one locked, synced page; a GitHub folder (tree) URL
  * creates one per Markdown file. Postprocessor applies the transport metadata and
  * resolves parents and internal links.
+ *
+ * A re-import of the same structured source refreshes the matching pages instead
+ * of creating duplicates: a page carrying a source path (folder and MkDocs
+ * imports) is matched by that path, and a file-based import into a chosen
+ * handbook is matched by slug within that handbook. A one-off pasted draft
+ * always creates a new page.
  */
 final class MarkdownImportPage {
 
@@ -289,19 +295,21 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * REST callback: create one handbook draft from converted block content.
+	 * REST callback: create one handbook draft from converted block content, or
+	 * refresh the matching page on a re-import.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return array<string, mixed>
 	 */
 	public function create_callback( WP_REST_Request $request ): array {
-		$title       = sanitize_text_field( (string) $request->get_param( 'title' ) );
-		$content     = (string) $request->get_param( 'content' );
-		$handbook_id = absint( $request->get_param( 'handbook' ) );
-		$transport   = (array) $request->get_param( 'transport' );
-		$parent      = absint( $request->get_param( 'parent' ) );
-		$source_path = sanitize_text_field( (string) $request->get_param( 'sourcePath' ) );
-		$slug        = sanitize_title( (string) $request->get_param( 'slug' ) );
+		$title         = sanitize_text_field( (string) $request->get_param( 'title' ) );
+		$content       = (string) $request->get_param( 'content' );
+		$handbook_id   = absint( $request->get_param( 'handbook' ) );
+		$transport     = (array) $request->get_param( 'transport' );
+		$parent        = absint( $request->get_param( 'parent' ) );
+		$source_path   = sanitize_text_field( (string) $request->get_param( 'sourcePath' ) );
+		$explicit_slug = sanitize_title( (string) $request->get_param( 'slug' ) );
+		$slug          = $explicit_slug;
 
 		// A "Slug:" line in the transport block is authoritative, so an area
 		// start page keeps its intended URL.
@@ -327,24 +335,38 @@ final class MarkdownImportPage {
 		// so the page does not show its title twice.
 		$content = self::strip_leading_title_repeat( $content, $title );
 
+		// Re-import protection: refresh the matching page instead of creating a
+		// duplicate. A stored source path (folder and MkDocs imports) is matched
+		// by path; a file-based import (an explicit slug) into a chosen handbook
+		// is matched by slug within that handbook. A pasted draft, which carries
+		// neither, always creates a new page.
+		$allow_slug_match = '' !== $explicit_slug && $handbook_id > 0;
+		$existing_id      = self::find_existing_page( $slug, $source_path, $handbook_id, $allow_slug_match );
+
 		// wp_insert_post expects slashed data and unslashes it; slash the block
 		// markup so escape sequences like \n and > survive.
-		$post_id = wp_insert_post(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'draft',
-				'post_title'     => $title,
-				'post_name'      => $slug,
-				'post_parent'    => $parent,
-				'post_content'   => (string) wp_slash( $content ),
-				'comment_status' => 'open',
-			),
-			true
+		$data = array(
+			'post_type'      => Handbook::POST_TYPE,
+			'post_title'     => $title,
+			'post_parent'    => $parent,
+			'post_content'   => (string) wp_slash( $content ),
+			'comment_status' => 'open',
 		);
-		if ( is_wp_error( $post_id ) ) {
-			return array( 'error' => $post_id->get_error_message() );
+
+		if ( $existing_id > 0 ) {
+			// Keep the existing slug and publication status so URLs and
+			// visibility stay stable across re-imports.
+			$data['ID'] = $existing_id;
+			$result     = wp_update_post( $data, true );
+		} else {
+			$data['post_status'] = 'draft';
+			$data['post_name']   = $slug;
+			$result              = wp_insert_post( $data, true );
 		}
-		$post_id = (int) $post_id;
+		if ( is_wp_error( $result ) ) {
+			return array( 'error' => $result->get_error_message() );
+		}
+		$post_id = (int) $result;
 
 		Postprocessor::apply_transport( $post_id, $transport, $handbook_id );
 
@@ -363,6 +385,7 @@ final class MarkdownImportPage {
 		return array(
 			'id'         => $post_id,
 			'sourcePath' => $source_path,
+			'updated'    => $existing_id > 0,
 			'editUrl'    => add_query_arg(
 				array(
 					'post'   => $post_id,
@@ -371,6 +394,62 @@ final class MarkdownImportPage {
 				admin_url( 'post.php' )
 			),
 		);
+	}
+
+	/**
+	 * Find an existing handbook page to refresh on a re-import.
+	 *
+	 * Matches first by the stored source path (the precise key for folder and
+	 * MkDocs imports), then, if allowed, by slug within the chosen handbook.
+	 * Returns 0 when nothing matches, so the caller creates a new page.
+	 *
+	 * @param string $slug             Intended slug.
+	 * @param string $source_path      Source path from the import, if any.
+	 * @param int    $handbook_id      Target handbook term ID (0 for none).
+	 * @param bool   $allow_slug_match Whether a slug match is permitted.
+	 * @return int Existing post ID, or 0.
+	 */
+	private static function find_existing_page( string $slug, string $source_path, int $handbook_id, bool $allow_slug_match ): int {
+		$base = array(
+			'post_type'      => Handbook::POST_TYPE,
+			'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		);
+		if ( $handbook_id > 0 ) {
+			$base['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				array(
+					'taxonomy' => Handbooks::TAXONOMY,
+					'field'    => 'term_id',
+					'terms'    => $handbook_id,
+				),
+			);
+		}
+
+		if ( '' !== $source_path ) {
+			$by_path = get_posts(
+				array_merge(
+					$base,
+					array(
+						'meta_key'   => Postprocessor::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+						'meta_value' => $source_path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					)
+				)
+			);
+			if ( ! empty( $by_path ) ) {
+				return (int) $by_path[0];
+			}
+		}
+
+		if ( $allow_slug_match && '' !== $slug ) {
+			$by_slug = get_posts( array_merge( $base, array( 'name' => $slug ) ) );
+			if ( ! empty( $by_slug ) ) {
+				return (int) $by_slug[0];
+			}
+		}
+
+		return 0;
 	}
 
 	/**

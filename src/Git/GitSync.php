@@ -210,7 +210,8 @@ final class GitSync {
 	}
 
 	/**
-	 * Create a locked GitHub page from a source URL and pull it once.
+	 * Create a locked GitHub page from a source URL and pull it once, or refresh
+	 * the existing page for that URL on a re-import.
 	 *
 	 * The slug is taken from the source file name so that internal .md links,
 	 * which reference other pages by file name, resolve to these pages.
@@ -228,19 +229,24 @@ final class GitSync {
 		$path = wp_parse_url( $url, PHP_URL_PATH );
 		$slug = sanitize_title( pathinfo( is_string( $path ) ? $path : $url, PATHINFO_FILENAME ) );
 
-		$post_id = wp_insert_post(
-			array(
-				'post_type'   => Handbook::POST_TYPE,
-				'post_status' => 'draft',
-				'post_title'  => '' !== $title ? $title : __( 'GitHub page', 'living-handbook' ),
-				'post_name'   => $slug,
-			),
-			true
-		);
-		if ( is_wp_error( $post_id ) ) {
-			return 0;
+		// Re-import protection: if a page already tracks this source URL, refresh
+		// it instead of creating a duplicate.
+		$post_id = self::find_by_url( $url, $handbook_id );
+		if ( 0 === $post_id ) {
+			$inserted = wp_insert_post(
+				array(
+					'post_type'   => Handbook::POST_TYPE,
+					'post_status' => 'draft',
+					'post_title'  => '' !== $title ? $title : __( 'GitHub page', 'living-handbook' ),
+					'post_name'   => $slug,
+				),
+				true
+			);
+			if ( is_wp_error( $inserted ) ) {
+				return 0;
+			}
+			$post_id = (int) $inserted;
 		}
-		$post_id = (int) $post_id;
 
 		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_GITHUB );
 		update_post_meta( $post_id, self::META_URL, $url );
@@ -250,6 +256,37 @@ final class GitSync {
 
 		$this->sync_page( $post_id );
 		return $post_id;
+	}
+
+	/**
+	 * Find an existing GitHub-sourced page that tracks a given source URL, so a
+	 * re-import refreshes it instead of creating a duplicate.
+	 *
+	 * @param string $url         Normalized Markdown source URL.
+	 * @param int    $handbook_id Target handbook term id (0 for none).
+	 * @return int Existing post id, or 0.
+	 */
+	private static function find_by_url( string $url, int $handbook_id ): int {
+		$args = array(
+			'post_type'      => Handbook::POST_TYPE,
+			'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			'meta_key'       => self::META_URL, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			'meta_value'     => $url, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+		);
+		if ( $handbook_id > 0 ) {
+			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				array(
+					'taxonomy' => Handbooks::TAXONOMY,
+					'field'    => 'term_id',
+					'terms'    => $handbook_id,
+				),
+			);
+		}
+		$found = get_posts( $args );
+		return ! empty( $found ) ? (int) $found[0] : 0;
 	}
 
 	/**
