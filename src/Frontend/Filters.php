@@ -44,6 +44,11 @@ final class Filters {
 	public const REST_ROUTE     = '/filter';
 
 	/**
+	 * Indent per hierarchy level in the facet list, in rem.
+	 */
+	private const FACET_INDENT = 0.9;
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -176,6 +181,10 @@ final class Filters {
 	 * facet filters through the REST route (handled by the frontend script), so
 	 * the form has no submit button; a Reset link clears the filters.
 	 *
+	 * A hierarchical taxonomy is listed as an outline: children follow their
+	 * parent and are indented, instead of the flat alphabetical order that
+	 * get_terms() returns, which would put a child above its own parent.
+	 *
 	 * @param WP_Term $term Handbook term.
 	 * @return string
 	 */
@@ -203,18 +212,28 @@ final class Filters {
 			if ( is_wp_error( $terms ) || empty( $terms ) ) {
 				continue;
 			}
+
+			$rows = is_taxonomy_hierarchical( $taxonomy )
+				? self::as_outline( $terms )
+				: self::as_flat_list( $terms );
+			if ( empty( $rows ) ) {
+				continue;
+			}
+
 			$selected = self::param_values( $param );
 			$fields  .= '<fieldset class="living-handbook-facet"><legend>' . esc_html( self::facet_label( $param ) ) . '</legend>';
-			foreach ( $terms as $facet_term ) {
-				if ( ! $facet_term instanceof WP_Term ) {
-					continue;
-				}
-				$fields .= sprintf(
-					'<label class="living-handbook-facet__opt"><input type="checkbox" class="living-handbook-facet__cb" name="%1$s[]" value="%2$s"%3$s> %4$s</label>',
+			foreach ( $rows as $row ) {
+				$facet_term = $row['term'];
+				$indent     = $row['depth'] > 0
+					? ' style="padding-inline-start:' . esc_attr( (string) round( $row['depth'] * self::FACET_INDENT, 2 ) ) . 'rem"'
+					: '';
+				$fields    .= sprintf(
+					'<label class="living-handbook-facet__opt"%5$s><input type="checkbox" class="living-handbook-facet__cb" name="%1$s[]" value="%2$s"%3$s> %4$s</label>',
 					esc_attr( $param ),
 					esc_attr( $facet_term->slug ),
 					in_array( $facet_term->slug, $selected, true ) ? ' checked' : '',
-					esc_html( $facet_term->name )
+					esc_html( $facet_term->name ),
+					$indent // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built above from an escaped numeric value.
 				);
 			}
 			$fields .= '</fieldset>';
@@ -229,6 +248,97 @@ final class Filters {
 			. $fields
 			. '<a class="living-handbook-reset living-handbook-reset--link" href="' . esc_url( $action ) . '">' . esc_html__( 'Reset', 'living-handbook' ) . '</a>'
 			. '</form>';
+	}
+
+	/**
+	 * Order terms of a hierarchical taxonomy as an outline: each term is
+	 * followed by its children, one level deeper, and every level is sorted by
+	 * name.
+	 *
+	 * A term whose parent is not in the set is treated as top level. That case
+	 * is real: the facets only offer terms that are actually used, so a parent
+	 * with no pages of its own does not appear, and its children must not be
+	 * indented under a term that is missing from the list.
+	 *
+	 * @param WP_Term[] $terms Terms to order.
+	 * @return array<int, array{term:WP_Term, depth:int}>
+	 */
+	private static function as_outline( array $terms ): array {
+		$by_id = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term ) {
+				$by_id[ $term->term_id ] = $term;
+			}
+		}
+		if ( empty( $by_id ) ) {
+			return array();
+		}
+
+		$by_parent = array();
+		foreach ( $by_id as $term ) {
+			$parent                = ( $term->parent > 0 && isset( $by_id[ $term->parent ] ) ) ? (int) $term->parent : 0;
+			$by_parent[ $parent ][] = $term;
+		}
+		foreach ( $by_parent as &$level ) {
+			usort(
+				$level,
+				static function ( WP_Term $a, WP_Term $b ): int {
+					return strnatcasecmp( $a->name, $b->name );
+				}
+			);
+		}
+		unset( $level );
+
+		$out = array();
+		self::append_level( $by_parent, 0, 0, $out );
+		return $out;
+	}
+
+	/**
+	 * Append one outline level and its descendants to the output.
+	 *
+	 * @param array<int, WP_Term[]>                    $by_parent Terms grouped by parent id.
+	 * @param int                                      $parent    Parent id to append.
+	 * @param int                                      $depth     Current depth.
+	 * @param array<int, array{term:WP_Term, depth:int}> $out     Output, by reference.
+	 * @return void
+	 */
+	private static function append_level( array $by_parent, int $parent, int $depth, array &$out ): void {
+		if ( empty( $by_parent[ $parent ] ) ) {
+			return;
+		}
+		foreach ( $by_parent[ $parent ] as $term ) {
+			$out[] = array(
+				'term'  => $term,
+				'depth' => $depth,
+			);
+			self::append_level( $by_parent, (int) $term->term_id, $depth + 1, $out );
+		}
+	}
+
+	/**
+	 * Order terms of a non-hierarchical taxonomy: a flat list, sorted by name.
+	 *
+	 * @param WP_Term[] $terms Terms to order.
+	 * @return array<int, array{term:WP_Term, depth:int}>
+	 */
+	private static function as_flat_list( array $terms ): array {
+		$out = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term ) {
+				$out[] = array(
+					'term'  => $term,
+					'depth' => 0,
+				);
+			}
+		}
+		usort(
+			$out,
+			static function ( array $a, array $b ): int {
+				return strnatcasecmp( $a['term']->name, $b['term']->name );
+			}
+		);
+		return $out;
 	}
 
 	/**
