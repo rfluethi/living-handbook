@@ -2,12 +2,15 @@
 #
 # Build an installable plugin zip from the current working tree.
 #
-# The runtime files ship: the main file, src, assets, languages, the readme and
-# LICENSE, plus the production Composer dependencies (vendor/, without dev
-# packages) that the import and GitHub sync need. Development files (tests,
-# tooling, CI config) are left out. The archive is prefixed with living-handbook/
-# so it unpacks into the correct plugin folder. Nothing is read from git, so you
-# can build, install in WordPress and test before committing.
+# The runtime files ship: the main file, uninstall.php, src, assets, languages,
+# the readme and LICENSE, plus the production Composer dependencies (vendor/,
+# without dev packages) that the import and GitHub sync need. composer.json
+# ships alongside vendor/, because Plugin Check flags a vendor directory without
+# it. Development files (tests, tooling, CI config, docs) are left out. Hidden
+# files are stripped: macOS drops .DS_Store into every folder it displays, and
+# Plugin Check rejects hidden files outright. The archive is prefixed with
+# living-handbook/ so it unpacks into the correct plugin folder. Nothing is read
+# from git, so you can build, install in WordPress and test before committing.
 #
 # Usage: bash bin/build.sh
 
@@ -36,6 +39,8 @@ mkdir -p "$dest"
 
 # Runtime files that ship inside the plugin.
 cp living-handbook.php "$dest"/
+cp uninstall.php "$dest"/
+cp composer.json "$dest"/
 cp -R src "$dest"/
 cp -R assets "$dest"/
 cp -R languages "$dest"/
@@ -44,8 +49,13 @@ if [ -f readme.txt ]; then cp readme.txt "$dest"/; fi
 if [ -f README.md ]; then cp README.md "$dest"/; fi
 if [ -f LICENSE ]; then cp LICENSE "$dest"/; fi
 
+# Strip hidden files. Plugin Check rejects them, and macOS scatters .DS_Store
+# and ._* resource forks through any folder that has been opened in Finder.
+find "$dest" -name '.DS_Store' -delete
+find "$dest" -name '._*' -delete
+
 rm -f "$output"
-( cd "$stage" && zip -rq "${root}/${output}" living-handbook )
+( cd "$stage" && zip -rq "${root}/${output}" living-handbook -x '*.DS_Store' -x '*/._*' -x '__MACOSX/*' )
 rm -rf "$stage"
 
 echo "Built ${output} (version ${version}) with production vendor from the working tree."

@@ -16,6 +16,7 @@ namespace LivingHandbook\Frontend;
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Setup\Onboarding;
 use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -124,8 +125,7 @@ final class FrontendRenderer {
 		if ( 'core/navigation' !== $name && 'core/navigation-submenu' !== $name && 'core/navigation-link' !== $name ) {
 			return $block_content;
 		}
-		$class_name = isset( $block['attrs']['className'] ) ? (string) $block['attrs']['className'] : '';
-		if ( false === strpos( $class_name, self::NAV_MARKER_CLASS ) ) {
+		if ( ! self::has_marker_class( $block ) ) {
 			return $block_content;
 		}
 
@@ -141,6 +141,26 @@ final class FrontendRenderer {
 			return self::convert_link_to_submenu( $block_content, $items );
 		}
 		return self::inject_top_level_submenu( $block_content, $items );
+	}
+
+	/**
+	 * Whether a block carries the marker class.
+	 *
+	 * The class list is compared entry by entry, not searched as a substring, so
+	 * a class like `has-handbook-menu-alt` on some unrelated block is not
+	 * mistaken for the marker.
+	 *
+	 * @param array<string, mixed> $block Parsed block.
+	 * @return bool
+	 */
+	private static function has_marker_class( array $block ): bool {
+		$class_name = isset( $block['attrs']['className'] ) ? (string) $block['attrs']['className'] : '';
+		if ( '' === trim( $class_name ) ) {
+			return false;
+		}
+		$classes = preg_split( '/\s+/', trim( $class_name ) );
+
+		return is_array( $classes ) && in_array( self::NAV_MARKER_CLASS, $classes, true );
 	}
 
 	/**
@@ -217,19 +237,28 @@ final class FrontendRenderer {
 	 * Add a "Handbooks" submenu as the first item of a marked navigation block.
 	 * The label can be changed with the living_handbook_nav_label filter.
 	 *
+	 * Needs a destination for the parent item. The post type archive is switched
+	 * off, so the overview page created on activation is used. Without a usable
+	 * overview page nothing is injected: a parent item pointing at "#" would be
+	 * worse than no menu entry. Marking a navigation link or a submenu instead
+	 * has no such problem, because those keep their own destination.
+	 *
 	 * @param string $content Navigation block HTML.
 	 * @param string $items   Handbook list-item HTML.
 	 * @return string
 	 */
 	private static function inject_top_level_submenu( string $content, string $items ): string {
+		$href = self::overview_url();
+		if ( '' === $href ) {
+			return $content;
+		}
+
 		/**
 		 * Filter the label of the injected top-level handbook submenu.
 		 *
 		 * @param string $label Menu label.
 		 */
-		$label   = (string) apply_filters( 'living_handbook_nav_label', __( 'Handbooks', 'living-handbook' ) );
-		$archive = get_post_type_archive_link( Handbook::POST_TYPE );
-		$href    = is_string( $archive ) ? $archive : '#';
+		$label = (string) apply_filters( 'living_handbook_nav_label', __( 'Handbooks', 'living-handbook' ) );
 
 		$submenu = '<li class="wp-block-navigation-item wp-block-navigation-submenu has-child">'
 			. '<a class="wp-block-navigation-item__content" href="' . esc_url( $href ) . '"><span class="wp-block-navigation-item__label">' . esc_html( $label ) . '</span></a>'
@@ -242,6 +271,22 @@ final class FrontendRenderer {
 			return (string) preg_replace( $pattern, '$1' . $submenu, $content, 1 );
 		}
 		return $content;
+	}
+
+	/**
+	 * The permalink of the overview page created on activation, or an empty
+	 * string when there is none to point at.
+	 *
+	 * @return string
+	 */
+	private static function overview_url(): string {
+		$page_id = (int) get_option( Onboarding::OPTION_OVERVIEW_PAGE, 0 );
+		if ( $page_id <= 0 || 'publish' !== get_post_status( $page_id ) ) {
+			return '';
+		}
+		$link = get_permalink( $page_id );
+
+		return is_string( $link ) ? $link : '';
 	}
 
 	/**

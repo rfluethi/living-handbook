@@ -34,6 +34,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Central plugin class. Modules are wired up in boot().
+ *
+ * The text domain is deliberately not loaded here. Since WordPress 4.6 the
+ * translations of a plugin are loaded automatically, just in time, from the
+ * language packs and from the plugin's own Domain Path; calling
+ * load_plugin_textdomain() is unnecessary and Plugin Check flags it.
  */
 final class Plugin {
 
@@ -72,12 +77,6 @@ final class Plugin {
 	 * @return void
 	 */
 	public function boot(): void {
-		load_plugin_textdomain(
-			'living-handbook',
-			false,
-			dirname( plugin_basename( LIVING_HANDBOOK_FILE ) ) . '/languages'
-		);
-
 		( new Handbook() )->register();
 		( new Taxonomies() )->register();
 		( new Handbooks() )->register();

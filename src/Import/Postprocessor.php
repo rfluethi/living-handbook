@@ -258,10 +258,16 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Find a handbook page by title.
+	 * Find a handbook page by title, ignoring one page: the one asking, so a
+	 * page cannot become its own parent.
+	 *
+	 * The page to ignore is skipped in PHP rather than excluded in the query.
+	 * Excluding a single known id does not need a NOT IN clause, and exclusionary
+	 * query parameters scale badly. Two candidates are fetched, which is enough:
+	 * at most one of them can be the asking page.
 	 *
 	 * @param string $title   Title.
-	 * @param int    $exclude Post id to exclude.
+	 * @param int    $exclude Post id to ignore.
 	 * @return int Post id, or 0.
 	 */
 	private static function find_page_by_title( string $title, int $exclude ): int {
@@ -270,13 +276,16 @@ final class Postprocessor {
 				'post_type'      => Handbook::POST_TYPE,
 				'post_status'    => 'any',
 				'title'          => $title,
-				'posts_per_page' => 1,
-				'post__not_in'   => array( $exclude ),
+				'posts_per_page' => 2,
 				'no_found_rows'  => true,
 			)
 		);
-		$post  = $query->posts[0] ?? null;
-		return $post instanceof WP_Post ? (int) $post->ID : 0;
+		foreach ( $query->posts as $post ) {
+			if ( $post instanceof WP_Post && (int) $post->ID !== $exclude ) {
+				return (int) $post->ID;
+			}
+		}
+		return 0;
 	}
 
 	/**

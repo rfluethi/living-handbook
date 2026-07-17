@@ -50,15 +50,15 @@ Often you do not want a separate block, you want the handbooks inside the theme'
 
 You mark the target with the CSS class **`has-handbook-menu`**.
 
-**Where to type it:** select the block in the editor. In the right-hand sidebar, open the **Settings** tab (the gear). Scroll to the bottom of that tab, past the block's own fields, and expand the collapsed **Advanced** panel. Enter `has-handbook-menu` in **Additional CSS class(es)**, then save. The panel is easy to miss because it sits below everything else.
+**Where to type it:** select the block in the editor. In the right-hand sidebar, open the **Settings** tab (the gear). Scroll to the bottom of that tab, past the block's own fields, and expand the collapsed **Advanced** panel. Enter `has-handbook-menu` in **Additional CSS class(es)**, then save. The panel is easy to miss because it sits below everything else. The class has to match exactly; `has-handbook-menu-alt` and the like are ignored.
 
 There are three places you can put that class, and they behave differently:
 
 1. **On a single navigation link (recommended).** The link turns into a submenu whose children are the handbooks. It keeps its own label and its own destination, so a link labelled "Handbook" pointing at your overview page still works when clicked, and opens the handbook list as a submenu.
 2. **On a navigation submenu.** The submenu's children become the handbooks. It keeps its own label and link, so you decide what it is called and where it points. Use this if you already have a submenu in place. It also works for a submenu nested inside another submenu, and for one that is still empty.
-3. **On the whole Navigation block.** A submenu labelled "Handbooks" is added as the first item. Change the label with the `living_handbook_nav_label` filter (see [hooks.md](hooks.md)).
+3. **On the whole Navigation block.** A submenu labelled "Handbooks" is added as the first item, pointing at the overview page that was created on activation. Change the label with the `living_handbook_nav_label` filter (see [hooks.md](hooks.md)). If that overview page no longer exists or is not published, nothing is injected: a menu entry leading nowhere would be worse than none.
 
-Recommendation: use option 1 or 2. Both keep a working parent link that you control. Option 3 has no sensible destination for its parent item, because there is no automatic handbook archive to point at.
+Recommendation: use option 1 or 2. Both keep a parent link that you control and that does not depend on the overview page the plugin created.
 
 **This only works with the block Navigation.** The classic menu editor under Appearance → Menus is not touched, so a CSS class entered there has no effect.
 

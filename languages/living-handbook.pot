@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-17T11:48:58+00:00\n"
+"POT-Creation-Date: 2026-07-17T12:27:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -110,8 +110,8 @@ msgstr ""
 
 #: src/Frontend/Entry.php:96
 #: src/Frontend/Entry.php:98
-#: src/Frontend/FrontendRenderer.php:230
-#: src/Frontend/FrontendRenderer.php:253
+#: src/Frontend/FrontendRenderer.php:261
+#: src/Frontend/FrontendRenderer.php:298
 msgid "Handbooks"
 msgstr ""
 
@@ -185,7 +185,7 @@ msgstr ""
 msgid "Unchecked"
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:73
+#: src/Frontend/FrontendRenderer.php:74
 msgid "Thanks for your feedback."
 msgstr ""
 
@@ -262,7 +262,7 @@ msgid "Unexpected GitHub API response."
 msgstr ""
 
 #: src/Git/GitSync.php:436
-#: src/Git/GitSync.php:811
+#: src/Git/GitSync.php:815
 msgid "Source"
 msgstr ""
 
@@ -290,37 +290,37 @@ msgstr ""
 msgid "A GitHub page is pulled when you save it, and its content editor is locked. Change the source here."
 msgstr ""
 
-#: src/Git/GitSync.php:545
+#: src/Git/GitSync.php:549
 msgid "This page is synced from GitHub. Its content is managed in the repository and cannot be edited here."
 msgstr ""
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:587
+#: src/Git/GitSync.php:591
 #, php-format
 msgid "Living Handbook: %d GitHub page could not be synced. Open it to see the error."
 msgid_plural "Living Handbook: %d GitHub pages could not be synced. Open them to see the error."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Git/GitSync.php:597
+#: src/Git/GitSync.php:601
 #: src/PostType/Handbook.php:56
 msgid "Handbook pages"
 msgstr ""
 
-#: src/Git/GitSync.php:610
+#: src/Git/GitSync.php:614
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Git/GitSync.php:676
+#: src/Git/GitSync.php:680
 msgid "Error: CommonMark is not installed."
 msgstr ""
 
-#: src/Git/GitSync.php:684
+#: src/Git/GitSync.php:688
 msgid "Error: source host not allowed."
 msgstr ""
 
 #. translators: %s: error message from the HTTP request.
-#: src/Git/GitSync.php:690
+#: src/Git/GitSync.php:694
 #: assets/js/markdown-import.js:119
 #: assets/js/markdown-import.js:181
 #, php-format,js-format
@@ -328,90 +328,90 @@ msgid "Error: %s"
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:696
+#: src/Git/GitSync.php:700
 #, php-format
 msgid "Error: HTTP %d"
 msgstr ""
 
-#: src/Git/GitSync.php:722
+#: src/Git/GitSync.php:726
 msgid "OK "
 msgstr ""
 
-#: src/Git/GitSync.php:827
+#: src/Git/GitSync.php:831
 msgid "GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:827
+#: src/Git/GitSync.php:831
 msgid "WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:838
-#: src/Git/GitSync.php:839
-#: src/Git/GitSync.php:881
+#: src/Git/GitSync.php:842
+#: src/Git/GitSync.php:843
+#: src/Git/GitSync.php:885
 msgid "Settings"
 msgstr ""
 
-#: src/Git/GitSync.php:866
+#: src/Git/GitSync.php:870
 msgid "Saved."
 msgstr ""
 
-#: src/Git/GitSync.php:872
+#: src/Git/GitSync.php:876
 msgid "Off (only on save and Sync now)"
 msgstr ""
 
-#: src/Git/GitSync.php:873
+#: src/Git/GitSync.php:877
 msgid "Hourly"
 msgstr ""
 
-#: src/Git/GitSync.php:874
+#: src/Git/GitSync.php:878
 msgid "Twice daily"
 msgstr ""
 
-#: src/Git/GitSync.php:875
+#: src/Git/GitSync.php:879
 msgid "Daily"
 msgstr ""
 
-#: src/Git/GitSync.php:876
+#: src/Git/GitSync.php:880
 msgid "Weekly"
 msgstr ""
 
-#: src/Git/GitSync.php:885
+#: src/Git/GitSync.php:889
 msgid "GitHub sync"
 msgstr ""
 
-#: src/Git/GitSync.php:888
+#: src/Git/GitSync.php:892
 msgid "Automatic sync"
 msgstr ""
 
-#: src/Git/GitSync.php:895
+#: src/Git/GitSync.php:899
 msgid "How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits."
 msgstr ""
 
-#: src/Git/GitSync.php:897
+#: src/Git/GitSync.php:901
 msgid "Next scheduled sync:"
 msgstr ""
 
-#: src/Git/GitSync.php:899
+#: src/Git/GitSync.php:903
 msgid "No background sync scheduled."
 msgstr ""
 
-#: src/Git/GitSync.php:905
+#: src/Git/GitSync.php:909
 msgid "Uninstall"
 msgstr ""
 
-#: src/Git/GitSync.php:908
+#: src/Git/GitSync.php:912
 msgid "When the plugin is deleted"
 msgstr ""
 
-#: src/Git/GitSync.php:910
+#: src/Git/GitSync.php:914
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr ""
 
-#: src/Git/GitSync.php:911
+#: src/Git/GitSync.php:915
 msgid "Off by default: your content is kept when the plugin is deleted, only the plugin settings and caches are removed. Turn this on to remove everything the plugin created."
 msgstr ""
 
-#: src/Git/GitSync.php:912
+#: src/Git/GitSync.php:916
 msgid "This also removes templates you edited in the Site Editor."
 msgstr ""
 

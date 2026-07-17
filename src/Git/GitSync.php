@@ -495,8 +495,12 @@ final class GitSync {
 		$source = self::SOURCE_GITHUB === $raw ? self::SOURCE_GITHUB : self::SOURCE_WORDPRESS;
 		update_post_meta( $post_id, self::META_SOURCE, $source );
 
-		$raw_url = isset( $_POST['living_handbook_markdown_source'] ) ? wp_unslash( $_POST['living_handbook_markdown_source'] ) : '';
-		$url     = esc_url_raw( self::normalize_url( is_string( $raw_url ) ? $raw_url : '' ) );
+		// Sanitize on the way in, then normalize the blob URL and validate it as
+		// a URL. esc_url_raw alone would satisfy the intent but not the sniff.
+		$raw_url = isset( $_POST['living_handbook_markdown_source'] )
+			? sanitize_text_field( wp_unslash( $_POST['living_handbook_markdown_source'] ) )
+			: '';
+		$url     = esc_url_raw( self::normalize_url( $raw_url ) );
 		update_post_meta( $post_id, self::META_URL, $url );
 
 		if ( self::SOURCE_GITHUB === $source && '' !== $url ) {

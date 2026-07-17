@@ -254,11 +254,13 @@ final class HandbookAdmin {
 		}
 		update_term_meta( $term_id, Handbooks::META_VISIBILITY, $visibility );
 
+		// Sanitize the whole submitted array on the way in, then keep only the
+		// roles this site actually has.
 		$roles = array();
 		if ( isset( $_POST['living_handbook_roles'] ) && is_array( $_POST['living_handbook_roles'] ) ) {
-			$valid = array_keys( wp_roles()->get_names() );
-			foreach ( wp_unslash( $_POST['living_handbook_roles'] ) as $role ) {
-				$role = sanitize_key( $role );
+			$submitted = array_map( 'sanitize_key', wp_unslash( $_POST['living_handbook_roles'] ) );
+			$valid     = array_keys( wp_roles()->get_names() );
+			foreach ( $submitted as $role ) {
 				if ( in_array( $role, $valid, true ) ) {
 					$roles[] = $role;
 				}
