@@ -17,8 +17,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Turns the German transport block (a bullet list of «Label: Value» lines) into
  * a normalised array. Placeholders such as [JJJJ-MM-TT] or [Rolle] count as
  * empty; [ANNAHME: X] resolves to X. Pure string handling, no WordPress calls.
+ *
+ * Some fields accept more than one label. The taxonomy that is shown as
+ * "Bereiche" in the interface was historically written as «Themengebiet» in the
+ * drafts, so both labels are read; «Bereich» is the preferred one for new
+ * drafts, and «Themengebiet» keeps the existing corpus working.
  */
 final class TransportBlock {
+
+	/**
+	 * Accepted labels per field, in order of preference. The first label that
+	 * carries a value wins.
+	 *
+	 * @var array<string, string[]>
+	 */
+	private const LABELS = array(
+		'page_type' => array( 'seitentyp' ),
+		'role'      => array( 'verantwortliche rolle' ),
+		'topic'     => array( 'bereich', 'themengebiet' ),
+		'handbook'  => array( 'handbuch' ),
+		'parent'    => array( 'eltern-seite' ),
+		'excerpt'   => array( 'textauszug' ),
+		'slug'      => array( 'slug' ),
+	);
 
 	/**
 	 * Parse the raw transport section.
@@ -53,18 +74,36 @@ final class TransportBlock {
 		}
 
 		return array(
-			'page_type' => $this->value( $values, 'seitentyp' ),
-			'role'      => $this->value( $values, 'verantwortliche rolle' ),
-			'topic'     => $this->value( $values, 'themengebiet' ),
+			'page_type' => $this->first( $values, self::LABELS['page_type'] ),
+			'role'      => $this->first( $values, self::LABELS['role'] ),
+			'topic'     => $this->first( $values, self::LABELS['topic'] ),
 			'audiences' => $audiences,
-			'handbook'  => $this->value( $values, 'handbuch' ),
-			'parent'    => $this->value( $values, 'eltern-seite' ),
+			'handbook'  => $this->first( $values, self::LABELS['handbook'] ),
+			'parent'    => $this->first( $values, self::LABELS['parent'] ),
 			'order'     => (int) $this->value( $values, 'reihenfolge' ),
-			'excerpt'   => $this->value( $values, 'textauszug' ),
+			'excerpt'   => $this->first( $values, self::LABELS['excerpt'] ),
 			'reviewed'  => $reviewed,
 			'interval'  => $interval,
-			'slug'      => $this->value( $values, 'slug' ),
+			'slug'      => $this->first( $values, self::LABELS['slug'] ),
 		);
+	}
+
+	/**
+	 * Read the first label that carries a value, so a field can accept more
+	 * than one spelling.
+	 *
+	 * @param array<string, string> $values Parsed label and value pairs.
+	 * @param string[]              $keys   Lower-case labels, most preferred first.
+	 * @return string
+	 */
+	private function first( array $values, array $keys ): string {
+		foreach ( $keys as $key ) {
+			$value = $this->value( $values, $key );
+			if ( '' !== $value ) {
+				return $value;
+			}
+		}
+		return '';
 	}
 
 	/**

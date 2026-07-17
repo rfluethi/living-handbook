@@ -276,8 +276,8 @@ final class Filters {
 
 		$by_parent = array();
 		foreach ( $by_id as $term ) {
-			$parent                = ( $term->parent > 0 && isset( $by_id[ $term->parent ] ) ) ? (int) $term->parent : 0;
-			$by_parent[ $parent ][] = $term;
+			$parent_id                 = ( $term->parent > 0 && isset( $by_id[ $term->parent ] ) ) ? (int) $term->parent : 0;
+			$by_parent[ $parent_id ][] = $term;
 		}
 		foreach ( $by_parent as &$level ) {
 			usort(
@@ -297,17 +297,17 @@ final class Filters {
 	/**
 	 * Append one outline level and its descendants to the output.
 	 *
-	 * @param array<int, WP_Term[]>                    $by_parent Terms grouped by parent id.
-	 * @param int                                      $parent    Parent id to append.
-	 * @param int                                      $depth     Current depth.
-	 * @param array<int, array{term:WP_Term, depth:int}> $out     Output, by reference.
+	 * @param array<int, WP_Term[]>                      $by_parent Terms grouped by parent id.
+	 * @param int                                        $parent_id Parent id whose children to append.
+	 * @param int                                        $depth     Current depth.
+	 * @param array<int, array{term:WP_Term, depth:int}> $out       Output, by reference.
 	 * @return void
 	 */
-	private static function append_level( array $by_parent, int $parent, int $depth, array &$out ): void {
-		if ( empty( $by_parent[ $parent ] ) ) {
+	private static function append_level( array $by_parent, int $parent_id, int $depth, array &$out ): void {
+		if ( empty( $by_parent[ $parent_id ] ) ) {
 			return;
 		}
-		foreach ( $by_parent[ $parent ] as $term ) {
+		foreach ( $by_parent[ $parent_id ] as $term ) {
 			$out[] = array(
 				'term'  => $term,
 				'depth' => $depth,

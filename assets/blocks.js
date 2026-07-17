@@ -81,7 +81,10 @@
 		icon: 'book',
 		supports: SUPPORTS,
 		attributes: {
-			display: { type: 'string', default: 'cards' }
+			// The overview lists whole handbooks, usually only a handful, so a
+			// list reads better than a card grid on first insert. Must match the
+			// default of the PHP registration.
+			display: { type: 'string', default: 'list' }
 		},
 		edit: function ( props ) {
 			return el(

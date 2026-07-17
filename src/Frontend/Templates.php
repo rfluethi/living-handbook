@@ -1,12 +1,17 @@
 <?php
 /**
- * Block templates for the handbook overview, entry and single pages.
+ * Block templates for the handbook entry and single pages.
  *
- * Registers block templates (WP 6.7+) so the handbook archive shows the
- * overview, each handbook term archive shows its entry page with the handbook
- * navigation, and single handbook pages get navigation, content and an
- * on-this-page column, using the active block theme's header and footer. Needs
- * a block theme; classic themes fall back to their own templates.
+ * Registers block templates (WP 6.7+) so each handbook term archive shows its
+ * entry page with the handbook navigation, and single handbook pages get
+ * navigation, content and an on-this-page column, using the active block
+ * theme's header and footer. Needs a block theme; classic themes fall back to
+ * their own templates.
+ *
+ * There is deliberately no template for the overview: the post type archive is
+ * switched off (Handbook::register_post_type, has_archive => false), so an
+ * archive template could never apply. The overview is a normal page holding the
+ * living-handbook/overview block.
  *
  * @package LivingHandbook
  */
@@ -36,7 +41,7 @@ final class Templates {
 	}
 
 	/**
-	 * Register the overview, entry and single block templates.
+	 * Register the entry and single block templates.
 	 *
 	 * @return void
 	 */
@@ -44,15 +49,6 @@ final class Templates {
 		if ( ! function_exists( 'register_block_template' ) ) {
 			return;
 		}
-
-		register_block_template(
-			'living-handbook//archive-handbook',
-			array(
-				'title'       => __( 'Handbook overview', 'living-handbook' ),
-				'description' => __( 'Landing page listing the handbooks a visitor may read.', 'living-handbook' ),
-				'content'     => self::wrap( '<!-- wp:living-handbook/overview /-->' ),
-			)
-		);
 
 		register_block_template(
 			'living-handbook//taxonomy-' . Handbooks::TAXONOMY,

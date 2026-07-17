@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 0.12.0
+Stable tag: 0.13.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,7 @@ Core features:
 * A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
 * Per-handbook navigation built from the page hierarchy and rendered as a core Navigation block, styled by the VSN plugin (Vertical Sidebar Navigation).
 * A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
-* Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks.
+* Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
 * Fully translatable (English source), with a German translation included.
 * No external WordPress plugin is required for the core (a block theme is, and VSN for the sidebar). The import and sync use two bundled Composer libraries (league/commonmark, symfony/yaml), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
@@ -34,14 +34,19 @@ Core features:
 
 1. Upload the plugin to `wp-content/plugins/living-handbook`.
 2. Activate it through the Plugins screen in WordPress.
-3. Deactivate and reactivate once, or visit Settings then Permalinks, so the handbook URLs work.
-4. For the sidebar navigation, install and activate the Vertical Sidebar Navigation (VSN) plugin.
+3. Activation creates a page called "Handbook" holding the overview block, and a notice points you to the next step. Deactivate and reactivate once, or visit Settings then Permalinks, if the handbook URLs do not work yet.
+4. Create a handbook under Handbook, Handbook types, set who may read it, and assign your pages to it. A page without a handbook stays invisible on the front end.
+5. For the sidebar navigation, install and activate the Vertical Sidebar Navigation (VSN) plugin.
 
 == Frequently Asked Questions ==
 
 = Do I need another plugin? =
 
 The core works on its own, but it expects a block theme. For the sidebar navigation styling, install the Vertical Sidebar Navigation (VSN) plugin.
+
+= Why are my handbook pages not visible? =
+
+Almost always one of two reasons. Either the page is not assigned to a handbook: access is granted per handbook, so a page that belongs to none belongs to nobody, and the page list warns you about it. Or the handbook itself is not visible to you: a new handbook defaults to "All members (logged in)", so logged out you see nothing.
 
 = Does the plugin connect to any external services? =
 
@@ -68,6 +73,17 @@ By default your content is kept and only the plugin's own settings and caches ar
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.13.0 =
+* First run: activating the plugin now creates the handbook overview as a normal page, so a fresh install shows something instead of nothing. A one-time notice points to it and explains the next step, and the page list warns about pages that stay invisible because they have no handbook. Nothing is created twice, and a page you delete does not come back.
+* The handbook overview block now defaults to a list, which reads better for the handful of handbooks most sites have. The card/list switch is unchanged.
+* Facet filters for hierarchical taxonomies (areas, page types, audiences) are shown as an outline: children are indented under their parent instead of being listed flat and alphabetically, which used to put a sub-area above its own parent.
+* Re-importing the same source now refreshes the matching pages instead of creating duplicates, matched by source path, by slug within the chosen handbook, or by GitHub source URL. Slug and publication status are kept. A pasted draft still always creates a new page.
+* Accessibility: visible focus outlines on all interactive elements, the table of contents moves keyboard focus to the target heading, reduced-motion preferences are respected, the feedback confirmation is announced, and the muted text colour now meets WCAG AA.
+* Security: the feedback endpoint now only accepts votes from users who are allowed to read that page, not from any logged-in user.
+* The transport block accepts "Bereich" next to the older "Themengebiet" for the area taxonomy; both are read, existing drafts keep working.
+* Removed a leftover overview template that could never apply since the post type archive was switched off, and moved an inline script into a properly enqueued file.
+* The developer documentation in docs/ was rewritten and corrected, including how to put the handbooks into your theme's navigation.
 
 = 0.12.0 =
 * Interface polish: the admin menu is ordered and clearly labelled, taxonomy edit screens use the right labels, the handbook list shows each handbook's access, the on-this-page block is titled "Table of Contents", and the overview and entry blocks can show their items as cards or as a list. Block controls that had no effect were removed, and a body class lets a site style the handbook without affecting the rest.
@@ -124,6 +140,9 @@ By default your content is kept and only the plugin's own settings and caches ar
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.13.0 =
+Activation now creates the handbook overview page and guides you through the first steps. Facet filters show sub-areas under their parent, re-imports no longer duplicate pages, and accessibility was improved. Still pre-release: best installed on a fresh database.
 
 = 0.12.0 =
 Interface polish, AJAX facet filtering, a handbook menu block, an uninstall data option, full translatability, and renamed source meta keys. Best installed on a fresh database while pre-release.

@@ -134,9 +134,12 @@ final class Blocks {
 			'living-handbook/overview',
 			array(
 				'attributes'      => array(
+					// The overview lists whole handbooks, usually only a handful,
+					// so a list reads better than a card grid on first insert.
+					// Must match the default in blocks.js.
 					'display' => array(
 						'type'    => 'string',
-						'default' => 'cards',
+						'default' => 'list',
 					),
 				),
 				'supports'        => $supports,
@@ -303,7 +306,7 @@ final class Blocks {
 	 * @return string
 	 */
 	public function render_overview( array $attributes ): string {
-		return Entry::render_chooser( self::display_mode( $attributes ) );
+		return Entry::render_chooser( self::display_mode( $attributes, 'list' ) );
 	}
 
 	/**
@@ -401,13 +404,22 @@ final class Blocks {
 	}
 
 	/**
-	 * Resolve the card/list display attribute, defaulting to cards.
+	 * Resolve the card/list display attribute.
+	 *
+	 * The registered block defaults normally fill the attribute in, so the
+	 * fallback only applies to a block saved before the attribute existed. It
+	 * is passed per block because the overview defaults to a list while the
+	 * entry defaults to cards.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
+	 * @param string               $fallback   Mode to use when the attribute is absent.
 	 * @return string
 	 */
-	private static function display_mode( array $attributes ): string {
-		return ( isset( $attributes['display'] ) && 'list' === $attributes['display'] ) ? 'list' : 'cards';
+	private static function display_mode( array $attributes, string $fallback = 'cards' ): string {
+		if ( ! isset( $attributes['display'] ) ) {
+			return 'list' === $fallback ? 'list' : 'cards';
+		}
+		return 'list' === $attributes['display'] ? 'list' : 'cards';
 	}
 
 	/**

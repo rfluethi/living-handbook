@@ -24,6 +24,7 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Taxonomy\Taxonomies;
 
@@ -93,6 +94,7 @@ final class Plugin {
 		( new Blocks() )->register();
 		( new MermaidBlock() )->register();
 		( new SourceNoteBlock() )->register();
+		( new Onboarding() )->register();
 
 		add_action( 'admin_init', array( $this, 'maybe_upgrade' ) );
 	}
@@ -120,8 +122,9 @@ final class Plugin {
 	}
 
 	/**
-	 * Activation callback: register the data model, seed the vocabulary, schedule
-	 * the GitHub sync, record the version, and flush rewrite rules.
+	 * Activation callback: register the data model, seed the vocabulary, create
+	 * the overview page, schedule the GitHub sync, record the version, and
+	 * flush rewrite rules.
 	 *
 	 * @return void
 	 */
@@ -133,6 +136,7 @@ final class Plugin {
 		$handbooks->register_meta();
 
 		Seeder::seed();
+		Onboarding::activate();
 		GitSync::schedule();
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 

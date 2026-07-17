@@ -16,6 +16,10 @@
  * templates a user customised in the Site Editor are stored in the database, and
  * those are removed together with the content when the option above is on.
  *
+ * The overview page created on activation is a normal page the user may have
+ * edited, moved or built on, so it is only removed with the content option, and
+ * only if it is still the page this plugin created.
+ *
  * @package LivingHandbook
  */
 
@@ -36,8 +40,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function living_handbook_run_uninstall(): void {
 	global $wpdb;
 
-	// Read the content-removal choice before the options are deleted below.
-	$remove_content = (bool) get_option( 'living_handbook_uninstall_content', false );
+	// Read the choices before the options are deleted below.
+	$remove_content   = (bool) get_option( 'living_handbook_uninstall_content', false );
+	$overview_page_id = (int) get_option( 'living_handbook_overview_page', 0 );
 
 	// Always: clear the scheduled sync and the plugin's own options.
 	wp_clear_scheduled_hook( 'living_handbook_git_sync' );
@@ -46,6 +51,8 @@ function living_handbook_run_uninstall(): void {
 	delete_option( 'living_handbook_nav_version' );
 	delete_option( 'living_handbook_db_version' );
 	delete_option( 'living_handbook_uninstall_content' );
+	delete_option( 'living_handbook_setup_notice' );
+	delete_option( 'living_handbook_overview_page' );
 
 	// Always: remove the navigation and area caches (transients keyed by version).
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
@@ -98,6 +105,11 @@ function living_handbook_run_uninstall(): void {
 		foreach ( $handbook_terms as $handbook_term_id ) {
 			wp_delete_term( (int) $handbook_term_id, 'handbook_set' );
 		}
+	}
+
+	// The overview page created on activation, if it is still a page.
+	if ( $overview_page_id > 0 && 'page' === get_post_type( $overview_page_id ) ) {
+		wp_delete_post( $overview_page_id, true );
 	}
 
 	// Remove any Site Editor customisations of the plugin's block templates.

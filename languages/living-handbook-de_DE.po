@@ -713,3 +713,31 @@ msgstr "Unerwartete Antwort der GitHub-API."
 
 msgid "Error: HTTP %d"
 msgstr "Fehler: HTTP %d"
+
+# First-run setup (Onboarding). Source strings live in src/Setup/Onboarding.php.
+
+msgid "Handbook"
+msgstr "Handbuch"
+
+msgid "Living Handbook is ready."
+msgstr "Living Handbook ist bereit."
+
+msgid "Your handbook overview was created as a normal page, so you can style and move it like any other:"
+msgstr "Deine Handbuch-Übersicht wurde als normale Seite angelegt, du kannst sie also wie jede andere gestalten und verschieben:"
+
+msgid "Next: create a handbook under Handbook, Handbook types, and set who may read it. Then assign your pages to that handbook."
+msgstr "Als Nächstes: Lege unter Handbuch, Handbuch-Arten ein Handbuch an und stelle ein, wer es lesen darf. Ordne dann deine Seiten diesem Handbuch zu."
+
+msgid "A page without a handbook stays invisible on the front end. That is on purpose: access is granted per handbook, so a page that belongs to none belongs to nobody."
+msgstr "Eine Seite ohne Handbuch bleibt im Frontend unsichtbar. Das ist Absicht: Der Zugriff wird pro Handbuch vergeben, eine Seite ohne Handbuch gehört also niemandem."
+
+msgid "Create a handbook"
+msgstr "Handbuch anlegen"
+
+msgid "Dismiss this notice"
+msgstr "Hinweis ausblenden"
+
+msgid "%d handbook page is not assigned to a handbook, so it stays invisible on the front end. Open it and pick a handbook in the sidebar."
+msgid_plural "%d handbook pages are not assigned to a handbook, so they stay invisible on the front end. Open them and pick a handbook in the sidebar."
+msgstr[0] "%d Handbuch-Seite ist keinem Handbuch zugeordnet und bleibt deshalb im Frontend unsichtbar. Öffne sie und wähle in der Seitenleiste ein Handbuch."
+msgstr[1] "%d Handbuch-Seiten sind keinem Handbuch zugeordnet und bleiben deshalb im Frontend unsichtbar. Öffne sie und wähle in der Seitenleiste ein Handbuch."

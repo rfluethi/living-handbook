@@ -1,16 +1,15 @@
 # Customizing the frontend
 
-The plugin ships default styles that follow the prototype design and expose CSS
-custom properties, so you can adapt the colours to your theme without touching
-the plugin. Typography and spacing come from your theme. The navigation is a core
-Navigation block styled by the VSN plugin; the rest is plugin markup.
+The plugin ships default styles and exposes CSS custom properties, so you can adapt the colours to your theme without touching the plugin. Typography and spacing come from your theme. The navigation is a core Navigation block styled by the VSN plugin; everything else is plugin markup.
 
-## Overriding the colours and a few sizes
+Put your rules in the Site Editor under **Styles → Additional CSS**, or in your theme's stylesheet.
 
-The custom properties are declared on the plugin's frontend wrappers. Set them in
-the Site Editor under Styles, Additional CSS, or in your theme's stylesheet:
+## Colours and a few sizes
+
+The custom properties are declared on the plugin's frontend wrappers. The quickest way to restyle everything is to override them:
 
 ```css
+.living-handbook-overview,
 .living-handbook-entry,
 .living-handbook-cards,
 .living-handbook-card,
@@ -21,52 +20,108 @@ the Site Editor under Styles, Additional CSS, or in your theme's stylesheet:
 .living-handbook-badge {
 	--lh-accent: var(--wp--preset--color--accent, #2c5f8a);
 	--lh-accent-soft: #eaf1f8;
-	--lh-ok: #1e8449;
-	--lh-due: #b26a00;
-	--lh-overdue: #c0392b;
+	--lh-ok: #1e8449;          /* freshness badge "Reviewed" */
+	--lh-due: #b26a00;         /* freshness badge "Review due" */
+	--lh-overdue: #c0392b;     /* freshness badge "Unchecked" (the escalation state) */
 	--lh-border: #e2e6ea;
-	--lh-muted: #76828d;
-	--lh-sticky-top: 2rem; /* offset for sticky nav/TOC under a fixed header */
-	--lh-nav-top-weight: 700; /* weight of the top navigation level */
+	--lh-muted: #5f6b75;       /* secondary text */
+	--lh-sticky-top: 2rem;     /* offset for sticky nav and TOC under a fixed header */
+	--lh-nav-top-weight: 700;  /* weight of the top navigation level */
 }
 ```
 
-Point `--lh-accent` at your theme's accent to match your palette. `--lh-sticky-top`
-controls the top offset of the sticky navigation and table of contents (and the
-scroll offset when jumping to a heading). `--lh-nav-top-weight` sets how bold the
-top level of the sidebar navigation is.
+Point `--lh-accent` at your theme's accent colour to match your palette. `--lh-sticky-top` controls the top offset of the sticky navigation and table of contents, and the scroll offset when jumping to a heading, so raise it if your theme has a fixed header. `--lh-nav-top-weight` sets how bold the top level of the sidebar navigation is.
+
+### A note on the freshness names
+
+The three freshness colours carry meaning, and the variable and class names do not read exactly like the badges:
+
+| Badge in the interface | Variable | Class modifier | Meaning |
+| --- | --- | --- | --- |
+| Reviewed | `--lh-ok` | `--ok` | Within the review interval |
+| Review due | `--lh-due` | `--due` | The interval has passed |
+| Unchecked | `--lh-overdue` | `--overdue` | Twice the interval has passed |
+
+So `--lh-overdue` is the colour of the badge that reads **Unchecked**. The name is internal, the badge is what your readers see.
+
+Keep the three distinguishable from each other, and ideally not by hue alone, since the state is also conveyed by a small dot on the cards.
+
+`--lh-muted` is used for small secondary text; the default meets WCAG AA (4.5:1 on white), so if you lighten it, check the contrast.
+
+## Scoping to the handbook only
+
+Every handbook view carries the body class `living-handbook-page`. Use it to style standard blocks inside the handbook without touching the rest of your site:
+
+```css
+.living-handbook-page .wp-block-quote { border-left-color: var(--lh-accent); }
+.living-handbook-page .wp-block-table { font-size: 0.9rem; }
+```
 
 ## Classes
 
-Entry page (a handbook's start page):
+### Overview and entry pages
 
-- `.living-handbook-layout`: the two-column grid (content plus filter sidebar), single column below 781px.
+- `.living-handbook-overview`, `.living-handbook-entry`: the block wrappers. Each also carries a `--list` or `--cards` modifier reflecting the block's Display setting, for example `.living-handbook-entry--list`.
+- `.living-handbook-layout`: the two-column grid (results plus filter sidebar); a single column below 781px.
 - `.living-handbook-start__search`, `.living-handbook-search__input`: the full-text search row.
-- `.living-handbook-aside`, `.living-handbook-facet`, `.living-handbook-facet__opt`, `.living-handbook-reset`: the taxonomy filter sidebar and its reset link.
-- `.living-handbook-entry__h`, `.living-handbook-count`, `.living-handbook-empty`: section headings, result count, and the empty state.
+- `.living-handbook-aside`, `.living-handbook-facet`, `.living-handbook-facet__opt`, `.living-handbook-reset`: the facet sidebar and its reset link.
+- `.living-handbook-main`: the result column that is swapped in when a facet or search filters the list. While loading it carries `aria-busy="true"`, which the default styles use to dim it.
+- `.living-handbook-entry__h`, `.living-handbook-count`, `.living-handbook-empty`: section headings, result count and the empty state.
 
-Card grids (areas, books, and pages):
+### Card grids
 
-- `.living-handbook-cards` with `--areas` or `--books`: the responsive grid.
-- `.living-handbook-card` with `--area` or `--book`, plus `.living-handbook-card__link`, `__title`, `__excerpt`, `__meta`.
-- `.living-handbook-card__dot` with `--ok`, `--due`, `--overdue`: the freshness dot.
+- `.living-handbook-cards`, with `--areas` or `--books`: the responsive grid.
+- `.living-handbook-card`, with `--area` or `--book`, plus `.living-handbook-card__link`, `__title`, `__excerpt`, `__meta`.
+- `.living-handbook-card__dot`, with `--ok`, `--due` or `--overdue`: the freshness dot.
 
-Single page navigation (VSN sidebar):
+In list display the cards lose their box and become flat rows; target them with the parent modifier, for example `.living-handbook-entry--list .living-handbook-card`.
 
-- `.living-handbook-navwrap`: wraps the core Navigation block; keeps it left-aligned.
+### Handbook menu
+
+- `.living-handbook-menu`, `.living-handbook-menu__list`, `.living-handbook-menu__link`: the compact handbook list for a header.
+- `.living-handbook-menu__toggle`: the button that collapses the list on narrow screens. The open state is `.living-handbook-menu.is-open`.
+
+### Navigation (VSN sidebar)
+
+- `.living-handbook-navwrap`: wraps the core Navigation block and keeps it left-aligned.
 - `.living-handbook-nav-top`: the top-level navigation item, weighted via `--lh-nav-top-weight`.
-- `.living-handbook-nav`, `.living-handbook-nav__title`: the bordered, sticky navigation tree; the current page's list item carries `.is-current`.
+- `.living-handbook-nav`, `.living-handbook-nav__title`: the bordered, sticky navigation tree. The current page's list item carries `.is-current`.
 
-On-this-page table of contents:
+The navigation itself is themed through VSN's own `--vsn-*` variables, not the `--lh-*` ones:
 
-- `.living-handbook-toc` with `--desktop` or `--mobile`: the collapsible box (desktop sticky at the side, mobile above the content).
-- `.living-handbook-toc__summary`, `__list`, `__item`; the active entry link carries `.is-active`.
+```css
+:is(.is-style-vsn-sidebar, .is-style-vsn-sidebar-accordion) {
+	--vsn-color-text-hover: var(--wp--preset--color--accent);
+	--vsn-active-border-color: var(--wp--preset--color--accent);
+	--vsn-indent: 1rem; /* indent per level */
+}
+```
 
-Badges, metadata footer and feedback:
+See the VSN documentation for the full list of `--vsn-*` variables.
 
-- `.living-handbook-badges`, `.living-handbook-badge` with `--type`, `--audience`, `--ok`, `--due`, `--overdue`.
+### Table of contents
+
+- `.living-handbook-toc`, with `--desktop` or `--mobile`: the collapsible box.
+- `.living-handbook-toc__summary`, `__list`, `__item`. The entry for the section you are reading carries `.is-active`.
+
+### Badges, metadata footer and feedback
+
+- `.living-handbook-badges`, `.living-handbook-badge`, with `--type`, `--audience`, `--ok`, `--due` or `--overdue`.
 - `.living-handbook-meta`, `.living-handbook-metagrid`, `.living-handbook-metagrid__item`, `__label`, `__date`.
 - `.living-handbook-person`, `__avatar`, `__name`: the responsible person in the footer.
-- `.living-handbook-feedback`: the "was this helpful?" row and its buttons.
+- `.living-handbook-feedback`: the "Was this helpful?" row and its buttons.
+
+## Accessibility: what not to remove
+
+The default styles include a few rules that exist for accessibility. If you override them, please keep an equivalent.
+
+- **Focus rings.** Every interactive element gets a visible outline on `:focus-visible`. Themes often strip the browser default; the plugin restores it. If you restyle it, keep an outline that is clearly visible against your background.
+- **Reduced motion.** Card hover motion and the loading fade are switched off under `prefers-reduced-motion: reduce`, and the table of contents then jumps instead of scrolling smoothly. If you add your own animations, wrap them in the same media query.
+
+```css
+@media (prefers-reduced-motion: reduce) {
+	.my-custom-animation { transition: none; animation: none; }
+}
+```
 
 Each block can also be styled through `theme.json` under `styles.blocks`.
