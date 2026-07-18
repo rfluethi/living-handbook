@@ -26,6 +26,7 @@ use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Seeder;
+use LivingHandbook\Setup\Settings;
 use LivingHandbook\Taxonomy\Taxonomies;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -90,6 +91,7 @@ final class Plugin {
 		( new Maintenance() )->register();
 		( new MarkdownImportPage() )->register();
 		( new GitSync() )->register();
+		( new Settings() )->register();
 		( new Blocks() )->register();
 		( new MermaidBlock() )->register();
 		( new SourceNoteBlock() )->register();

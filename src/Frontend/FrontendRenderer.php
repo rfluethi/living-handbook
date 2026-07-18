@@ -68,10 +68,12 @@ final class FrontendRenderer {
 			'living-handbook',
 			'livingHandbook',
 			array(
-				'rest'   => esc_url_raw( rest_url( 'living-handbook/v1/feedback' ) ),
-				'filter' => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE ) ),
-				'nonce'  => wp_create_nonce( 'wp_rest' ),
-				'thanks' => __( 'Thanks for your feedback.', 'living-handbook' ),
+				'rest'          => esc_url_raw( rest_url( 'living-handbook/v1/feedback' ) ),
+				'filter'        => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE ) ),
+				'nonce'         => wp_create_nonce( 'wp_rest' ),
+				'thanks'        => __( 'Thanks for your feedback.', 'living-handbook' ),
+				'feedbackError' => __( 'Your feedback could not be sent. Please try again.', 'living-handbook' ),
+				'filterError'   => __( 'The list could not be updated. Please reload the page.', 'living-handbook' ),
 			)
 		);
 	}

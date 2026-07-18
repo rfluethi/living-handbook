@@ -19,8 +19,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Turns a Markdown draft into title, HTML, and transport metadata. It strips a
  * leading YAML front matter block, splits off the transport block, lifts the
  * first top-level heading out as the title, converts the rest with a real
- * GitHub Flavored Markdown library (raw HTML passes through), and rewrites image
- * sources to media URLs. The browser turns the HTML into blocks.
+ * GitHub Flavored Markdown library, and rewrites image sources to media URLs.
+ * The browser turns the HTML into blocks.
+ *
+ * Raw HTML in the Markdown passes through the converter, so the converted HTML
+ * is run through the shared HtmlSanitizer allowlist before it is returned: a
+ * hostile draft cannot smuggle a script into the page a capable user imports.
  */
 final class MarkdownConverter {
 
@@ -63,9 +67,16 @@ final class MarkdownConverter {
 		}
 
 		$html = $this->to_html( $markdown );
+		// GitHub task lists render as <input type="checkbox">, which the block
+		// editor's paste handler drops. Turn them into ballot symbols so the
+		// checkbox stays visible as text on every import path.
+		$html = $this->render_task_checkboxes( $html );
 		if ( ! empty( $image_map ) ) {
 			$html = $this->rewrite_images( $html, $image_map );
 		}
+		// The HTML came from an external source; strip anything unsafe before it
+		// reaches the browser and the database.
+		$html = HtmlSanitizer::clean( $html );
 
 		return array(
 			'title'     => $title,
@@ -85,7 +96,7 @@ final class MarkdownConverter {
 	}
 
 	/**
-	 * Convert Markdown to HTML, keeping embedded raw HTML.
+	 * Convert Markdown to HTML, keeping embedded raw HTML but not unsafe links.
 	 *
 	 * @param string $markdown Markdown.
 	 * @return string
@@ -94,10 +105,31 @@ final class MarkdownConverter {
 		$converter = new GithubFlavoredMarkdownConverter(
 			array(
 				'html_input'         => 'allow',
-				'allow_unsafe_links' => true,
+				'allow_unsafe_links' => false,
 			)
 		);
 		return (string) $converter->convert( $markdown )->getContent();
+	}
+
+	/**
+	 * Replace GitHub task-list checkbox inputs with ballot symbols.
+	 *
+	 * A task list item renders as a disabled <input type="checkbox">. The block
+	 * editor's paste handler drops <input> elements, so the checkbox would
+	 * vanish on import. A ballot symbol (empty or checked) keeps it visible as
+	 * plain text, and it needs no special styling to render.
+	 *
+	 * @param string $html HTML.
+	 * @return string
+	 */
+	private function render_task_checkboxes( string $html ): string {
+		return (string) preg_replace_callback(
+			'/<input\b[^>]*\btype=(["\'])checkbox\1[^>]*>/i',
+			static function ( array $found ): string {
+				return ( false !== stripos( $found[0], 'checked' ) ) ? "\xE2\x98\x91 " : "\xE2\x98\x90 ";
+			},
+			$html
+		);
 	}
 
 	/**

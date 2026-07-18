@@ -55,7 +55,9 @@ final class Maintenance {
 	 * Render the dashboard widget.
 	 *
 	 * Loads only post IDs and reads the freshness meta per page; the title and
-	 * edit link are fetched only for the overdue pages, not for all pages.
+	 * edit link are fetched only for the overdue pages, not for all pages. The
+	 * post meta of every page is primed in one query first, so the per-page
+	 * freshness lookups do not each hit the database (no N+1).
 	 *
 	 * @return void
 	 */
@@ -69,6 +71,12 @@ final class Maintenance {
 				'no_found_rows'  => true,
 			)
 		);
+
+		// Prime the meta cache for every page in one query, so FreshnessStatus,
+		// which reads several meta keys per page, does not query per page.
+		if ( ! empty( $ids ) ) {
+			update_meta_cache( 'post', $ids );
+		}
 
 		$total   = 0;
 		$overdue = array();

@@ -1,11 +1,12 @@
 /*
- * Living Handbook frontend: AJAX card filtering and search, feedback, the
- * on-this-page table of contents with depth limit, smooth scrolling and
- * scroll-spy, and the mobile toggle for the handbook menu. Selecting a taxonomy
- * facet or submitting the search filters the handbook through a REST request
- * and swaps the result list in place, so no full page reload and no separate
- * filter button are needed. Typing in the search box also narrows the shown
- * cards live for instant feedback.
+ * Living Handbook frontend: AJAX card filtering and search, the handbook
+ * navigation accordion, feedback, the on-this-page table of contents with depth
+ * limit, smooth scrolling and scroll-spy, and the mobile toggle for the
+ * handbook menu. Selecting a taxonomy facet or submitting the search filters the
+ * handbook through a REST request and swaps the result list in place, so no full
+ * page reload is needed; without JavaScript the facet and search forms submit
+ * normally with their own button. Typing in the search box also narrows the
+ * shown cards live for instant feedback.
  */
 ( function () {
 	'use strict';
@@ -51,6 +52,33 @@
 		return window.livingHandbook && window.livingHandbook.filter;
 	}
 
+	function updateUrl( params ) {
+		if ( ! window.history || ! window.history.replaceState ) {
+			return;
+		}
+		var qs = new URLSearchParams();
+		params.forEach( function ( value, key ) {
+			if ( 'term_id' !== key ) {
+				qs.append( key, value );
+			}
+		} );
+		var query = qs.toString();
+		window.history.replaceState( null, '', window.location.pathname + ( query ? '?' + query : '' ) );
+	}
+
+	function showFilterError( main ) {
+		if ( ! main || main.querySelector( '.living-handbook-filter-error' ) ) {
+			return;
+		}
+		var p = document.createElement( 'p' );
+		p.className = 'living-handbook-filter-error';
+		p.setAttribute( 'role', 'alert' );
+		p.textContent = ( window.livingHandbook && window.livingHandbook.filterError )
+			? window.livingHandbook.filterError
+			: 'The list could not be updated. Please reload the page.';
+		main.insertBefore( p, main.firstChild );
+	}
+
 	function ajaxFilter( entry ) {
 		if ( ! canAjax() ) {
 			return;
@@ -72,23 +100,49 @@
 			params.append( cb.name, cb.value );
 		} );
 
+		// Cancel a request that is still in flight for this entry, so a quick
+		// series of clicks does not race and land out of order.
+		if ( entry.lhController ) {
+			entry.lhController.abort();
+		}
+		var controller = ( 'AbortController' in window ) ? new AbortController() : null;
+		entry.lhController = controller;
+
 		main.setAttribute( 'aria-busy', 'true' );
 		fetch( window.livingHandbook.filter + '?' + params.toString(), {
 			headers: { 'X-WP-Nonce': window.livingHandbook.nonce },
-			credentials: 'same-origin'
+			credentials: 'same-origin',
+			signal: controller ? controller.signal : undefined
 		} ).then( function ( response ) {
+			if ( ! response.ok ) {
+				throw new Error( 'HTTP ' + response.status );
+			}
 			return response.json();
 		} ).then( function ( data ) {
 			if ( data && typeof data.html === 'string' ) {
 				main.innerHTML = data.html;
 			}
 			main.removeAttribute( 'aria-busy' );
-		} ).catch( function () {
+			entry.lhController = null;
+			updateUrl( params );
+		} ).catch( function ( err ) {
+			// A superseded request was aborted on purpose; leave it silent.
+			if ( err && 'AbortError' === err.name ) {
+				return;
+			}
 			main.removeAttribute( 'aria-busy' );
+			entry.lhController = null;
+			showFilterError( main );
 		} );
 	}
 
 	function wireEntry( entry ) {
+		// With JavaScript the facets filter live on change, so the no-JS submit
+		// button is hidden.
+		entry.querySelectorAll( '.living-handbook-filterform__submit' ).forEach( function ( button ) {
+			button.hidden = true;
+		} );
+
 		entry.addEventListener( 'change', function ( event ) {
 			if ( event.target && event.target.classList && event.target.classList.contains( 'living-handbook-facet__cb' ) ) {
 				ajaxFilter( entry );
@@ -100,6 +154,38 @@
 			searchForm.addEventListener( 'submit', function ( event ) {
 				event.preventDefault();
 				ajaxFilter( entry );
+			} );
+		}
+
+		var filterForm = entry.querySelector( '.living-handbook-filterform' );
+		if ( filterForm && canAjax() ) {
+			filterForm.addEventListener( 'submit', function ( event ) {
+				event.preventDefault();
+				ajaxFilter( entry );
+			} );
+		}
+	}
+
+	/* ---------- Handbook navigation: accordion toggles and mobile collapse ---------- */
+
+	function wireNav() {
+		document.querySelectorAll( '.living-handbook-nav__toggle' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				var item = btn.closest( '.living-handbook-nav__item' );
+				if ( ! item ) {
+					return;
+				}
+				var open = item.classList.toggle( 'is-open' );
+				btn.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			} );
+		} );
+
+		// Start the whole navigation collapsed on narrow screens; on wider
+		// screens it stays open. The title (summary) opens or closes it either
+		// way, natively.
+		if ( window.matchMedia && window.matchMedia( '(max-width: 781px)' ).matches ) {
+			document.querySelectorAll( 'details.living-handbook-nav[open]' ).forEach( function ( nav ) {
+				nav.open = false;
 			} );
 		}
 	}
@@ -220,6 +306,12 @@
 			return;
 		}
 		var postId = parseInt( box.getAttribute( 'data-post' ), 10 );
+		var buttons = box.querySelectorAll( 'button[data-value]' );
+		// Prevent double counting: disable both buttons the moment one is used.
+		buttons.forEach( function ( b ) {
+			b.disabled = true;
+		} );
+
 		fetch( window.livingHandbook.rest, {
 			method: 'POST',
 			headers: {
@@ -227,9 +319,29 @@
 				'X-WP-Nonce': window.livingHandbook.nonce
 			},
 			body: JSON.stringify( { post_id: postId, value: value } )
-		} ).then( function () {
+		} ).then( function ( response ) {
+			if ( ! response.ok ) {
+				throw new Error( 'HTTP ' + response.status );
+			}
+			// Replace the prompt with the confirmation and move focus to it so
+			// the aria-live region announces the change for screen-reader users.
 			box.textContent = window.livingHandbook.thanks;
-		} ).catch( function () {} );
+			box.setAttribute( 'tabindex', '-1' );
+			box.focus();
+		} ).catch( function () {
+			// Re-enable the buttons and show a real error, not a false thanks.
+			buttons.forEach( function ( b ) {
+				b.disabled = false;
+			} );
+			var existing = box.querySelector( '.living-handbook-feedback__error' );
+			if ( existing ) {
+				existing.remove();
+			}
+			var msg = document.createElement( 'span' );
+			msg.className = 'living-handbook-feedback__error';
+			msg.textContent = window.livingHandbook.feedbackError || 'Please try again.';
+			box.appendChild( msg );
+		} );
 	}
 
 	/* ---------- Init ---------- */
@@ -237,6 +349,7 @@
 	document.addEventListener( 'DOMContentLoaded', function () {
 		applyFilter();
 		buildToc();
+		wireNav();
 		wireMenus();
 
 		document.querySelectorAll( '.living-handbook-search__input' ).forEach( function ( input ) {

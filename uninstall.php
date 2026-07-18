@@ -20,6 +20,10 @@
  * edited, moved or built on, so it is only removed with the content option, and
  * only if it is still the page this plugin created.
  *
+ * This cleanup runs on the current site only. The plugin is built for
+ * single-site installations and is not network (multisite) aware, so on a
+ * network install it must be uninstalled per site.
+ *
  * @package LivingHandbook
  */
 
@@ -75,11 +79,13 @@ function living_handbook_run_uninstall(): void {
 	}
 
 	// Load the autoloader and register the data model so wp_delete_post and
-	// wp_delete_term run cleanly (init has not fired during uninstall).
+	// wp_delete_term run cleanly (init has not fired during uninstall). All
+	// taxonomies must be registered before their terms can be deleted.
 	require_once __DIR__ . '/living-handbook.php';
 	( new LivingHandbook\PostType\Handbook() )->register_post_type();
 	$handbooks = new LivingHandbook\Handbook\Handbooks();
 	$handbooks->register_taxonomy();
+	( new LivingHandbook\Taxonomy\Taxonomies() )->register_taxonomies();
 
 	$handbook_ids = get_posts(
 		array(
@@ -94,16 +100,27 @@ function living_handbook_run_uninstall(): void {
 		wp_delete_post( (int) $handbook_id, true );
 	}
 
-	$handbook_terms = get_terms(
-		array(
-			'taxonomy'   => 'handbook_set',
-			'hide_empty' => false,
-			'fields'     => 'ids',
-		)
+	// Delete the terms of every plugin taxonomy: the handbook grouping plus the
+	// four seeded vocabularies, whose terms would otherwise be left orphaned.
+	$taxonomies = array(
+		LivingHandbook\Handbook\Handbooks::TAXONOMY,
+		LivingHandbook\Taxonomy\Taxonomies::PAGE_TYPE,
+		LivingHandbook\Taxonomy\Taxonomies::TOPIC,
+		LivingHandbook\Taxonomy\Taxonomies::ROLE,
+		LivingHandbook\Taxonomy\Taxonomies::AUDIENCE,
 	);
-	if ( is_array( $handbook_terms ) ) {
-		foreach ( $handbook_terms as $handbook_term_id ) {
-			wp_delete_term( (int) $handbook_term_id, 'handbook_set' );
+	foreach ( $taxonomies as $taxonomy ) {
+		$term_ids = get_terms(
+			array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+				'fields'     => 'ids',
+			)
+		);
+		if ( is_array( $term_ids ) ) {
+			foreach ( $term_ids as $term_id ) {
+				wp_delete_term( (int) $term_id, $taxonomy );
+			}
 		}
 	}
 

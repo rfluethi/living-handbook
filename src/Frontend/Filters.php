@@ -6,11 +6,12 @@
  * terms actually used by pages of the current handbook are offered. Selecting a
  * facet, or submitting the search, sends a REST request that returns the
  * filtered result list, which the frontend script swaps in place, so there is
- * no full page reload and no separate filter button. When JavaScript is off the
- * search form still submits normally and the result list is rendered on the
- * server from the request. The result list runs its own query, scoped to the
- * handbook, rather than modifying the term archive's main query (which is
- * fragile on a taxonomy archive).
+ * no full page reload. When JavaScript is off the facet form and the search
+ * form still submit normally with their own button, and the result list is
+ * rendered on the server from the request; the frontend script hides the facet
+ * submit button because it filters live on change. The result list runs its own
+ * query, scoped to the handbook, rather than modifying the term archive's main
+ * query (which is fragile on a taxonomy archive).
  *
  * @package LivingHandbook
  */
@@ -177,9 +178,10 @@ final class Filters {
 	/**
 	 * Render the taxonomy facet form for a handbook.
 	 *
-	 * Only the terms used by pages of this handbook are offered. Selecting a
-	 * facet filters through the REST route (handled by the frontend script), so
-	 * the form has no submit button; a Reset link clears the filters.
+	 * Only the terms used by pages of this handbook are offered. The form has a
+	 * submit button so it works without JavaScript; the frontend script hides
+	 * the button and filters live as a facet is toggled. A Reset link clears the
+	 * filters.
 	 *
 	 * A hierarchical taxonomy is listed as an outline: children follow their
 	 * parent and are indented, instead of the flat alphabetical order that
@@ -246,7 +248,10 @@ final class Filters {
 		return '<form class="living-handbook-filterform" method="get" action="' . esc_url( $action ) . '">'
 			. self::hidden_search_field()
 			. $fields
+			. '<p class="living-handbook-filterform__actions">'
+			. '<button type="submit" class="living-handbook-filterform__submit">' . esc_html__( 'Apply filters', 'living-handbook' ) . '</button> '
 			. '<a class="living-handbook-reset living-handbook-reset--link" href="' . esc_url( $action ) . '">' . esc_html__( 'Reset', 'living-handbook' ) . '</a>'
+			. '</p>'
 			. '</form>';
 	}
 
@@ -446,7 +451,7 @@ final class Filters {
 				)
 			);
 			if ( is_string( $links ) && '' !== $links ) {
-				$out .= '<nav class="living-handbook-pagination">' . $links . '</nav>';
+				$out .= '<nav class="living-handbook-pagination" aria-label="' . esc_attr__( 'Handbook pages', 'living-handbook' ) . '">' . $links . '</nav>';
 			}
 		}
 

@@ -244,17 +244,12 @@
 	margin: 0 0 0.5rem;
 }
 
-/* Navigation: keep the VSN sidebar left-aligned, top level bold */
-
-.living-handbook-navwrap .wp-block-navigation,
-.living-handbook-navwrap .wp-block-navigation__container {
-	justify-content: flex-start;
-	text-align: start;
-}
-
-.living-handbook-navwrap .living-handbook-nav-top .wp-block-navigation-item__content {
-	font-weight: var(--lh-nav-top-weight, 700);
-}
+/* Handbook navigation: a self-contained, collapsible page tree, styled by the
+ * plugin, with no dependency on any other plugin. The whole block is a native
+ * <details>; its <summary> (the handbook title) opens and closes it, like the
+ * table of contents, on desktop and on mobile. Two variants: --tree shows the
+ * whole tree at once, --accordion collapses branches with a toggle on the left
+ * so only the current path is open. */
 
 .living-handbook-nav {
 	font-size: 0.9rem;
@@ -265,44 +260,124 @@
 	top: var(--lh-sticky-top, 2rem);
 }
 
-.living-handbook-nav__title {
-	font-size: 0.72rem;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	color: var(--lh-muted);
-	margin: 0 0 0.6rem;
+/* The summary is the clickable title; keep the native disclosure triangle. */
+.living-handbook-nav__top {
+	cursor: pointer;
+	font-weight: var(--lh-nav-top-weight, 700);
+	color: inherit;
+	margin: 0;
 }
 
-.living-handbook-nav ul {
+.living-handbook-nav[open] > .living-handbook-nav__top {
+	margin: 0 0 0.5rem;
+}
+
+.living-handbook-nav__top:hover {
+	color: var(--lh-accent);
+}
+
+.living-handbook-nav__list,
+.living-handbook-nav__sublist {
 	list-style: none;
 	margin: 0;
-	padding-inline-start: 0.2rem;
+	padding: 0;
 }
 
-.living-handbook-nav li {
-	margin: 0.15rem 0;
+.living-handbook-nav__sublist {
+	margin: 0.1rem 0 0.2rem 0.15rem;
 	padding-inline-start: 0.7rem;
 	border-inline-start: 2px solid var(--lh-border);
 }
 
-.living-handbook-nav a {
+.living-handbook-nav__item {
+	margin: 0.1rem 0;
+}
+
+/* Each item is a row: an optional toggle (or a spacer) on the left, then the
+ * page link, so branch and leaf labels line up. */
+.living-handbook-nav__row {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.15rem;
+}
+
+.living-handbook-nav__row > a {
+	flex: 1 1 auto;
 	display: block;
-	padding: 0.15rem 0;
+	padding: 0.2rem 0;
 	text-decoration: none;
 	color: inherit;
 }
 
-.living-handbook-nav a:hover {
+.living-handbook-nav__row > a:hover {
 	color: var(--lh-accent);
 }
 
-.living-handbook-nav li.is-current {
-	border-inline-start-color: var(--lh-accent);
-}
-
-.living-handbook-nav li.is-current > a {
+.living-handbook-nav__item.is-current > .living-handbook-nav__row > a {
 	color: var(--lh-accent);
 	font-weight: 700;
+}
+
+/* Toggle and spacer share the same width so labels line up. */
+.living-handbook-nav__toggle,
+.living-handbook-nav__spacer {
+	flex: 0 0 auto;
+	width: 1.2rem;
+	height: 1.6rem;
+}
+
+.living-handbook-nav__toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+
+/* A triangle on the left, pointing at the label when closed and down when open,
+ * matching the native <summary> marker. */
+.living-handbook-nav__toggle > span {
+	width: 0;
+	height: 0;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-inline-start: 6px solid currentColor;
+	transition: transform 0.15s ease;
+}
+
+.living-handbook-nav__item.is-open > .living-handbook-nav__row > .living-handbook-nav__toggle > span {
+	transform: rotate(90deg);
+}
+
+/* Accordion variant: sublists are collapsed unless their branch is open. */
+.living-handbook-nav--accordion .living-handbook-nav__sublist {
+	display: none;
+}
+
+.living-handbook-nav--accordion .living-handbook-nav__item.is-open > .living-handbook-nav__sublist {
+	display: block;
+}
+
+/* Tree variant: everything is shown, so no toggles and no left gutter. */
+.living-handbook-nav--tree .living-handbook-nav__toggle,
+.living-handbook-nav--tree .living-handbook-nav__spacer {
+	display: none;
+}
+
+/* On narrow screens the navigation drops its sticky position and stacks. */
+@media (max-width: 781px) {
+	.living-handbook-nav {
+		position: static;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.living-handbook-nav__toggle > span {
+		transition: none;
+	}
 }
 
 /* On-this-page table of contents (collapsible box) */
@@ -608,7 +683,9 @@
 /* Visible keyboard focus for every interactive handbook control (WCAG 2.4.7).
  * Themes frequently strip the browser default; restore an explicit outline. */
 .living-handbook-card__link:focus-visible,
-.living-handbook-nav a:focus-visible,
+.living-handbook-nav__top:focus-visible,
+.living-handbook-nav__row > a:focus-visible,
+.living-handbook-nav__toggle:focus-visible,
 .living-handbook-toc__list a:focus-visible,
 .living-handbook-toc__summary:focus-visible,
 .living-handbook-menu__link:focus-visible,
@@ -662,4 +739,117 @@
 .living-handbook-count,
 .living-handbook-empty {
 	--lh-muted: #5f6b75;
+}
+
+/* Handbook navigation: the arrow link to the handbook start page, sitting next
+ * to the collapsible title. The title (summary) only opens or closes the tree;
+ * this arrow is the way back to the handbook start page. */
+.living-handbook-nav__home {
+	float: right;
+	display: inline-flex;
+	align-items: center;
+	margin-inline-start: 0.5rem;
+	color: inherit;
+	text-decoration: none;
+}
+
+.living-handbook-nav__home:hover {
+	color: var(--lh-accent);
+}
+
+.living-handbook-nav__home:focus-visible {
+	outline: 2px solid var(--lh-accent, #2c5f8a);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+
+/* ---------- Review follow-up: accessibility and contrast ---------- */
+
+/* Visually hidden text for assistive technology (own rule, so it does not
+ * depend on the theme shipping a screen-reader-text class). */
+.living-handbook-visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Freshness status must not rely on colour alone (WCAG 1.4.1): vary the dot
+ * shape per status. Reviewed stays a circle, review due becomes a rounded
+ * square, overdue a diamond. */
+.living-handbook-card__dot--due {
+	border-radius: 2px;
+}
+
+.living-handbook-card__dot--overdue {
+	border-radius: 1px;
+	transform: rotate(45deg);
+}
+
+/* Feedback error message shown when the request fails, instead of a false
+ * thank-you. */
+.living-handbook-feedback__error {
+	color: var(--lh-overdue, #c0392b);
+}
+
+/* Contrast (WCAG 1.4.3): darken the "review due" and "reviewed" tones so the
+ * badge text clears AA on its tinted background, and give form controls a
+ * border that clears 3:1 against white (WCAG 1.4.11). */
+.living-handbook-overview,
+.living-handbook-entry,
+.living-handbook-cards,
+.living-handbook-card,
+.living-handbook-layout,
+.living-handbook-sidebar,
+.living-handbook-aside,
+.living-handbook-nav,
+.living-handbook-toc,
+.living-handbook-badges,
+.living-handbook-meta,
+.living-handbook-feedback,
+.living-handbook-badge,
+.living-handbook-count,
+.living-handbook-empty {
+	--lh-due: #8a5200;
+	--lh-ok: #176e3c;
+	--lh-border-strong: #6b7784;
+}
+
+.living-handbook-start__search .living-handbook-search__input,
+.living-handbook-reset,
+.living-handbook-feedback button,
+.living-handbook-menu__toggle {
+	border-color: var(--lh-border-strong, #6b7784);
+}
+
+/* Mermaid diagram figure: reset the browser's default figure margin and style
+ * the caption. The diagram itself keeps its own (SVG) sizing. */
+.living-handbook-figure {
+	margin: 1.5rem 0;
+}
+
+.living-handbook-figure__caption {
+	margin-top: 0.4rem;
+	font-size: 0.85rem;
+	color: var(--lh-muted, #5f6b75);
+	text-align: center;
+}
+
+/* AJAX facet filtering: a visible error when the request fails, instead of a
+ * silent stale list. */
+.living-handbook-filter-error {
+	margin: 0 0 0.75rem;
+	color: var(--lh-overdue, #c0392b);
+}
+
+.living-handbook-filterform__actions {
+	margin: 0.75rem 0 0;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
 }

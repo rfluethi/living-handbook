@@ -295,6 +295,8 @@ final class Blocks {
 			'Note text (shown only on GitHub pages)',
 			'This page is maintained on GitHub and updated automatically.',
 			'Mermaid code',
+			'Diagram title (caption)',
+			'Diagram description (for screen readers)',
 			'mermaid.min.js is missing in assets/js/.',
 		);
 	}

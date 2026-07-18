@@ -44,9 +44,15 @@ final class Cards {
 		$audiences = self::term_slugs( $post_id, Taxonomies::AUDIENCE );
 
 		$status = FreshnessStatus::for_post( $post_id );
-		$dot    = FreshnessStatus::NONE !== $status
-			? '<span class="living-handbook-card__dot living-handbook-card__dot--' . esc_attr( $status ) . '" title="' . esc_attr( FreshnessStatus::label( $status ) ) . '"></span>'
-			: '';
+		// The freshness status must not rely on colour alone (WCAG 1.4.1) and
+		// must be reachable by assistive technology (1.1.1): the dot carries a
+		// visually hidden text label, and its shape varies per status in CSS.
+		$dot = '';
+		if ( FreshnessStatus::NONE !== $status ) {
+			$label = FreshnessStatus::label( $status );
+			$dot   = '<span class="living-handbook-card__dot living-handbook-card__dot--' . esc_attr( $status ) . '" title="' . esc_attr( $label ) . '">'
+				. '<span class="living-handbook-visually-hidden">' . esc_html( $label ) . '</span></span>';
+		}
 
 		$excerpt = has_excerpt( $post_id )
 			? wp_strip_all_tags( get_the_excerpt( $post_id ) )

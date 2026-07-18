@@ -27,10 +27,16 @@ final class PageMeta {
 	/**
 	 * Build the feedback prompt markup.
 	 *
+	 * The feedback REST endpoint requires a logged-in user, so the buttons are
+	 * only rendered for logged-in visitors; a guest would only get an error.
+	 *
 	 * @param int $post_id Post ID.
 	 * @return string
 	 */
 	public static function render_feedback( int $post_id ): string {
+		if ( ! is_user_logged_in() ) {
+			return '';
+		}
 		return sprintf(
 			'<div class="living-handbook-feedback" data-post="%d"><span>%s</span> <button type="button" data-value="yes">%s</button> <button type="button" data-value="no">%s</button></div>',
 			$post_id,

@@ -2,16 +2,23 @@
 /**
  * Per-handbook sidebar navigation.
  *
- * Builds the page tree of a handbook as a core navigation block with a VSN
- * block style, so the VSN plugin styles it and handles the open path, active
- * marker and mobile burger. The tree is scoped to one handbook, so it never
- * lists pages of another handbook.
+ * Builds the page tree of one handbook as a self-contained, collapsible list
+ * with its own accordion behaviour, so the navigation works on its own and does
+ * not depend on any other plugin. The whole block is a native <details> whose
+ * <summary> is the handbook title: clicking the title opens or closes the entire
+ * navigation, exactly like the on-this-page table of contents, and it works the
+ * same on desktop and on narrow screens (the frontend script starts it collapsed
+ * on small viewports). A small arrow next to the title links to the handbook
+ * start page.
  *
- * Building the tree walks the page hierarchy with one query per branch, so the
- * assembled block markup is cached per handbook and variant and reused until a
- * handbook page or a handbook term changes (a version counter is bumped, see
- * invalidate()). The cached markup still runs through do_blocks on each request,
- * so the current-page marker stays correct.
+ * The two display variants:
+ * - "sidebar" (Menu): the whole tree is shown, nothing collapses.
+ * - "accordion": each branch with children collapses; the branch leading to the
+ *   current page starts open, the rest closed, and a toggle on the left of the
+ *   branch opens or closes it.
+ *
+ * The styling and the toggle behaviour ship with the plugin (frontend.css and
+ * frontend.js); the VSN plugin is no longer required.
  *
  * @package LivingHandbook
  */
@@ -31,12 +38,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Builds the VSN-styled navigation for a handbook.
+ * Builds the self-contained navigation for a handbook.
  */
 final class Navigation {
 
 	/**
-	 * Option holding the cache version; bumped to invalidate the nav markup.
+	 * Option holding the cache version; kept so the hook wiring stays valid and
+	 * a future cache can key off it. The current renderer builds fresh, so the
+	 * value is only bumped, not read.
 	 */
 	private const CACHE_VERSION_OPTION = 'living_handbook_nav_version';
 
@@ -51,51 +60,66 @@ final class Navigation {
 		if ( $term_id <= 0 ) {
 			return '';
 		}
-
-		$markup = self::markup( $term_id, $variant );
-		if ( '' === $markup ) {
+		$term = get_term( $term_id );
+		if ( ! $term instanceof WP_Term ) {
 			return '';
 		}
 
-		return '<div class="living-handbook-navwrap">' . do_blocks( $markup ) . '</div>';
-	}
-
-	/**
-	 * The cached navigation block markup for a handbook and variant.
-	 *
-	 * @param int    $term_id Handbook term ID.
-	 * @param string $variant Either 'sidebar' (menu) or 'accordion'.
-	 * @return string Block markup, or '' when the handbook has no pages.
-	 */
-	private static function markup( int $term_id, string $variant ): string {
-		$version   = (int) get_option( self::CACHE_VERSION_OPTION, 0 );
-		$cache_key = 'lh_nav_' . $version . '_' . $term_id . '_' . $variant;
-
-		$cached = get_transient( $cache_key );
-		if ( is_string( $cached ) ) {
-			return $cached;
+		$current  = self::current_post_id();
+		$open_ids = $current > 0 ? array_map( 'intval', get_post_ancestors( $current ) ) : array();
+		if ( $current > 0 ) {
+			$open_ids[] = $current;
 		}
 
-		$inner = self::top_link( $term_id ) . self::branch( 0, $term_id );
-		if ( '' === $inner ) {
-			set_transient( $cache_key, '', HOUR_IN_SECONDS );
+		$tree = self::branch( 0, $term_id, $current, $open_ids );
+		if ( '' === $tree ) {
 			return '';
 		}
 
 		$accordion = 'accordion' === $variant;
-		$class     = $accordion ? 'is-style-vsn-sidebar-accordion' : 'is-style-vsn-sidebar';
-		$on_click  = $accordion ? ',"openSubmenusOnClick":true' : '';
+		$classes   = 'living-handbook-nav ' . ( $accordion ? 'living-handbook-nav--accordion' : 'living-handbook-nav--tree' );
 
-		$markup = '<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}' . $on_click . ',"className":"' . $class . '"} -->'
-			. $inner
-			. '<!-- /wp:navigation -->';
+		// A small arrow next to the title links back to the handbook start page.
+		// The title itself only opens or closes the navigation.
+		$home  = '';
+		$entry = get_term_link( $term );
+		if ( ! is_wp_error( $entry ) ) {
+			$home = sprintf(
+				'<a class="living-handbook-nav__home" href="%1$s" aria-label="%2$s"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H5"/><path d="M8 4l-4 4 4 4"/></svg></a>',
+				esc_url( (string) $entry ),
+				esc_attr__( 'Open the handbook start page', 'living-handbook' )
+			);
+		}
 
-		set_transient( $cache_key, $markup, DAY_IN_SECONDS );
-		return $markup;
+		// The whole navigation is a native <details>, open by default; the
+		// frontend script collapses it on narrow screens. The <summary> is the
+		// handbook title and toggles the block, like the table of contents.
+		$out  = '<details class="' . esc_attr( $classes ) . '" open>';
+		$out .= '<summary class="living-handbook-nav__top">' . $home . esc_html( $term->name ) . '</summary>';
+		$out .= '<nav aria-label="' . esc_attr( $term->name ) . '">';
+		$out .= '<ul class="living-handbook-nav__list">' . $tree . '</ul>';
+		$out .= '</nav>';
+		$out .= '</details>';
+
+		return '<div class="living-handbook-navwrap">' . $out . '</div>';
 	}
 
 	/**
-	 * Invalidate the cached navigation markup by bumping the version counter.
+	 * The current single handbook page ID, or 0 when not on one.
+	 *
+	 * @return int
+	 */
+	private static function current_post_id(): int {
+		if ( ! is_singular( Handbook::POST_TYPE ) ) {
+			return 0;
+		}
+		$id = get_the_ID();
+		return false !== $id ? (int) $id : 0;
+	}
+
+	/**
+	 * Invalidate any cached navigation. The renderer builds fresh, so this only
+	 * bumps the version counter, kept for the hook wiring and a future cache.
 	 *
 	 * @return void
 	 */
@@ -120,40 +144,15 @@ final class Navigation {
 	}
 
 	/**
-	 * A link to the handbook entry page, shown at the top of the navigation.
+	 * Recursively build the list markup for one branch of the tree.
 	 *
-	 * It carries the class living-handbook-nav-top so the top level can be
-	 * styled (bold by default, adjustable with the --lh-nav-top-weight
-	 * variable).
-	 *
-	 * @param int $term_id Handbook term ID.
+	 * @param int   $parent_id Parent post ID (0 for the top level).
+	 * @param int   $term_id   Handbook term ID.
+	 * @param int   $current   The current page ID (0 when not on a page).
+	 * @param int[] $open_ids  Page IDs on the path to the current page.
 	 * @return string
 	 */
-	private static function top_link( int $term_id ): string {
-		$term = get_term( $term_id );
-		if ( ! $term instanceof WP_Term ) {
-			return '';
-		}
-		$link = get_term_link( $term );
-		if ( is_wp_error( $link ) ) {
-			return '';
-		}
-
-		return sprintf(
-			'<!-- wp:navigation-link {"label":%1$s,"url":%2$s,"kind":"custom","className":"living-handbook-nav-top"} /-->',
-			(string) wp_json_encode( $term->name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
-			(string) wp_json_encode( (string) $link, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
-		);
-	}
-
-	/**
-	 * Recursively build the navigation block markup for one branch of the tree.
-	 *
-	 * @param int $parent_id Parent post ID (0 for the top level).
-	 * @param int $term_id   Handbook term ID.
-	 * @return string
-	 */
-	private static function branch( int $parent_id, int $term_id ): string {
+	private static function branch( int $parent_id, int $term_id, int $current, array $open_ids ): string {
 		$query = new WP_Query(
 			array(
 				'post_type'      => Handbook::POST_TYPE,
@@ -180,28 +179,45 @@ final class Navigation {
 			if ( ! $post instanceof WP_Post ) {
 				continue;
 			}
-			$children = self::branch( $post->ID, $term_id );
-			$label    = (string) wp_json_encode( get_the_title( $post ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-			$url      = (string) wp_json_encode( (string) get_permalink( $post ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+			$pid          = (int) $post->ID;
+			$children     = self::branch( $pid, $term_id, $current, $open_ids );
+			$has_children = '' !== $children;
+			$is_open      = $has_children && in_array( $pid, $open_ids, true );
+			$title        = get_the_title( $post );
 
-			if ( '' !== $children ) {
-				$out .= sprintf(
-					'<!-- wp:navigation-submenu {"label":%1$s,"type":"%2$s","id":%3$d,"url":%4$s,"kind":"post-type"} -->%5$s<!-- /wp:navigation-submenu -->',
-					$label,
-					Handbook::POST_TYPE,
-					$post->ID,
-					$url,
-					$children
+			$classes = array( 'living-handbook-nav__item' );
+			if ( $has_children ) {
+				$classes[] = 'has-children';
+			}
+			if ( $pid === $current ) {
+				$classes[] = 'is-current';
+			}
+			if ( $is_open ) {
+				$classes[] = 'is-open';
+			}
+
+			// The row holds an optional toggle on the left, then the page link.
+			// Leaves get a spacer so their labels line up with branch labels.
+			$row = '<div class="living-handbook-nav__row">';
+			if ( $has_children ) {
+				$row .= sprintf(
+					'<button type="button" class="living-handbook-nav__toggle" aria-expanded="%1$s" aria-label="%2$s"><span aria-hidden="true"></span></button>',
+					$is_open ? 'true' : 'false',
+					/* translators: %s: page title. */
+					esc_attr( sprintf( __( 'Toggle %s', 'living-handbook' ), $title ) )
 				);
 			} else {
-				$out .= sprintf(
-					'<!-- wp:navigation-link {"label":%1$s,"type":"%2$s","id":%3$d,"url":%4$s,"kind":"post-type"} /-->',
-					$label,
-					Handbook::POST_TYPE,
-					$post->ID,
-					$url
-				);
+				$row .= '<span class="living-handbook-nav__spacer" aria-hidden="true"></span>';
 			}
+			$row .= '<a href="' . esc_url( (string) get_permalink( $post ) ) . '"' . ( $pid === $current ? ' aria-current="page"' : '' ) . '>' . esc_html( $title ) . '</a>';
+			$row .= '</div>';
+
+			$item = '<li class="' . esc_attr( implode( ' ', $classes ) ) . '">' . $row;
+			if ( $has_children ) {
+				$item .= '<ul class="living-handbook-nav__sublist">' . $children . '</ul>';
+			}
+			$item .= '</li>';
+			$out  .= $item;
 		}
 		return $out;
 	}

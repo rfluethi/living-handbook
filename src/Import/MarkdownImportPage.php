@@ -34,12 +34,31 @@ if ( ! defined( 'ABSPATH' ) ) {
  * imports) is matched by that path, and a file-based import into a chosen
  * handbook is matched by slug within that handbook. A one-off pasted draft
  * always creates a new page.
+ *
+ * The endpoints need edit_posts, which a Contributor has, so every write is
+ * additionally checked against the concrete post: a re-import only refreshes a
+ * page the current user may edit, and the finalize pass only touches handbook
+ * pages the user may edit. This stops a Contributor from overwriting another
+ * author's published page through a re-import match.
+ *
+ * The page offers each source (paste, ZIP, GitHub) its own button, so a pasted
+ * draft is never silently ignored because a URL is still in the field. Pages
+ * that fail to import are listed with their reason, not just counted out. The
+ * ZIP is read in bounded steps (entry count, per-file and total size), so a
+ * prepared archive cannot exhaust the server's memory.
  */
 final class MarkdownImportPage {
 
 	private const MENU_SLUG = 'living-handbook-import';
 
 	private const IMAGE_EXTENSIONS = array( 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg' );
+
+	/**
+	 * ZIP import limits, checked before the archive is read into memory.
+	 */
+	private const ZIP_MAX_ENTRIES     = 2000;
+	private const ZIP_MAX_FILE_BYTES  = 5242880;  // 5 MB uncompressed per file.
+	private const ZIP_MAX_TOTAL_BYTES = 52428800; // 50 MB uncompressed total.
 
 	/**
 	 * Hook registration into WordPress.
@@ -177,17 +196,37 @@ final class MarkdownImportPage {
 			return array( 'error' => __( 'Could not open the ZIP file.', 'living-handbook' ) );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- ZipArchive::$numFiles is a PHP core property.
+		$file_count = $zip->numFiles;
+		if ( $file_count > self::ZIP_MAX_ENTRIES ) {
+			$zip->close();
+			return array( 'error' => __( 'The ZIP has too many entries (maximum is 2000).', 'living-handbook' ) );
+		}
+
 		$markdown_files = array();
 		$image_files    = array();
 		$mkdocs_yaml    = '';
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- ZipArchive::$numFiles is a PHP core property.
-		$file_count = $zip->numFiles;
+		$total_bytes    = 0;
 		for ( $i = 0; $i < $file_count; $i++ ) {
 			$name = (string) $zip->getNameIndex( $i );
 			$base = basename( $name );
 			if ( '' === $base || 0 === strpos( $base, '.' ) || false !== strpos( $name, '__MACOSX' ) ) {
 				continue;
 			}
+
+			// Guard against a prepared archive: skip a single oversized entry,
+			// and stop before the uncompressed total exhausts memory.
+			$stat = $zip->statIndex( $i );
+			$size = is_array( $stat ) ? (int) $stat['size'] : 0;
+			if ( $size > self::ZIP_MAX_FILE_BYTES ) {
+				continue;
+			}
+			$total_bytes += $size;
+			if ( $total_bytes > self::ZIP_MAX_TOTAL_BYTES ) {
+				$zip->close();
+				return array( 'error' => __( 'The ZIP is too large: the uncompressed contents exceed 50 MB.', 'living-handbook' ) );
+			}
+
 			$content = $zip->getFromIndex( $i );
 			if ( false === $content ) {
 				continue;
@@ -343,6 +382,14 @@ final class MarkdownImportPage {
 		$allow_slug_match = '' !== $explicit_slug && $handbook_id > 0;
 		$existing_id      = self::find_existing_page( $slug, $source_path, $handbook_id, $allow_slug_match );
 
+		// Never let a re-import overwrite a page the current user may not edit.
+		// The endpoints only require edit_posts, which a Contributor has, so a
+		// match on someone else's published page must not become an update.
+		// Fall back to creating a fresh page for this user instead.
+		if ( $existing_id > 0 && ! current_user_can( 'edit_post', $existing_id ) ) {
+			$existing_id = 0;
+		}
+
 		// wp_insert_post expects slashed data and unslashes it; slash the block
 		// markup so escape sequences like \n and > survive.
 		$data = array(
@@ -350,7 +397,7 @@ final class MarkdownImportPage {
 			'post_title'     => $title,
 			'post_parent'    => $parent,
 			'post_content'   => (string) wp_slash( $content ),
-			'comment_status' => 'open',
+			'comment_status' => 'closed',
 		);
 
 		if ( $existing_id > 0 ) {
@@ -498,11 +545,19 @@ final class MarkdownImportPage {
 	/**
 	 * REST callback: resolve parents and convert internal .md links.
 	 *
+	 * The ids are restricted to handbook pages the current user may edit, so a
+	 * caller cannot use this to rewrite arbitrary posts.
+	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return array<string, mixed>
 	 */
 	public function finalize_callback( WP_REST_Request $request ): array {
-		$ids = array_map( 'absint', (array) $request->get_param( 'ids' ) );
+		$ids = array();
+		foreach ( array_map( 'absint', (array) $request->get_param( 'ids' ) ) as $id ) {
+			if ( $id > 0 && Handbook::POST_TYPE === get_post_type( $id ) && current_user_can( 'edit_post', $id ) ) {
+				$ids[] = $id;
+			}
+		}
 		return array( 'converted' => Postprocessor::finalize( $ids ) );
 	}
 
@@ -642,6 +697,8 @@ final class MarkdownImportPage {
 			'No Markdown pages found.',
 			'Done: created %d GitHub page(s).',
 			'wp.blocks is not loaded.',
+			'No ZIP file received.',
+			'No GitHub URL given.',
 		);
 	}
 
@@ -667,6 +724,7 @@ final class MarkdownImportPage {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Import', 'living-handbook' ); ?></h1>
 			<p><?php esc_html_e( 'Import Markdown into handbook pages. Paste a single draft or upload a ZIP of .md files: these become editable pages. If the ZIP contains a mkdocs.yml, its navigation defines the page structure, titles, and order (the ZIP must also hold the referenced files). Or give a GitHub URL: a file URL becomes one locked page, a folder (tree) URL imports every .md file in the folder as locked pages pulled from the repository. Front matter is dropped, transport metadata and the parent and order are applied, Mermaid diagrams and collapsible details become blocks, images in the ZIP are added to the media library, and internal .md links are pointed at the imported pages.', 'living-handbook' ); ?></p>
+			<p><?php esc_html_e( 'Each source has its own button below. Use the one for the source you want; the others are ignored.', 'living-handbook' ); ?></p>
 
 			<table class="form-table" role="presentation">
 				<tr>
@@ -695,13 +753,17 @@ final class MarkdownImportPage {
 				</tr>
 				<tr>
 					<th scope="row"><label for="lh-import-md"><?php esc_html_e( 'Paste Markdown', 'living-handbook' ); ?></label></th>
-					<td><textarea id="lh-import-md" rows="14" class="large-text code"></textarea></td>
+					<td>
+						<textarea id="lh-import-md" rows="14" class="large-text code"></textarea>
+						<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-paste"><?php esc_html_e( 'Import Markdown', 'living-handbook' ); ?></button></p>
+					</td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="lh-import-zip"><?php esc_html_e( 'or upload a ZIP', 'living-handbook' ); ?></label></th>
 					<td>
 						<input type="file" id="lh-import-zip" accept=".zip">
 						<p class="description"><?php esc_html_e( 'Flat set of .md files, or a repository export with a mkdocs.yml for a structured import.', 'living-handbook' ); ?></p>
+						<p><button type="button" class="button lh-import-run" id="lh-import-run-zip"><?php esc_html_e( 'Import ZIP', 'living-handbook' ); ?></button></p>
 					</td>
 				</tr>
 				<tr>
@@ -709,13 +771,11 @@ final class MarkdownImportPage {
 					<td>
 						<input type="url" id="lh-import-github" class="large-text code" placeholder="https://github.com/.../file.md or .../tree/main/folder">
 						<p class="description"><?php esc_html_e( 'Creates locked pages pulled from a public GitHub repository.', 'living-handbook' ); ?></p>
+						<p><button type="button" class="button lh-import-run" id="lh-import-run-github"><?php esc_html_e( 'Import from GitHub', 'living-handbook' ); ?></button></p>
 					</td>
 				</tr>
 			</table>
-			<p>
-				<button type="button" class="button button-primary" id="lh-import-run"><?php esc_html_e( 'Import', 'living-handbook' ); ?></button>
-				<span id="lh-import-status" style="margin-left:1em;"></span>
-			</p>
+			<p><span id="lh-import-status" aria-live="polite"></span></p>
 			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
 		</div>
 		<?php

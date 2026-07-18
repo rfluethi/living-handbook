@@ -12,14 +12,44 @@
 	var useEffect = element.useEffect;
 	var useRef = element.useRef;
 
+	// Load the mermaid library on demand, so the block editor does not pull in
+	// 3.5 MB on every open. The URL is provided by the server (lhMermaid.src).
+	function ensureMermaid( cb ) {
+		if ( window.mermaid ) {
+			cb();
+			return;
+		}
+		var src = ( window.lhMermaid && window.lhMermaid.src ) ? window.lhMermaid.src : '';
+		if ( ! src ) {
+			cb();
+			return;
+		}
+		var existing = document.getElementById( 'lh-mermaid-lib' );
+		if ( existing ) {
+			existing.addEventListener( 'load', cb );
+			return;
+		}
+		var s = document.createElement( 'script' );
+		s.id = 'lh-mermaid-lib';
+		s.src = src;
+		s.onload = cb;
+		document.head.appendChild( s );
+	}
+
 	blocks.registerBlockType( 'living-handbook/mermaid', {
 		apiVersion: 3,
 		title: 'Mermaid',
 		icon: 'chart-area',
 		category: 'living-handbook',
-		attributes: { code: { type: 'string', default: '' } },
+		attributes: {
+			code: { type: 'string', default: '' },
+			title: { type: 'string', default: '' },
+			description: { type: 'string', default: '' }
+		},
 		edit: function ( props ) {
 			var code = props.attributes.code || '';
+			var title = props.attributes.title || '';
+			var description = props.attributes.description || '';
 			var blockProps = useBlockProps();
 			var previewRef = useRef();
 
@@ -28,28 +58,34 @@
 				if ( ! node ) {
 					return;
 				}
-				if ( ! window.mermaid ) {
-					node.textContent = __( 'mermaid.min.js is missing in assets/js/.', 'living-handbook' );
-					return;
-				}
-				node.innerHTML = '';
-				if ( ! code ) {
-					return;
-				}
-				try {
-					window.mermaid.initialize( { startOnLoad: false } );
-					window.mermaid.render( 'lhm' + Date.now(), code ).then( function ( r ) {
-						if ( previewRef.current ) {
-							previewRef.current.innerHTML = r.svg;
-						}
-					} ).catch( function ( e ) {
-						if ( previewRef.current ) {
-							previewRef.current.textContent = 'Mermaid: ' + ( e && e.message ? e.message : e );
-						}
-					} );
-				} catch ( e ) {
-					node.textContent = 'Mermaid: ' + ( e && e.message ? e.message : e );
-				}
+				ensureMermaid( function () {
+					if ( ! previewRef.current ) {
+						return;
+					}
+					var target = previewRef.current;
+					if ( ! window.mermaid ) {
+						target.textContent = __( 'mermaid.min.js is missing in assets/js/.', 'living-handbook' );
+						return;
+					}
+					target.innerHTML = '';
+					if ( ! code ) {
+						return;
+					}
+					try {
+						window.mermaid.initialize( { startOnLoad: false } );
+						window.mermaid.render( 'lhm' + Date.now(), code ).then( function ( r ) {
+							if ( previewRef.current ) {
+								previewRef.current.innerHTML = r.svg;
+							}
+						} ).catch( function ( e ) {
+							if ( previewRef.current ) {
+								previewRef.current.textContent = 'Mermaid: ' + ( e && e.message ? e.message : e );
+							}
+						} );
+					} catch ( e ) {
+						target.textContent = 'Mermaid: ' + ( e && e.message ? e.message : e );
+					}
+				} );
 			}, [ code ] );
 
 			return el(
@@ -61,6 +97,21 @@
 					rows: 8,
 					onChange: function ( v ) {
 						props.setAttributes( { code: v } );
+					}
+				} ),
+				el( components.TextControl, {
+					label: __( 'Diagram title (caption)', 'living-handbook' ),
+					value: title,
+					onChange: function ( v ) {
+						props.setAttributes( { title: v } );
+					}
+				} ),
+				el( components.TextareaControl, {
+					label: __( 'Diagram description (for screen readers)', 'living-handbook' ),
+					value: description,
+					rows: 2,
+					onChange: function ( v ) {
+						props.setAttributes( { description: v } );
 					}
 				} ),
 				el( 'div', {

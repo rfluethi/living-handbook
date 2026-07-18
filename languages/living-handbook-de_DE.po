@@ -741,3 +741,44 @@ msgid "%d handbook page is not assigned to a handbook, so it stays invisible on 
 msgid_plural "%d handbook pages are not assigned to a handbook, so they stay invisible on the front end. Open them and pick a handbook in the sidebar."
 msgstr[0] "%d Handbuch-Seite ist keinem Handbuch zugeordnet und bleibt deshalb im Frontend unsichtbar. Öffne sie und wähle in der Seitenleiste ein Handbuch."
 msgstr[1] "%d Handbuch-Seiten sind keinem Handbuch zugeordnet und bleiben deshalb im Frontend unsichtbar. Öffne sie und wähle in der Seitenleiste ein Handbuch."
+
+# Handbook navigation (self-contained accordion). Source in src/Frontend/Navigation.php.
+
+msgid "Toggle %s"
+msgstr "%s auf- oder zuklappen"
+
+msgid "Open the handbook start page"
+msgstr "Handbuch-Startseite öffnen"
+
+msgid "Your feedback could not be sent. Please try again."
+msgstr "Dein Feedback konnte nicht gesendet werden. Bitte versuche es erneut."
+
+msgid "Diagram title (caption)"
+msgstr "Diagramm-Titel (Bildunterschrift)"
+
+msgid "Diagram description (for screen readers)"
+msgstr "Diagramm-Beschreibung (für Screenreader)"
+
+msgid "Each source has its own button below. Use the one for the source you want; the others are ignored."
+msgstr "Jede Quelle hat unten ihren eigenen Button. Nutze den für die gewünschte Quelle; die anderen werden ignoriert."
+
+msgid "Import Markdown"
+msgstr "Markdown importieren"
+
+msgid "Import ZIP"
+msgstr "ZIP importieren"
+
+msgid "Import from GitHub"
+msgstr "Aus GitHub importieren"
+
+msgid "The ZIP has too many entries (maximum is 2000)."
+msgstr "Das ZIP hat zu viele Einträge (maximal 2000)."
+
+msgid "The ZIP is too large: the uncompressed contents exceed 50 MB."
+msgstr "Das ZIP ist zu gross: der entpackte Inhalt überschreitet 50 MB."
+
+msgid "Apply filters"
+msgstr "Filter anwenden"
+
+msgid "The list could not be updated. Please reload the page."
+msgstr "Die Liste konnte nicht aktualisiert werden. Bitte lade die Seite neu."

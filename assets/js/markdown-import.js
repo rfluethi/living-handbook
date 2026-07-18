@@ -63,6 +63,13 @@
 	}
 
 	function libraryHtmlToMarkup( html ) {
+		// GitHub task-list checkboxes are <input> elements, which the block
+		// paste handler drops. Turn them into ballot symbols first, so the
+		// checkbox survives as visible text in the imported page.
+		html = String( html ).replace( /<input\b[^>]*type=["']?checkbox["']?[^>]*>/gi, function ( match ) {
+			return /\bchecked\b/i.test( match ) ? '☑ ' : '☐ ';
+		} );
+
 		var doc = new DOMParser().parseFromString( '<body>' + html + '</body>', 'text/html' );
 		var nodes = doc.body ? doc.body.childNodes : [];
 		var parts = [];
@@ -95,7 +102,6 @@
 	}
 
 	ready( function () {
-		var runBtn = document.getElementById( 'lh-import-run' );
 		var mdField = document.getElementById( 'lh-import-md' );
 		var zipField = document.getElementById( 'lh-import-zip' );
 		var titleField = document.getElementById( 'lh-import-title' );
@@ -103,7 +109,12 @@
 		var githubField = document.getElementById( 'lh-import-github' );
 		var statusEl = document.getElementById( 'lh-import-status' );
 		var results = document.getElementById( 'lh-import-results' );
-		if ( ! runBtn ) {
+
+		var pasteBtn = document.getElementById( 'lh-import-run-paste' );
+		var zipBtn = document.getElementById( 'lh-import-run-zip' );
+		var githubBtn = document.getElementById( 'lh-import-run-github' );
+		var runButtons = [ pasteBtn, zipBtn, githubBtn ];
+		if ( ! pasteBtn && ! zipBtn && ! githubBtn ) {
 			return;
 		}
 
@@ -113,6 +124,14 @@
 			if ( statusEl ) {
 				statusEl.textContent = msg;
 			}
+		}
+
+		function setBusy( on ) {
+			runButtons.forEach( function ( b ) {
+				if ( b ) {
+					b.disabled = on;
+				}
+			} );
 		}
 
 		function errorMessage( err ) {
@@ -136,6 +155,19 @@
 			a.href = created.editUrl || '#';
 			a.textContent = title || sprintf( __( 'Page %d', 'living-handbook' ), created.id );
 			li.appendChild( a );
+			results.appendChild( li );
+		}
+
+		// Show a page that failed to import, with the reason, instead of letting
+		// the total silently count fewer pages.
+		function addFailure( title, reason ) {
+			if ( ! results ) {
+				return;
+			}
+			var li = document.createElement( 'li' );
+			li.className = 'lh-import-failed';
+			li.style.color = '#b32d2e';
+			li.textContent = ( title || __( 'Imported page', 'living-handbook' ) ) + ' — ' + ( reason || __( 'unknown', 'living-handbook' ) );
 			results.appendChild( li );
 		}
 
@@ -164,10 +196,10 @@
 			var md = mdField ? mdField.value : '';
 			if ( ! md.replace( /\s+/g, '' ) ) {
 				setStatus( __( 'Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL.', 'living-handbook' ) );
-				return;
+				return Promise.resolve();
 			}
 			setStatus( __( 'Converting…', 'living-handbook' ) );
-			wp.apiFetch( { path: lhImport.convertPath, method: 'POST', data: { markdown: md } } ).then( function ( res ) {
+			return wp.apiFetch( { path: lhImport.convertPath, method: 'POST', data: { markdown: md } } ).then( function ( res ) {
 				if ( res && res.error ) {
 					setStatus( res.error );
 					return;
@@ -178,6 +210,7 @@
 				setStatus( __( 'Creating draft…', 'living-handbook' ) );
 				return createPage( title, markup, res.transport, '' ).then( function ( created ) {
 					if ( created && created.error ) {
+						addFailure( title, created.error );
 						setStatus( sprintf( __( 'Error: %s', 'living-handbook' ), created.error ) );
 						return;
 					}
@@ -219,6 +252,7 @@
 						}
 					} ).then( function ( created ) {
 						if ( created && created.error ) {
+							addFailure( spec.navTitle, created.error );
 							return;
 						}
 						if ( created && created.id ) {
@@ -241,7 +275,7 @@
 			setStatus( __( 'Uploading ZIP…', 'living-handbook' ) );
 			var fd = new FormData();
 			fd.append( 'zip', file );
-			wp.apiFetch( { path: lhImport.zipPath, method: 'POST', body: fd } ).then( function ( res ) {
+			return wp.apiFetch( { path: lhImport.zipPath, method: 'POST', body: fd } ).then( function ( res ) {
 				if ( res && res.error ) {
 					setStatus( res.error );
 					return;
@@ -262,6 +296,7 @@
 						var markup = libraryHtmlToMarkup( f.html || '' );
 						return createPage( f.title, markup, f.transport, f.slug ).then( function ( created ) {
 							if ( created && created.error ) {
+								addFailure( f.title, created.error );
 								return;
 							}
 							addResult( created, f.title );
@@ -284,7 +319,7 @@
 
 		function importGithub( url ) {
 			setStatus( __( 'Fetching page(s) from GitHub…', 'living-handbook' ) );
-			wp.apiFetch( {
+			return wp.apiFetch( {
 				path: lhImport.githubPath,
 				method: 'POST',
 				data: { url: url, title: trimVal( titleField ), handbook: handbookId() }
@@ -307,24 +342,61 @@
 			} );
 		}
 
-		runBtn.addEventListener( 'click', function () {
+		function begin() {
 			if ( results ) {
 				results.innerHTML = '';
 			}
 			if ( ! window.wp || ! wp.blocks ) {
 				setStatus( __( 'wp.blocks is not loaded.', 'living-handbook' ) );
-				return;
+				return false;
 			}
 			ensureCoreBlocks();
-			var githubUrl = trimVal( githubField );
-			var file = ( zipField && zipField.files && zipField.files.length ) ? zipField.files[0] : null;
-			if ( githubUrl ) {
-				importGithub( githubUrl );
-			} else if ( file ) {
-				importZip( file );
-			} else {
-				importPaste();
-			}
-		} );
+			setBusy( true );
+			return true;
+		}
+
+		function run( promise ) {
+			Promise.resolve( promise ).then( function () {
+				setBusy( false );
+			} ).catch( function ( err ) {
+				setStatus( errorMessage( err ) );
+				setBusy( false );
+			} );
+		}
+
+		if ( pasteBtn ) {
+			pasteBtn.addEventListener( 'click', function () {
+				if ( ! begin() ) {
+					return;
+				}
+				run( importPaste() );
+			} );
+		}
+		if ( zipBtn ) {
+			zipBtn.addEventListener( 'click', function () {
+				var file = ( zipField && zipField.files && zipField.files.length ) ? zipField.files[0] : null;
+				if ( ! file ) {
+					setStatus( __( 'No ZIP file received.', 'living-handbook' ) );
+					return;
+				}
+				if ( ! begin() ) {
+					return;
+				}
+				run( importZip( file ) );
+			} );
+		}
+		if ( githubBtn ) {
+			githubBtn.addEventListener( 'click', function () {
+				var url = trimVal( githubField );
+				if ( ! url ) {
+					setStatus( __( 'No GitHub URL given.', 'living-handbook' ) );
+					return;
+				}
+				if ( ! begin() ) {
+					return;
+				}
+				run( importGithub( url ) );
+			} );
+		}
 	} );
 }() );
