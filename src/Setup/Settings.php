@@ -38,6 +38,13 @@ final class Settings {
 	public const PAGE_SLUG = 'living-handbook-sync';
 
 	/**
+	 * Option holding the site's custom CSS for the handbook frontend, so a site
+	 * can style the handbook from the plugin instead of the theme; it is removed
+	 * when the plugin is uninstalled.
+	 */
+	public const OPTION_CUSTOM_CSS = 'living_handbook_custom_css';
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -57,13 +64,45 @@ final class Settings {
 	 * @return void
 	 */
 	public function add_page(): void {
-		add_submenu_page(
+		$hook = add_submenu_page(
 			'edit.php?post_type=' . Handbook::POST_TYPE,
 			__( 'Settings', 'living-handbook' ),
 			__( 'Settings', 'living-handbook' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
+		);
+		if ( is_string( $hook ) && '' !== $hook ) {
+			add_action( 'load-' . $hook, array( $this, 'register_help' ) );
+		}
+	}
+
+	/**
+	 * Add a contextual Help tab explaining the Custom CSS field, with two
+	 * examples and a link to the customization documentation.
+	 *
+	 * @return void
+	 */
+	public function register_help(): void {
+		$screen = get_current_screen();
+		if ( null === $screen ) {
+			return;
+		}
+		$doc     = 'https://github.com/rfluethi/living-handbook/blob/main/docs/customization.md';
+		$content = '<p>' . esc_html__( 'Add CSS that loads on the handbook pages only. It is stored with the plugin and removed when you delete the plugin, unlike CSS kept in the theme.', 'living-handbook' ) . '</p>'
+			. '<p>' . esc_html__( 'Target the plugin classes and the --lh-* custom properties. For example:', 'living-handbook' ) . '</p>'
+			. '<pre>.living-handbook-entry, .living-handbook-nav { --lh-accent: #b30000; }' . "\n" . '.living-handbook-card__dot { display: none; }</pre>'
+			. '<p>' . sprintf(
+				/* translators: %s: link to the customization documentation. */
+				esc_html__( 'The full reference of variables and class names is in the %s.', 'living-handbook' ),
+				'<a href="' . esc_url( $doc ) . '" target="_blank" rel="noreferrer noopener">' . esc_html__( 'customization documentation', 'living-handbook' ) . '</a>'
+			) . '</p>';
+		$screen->add_help_tab(
+			array(
+				'id'      => 'living_handbook_css_help',
+				'title'   => __( 'Custom CSS', 'living-handbook' ),
+				'content' => $content,
+			)
 		);
 	}
 
@@ -79,7 +118,7 @@ final class Settings {
 			array(
 				'type'              => 'string',
 				'sanitize_callback' => array( $this, 'sanitize_schedule' ),
-				'default'           => 'daily',
+				'default'           => 'weekly',
 			)
 		);
 		register_setting(
@@ -91,6 +130,15 @@ final class Settings {
 				'default'           => 0,
 			)
 		);
+		register_setting(
+			self::OPTION_GROUP,
+			self::OPTION_CUSTOM_CSS,
+			array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_css' ),
+				'default'           => '',
+			)
+		);
 
 		add_settings_section( 'living_handbook_sync_section', __( 'GitHub sync', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
 		add_settings_field(
@@ -100,6 +148,16 @@ final class Settings {
 			self::PAGE_SLUG,
 			'living_handbook_sync_section',
 			array( 'label_for' => GitSync::OPTION_SCHEDULE )
+		);
+
+		add_settings_section( 'living_handbook_appearance_section', __( 'Appearance', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_field(
+			self::OPTION_CUSTOM_CSS,
+			__( 'Custom CSS', 'living-handbook' ),
+			array( $this, 'render_css_field' ),
+			self::PAGE_SLUG,
+			'living_handbook_appearance_section',
+			array( 'label_for' => self::OPTION_CUSTOM_CSS )
 		);
 
 		add_settings_section( 'living_handbook_uninstall_section', __( 'Uninstall', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
@@ -121,7 +179,7 @@ final class Settings {
 	public function sanitize_schedule( $value ): string {
 		$value   = is_string( $value ) ? $value : '';
 		$choices = array_keys( GitSync::schedule_choices() );
-		return in_array( $value, $choices, true ) ? $value : 'daily';
+		return in_array( $value, $choices, true ) ? $value : 'weekly';
 	}
 
 	/**
@@ -133,6 +191,34 @@ final class Settings {
 	 */
 	public function sanitize_uninstall( $value ): int {
 		return empty( $value ) ? 0 : 1;
+	}
+
+	/**
+	 * Sanitize the custom CSS. CSS never needs a "<", so removing it prevents
+	 * closing the style tag or injecting a script: the value cannot break out of
+	 * the style block it is printed in.
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return string
+	 */
+	public function sanitize_css( $value ): string {
+		$value = is_string( $value ) ? $value : '';
+		return trim( str_replace( '<', '', $value ) );
+	}
+
+	/**
+	 * Render the custom CSS field.
+	 *
+	 * @return void
+	 */
+	public function render_css_field(): void {
+		$css = (string) get_option( self::OPTION_CUSTOM_CSS, '' );
+		printf(
+			'<textarea id="%1$s" name="%1$s" rows="10" class="large-text code" spellcheck="false">%2$s</textarea>',
+			esc_attr( self::OPTION_CUSTOM_CSS ),
+			esc_textarea( $css )
+		);
+		echo '<p class="description">' . esc_html__( 'CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples.', 'living-handbook' ) . '</p>';
 	}
 
 	/**
@@ -150,7 +236,7 @@ final class Settings {
 	 * @return void
 	 */
 	public function render_schedule_field(): void {
-		$current = (string) get_option( GitSync::OPTION_SCHEDULE, 'daily' );
+		$current = (string) get_option( GitSync::OPTION_SCHEDULE, 'weekly' );
 		echo '<select id="' . esc_attr( GitSync::OPTION_SCHEDULE ) . '" name="' . esc_attr( GitSync::OPTION_SCHEDULE ) . '">';
 		foreach ( GitSync::schedule_choices() as $key => $label ) {
 			printf(

@@ -41,8 +41,9 @@ final class Filters {
 
 	private const SEARCH_PARAM = 'lh_s';
 
-	public const REST_NAMESPACE = 'living-handbook/v1';
-	public const REST_ROUTE     = '/filter';
+	public const REST_NAMESPACE    = 'living-handbook/v1';
+	public const REST_ROUTE        = '/filter';
+	public const REST_ROUTE_SEARCH = '/search';
 
 	/**
 	 * Indent per hierarchy level in the facet list, in rem.
@@ -79,6 +80,79 @@ final class Filters {
 				),
 			)
 		);
+
+		register_rest_route(
+			self::REST_NAMESPACE,
+			self::REST_ROUTE_SEARCH,
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'rest_search' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'term_id' => array(
+						'required'          => true,
+						'sanitize_callback' => 'absint',
+					),
+					'q'       => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * REST handler: return the matching pages of one handbook as a small list of
+	 * title and permalink, for the on-page search typeahead. Access to the
+	 * handbook and to each page is checked, so it cannot surface a page the
+	 * current user may not read.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response
+	 */
+	public function rest_search( WP_REST_Request $request ): WP_REST_Response {
+		$term_id = (int) $request->get_param( 'term_id' );
+		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
+		if ( ! $term instanceof WP_Term || ! AccessController::can_view_term( $term_id, get_current_user_id() ) ) {
+			return new WP_REST_Response( array( 'results' => array() ), 200 );
+		}
+
+		$search = sanitize_text_field( (string) $request->get_param( 'q' ) );
+		if ( '' === $search ) {
+			return new WP_REST_Response( array( 'results' => array() ), 200 );
+		}
+
+		$query = new WP_Query(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'publish',
+				'posts_per_page' => 8,
+				'no_found_rows'  => true,
+				's'              => $search,
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					array(
+						'taxonomy' => Handbooks::TAXONOMY,
+						'field'    => 'term_id',
+						'terms'    => $term_id,
+					),
+				),
+			)
+		);
+
+		$user_id = get_current_user_id();
+		$results = array();
+		foreach ( $query->posts as $post ) {
+			if ( ! $post instanceof WP_Post || ! AccessController::can_view_post( $post->ID, $user_id ) ) {
+				continue;
+			}
+			$permalink = get_permalink( $post->ID );
+			$results[] = array(
+				'title' => get_the_title( $post->ID ),
+				'url'   => is_string( $permalink ) ? $permalink : '',
+			);
+		}
+
+		return new WP_REST_Response( array( 'results' => $results ), 200 );
 	}
 
 	/**

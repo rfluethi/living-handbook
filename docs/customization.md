@@ -2,7 +2,7 @@
 
 The plugin ships default styles and exposes CSS custom properties, so you can adapt the colours to your theme without touching the plugin. Typography and spacing come from your theme. The navigation is a self-contained, collapsible page tree rendered by the plugin; everything the plugin shows is its own markup, styled through the `--lh-*` variables below.
 
-Put your rules in the Site Editor under **Styles → Additional CSS**, or in your theme's stylesheet.
+Put your rules in the plugin's own **Custom CSS** field under **Handbook → Settings**: it is added on the handbook pages only, stored with the plugin, and removed when you delete the plugin. Alternatively use the Site Editor under **Styles → Additional CSS** or your theme's stylesheet, but note that CSS kept in the theme stays behind after the plugin is gone.
 
 ## Colours and a few sizes
 

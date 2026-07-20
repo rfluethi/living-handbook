@@ -57,6 +57,7 @@ function living_handbook_run_uninstall(): void {
 	delete_option( 'living_handbook_uninstall_content' );
 	delete_option( 'living_handbook_setup_notice' );
 	delete_option( 'living_handbook_overview_page' );
+	delete_option( 'living_handbook_custom_css' );
 
 	// Always: remove the navigation and area caches (transients keyed by version).
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange

@@ -194,6 +194,7 @@ final class Metadata {
 				<?php esc_html_e( 'Exclude this page from AI use', 'living-handbook' ); ?>
 			</label>
 		</p>
+		<p class="description"><?php esc_html_e( 'A marker only. It does not block anything by itself; it is published in the page REST data (living_handbook_status), so an AI tool or export that reads the handbook can choose to skip this page.', 'living-handbook' ); ?></p>
 		<p class="description"><?php esc_html_e( 'The last updated date is set automatically on save.', 'living-handbook' ); ?></p>
 		<?php
 	}

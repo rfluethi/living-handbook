@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.14.0
+Stable tag: 0.15.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,14 @@ By default your content is kept and only the plugin's own settings and caches ar
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.15.0 =
+* The import screen is reorganised into two steps: choose the target handbook, then pick one source in a tabbed switcher (paste, ZIP, or GitHub). Only the chosen source is shown, with a single import button, and the explanation moved into a collapsible help section.
+* New "Handbook search" block: a search-as-you-type box for a single page. It shows matching pages as links, so the visitor jumps straight there without leaving the page.
+* New "Custom CSS" field on the settings page: style the handbook from the plugin instead of the theme, so the styling is removed when the plugin is deleted.
+* The default background sync frequency for a new install is now weekly (was daily). Existing sites keep their configured setting.
+* The handbook admin menu shows a divider between the three usage pages and the six configuration pages.
+* Polish: the import explanation is now a screen Help tab; live search on the entry page is debounced and shows real results (title and body matches); importing without a target handbook asks first; the review column is sortable and shown in the site date format; the overdue dashboard caps its list with a link to all pages; and small controls meet the minimum touch-target size.
 
 = 0.14.0 =
 * Security: closed several access side-channels so per-handbook visibility holds beyond the single page. Reading the handbook list over REST is limited to editors; comments on a handbook you may not read are hidden from comment queries, feeds and single REST reads; and a page's visibility is combined fail-closed across every handbook it belongs to. The Markdown sync source is restricted to https hosts.
@@ -158,8 +166,11 @@ By default your content is kept and only the plugin's own settings and caches ar
 
 == Upgrade Notice ==
 
+= 0.15.0 =
+A clearer two-step import screen with a tabbed source switcher, an on-page Handbook search block, a Custom CSS field in the settings, a weekly default sync frequency for new installs, and a divider in the admin menu. Pre-release: best on a fresh database.
+
 = 0.14.0 =
-Security hardening of the access side-channels (REST, comments, multi-handbook fail-closed), the Settings API, a self-contained navigation, on-demand Mermaid with text alternatives, bounded ZIP import, and updated terminology (Handbooks, Topics, Review overdue). New getting-started and maintenance docs. Still pre-release: best installed on a fresh database.
+Hardens the access side-channels (REST, comments, multi-handbook fail-closed), moves settings to the Settings API, makes navigation self-contained, and updates terminology. New getting-started and maintenance docs. Pre-release: best on a fresh database.
 
 = 0.13.0 =
 Activation now creates the handbook overview page and guides you through the first steps. The uninstall cleanup finally ships. Facet filters show sub-areas under their parent, re-imports no longer duplicate pages, and accessibility was improved. Still pre-release: best installed on a fresh database.

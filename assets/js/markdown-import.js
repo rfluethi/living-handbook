@@ -120,6 +120,49 @@
 
 		ensureCoreBlocks();
 
+		// ARIA tabs for the import source (Paste / ZIP / GitHub).
+		( function setupSourceTabs() {
+			var tablist = document.querySelector( '.living-handbook-import__tablist' );
+			if ( ! tablist ) {
+				return;
+			}
+			var tabs = Array.prototype.slice.call( tablist.querySelectorAll( '[role="tab"]' ) );
+			function select( tab ) {
+				tabs.forEach( function ( t ) {
+					var on = t === tab;
+					t.setAttribute( 'aria-selected', on ? 'true' : 'false' );
+					t.tabIndex = on ? 0 : -1;
+					var panel = document.getElementById( t.getAttribute( 'aria-controls' ) );
+					if ( panel ) {
+						panel.hidden = ! on;
+					}
+				} );
+			}
+			tabs.forEach( function ( tab, idx ) {
+				tab.addEventListener( 'click', function () {
+					select( tab );
+					tab.focus();
+				} );
+				tab.addEventListener( 'keydown', function ( e ) {
+					var i = idx;
+					if ( e.key === 'ArrowRight' || e.key === 'ArrowDown' ) {
+						i = ( idx + 1 ) % tabs.length;
+					} else if ( e.key === 'ArrowLeft' || e.key === 'ArrowUp' ) {
+						i = ( idx - 1 + tabs.length ) % tabs.length;
+					} else if ( e.key === 'Home' ) {
+						i = 0;
+					} else if ( e.key === 'End' ) {
+						i = tabs.length - 1;
+					} else {
+						return;
+					}
+					e.preventDefault();
+					select( tabs[ i ] );
+					tabs[ i ].focus();
+				} );
+			} );
+		}() );
+
 		function setStatus( msg ) {
 			if ( statusEl ) {
 				statusEl.textContent = msg;
@@ -232,6 +275,8 @@
 			setStatus( sprintf( __( 'Creating %d page(s)…', 'living-handbook' ), pages.length ) );
 			var byPath = {};
 			var ids = [];
+			var done = 0;
+			var total = pages.length;
 			var chain = Promise.resolve();
 			pages.forEach( function ( spec ) {
 				chain = chain.then( function () {
@@ -251,6 +296,8 @@
 							order: spec.order
 						}
 					} ).then( function ( created ) {
+						++done;
+						setStatus( sprintf( __( 'Importing page %1$d of %2$d …', 'living-handbook' ), done, total ) );
 						if ( created && created.error ) {
 							addFailure( spec.navTitle, created.error );
 							return;
@@ -290,11 +337,15 @@
 				}
 				setStatus( sprintf( __( 'Creating %d drafts…', 'living-handbook' ), files.length ) );
 				var ids = [];
+				var done = 0;
+				var total = files.length;
 				var chain = Promise.resolve();
 				files.forEach( function ( f ) {
 					chain = chain.then( function () {
 						var markup = libraryHtmlToMarkup( f.html || '' );
 						return createPage( f.title, markup, f.transport, f.slug ).then( function ( created ) {
+							++done;
+							setStatus( sprintf( __( 'Importing page %1$d of %2$d …', 'living-handbook' ), done, total ) );
 							if ( created && created.error ) {
 								addFailure( f.title, created.error );
 								return;
@@ -348,6 +399,9 @@
 			}
 			if ( ! window.wp || ! wp.blocks ) {
 				setStatus( __( 'wp.blocks is not loaded.', 'living-handbook' ) );
+				return false;
+			}
+			if ( handbookId() === 0 && ! window.confirm( __( 'No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?', 'living-handbook' ) ) ) {
 				return false;
 			}
 			ensureCoreBlocks();

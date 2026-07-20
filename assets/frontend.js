@@ -5,8 +5,8 @@
  * handbook menu. Selecting a taxonomy facet or submitting the search filters the
  * handbook through a REST request and swaps the result list in place, so no full
  * page reload is needed; without JavaScript the facet and search forms submit
- * normally with their own button. Typing in the search box also narrows the
- * shown cards live for instant feedback.
+ * normally with their own button. Typing in the search box re-runs the server
+ * search after a short debounce.
  */
 ( function () {
 	'use strict';
@@ -15,38 +15,23 @@
 		return window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 	}
 
-	/* ---------- Overview and entry: live card narrowing while typing ---------- */
+	/* ---------- Small debounce helper for live search ---------- */
 
-	function cards() {
-		return document.querySelectorAll( '.living-handbook-card' );
+	function debounce( fn, wait ) {
+		var timer = null;
+		return function () {
+			var context = this;
+			var args = arguments;
+			if ( timer ) {
+				clearTimeout( timer );
+			}
+			timer = setTimeout( function () {
+				fn.apply( context, args );
+			}, wait );
+		};
 	}
 
-	function applyFilter() {
-		var list = cards();
-		if ( ! list.length ) {
-			return;
-		}
-
-		var query = '';
-		document.querySelectorAll( '.living-handbook-search__input' ).forEach( function ( input ) {
-			if ( ! query ) {
-				query = input.value.trim().toLowerCase();
-			}
-		} );
-
-		list.forEach( function ( card ) {
-			var show = true;
-			if ( query ) {
-				var text = ( ( card.getAttribute( 'data-title' ) || '' ) + ' ' + ( card.textContent || '' ) ).toLowerCase();
-				if ( text.indexOf( query ) === -1 ) {
-					show = false;
-				}
-			}
-			card.style.display = show ? '' : 'none';
-		} );
-	}
-
-	/* ---------- Overview and entry: AJAX facet and search filtering ---------- */
+	/* ---------- Entry: AJAX facet and search filtering ---------- */
 
 	function canAjax() {
 		return window.livingHandbook && window.livingHandbook.filter;
@@ -157,6 +142,16 @@
 			} );
 		}
 
+		// Live search: re-run the server search after a short debounce, so the
+		// result list (title and body matches) stays authoritative instead of
+		// hiding cards by their visible text.
+		var searchInput = entry.querySelector( '.living-handbook-search__input' );
+		if ( searchInput && canAjax() ) {
+			searchInput.addEventListener( 'input', debounce( function () {
+				ajaxFilter( entry );
+			}, 150 ) );
+		}
+
 		var filterForm = entry.querySelector( '.living-handbook-filterform' );
 		if ( filterForm && canAjax() ) {
 			filterForm.addEventListener( 'submit', function ( event ) {
@@ -202,6 +197,94 @@
 				var open = nav.classList.toggle( 'is-open' );
 				btn.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
 			} );
+		} );
+	}
+
+	/* ---------- Single page: on-page handbook search (typeahead) ---------- */
+
+	function wirePageSearch( box ) {
+		if ( ! window.livingHandbook || ! window.livingHandbook.search ) {
+			return;
+		}
+		var input = box.querySelector( '.living-handbook-page-search__input' );
+		var results = box.querySelector( '.living-handbook-page-search__results' );
+		var termId = box.getAttribute( 'data-term-id' );
+		if ( ! input || ! results || ! termId ) {
+			return;
+		}
+		var controller = null;
+
+		function hide() {
+			results.hidden = true;
+			input.setAttribute( 'aria-expanded', 'false' );
+		}
+
+		function render( items ) {
+			results.innerHTML = '';
+			if ( ! items.length ) {
+				var empty = document.createElement( 'li' );
+				empty.className = 'living-handbook-page-search__empty';
+				empty.setAttribute( 'role', 'presentation' );
+				empty.textContent = window.livingHandbook.searchEmpty || 'No matches.';
+				results.appendChild( empty );
+			} else {
+				items.forEach( function ( item ) {
+					var li = document.createElement( 'li' );
+					li.setAttribute( 'role', 'option' );
+					var a = document.createElement( 'a' );
+					a.href = item.url;
+					a.textContent = item.title;
+					li.appendChild( a );
+					results.appendChild( li );
+				} );
+			}
+			results.hidden = false;
+			input.setAttribute( 'aria-expanded', 'true' );
+		}
+
+		function run() {
+			var q = input.value.trim();
+			if ( q.length < 2 ) {
+				hide();
+				return;
+			}
+			if ( controller ) {
+				controller.abort();
+			}
+			controller = ( 'AbortController' in window ) ? new AbortController() : null;
+			var params = new URLSearchParams();
+			params.set( 'term_id', termId );
+			params.set( 'q', q );
+			fetch( window.livingHandbook.search + '?' + params.toString(), {
+				headers: { 'X-WP-Nonce': window.livingHandbook.nonce },
+				credentials: 'same-origin',
+				signal: controller ? controller.signal : undefined
+			} ).then( function ( response ) {
+				if ( ! response.ok ) {
+					throw new Error( 'HTTP ' + response.status );
+				}
+				return response.json();
+			} ).then( function ( data ) {
+				render( ( data && data.results ) ? data.results : [] );
+			} ).catch( function ( err ) {
+				if ( err && 'AbortError' === err.name ) {
+					return;
+				}
+				hide();
+			} );
+		}
+
+		input.addEventListener( 'input', debounce( run, 150 ) );
+		input.addEventListener( 'focus', function () {
+			if ( ! results.hidden || results.children.length ) {
+				run();
+			}
+		} );
+		input.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key ) {
+				input.value = '';
+				hide();
+			}
 		} );
 	}
 
@@ -347,16 +430,12 @@
 	/* ---------- Init ---------- */
 
 	document.addEventListener( 'DOMContentLoaded', function () {
-		applyFilter();
 		buildToc();
 		wireNav();
 		wireMenus();
 
-		document.querySelectorAll( '.living-handbook-search__input' ).forEach( function ( input ) {
-			input.addEventListener( 'input', applyFilter );
-		} );
-
 		document.querySelectorAll( '.living-handbook-entry' ).forEach( wireEntry );
+		document.querySelectorAll( '.living-handbook-page-search' ).forEach( wirePageSearch );
 
 		document.querySelectorAll( '.living-handbook-feedback' ).forEach( function ( box ) {
 			// Announce the confirmation to assistive technology when the buttons

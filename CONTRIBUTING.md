@@ -24,6 +24,39 @@ The integration tests need the WordPress test suite and are kept separate. Run t
 composer test:integration
 ```
 
+### Setting up the integration test suite
+
+The integration tests run against a real WordPress test environment. They need a throwaway MySQL/MariaDB database (it is wiped on every run, so use a dedicated one), a WordPress core checkout, and a `wp-tests-config.php`. `wp-phpunit` (a dev dependency) provides the test framework itself, so no separate test-lib checkout is needed.
+
+1. Create an empty test database, for example `wordpress_test`, and a database user that can access it.
+2. Get a WordPress core checkout, for example `git clone --depth=1 https://github.com/WordPress/WordPress.git /tmp/wordpress`.
+3. Create a `wp-tests-config.php` (keep it out of git; it is already in `.gitignore`) with at least:
+
+   ```php
+   <?php
+   define( 'ABSPATH', '/tmp/wordpress/' );
+   define( 'DB_NAME', 'wordpress_test' );
+   define( 'DB_USER', 'wp' );
+   define( 'DB_PASSWORD', 'wp' );
+   define( 'DB_HOST', 'localhost' );
+   define( 'DB_CHARSET', 'utf8' );
+   define( 'DB_COLLATE', '' );
+   $table_prefix = 'wptests_';
+   define( 'WP_TESTS_DOMAIN', 'example.org' );
+   define( 'WP_TESTS_EMAIL', 'admin@example.org' );
+   define( 'WP_TESTS_TITLE', 'Test' );
+   define( 'WP_PHP_BINARY', 'php' );
+   ```
+
+4. Point the suite at that config through `WP_TESTS_CONFIG_FILE_PATH` and run the tests:
+
+   ```bash
+   export WP_TESTS_CONFIG_FILE_PATH="$(pwd)/wp-tests-config.php"
+   LH_INTEGRATION=1 composer test:integration
+   ```
+
+`tests/bootstrap.php` reads `WP_TESTS_CONFIG_FILE_PATH` and defines the matching constant, so the config file above is the single place that describes your local database and WordPress path.
+
 ## Building an installable zip
 
 To run every check and, if they all pass, build the zip in one step:

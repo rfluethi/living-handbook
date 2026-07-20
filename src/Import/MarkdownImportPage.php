@@ -77,13 +77,36 @@ final class MarkdownImportPage {
 	 * @return void
 	 */
 	public function add_page(): void {
-		add_submenu_page(
+		$hook = add_submenu_page(
 			'edit.php?post_type=' . Handbook::POST_TYPE,
 			__( 'Markdown import', 'living-handbook' ),
 			__( 'Import', 'living-handbook' ),
 			'edit_posts',
 			self::MENU_SLUG,
 			array( $this, 'render' )
+		);
+		if ( is_string( $hook ) && '' !== $hook ) {
+			add_action( 'load-' . $hook, array( $this, 'register_help' ) );
+		}
+	}
+
+	/**
+	 * Add the explanation as a contextual Help tab (top right of the screen),
+	 * the standard WordPress place for it, instead of an inline block.
+	 *
+	 * @return void
+	 */
+	public function register_help(): void {
+		$screen = get_current_screen();
+		if ( null === $screen ) {
+			return;
+		}
+		$screen->add_help_tab(
+			array(
+				'id'      => 'living_handbook_import_help',
+				'title'   => __( 'How the import works', 'living-handbook' ),
+				'content' => '<p>' . esc_html__( 'Import Markdown into handbook pages. Paste a single draft or upload a ZIP of .md files: these become editable pages. If the ZIP contains a mkdocs.yml, its navigation defines the page structure, titles, and order (the ZIP must also hold the referenced files). Or give a GitHub URL: a file URL becomes one locked page, a folder (tree) URL imports every .md file in the folder as locked pages pulled from the repository. Front matter is dropped, transport metadata and the parent and order are applied, Mermaid diagrams and collapsible details become blocks, images in the ZIP are added to the media library, and internal .md links are pointed at the imported pages.', 'living-handbook' ) . '</p>',
+			)
 		);
 	}
 
@@ -699,6 +722,8 @@ final class MarkdownImportPage {
 			'wp.blocks is not loaded.',
 			'No ZIP file received.',
 			'No GitHub URL given.',
+			'No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?',
+			'Importing page %1$d of %2$d …',
 		);
 	}
 
@@ -723,8 +748,16 @@ final class MarkdownImportPage {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Import', 'living-handbook' ); ?></h1>
-			<p><?php esc_html_e( 'Import Markdown into handbook pages. Paste a single draft or upload a ZIP of .md files: these become editable pages. If the ZIP contains a mkdocs.yml, its navigation defines the page structure, titles, and order (the ZIP must also hold the referenced files). Or give a GitHub URL: a file URL becomes one locked page, a folder (tree) URL imports every .md file in the folder as locked pages pulled from the repository. Front matter is dropped, transport metadata and the parent and order are applied, Mermaid diagrams and collapsible details become blocks, images in the ZIP are added to the media library, and internal .md links are pointed at the imported pages.', 'living-handbook' ); ?></p>
-			<p><?php esc_html_e( 'Each source has its own button below. Use the one for the source you want; the others are ignored.', 'living-handbook' ); ?></p>
+			<style>
+				.living-handbook-import__step{margin:1.5rem 0 .25rem}
+				.living-handbook-import__tablist{display:flex;flex-wrap:wrap;gap:.25rem;border-bottom:1px solid #c3c4c7;margin:.5rem 0 0}
+				.living-handbook-import__tab{appearance:none;background:transparent;border:1px solid transparent;border-bottom:none;padding:.5rem .9rem;margin-bottom:-1px;cursor:pointer;font-size:13px;line-height:1.6;border-radius:4px 4px 0 0;color:#1d2327}
+				.living-handbook-import__tab .dashicons{font-size:16px;width:16px;height:16px;vertical-align:text-bottom;margin-inline-end:.25rem}
+				.living-handbook-import__tab[aria-selected="true"]{background:#fff;border-color:#c3c4c7;font-weight:600}
+				.living-handbook-import__tab:focus-visible{outline:2px solid #2271b1;outline-offset:-2px}
+				.living-handbook-import__panel{max-width:820px;border:1px solid #c3c4c7;border-top:none;padding:1rem;background:#fff}
+			</style>
+			<h2 class="living-handbook-import__step"><?php esc_html_e( '1. Target', 'living-handbook' ); ?></h2>
 
 			<table class="form-table" role="presentation">
 				<tr>
@@ -751,30 +784,37 @@ final class MarkdownImportPage {
 						<p class="description"><?php esc_html_e( 'For a pasted draft or a single GitHub file. If empty, the first heading is used. For a ZIP, a GitHub folder, or a mkdocs.yml, each file keeps its own title.', 'living-handbook' ); ?></p>
 					</td>
 				</tr>
-				<tr>
-					<th scope="row"><label for="lh-import-md"><?php esc_html_e( 'Paste Markdown', 'living-handbook' ); ?></label></th>
-					<td>
-						<textarea id="lh-import-md" rows="14" class="large-text code"></textarea>
-						<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-paste"><?php esc_html_e( 'Import Markdown', 'living-handbook' ); ?></button></p>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="lh-import-zip"><?php esc_html_e( 'or upload a ZIP', 'living-handbook' ); ?></label></th>
-					<td>
-						<input type="file" id="lh-import-zip" accept=".zip">
-						<p class="description"><?php esc_html_e( 'Flat set of .md files, or a repository export with a mkdocs.yml for a structured import.', 'living-handbook' ); ?></p>
-						<p><button type="button" class="button lh-import-run" id="lh-import-run-zip"><?php esc_html_e( 'Import ZIP', 'living-handbook' ); ?></button></p>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="lh-import-github"><?php esc_html_e( 'or import from GitHub', 'living-handbook' ); ?></label></th>
-					<td>
-						<input type="url" id="lh-import-github" class="large-text code" placeholder="https://github.com/.../file.md or .../tree/main/folder">
-						<p class="description"><?php esc_html_e( 'Creates locked pages pulled from a public GitHub repository.', 'living-handbook' ); ?></p>
-						<p><button type="button" class="button lh-import-run" id="lh-import-run-github"><?php esc_html_e( 'Import from GitHub', 'living-handbook' ); ?></button></p>
-					</td>
-				</tr>
 			</table>
+
+			<h2 class="living-handbook-import__step"><?php esc_html_e( '2. Source', 'living-handbook' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Choose one source, then import.', 'living-handbook' ); ?></p>
+			<div class="living-handbook-import__tabs">
+				<div class="living-handbook-import__tablist" role="tablist" aria-label="<?php esc_attr_e( 'Import source', 'living-handbook' ); ?>">
+					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-paste" aria-controls="lh-panel-paste" aria-selected="true"><span class="dashicons dashicons-edit" aria-hidden="true"></span><?php esc_html_e( 'Paste text', 'living-handbook' ); ?></button>
+					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-zip" aria-controls="lh-panel-zip" aria-selected="false" tabindex="-1"><span class="dashicons dashicons-media-archive" aria-hidden="true"></span><?php esc_html_e( 'ZIP file', 'living-handbook' ); ?></button>
+					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-github" aria-controls="lh-panel-github" aria-selected="false" tabindex="-1"><span class="dashicons dashicons-editor-code" aria-hidden="true"></span><?php esc_html_e( 'GitHub', 'living-handbook' ); ?></button>
+				</div>
+
+				<div class="living-handbook-import__panel" id="lh-panel-paste" role="tabpanel" aria-labelledby="lh-tab-paste">
+					<label class="screen-reader-text" for="lh-import-md"><?php esc_html_e( 'Paste Markdown', 'living-handbook' ); ?></label>
+					<textarea id="lh-import-md" rows="14" class="large-text code" placeholder="<?php esc_attr_e( 'Paste a Markdown draft here', 'living-handbook' ); ?>"></textarea>
+					<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-paste"><?php esc_html_e( 'Import Markdown', 'living-handbook' ); ?></button></p>
+				</div>
+
+				<div class="living-handbook-import__panel" id="lh-panel-zip" role="tabpanel" aria-labelledby="lh-tab-zip" hidden>
+					<label class="screen-reader-text" for="lh-import-zip"><?php esc_html_e( 'ZIP file', 'living-handbook' ); ?></label>
+					<input type="file" id="lh-import-zip" accept=".zip">
+					<p class="description"><?php esc_html_e( 'Flat set of .md files, or a repository export with a mkdocs.yml for a structured import.', 'living-handbook' ); ?></p>
+					<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-zip"><?php esc_html_e( 'Import ZIP', 'living-handbook' ); ?></button></p>
+				</div>
+
+				<div class="living-handbook-import__panel" id="lh-panel-github" role="tabpanel" aria-labelledby="lh-tab-github" hidden>
+					<label class="screen-reader-text" for="lh-import-github"><?php esc_html_e( 'GitHub URL', 'living-handbook' ); ?></label>
+					<input type="url" id="lh-import-github" class="large-text code" placeholder="https://github.com/.../file.md or .../tree/main/folder">
+					<p class="description"><?php esc_html_e( 'Creates locked pages pulled from a public GitHub repository.', 'living-handbook' ); ?></p>
+					<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-github"><?php esc_html_e( 'Import from GitHub', 'living-handbook' ); ?></button></p>
+				</div>
+			</div>
 			<p><span id="lh-import-status" aria-live="polite"></span></p>
 			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
 		</div>

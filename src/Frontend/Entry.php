@@ -166,7 +166,14 @@ final class Entry {
 		}
 
 		if ( '' === $body ) {
-			return '<p class="living-handbook-empty">' . esc_html__( 'This handbook has no pages yet.', 'living-handbook' ) . '</p>';
+			$empty = '<p class="living-handbook-empty">' . esc_html__( 'This handbook has no pages yet.', 'living-handbook' );
+			// A guest may simply be missing member-only pages, so offer a login.
+			if ( ! is_user_logged_in() ) {
+				$link     = get_term_link( $term_id, Handbooks::TAXONOMY );
+				$redirect = is_wp_error( $link ) ? '' : (string) $link;
+				$empty   .= ' <a href="' . esc_url( wp_login_url( $redirect ) ) . '">' . esc_html__( 'Log in to see more.', 'living-handbook' ) . '</a>';
+			}
+			return $empty . '</p>';
 		}
 		return $body;
 	}

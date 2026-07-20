@@ -13,6 +13,7 @@ use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\FreshnessStatus;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -33,6 +34,8 @@ final class Maintenance {
 		add_action( 'wp_dashboard_setup', array( $this, 'add_widget' ) );
 		add_filter( 'manage_' . Handbook::POST_TYPE . '_posts_columns', array( $this, 'columns' ) );
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
+		add_filter( 'manage_edit-' . Handbook::POST_TYPE . '_sortable_columns', array( $this, 'sortable_columns' ) );
+		add_action( 'pre_get_posts', array( $this, 'sort_by_reviewed' ) );
 	}
 
 	/**
@@ -114,8 +117,9 @@ final class Maintenance {
 			return;
 		}
 
+		$limit = 10;
 		echo '<ul>';
-		foreach ( $overdue as $item ) {
+		foreach ( array_slice( $overdue, 0, $limit ) as $item ) {
 			printf(
 				'<li><a href="%1$s">%2$s</a> (%3$s)</li>',
 				esc_url( $item['link'] ),
@@ -124,6 +128,23 @@ final class Maintenance {
 			);
 		}
 		echo '</ul>';
+
+		if ( $count > $limit ) {
+			printf(
+				'<p><a href="%1$s">%2$s</a></p>',
+				esc_url(
+					add_query_arg(
+						array(
+							'post_type' => Handbook::POST_TYPE,
+							'orderby'   => 'living_handbook_reviewed',
+							'order'     => 'asc',
+						),
+						admin_url( 'edit.php' )
+					)
+				),
+				esc_html__( 'Show all handbook pages, oldest review first', 'living-handbook' )
+			);
+		}
 	}
 
 	/**
@@ -149,14 +170,70 @@ final class Maintenance {
 		if ( 'living_handbook_reviewed' === $column ) {
 			$reviewed = (string) get_post_meta( $post_id, Metadata::REVIEWED, true );
 			$label    = FreshnessStatus::label( FreshnessStatus::for_post( $post_id ) );
-			echo esc_html( '' !== $reviewed ? $reviewed : '—' );
+			$display  = '—';
+			if ( '' !== $reviewed ) {
+				$timestamp = strtotime( $reviewed );
+				$display   = false !== $timestamp ? date_i18n( (string) get_option( 'date_format' ), $timestamp ) : $reviewed;
+			}
+			echo esc_html( $display );
 			if ( '' !== $label ) {
 				printf( ' <span>(%s)</span>', esc_html( $label ) );
 			}
 		} elseif ( 'living_handbook_feedback' === $column ) {
 			$yes = (int) get_post_meta( $post_id, Feedback::YES, true );
 			$no  = (int) get_post_meta( $post_id, Feedback::NO, true );
-			echo esc_html( sprintf( '%1$d / %2$d', $yes, $no ) );
+			echo esc_html(
+				sprintf(
+					/* translators: 1: number of positive votes, 2: number of negative votes. */
+					__( '%1$d yes, %2$d no', 'living-handbook' ),
+					$yes,
+					$no
+				)
+			);
 		}
+	}
+
+	/**
+	 * Mark the review column as sortable.
+	 *
+	 * @param array<string, string> $columns Sortable columns.
+	 * @return array<string, string>
+	 */
+	public function sortable_columns( array $columns ): array {
+		$columns['living_handbook_reviewed'] = 'living_handbook_reviewed';
+		return $columns;
+	}
+
+	/**
+	 * Order the handbook list by the last review date when that column header is
+	 * clicked. Pages without a review date are kept in the list (NOT EXISTS), so
+	 * sorting never hides them.
+	 *
+	 * @param WP_Query $query The current query.
+	 * @return void
+	 */
+	public function sort_by_reviewed( WP_Query $query ): void {
+		if ( ! is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+		if ( 'living_handbook_reviewed' !== $query->get( 'orderby' ) ) {
+			return;
+		}
+		$order = 'DESC' === strtoupper( (string) $query->get( 'order' ) ) ? 'DESC' : 'ASC';
+		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			'meta_query',
+			array(
+				'relation'    => 'OR',
+				'lh_reviewed' => array(
+					'key'     => Metadata::REVIEWED,
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => Metadata::REVIEWED,
+					'compare' => 'NOT EXISTS',
+				),
+			)
+		);
+		$query->set( 'orderby', array( 'lh_reviewed' => $order ) );
 	}
 }

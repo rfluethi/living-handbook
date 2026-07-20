@@ -1,6 +1,6 @@
 # Blocks
 
-Living Handbook ships ten dynamic blocks, grouped under the **Living Handbook** category in the block inserter. They are server-rendered: each one builds its markup on page load from the current context. Most only output something in the context they are meant for; placed anywhere else they render nothing at all.
+Living Handbook ships eleven dynamic blocks, grouped under the **Living Handbook** category in the block inserter. They are server-rendered: each one builds its markup on page load from the current context. Most only output something in the context they are meant for; placed anywhere else they render nothing at all.
 
 ![Living Handbook Blocks](_attachments/living-handbook-blocks.png)
 
@@ -131,6 +131,12 @@ Renders a diagram written in [Mermaid](https://mermaid.js.org/) syntax, drawn in
 A short note marking a page as maintained on GitHub and updated automatically. It only appears on a page whose source is GitHub; on a page maintained in WordPress it renders nothing, so you can place it in the single template once and forget about it.
 
 **Settings:** the note text is editable.
+
+## Handbook search (`living-handbook/search`)
+
+A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It only renders on a single handbook page; anywhere else it outputs nothing.
+
+**Renders on:** single handbook pages only.
 
 ## Nothing shows up?
 

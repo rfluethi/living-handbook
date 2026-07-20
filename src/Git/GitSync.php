@@ -198,8 +198,8 @@ final class GitSync {
 	 * @return string
 	 */
 	private static function current_schedule(): string {
-		$value = (string) get_option( self::OPTION_SCHEDULE, 'daily' );
-		return in_array( $value, self::SCHEDULES, true ) ? $value : 'daily';
+		$value = (string) get_option( self::OPTION_SCHEDULE, 'weekly' );
+		return in_array( $value, self::SCHEDULES, true ) ? $value : 'weekly';
 	}
 
 	/**
@@ -870,5 +870,10 @@ final class GitSync {
 		}
 		$is_github = self::SOURCE_GITHUB === get_post_meta( $post_id, self::META_SOURCE, true );
 		echo esc_html( $is_github ? __( 'GitHub', 'living-handbook' ) : __( 'WordPress', 'living-handbook' ) );
+
+		// Flag a failed sync right in the column, not only in the admin notice.
+		if ( $is_github && '1' === (string) get_post_meta( $post_id, self::META_ERROR, true ) ) {
+			echo ' <span class="living-handbook-sync-failed" style="color:#b32d2e;font-weight:600;">' . esc_html__( '(sync failed)', 'living-handbook' ) . '</span>';
+		}
 	}
 }

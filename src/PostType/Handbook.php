@@ -41,6 +41,26 @@ final class Handbook {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_filter( 'wp_sitemaps_post_types', array( $this, 'exclude_from_sitemap' ) );
 		add_action( 'admin_menu', array( $this, 'reorder_submenu' ), 999 );
+		add_action( 'admin_head', array( $this, 'submenu_divider_style' ) );
+	}
+
+	/**
+	 * Draw a thin divider in the handbook submenu between the three usage pages
+	 * (pages, add new, import) and the six configuration pages (the taxonomies
+	 * and the settings), so the split is visible at a glance.
+	 *
+	 * WordPress submenus have no native separators, so this styles the first
+	 * configuration item (the Handbooks taxonomy) with a top border and some
+	 * spacing. The border colour is a translucent grey that reads on both the
+	 * dark and the light admin colour schemes.
+	 *
+	 * @return void
+	 */
+	public function submenu_divider_style(): void {
+		echo '<style id="living-handbook-menu-divider">'
+			. '#menu-posts-' . esc_attr( self::POST_TYPE ) . ' .wp-submenu li a[href*="taxonomy=handbook_set"]{'
+			. 'margin-top:6px;padding-top:12px;border-top:1px solid rgba(140,140,140,.4);}'
+			. '</style>';
 	}
 
 	/**

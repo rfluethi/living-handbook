@@ -4,15 +4,17 @@ How to get Markdown into the handbook, and how a page can stay synced from a Git
 
 ## The import screen
 
-Under **Handbook → Import**, the screen accepts three kinds of input, each with its own button:
+Under **Handbook → Import**, the screen works in two steps. First pick a **target handbook** (and, optionally, a page title). Then choose one **source** in the tab switcher and import it. Only the chosen source is shown, so a pasted draft is never ignored because a URL is still in another field. A short "How the import works" section at the top explains the details on demand.
 
-1. **Paste** a Markdown draft into the text area, then **Import Markdown**.
-2. **Upload a ZIP** of `.md` files, then **Import ZIP**. The ZIP may be a flat set of files or a structured MkDocs project (see below).
-3. **Enter a GitHub URL**, then **Import from GitHub**. Both a single file and a whole folder work:
+The three sources are:
+
+1. **Paste text**: paste a Markdown draft, then **Import Markdown**.
+2. **ZIP file**: upload a ZIP of `.md` files, then **Import ZIP**. The ZIP may be a flat set of files or a structured MkDocs project (see below).
+3. **GitHub**: enter a GitHub URL, then **Import from GitHub**. Both a single file and a whole folder work:
    - a file, either a `raw.githubusercontent.com` URL or a `github.com/.../blob/...` URL (the blob URL is normalised to raw automatically);
    - a folder, a `github.com/.../tree/...` URL. Every `.md` file in that folder (including `README.md`) is imported through the GitHub contents API. Subfolders are not descended into.
 
-Each source has its own button, so a pasted draft is never ignored just because a URL is still in a field. Pick a **target handbook** at the top before you import. Pages that land without a handbook are invisible on the front end, because access is fail-closed.
+Pages that land without a handbook are invisible on the front end, because access is fail-closed.
 
 **How the conversion works:** league/commonmark renders the Markdown to HTML, and WordPress's own paste conversion turns that HTML into editable blocks. A ```` ```mermaid ```` code fence becomes a live-rendered Mermaid block, collapsible `<details>` sections become details blocks, and images referenced from an `assets` folder are sideloaded into the media library. Once all pages exist, a shared post-processor applies the transport metadata and resolves parents and internal `.md` links, both the link target and the visible link text.
 
@@ -66,7 +68,7 @@ Each page has a source, set in the **Source** box in the editor:
 
 ### How the sync learns of changes
 
-There is no webhook. WordPress pulls: on save, on demand (Sync now), and on a background schedule (WordPress cron, which fires on site visits). Set the schedule under **Handbook → Settings**: off, hourly, twice daily, daily (the default), or weekly. "Off" still syncs on save and via Sync now.
+There is no webhook. WordPress pulls: on save, on demand (Sync now), and on a background schedule (WordPress cron, which fires on site visits). Set the schedule under **Handbook → Settings**: off, hourly, twice daily, daily, or weekly (the default on a new install). "Off" still syncs on save and via Sync now.
 
 A large handbook is synced in batches rather than all at once, so a single request never has to fetch every page.
 

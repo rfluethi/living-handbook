@@ -17,6 +17,7 @@ use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Onboarding;
+use LivingHandbook\Setup\Settings;
 use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -70,12 +71,22 @@ final class FrontendRenderer {
 			array(
 				'rest'          => esc_url_raw( rest_url( 'living-handbook/v1/feedback' ) ),
 				'filter'        => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE ) ),
+				'search'        => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE_SEARCH ) ),
 				'nonce'         => wp_create_nonce( 'wp_rest' ),
 				'thanks'        => __( 'Thanks for your feedback.', 'living-handbook' ),
 				'feedbackError' => __( 'Your feedback could not be sent. Please try again.', 'living-handbook' ),
 				'filterError'   => __( 'The list could not be updated. Please reload the page.', 'living-handbook' ),
+				'searchEmpty'   => __( 'No matches.', 'living-handbook' ),
 			)
 		);
+
+		// A site can style the handbook with the plugin's own Custom CSS field, so
+		// the customisation lives with the plugin and is removed on uninstall,
+		// unlike CSS kept in the theme. It is added after the plugin stylesheet.
+		$custom_css = trim( (string) get_option( Settings::OPTION_CUSTOM_CSS, '' ) );
+		if ( '' !== $custom_css ) {
+			wp_add_inline_style( 'living-handbook', $custom_css );
+		}
 	}
 
 	/**

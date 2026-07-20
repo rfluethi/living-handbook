@@ -788,3 +788,81 @@ msgstr "Handbuch-Navigation: der Seitenbaum des aktuellen Handbuchs. Wähle in d
 
 msgid "Review overdue"
 msgstr "Prüfung überfällig"
+
+msgid "How the import works"
+msgstr "Wie der Import funktioniert"
+
+msgid "1. Target"
+msgstr "1. Ziel"
+
+msgid "2. Source"
+msgstr "2. Quelle"
+
+msgid "Choose one source, then import."
+msgstr "Eine Quelle wählen, dann importieren."
+
+msgid "Import source"
+msgstr "Importquelle"
+
+msgid "Paste text"
+msgstr "Text einfügen"
+
+msgid "ZIP file"
+msgstr "ZIP-Datei"
+
+msgid "GitHub URL"
+msgstr "GitHub-URL"
+
+msgid "Paste a Markdown draft here"
+msgstr "Hier einen Markdown-Entwurf einfügen"
+
+msgid "Handbook search"
+msgstr "Handbuch-Suche"
+
+msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type."
+msgstr "Handbuch-Suche: ein Suchfeld mit Sofort-Vorschlägen für das aktuelle Handbuch, für eine Einzelseite. Es listet passende Seiten, während du tippst."
+
+msgid "%1$d yes, %2$d no"
+msgstr "%1$d Ja, %2$d Nein"
+
+msgid "Show all handbook pages, oldest review first"
+msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
+
+msgid "No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?"
+msgstr "Kein Ziel-Handbuch gewählt. Importierte Seiten bleiben unsichtbar, bis du sie einem Handbuch zuweist. Trotzdem importieren?"
+
+msgid "No matches."
+msgstr "Keine Treffer."
+
+msgid "Appearance"
+msgstr "Darstellung"
+
+msgid "Custom CSS"
+msgstr "Eigenes CSS"
+
+msgid "CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples."
+msgstr "CSS, das nur auf den Handbuch-Seiten geladen und beim Plugin gespeichert wird. Beispiele findest du im Hilfe-Tab (oben rechts)."
+
+msgid "Add CSS that loads on the handbook pages only. It is stored with the plugin and removed when you delete the plugin, unlike CSS kept in the theme."
+msgstr "Füge CSS hinzu, das nur auf den Handbuch-Seiten geladen wird. Es liegt beim Plugin und wird beim Löschen des Plugins mit entfernt, anders als CSS im Theme."
+
+msgid "Target the plugin classes and the --lh-* custom properties. For example:"
+msgstr "Passe die Plugin-Klassen und die --lh-*-Variablen an. Zum Beispiel:"
+
+msgid "The full reference of variables and class names is in the %s."
+msgstr "Die vollständige Übersicht der Variablen und Klassennamen findest du in der %s."
+
+msgid "customization documentation"
+msgstr "Anpassungs-Dokumentation"
+
+msgid "(sync failed)"
+msgstr "(Sync fehlgeschlagen)"
+
+msgid "A marker only. It does not block anything by itself; it is published in the page REST data (living_handbook_status), so an AI tool or export that reads the handbook can choose to skip this page."
+msgstr "Nur eine Markierung. Sie blockiert für sich nichts; sie steht in den REST-Daten der Seite (living_handbook_status), sodass ein KI-Werkzeug oder ein Export, der das Handbuch liest, diese Seite überspringen kann."
+
+msgid "Log in to see more."
+msgstr "Melde dich an, um mehr zu sehen."
+
+msgid "Importing page %1$d of %2$d …"
+msgstr "Importiere Seite %1$d von %2$d …"

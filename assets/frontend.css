@@ -472,6 +472,7 @@
 }
 
 .living-handbook-metagrid__date {
+	margin: 0;
 	font-weight: 600;
 }
 
@@ -852,4 +853,98 @@
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
+}
+
+/* On-page handbook search (typeahead): a full-width field with a dropdown of
+ * matching pages, so the visitor jumps straight to a page without leaving this
+ * one. The field carries the same thin border as the entry search. */
+.living-handbook-page-search {
+	position: relative;
+	margin: 0 0 1.25rem;
+}
+
+.living-handbook-page-search__input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.85rem 1rem;
+	font-size: 1.05rem;
+	border: 1px solid var(--lh-border-strong, #6b7784);
+	border-radius: 10px;
+}
+
+.living-handbook-page-search__input:focus-visible {
+	outline: 2px solid var(--lh-accent, #2c5f8a);
+	outline-offset: 2px;
+}
+
+.living-handbook-page-search__results {
+	list-style: none;
+	margin: 0.5rem 0 0;
+	padding: 0.25rem;
+	border: 1px solid var(--lh-border, #e2e6ea);
+	border-radius: 10px;
+	max-height: 22rem;
+	overflow-y: auto;
+}
+
+.living-handbook-page-search__results li {
+	margin: 0;
+}
+
+.living-handbook-page-search__results a {
+	display: block;
+	padding: 0.5rem 0.6rem;
+	border-radius: 6px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.living-handbook-page-search__results a:hover,
+.living-handbook-page-search__results a:focus {
+	background: var(--lh-accent-soft, #eaf1f8);
+	color: var(--lh-accent, #2c5f8a);
+}
+
+.living-handbook-page-search__empty {
+	padding: 0.5rem 0.6rem;
+	color: var(--lh-muted, #5f6b75);
+}
+
+/* Pagination for the filtered result list. */
+.living-handbook-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	margin: 1.25rem 0 0;
+}
+
+.living-handbook-pagination .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2rem;
+	min-height: 2rem;
+	padding: 0 0.5rem;
+	border: 1px solid var(--lh-border-strong, #6b7784);
+	border-radius: 6px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.living-handbook-pagination .page-numbers.current {
+	background: var(--lh-accent, #2c5f8a);
+	border-color: var(--lh-accent, #2c5f8a);
+	color: #fff;
+}
+
+/* Touch targets (WCAG 2.5.8): keep the small controls at least 24px high, with
+ * enough hit area, without changing their visual weight much. */
+.living-handbook-feedback button {
+	min-height: 24px;
+}
+
+.living-handbook-toc__list a {
+	min-height: 24px;
+	display: flex;
+	align-items: center;
 }

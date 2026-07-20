@@ -172,6 +172,7 @@ final class Blocks {
 		$simple = array(
 			'living-handbook/badges'   => array( $this, 'render_badges' ),
 			'living-handbook/feedback' => array( $this, 'render_feedback' ),
+			'living-handbook/search'   => array( $this, 'render_search' ),
 		);
 		foreach ( $simple as $name => $callback ) {
 			register_block_type(
@@ -290,6 +291,8 @@ final class Blocks {
 			'Handbook badges: page type, topic and audience of the current page.',
 			'Handbook feedback',
 			'Handbook feedback: the "Was this helpful?" prompt for the current page.',
+			'Handbook search',
+			'Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type.',
 			'GitHub source note',
 			'Shows a note on pages synced from GitHub; renders nothing on other pages.',
 			'Note text (shown only on GitHub pages)',
@@ -388,6 +391,41 @@ final class Blocks {
 	public function render_feedback(): string {
 		$post_id = self::current_handbook_id();
 		return $post_id > 0 ? PageMeta::render_feedback( $post_id ) : '';
+	}
+
+	/**
+	 * Render the on-page search box for the current handbook (single page only).
+	 *
+	 * A search-as-you-type field: the frontend script queries the handbook's
+	 * pages and shows the matches as links in a dropdown, so the visitor jumps
+	 * straight to a page without leaving the current one. The results are always
+	 * scoped to the current handbook and access-checked on the server.
+	 *
+	 * @return string
+	 */
+	public function render_search(): string {
+		if ( ! is_singular( Handbook::POST_TYPE ) ) {
+			return '';
+		}
+		$term_id = self::current_term_id();
+		if ( $term_id <= 0 ) {
+			return '';
+		}
+		wp_enqueue_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
+		wp_enqueue_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
+
+		$id = wp_unique_id( 'living-handbook-search-' );
+		return sprintf(
+			'<div class="living-handbook-page-search" data-term-id="%1$s">'
+			. '<label class="living-handbook-visually-hidden" for="%2$s">%3$s</label>'
+			. '<input type="search" id="%2$s" class="living-handbook-page-search__input" autocomplete="off" placeholder="%4$s" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="%2$s-results">'
+			. '<ul id="%2$s-results" class="living-handbook-page-search__results" role="listbox" hidden></ul>'
+			. '</div>',
+			esc_attr( (string) $term_id ),
+			esc_attr( $id ),
+			esc_html__( 'Search this handbook', 'living-handbook' ),
+			esc_attr__( 'Search this handbook …', 'living-handbook' )
+		);
 	}
 
 	/**

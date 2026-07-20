@@ -79,7 +79,7 @@ final class PageMeta {
 		$items .= self::item( __( 'Last reviewed', 'living-handbook' ), $reviewed_value . $badge, self::person( $reviewer_id, $show_people ) );
 		$items .= self::item( __( 'Responsible role', 'living-handbook' ), esc_html( $role ), '' );
 
-		return '<footer class="living-handbook-meta"><div class="living-handbook-metagrid">' . $items . '</div></footer>';
+		return '<footer class="living-handbook-meta"><dl class="living-handbook-metagrid">' . $items . '</dl></footer>';
 	}
 
 	/**
@@ -92,9 +92,8 @@ final class PageMeta {
 	 */
 	private static function item( string $label, string $value_html, string $person_html ): string {
 		return '<div class="living-handbook-metagrid__item">'
-			. '<span class="living-handbook-metagrid__label">' . esc_html( $label ) . '</span>'
-			. '<span class="living-handbook-metagrid__date">' . $value_html . '</span>'
-			. $person_html
+			. '<dt class="living-handbook-metagrid__label">' . esc_html( $label ) . '</dt>'
+			. '<dd class="living-handbook-metagrid__date">' . $value_html . $person_html . '</dd>'
 			. '</div>';
 	}
 

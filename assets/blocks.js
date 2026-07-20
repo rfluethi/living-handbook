@@ -260,4 +260,11 @@
 		'thumbs-up',
 		__( 'Handbook feedback: the "Was this helpful?" prompt for the current page.', 'living-handbook' )
 	);
+
+	dynamic(
+		'living-handbook/search',
+		__( 'Handbook search', 'living-handbook' ),
+		'search',
+		__( 'Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type.', 'living-handbook' )
+	);
 }( window.wp.blocks, window.wp.element, window.wp.serverSideRender, window.wp.i18n, window.wp.blockEditor, window.wp.components ) );
