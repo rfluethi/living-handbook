@@ -129,6 +129,13 @@ final class AccessController {
 	/**
 	 * Remove handbook posts the current user may not view from any result set.
 	 *
+	 * This runs on the_posts, which core applies to full-object queries (the
+	 * display path). Core returns id-only and id=>parent queries (fields =>
+	 * 'ids') before the_posts runs, so those never reach this filter. That is
+	 * acceptable: a bare id exposes no content, and every actual content read
+	 * (single page, entry page, single REST item, comments) is guarded on its
+	 * own.
+	 *
 	 * @param WP_Post[] $posts Posts returned by the query.
 	 * @param WP_Query  $query The query (unused, kept for the filter signature).
 	 * @return WP_Post[]

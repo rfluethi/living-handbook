@@ -18,10 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * a normalised array. Placeholders such as [JJJJ-MM-TT] or [Rolle] count as
  * empty; [ANNAHME: X] resolves to X. Pure string handling, no WordPress calls.
  *
- * Some fields accept more than one label. The taxonomy that is shown as
- * "Bereiche" in the interface was historically written as «Themengebiet» in the
- * drafts, so both labels are read; «Bereich» is the preferred one for new
- * drafts, and «Themengebiet» keeps the existing corpus working.
+ * Some fields accept more than one label. The taxonomy that is shown as "Topics"
+ * in the interface ("Themen" in German) accepts, in order of preference,
+ * «Thema», then «Bereich» and «Themengebiet». «Thema» matches the current
+ * interface label and is the preferred one for new drafts; «Bereich» and the
+ * older «Themengebiet» keep the existing corpus of drafts working.
  */
 final class TransportBlock {
 
@@ -34,7 +35,7 @@ final class TransportBlock {
 	private const LABELS = array(
 		'page_type' => array( 'seitentyp' ),
 		'role'      => array( 'verantwortliche rolle' ),
-		'topic'     => array( 'bereich', 'themengebiet' ),
+		'topic'     => array( 'thema', 'bereich', 'themengebiet' ),
 		'handbook'  => array( 'handbuch' ),
 		'parent'    => array( 'eltern-seite' ),
 		'excerpt'   => array( 'textauszug' ),

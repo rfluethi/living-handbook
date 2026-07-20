@@ -12,21 +12,21 @@ Active development (0.x). The plugin is usable end to end: multiple handbooks, p
 
 - A dedicated handbook content type with structured page types (Diataxis plus FAQ).
 - Ownership per page: a responsible role mapped to a current person.
-- Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for unchecked pages.
+- Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
 - Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
 - Several handbooks side by side, each with its own entry page and navigation.
 - An entry page per handbook with full-text search, taxonomy filters, area tiles and recently updated pages.
-- A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
-- Per-handbook navigation built from the page hierarchy, rendered as a core Navigation block and styled by the [VSN plugin](https://github.com/rfluethi/vertical-sidebar-navigation).
+- Per-handbook navigation built from the page hierarchy: a self-contained, collapsible page tree with a Menu or Accordion display, styled by the plugin. No other plugin is required.
 - Markdown import: paste, a ZIP of `.md` files (flat or MkDocs-structured), or a GitHub file or folder URL.
 - GitHub sync: a page can be sourced from a Markdown URL, pulled on save, on demand and on a schedule, with a locked editor.
-- No external WordPress plugin dependency for the core; the import and sync bundle two Composer libraries in `vendor/`.
+- No external WordPress plugin dependency; the import and sync bundle two Composer libraries in `vendor/`.
 
 ## Requirements
 
 - WordPress 6.7 or newer, with a block theme
 - PHP 8.1 or newer
-- The VSN plugin for the sidebar navigation styling
+
+Living Handbook is built for single-site installations; network activation on multisite is not supported.
 
 ## Development
 
@@ -47,7 +47,9 @@ Continuous integration runs linting, static analysis, and unit tests on every pu
 
 ## Documentation
 
-Developer documentation lives in [`docs/`](docs/): [blocks](docs/blocks.md), [templates](docs/templates.md), [customization](docs/customization.md), [architecture](docs/architecture.md), [hooks](docs/hooks.md) and [import and sync](docs/import-and-sync.md).
+New to the plugin? Start with [getting started](docs/getting-started.md): from install to your first page that visitors can see. Then [maintenance and freshness](docs/maintenance.md), the feature the plugin is built around.
+
+Developer documentation lives in [`docs/`](docs/): a plain-language [code overview](docs/code-overview.md) to start, then [blocks](docs/blocks.md), [templates](docs/templates.md), [customization](docs/customization.md), [architecture](docs/architecture.md), [hooks](docs/hooks.md) and [import and sync](docs/import-and-sync.md).
 
 ## License
 

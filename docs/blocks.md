@@ -10,11 +10,11 @@ Before the individual blocks, it helps to know the three pages a handbook has. A
 
 | Surface | What it is | URL |
 | --- | --- | --- |
-| **Overview** | Lists all handbooks a visitor may read. A normal WordPress page that you create yourself and put the overview block on. | Whatever you choose, for example `/handbook/` |
+| **Overview** | Lists all handbooks a visitor may read. A normal WordPress page holding the overview block; activation creates one for you, and you can move, restyle or replace it. | Whatever you choose, for example `/handbook/` |
 | **Entry page** | The start page of one handbook: search, filters, areas, recently updated. Created automatically for every handbook. | `/handbook-set/<handbook-slug>/` |
 | **Single page** | One handbook page: navigation, content, table of contents, badges, feedback, metadata. | `/handbook/<page-slug>/` |
 
-The entry page and the single page come with block templates that already place the right blocks, so you rarely need to build them by hand. The overview is the exception: **the plugin does not create it for you.** Create a normal page, add the "Handbook overview" block, publish, and that page is your overview. There is deliberately no automatic archive at `/handbook/`, because that would be a second, competing overview you cannot style.
+The entry page and the single page come with block templates that already place the right blocks, so you rarely need to build them by hand. The overview is a normal page: activation creates one called "Handbook" with the "Handbook overview" block already on it, so a fresh install shows something instead of nothing. Because it is an ordinary page, you can move it, restyle it, or build your own instead. There is deliberately no automatic archive at `/handbook/`, because that would be a second, competing overview you cannot style.
 
 ## Handbook overview (`living-handbook/overview`)
 
@@ -30,9 +30,9 @@ Lists every handbook the current visitor may read: name, description and page co
 
 ![](_attachments/handbook-entry-en.png)
 
-The start page of one handbook. It shows a prominent search field, the areas of the handbook (its top-level pages, with a subpage count) and the most recently updated pages, plus a facet filter (page type, area, responsible role, audience).
+The start page of one handbook. It shows a prominent search field, the areas of the handbook (its top-level pages, with a subpage count) and the most recently updated pages, plus a facet filter (page type, topic, responsible role, audience).
 
-Selecting a facet or submitting the search filters the list without reloading the page, so there is no separate "Filter" button. If JavaScript is unavailable, the search still works as a normal form submit.
+Selecting a facet or submitting the search filters the list without reloading the page. The facet form also has a submit button, so it works without JavaScript; the frontend script hides that button and filters live as you toggle a facet. If JavaScript is unavailable, the facet form and the search both submit as a normal form.
 
 **Settings:** *Display* switches the cards between **Cards** (default) and **List**.
 
@@ -68,17 +68,17 @@ Two more caveats. The injection reproduces the markup of the core Navigation blo
 
 ![](_attachments/handbook-navigation-en.png)
 
-The page tree of the current handbook, output as a core Navigation block carrying a VSN block style. The tree is scoped to the current handbook, so it never lists pages of another one, and the assembled markup is cached per handbook (and rebuilt when a page or handbook changes). The current page is marked automatically.
+The page tree of the current handbook, rendered as a self-contained, collapsible list styled by the plugin. No other plugin is required. The whole block is a native `<details>` element: its title is the handbook name and toggles the entire navigation open or closed, like the table of contents, and it behaves the same on desktop and on narrow screens (where it starts collapsed). A small arrow next to the title links to the handbook's start page. The tree is scoped to the current handbook, so it never lists pages of another one; the assembled markup is cached per handbook and rebuilt when a page or handbook changes, and the current page is marked automatically.
 
-**Settings:** *Display* chooses between **Menu** (`is-style-vsn-sidebar`: parent pages stay clickable links, the path to the current page is open) and **Accordion** (`is-style-vsn-sidebar-accordion`: submenus open on click, one per level; parent items become buttons and are no longer direct links).
+**Settings:** *Display* chooses between **Menu** (the whole tree is shown at once, nothing collapses) and **Accordion** (each branch with children collapses; the branch leading to the current page starts open, the rest closed, and a toggle on the left of a branch opens or closes it).
 
-**Renders on:** single handbook pages and handbook entry pages. The styling and the open/close behaviour come from the **Vertical Sidebar Navigation (VSN)** plugin; without it you get an unstyled core navigation.
+**Renders on:** single handbook pages and handbook entry pages.
 
 ## Handbook badges (`living-handbook/badges`)
 
 ![](_attachments/handbook-badges-en.png)
 
-The badge row for a single page: page type, area and audience.
+The badge row for a single page: page type, topic and audience.
 
 **Renders on:** single handbook pages only.
 
@@ -98,7 +98,7 @@ The templates place two instances: a sticky desktop one in the side column and a
 
 ![](_attachments/handbook-feedback-en.png)
 
-The "Was this helpful?" prompt with Yes and No buttons. Votes are counted per page, one per user, and only from users who are allowed to read that page. The maintenance dashboard reports the totals.
+The "Was this helpful?" prompt with Yes and No buttons. Votes are counted per page, one per user, and only from users who are allowed to read that page. The buttons are shown to logged-in visitors only, because the endpoint requires a login. The maintenance dashboard reports the totals.
 
 **Renders on:** single handbook pages only.
 
@@ -112,7 +112,7 @@ The metadata footer of a single page: created, last updated, last reviewed and t
 | --- | --- |
 | **Reviewed** | The last review is within the page's review interval. |
 | **Review due** | The interval has passed. |
-| **Unchecked** | Twice the interval has passed, the escalation state. |
+| **Review overdue** | Twice the interval has passed, the escalation state. |
 
 **Settings:** *Show people* toggles the avatar and name.
 
@@ -122,7 +122,7 @@ The metadata footer of a single page: created, last updated, last reviewed and t
 
 ![](_attachments/mermaid-en.png)
 
-Renders a diagram written in [Mermaid](https://mermaid.js.org/) syntax, drawn in the browser. The import creates this block automatically from a ```` ```mermaid ```` code fence; you can also insert it by hand and paste the diagram source. Unlike the other blocks it is not context-bound, so it renders wherever you place it, including inside the page content.
+Renders a diagram written in [Mermaid](https://mermaid.js.org/) syntax, drawn in the browser. The import creates this block automatically from a ```` ```mermaid ```` code fence; you can also insert it by hand and paste the diagram source. A **Diagram title** shows as a caption, and a **Diagram description** becomes the diagram's text alternative for screen readers. Unlike the other blocks it is not context-bound, so it renders wherever you place it, including inside the page content.
 
 ## GitHub source note (`living-handbook/git-source-note`)
 
@@ -137,7 +137,7 @@ A short note marking a page as maintained on GitHub and updated automatically. I
 Three causes account for almost every "the block is empty" report:
 
 - **The page has no handbook.** Access is deliberately fail-closed: a handbook page that is not assigned to a handbook is invisible on the front end. Assign it in the editor sidebar.
-- **The handbook is not visible to you.** A new handbook defaults to "All members (logged in)", so logged out you see nothing. Change it on the handbook itself (Handbook → Handbook types → edit).
+- **The handbook is not visible to you.** A new handbook defaults to "All members (logged in)", so logged out you see nothing. Change it on the handbook itself (Handbook → Handbooks → edit).
 - **The block is in the wrong context.** Most blocks only render on a single page or an entry page. See "Renders on" above.
 
 ## Styling the blocks

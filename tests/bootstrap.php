@@ -25,6 +25,15 @@ if ( getenv( 'LH_INTEGRATION' ) ) {
 		exit( 1 );
 	}
 
+	// Honor an explicit config path so a local wp-tests-config.php is used no
+	// matter how the installed wp-phpunit version looks the config up: some
+	// versions read the WP_TESTS_CONFIG_FILE_PATH environment variable, others
+	// only the constant, so define the constant from the variable here.
+	$living_handbook_config = getenv( 'WP_TESTS_CONFIG_FILE_PATH' );
+	if ( is_string( $living_handbook_config ) && '' !== $living_handbook_config && ! defined( 'WP_TESTS_CONFIG_FILE_PATH' ) ) {
+		define( 'WP_TESTS_CONFIG_FILE_PATH', $living_handbook_config );
+	}
+
 	require_once $living_handbook_wp_phpunit . '/includes/functions.php';
 
 	tests_add_filter(

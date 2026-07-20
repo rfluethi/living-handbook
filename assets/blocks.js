@@ -124,7 +124,7 @@
 				Fragment,
 				{},
 				panel( __( 'Navigation', 'living-handbook' ), control ),
-				note( __( 'Handbook navigation: the page tree of the current handbook, styled by the VSN plugin. Choose Menu or Accordion in the block settings.', 'living-handbook' ) )
+				note( __( 'Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings.', 'living-handbook' ) )
 			);
 		},
 		save: function () {

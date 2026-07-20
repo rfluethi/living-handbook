@@ -6,7 +6,7 @@ Living Handbook exposes extension points so you can adjust behaviour without pat
 
 ### `living_handbook_can_view_post`
 
-Filters the final decision on whether a user may view a handbook page. This is the single access decision used by every front-end read path (single pages, handbook entry pages, result sets, the facet filter endpoint, the feedback endpoint and single REST reads), so a filter here takes effect everywhere.
+Filters the final decision on whether a user may view a handbook page. This is the single access decision used by every front-end read path (single pages, handbook entry pages, result sets, the facet filter endpoint, the feedback endpoint, single REST reads, and the comment channels), so a filter here takes effect everywhere.
 
 Parameters:
 
@@ -71,6 +71,20 @@ add_filter(
 		return 'Knowledge base';
 	}
 );
+```
+
+### `living_handbook_uninstall_remove_content`
+
+Filters whether deleting the plugin also removes all handbook content. By default the uninstall keeps your content and only removes the plugin's own options and caches; the same choice is offered as a checkbox on the settings page. This filter is OR-combined with that checkbox, so returning `true` forces the full removal even when the option is off: the handbook pages, the handbooks and their metadata, the four seeded vocabularies, the overview page created on activation, and any templates you edited in the Site Editor.
+
+Parameters:
+
+- `bool $remove` Whether to remove all content. Defaults to `false`.
+
+Return a boolean. Because it runs during uninstall, put it in a must-use plugin (`wp-content/mu-plugins/`) so it is loaded when the plugin is deleted. Example, always wipe content on uninstall:
+
+```php
+add_filter( 'living_handbook_uninstall_remove_content', '__return_true' );
 ```
 
 _Planned: filters for the navigation markup, the metadata output and the freshness evaluation._

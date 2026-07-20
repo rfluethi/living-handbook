@@ -69,7 +69,7 @@ final class FreshnessStatus {
 			case self::DUE:
 				return __( 'Review due', 'living-handbook' );
 			case self::OVERDUE:
-				return __( 'Unchecked', 'living-handbook' );
+				return __( 'Review overdue', 'living-handbook' );
 			default:
 				return '';
 		}

@@ -782,3 +782,9 @@ msgstr "Filter anwenden"
 
 msgid "The list could not be updated. Please reload the page."
 msgstr "Die Liste konnte nicht aktualisiert werden. Bitte lade die Seite neu."
+
+msgid "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings."
+msgstr "Handbuch-Navigation: der Seitenbaum des aktuellen Handbuchs. Wähle in den Blockeinstellungen Menü oder Akkordeon."
+
+msgid "Review overdue"
+msgstr "Prüfung überfällig"

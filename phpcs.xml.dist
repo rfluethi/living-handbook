@@ -9,6 +9,9 @@
 	<exclude-pattern>/tests/*</exclude-pattern>
 	<exclude-pattern>/languages/*</exclude-pattern>
 
+	<!-- Local test harness config, not part of the plugin and not committed. -->
+	<exclude-pattern>/wp-tests-config.php</exclude-pattern>
+
 	<arg name="extensions" value="php"/>
 	<arg name="colors"/>
 	<arg value="sp"/>

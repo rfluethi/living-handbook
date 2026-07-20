@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.13.0
+Stable tag: 0.14.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,31 +18,35 @@ Core features:
 
 * A dedicated handbook content type with structured page types (Diataxis plus FAQ).
 * Ownership per page: a responsible role mapped to a current person.
-* Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages that go unchecked.
+* Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
 * Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
 * Several handbooks side by side, each with its own access group, its own entry page, and its own navigation.
 * An entry page per handbook with full-text search, taxonomy filters that apply without a reload, area tiles and recently updated pages.
 * A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
-* Per-handbook navigation built from the page hierarchy and rendered as a core Navigation block, styled by the VSN plugin (Vertical Sidebar Navigation).
+* Per-handbook navigation built from the page hierarchy: a self-contained, collapsible page tree with a Menu or Accordion display, styled by the plugin. No other plugin is required.
 * A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
 * Fully translatable (English source), with a German translation included.
-* No external WordPress plugin is required for the core (a block theme is, and VSN for the sidebar). The import and sync use two bundled Composer libraries (league/commonmark, symfony/yaml), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
+* No external WordPress plugin is required; a block theme is. The import and sync use two bundled Composer libraries (league/commonmark, symfony/yaml), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
 
 == Installation ==
 
 1. Upload the plugin to `wp-content/plugins/living-handbook`.
 2. Activate it through the Plugins screen in WordPress.
 3. Activation creates a page called "Handbook" holding the overview block, and a notice points you to the next step. Deactivate and reactivate once, or visit Settings then Permalinks, if the handbook URLs do not work yet.
-4. Create a handbook under Handbook, Handbook types, set who may read it, and assign your pages to it. A page without a handbook stays invisible on the front end.
-5. For the sidebar navigation, install and activate the Vertical Sidebar Navigation (VSN) plugin.
+4. Create a handbook under Handbook, Handbooks, set who may read it, and assign your pages to it. A page without a handbook stays invisible on the front end.
+5. Living Handbook is built for single-site installations. On a multisite network, activate and uninstall it per site; network-wide activation is not supported.
 
 == Frequently Asked Questions ==
 
 = Do I need another plugin? =
 
-The core works on its own, but it expects a block theme. For the sidebar navigation styling, install the Vertical Sidebar Navigation (VSN) plugin.
+No. The plugin works on its own; it only expects a block theme.
+
+= Does it work on multisite? =
+
+The plugin is built for single-site installations. On a multisite network, activate and uninstall it on each site individually; network-wide activation is not supported, because the one-time setup (the vocabulary, the overview page, the rewrite rules) and the uninstall cleanup run on the current site only.
 
 = Why are my handbook pages not visible? =
 
@@ -73,6 +77,18 @@ By default your content is kept and only the plugin's own settings and caches ar
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.14.0 =
+* Security: closed several access side-channels so per-handbook visibility holds beyond the single page. Reading the handbook list over REST is limited to editors; comments on a handbook you may not read are hidden from comment queries, feeds and single REST reads; and a page's visibility is combined fail-closed across every handbook it belongs to. The Markdown sync source is restricted to https hosts.
+* The settings page now uses the WordPress Settings API: it posts to options.php (no resubmit on reload), validates through a sanitize callback, and shows the standard settings notice.
+* Navigation is now self-contained and needs no other plugin: a collapsible native page tree with a Menu or Accordion display, a title that toggles the whole tree, and a link to the handbook start page.
+* Accessibility: Mermaid loads only when a diagram is present, and on demand in the editor; each diagram carries a title and a text alternative for screen readers.
+* Import: each source (paste, ZIP, GitHub) has its own button, per-page failures are listed with their reason, and a ZIP is read within bounded limits (2000 entries, 5 MB per file, 50 MB total).
+* Terminology: the grouping is shown as "Handbooks", the cross-cutting filter taxonomy as "Topics", and the escalated freshness state as "Review overdue". The transport block now prefers "Thema" for the topic field; "Bereich" and "Themengebiet" keep working.
+* Uninstall also removes the seeded vocabulary terms when you opt in to full content removal.
+* Performance: fixed an N+1 query in the maintenance dashboard widget.
+* Documentation: new getting-started and maintenance guides (English and German), plus corrections to the blocks, hooks and contributing docs.
+* Tests: added REST permission and access-chain integration tests, and tests for the GitHub source allowlist and the HTML sanitizer.
 
 = 0.13.0 =
 * First run: activating the plugin now creates the handbook overview as a normal page, so a fresh install shows something instead of nothing. A one-time notice points to it and explains the next step, and the page list warns about pages that stay invisible because they have no handbook. Nothing is created twice, and a page you delete does not come back.
@@ -141,6 +157,9 @@ By default your content is kept and only the plugin's own settings and caches ar
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.14.0 =
+Security hardening of the access side-channels (REST, comments, multi-handbook fail-closed), the Settings API, a self-contained navigation, on-demand Mermaid with text alternatives, bounded ZIP import, and updated terminology (Handbooks, Topics, Review overdue). New getting-started and maintenance docs. Still pre-release: best installed on a fresh database.
 
 = 0.13.0 =
 Activation now creates the handbook overview page and guides you through the first steps. The uninstall cleanup finally ships. Facet filters show sub-areas under their parent, re-imports no longer duplicate pages, and accessibility was improved. Still pre-release: best installed on a fresh database.

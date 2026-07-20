@@ -9,7 +9,7 @@ Two of them do the work:
 | **Handbook entry** | Each handbook's entry page, the `handbook_set` term archive, for example `/handbook-set/general/` |
 | **Handbook page** | A single handbook page, for example `/handbook/onboarding/` |
 
-There is **no template for the overview**. The overview is a normal WordPress page that you create yourself and put the "Handbook overview" block on. See [blocks.md](blocks.md).
+There is **no template for the overview**. The overview is a normal WordPress page with the "Handbook overview" block on it; activation creates one for you, and you can move, restyle or replace it. See [blocks.md](blocks.md).
 
 A note on editing: once you save changes to one of these templates in the Site Editor, WordPress keeps your saved version and stops using the plugin's built-in one, even across plugin updates. If a template looks out of date after an update, open it in the Site Editor and choose **Clear customizations** to fall back to the plugin's current version.
 

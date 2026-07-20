@@ -566,7 +566,7 @@ final class Filters {
 			case 'lh_type':
 				return __( 'Page type', 'living-handbook' );
 			case 'lh_topic':
-				return __( 'Areas', 'living-handbook' );
+				return __( 'Topics', 'living-handbook' );
 			case 'lh_role':
 				return __( 'Responsibility', 'living-handbook' );
 			case 'lh_audience':

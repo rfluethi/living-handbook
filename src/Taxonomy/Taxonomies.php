@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers the four handbook taxonomies: page type, topic (shown as "Areas"),
+ * Registers the four handbook taxonomies: page type, topic (shown as "Topics"),
  * responsible role (shown as "Responsibility"), and audience. They are not
  * public on their own; the frontend access check governs visibility.
  */
@@ -59,8 +59,8 @@ final class Taxonomies {
 			self::TOPIC,
 			$object,
 			$this->args(
-				__( 'Areas', 'living-handbook' ),
-				__( 'Area', 'living-handbook' ),
+				__( 'Topics', 'living-handbook' ),
+				__( 'Topic', 'living-handbook' ),
 				'handbook-topic',
 				true
 			)

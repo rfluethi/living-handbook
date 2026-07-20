@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers the `handbook_set` grouping taxonomy (shown as "Handbook types").
- * Each handbook page belongs to exactly one handbook. Every handbook carries a
+ * Registers the `handbook_set` grouping taxonomy (shown as "Handbooks"). Each
+ * handbook page belongs to exactly one handbook. Every handbook carries a
  * frontend access configuration (visibility plus optional roles and users); the
  * Access module enforces it.
  *
@@ -71,8 +71,8 @@ final class Handbooks {
 			array( Handbook::POST_TYPE ),
 			array(
 				'labels'             => Taxonomies::labels(
-					__( 'Handbook types', 'living-handbook' ),
-					__( 'Handbook type', 'living-handbook' )
+					__( 'Handbooks', 'living-handbook' ),
+					__( 'Handbook', 'living-handbook' )
 				),
 				'hierarchical'       => true,
 				'public'             => false,

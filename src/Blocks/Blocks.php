@@ -270,7 +270,7 @@ final class Blocks {
 			'Navigation',
 			'Menu',
 			'Accordion',
-			'Handbook navigation: the page tree of the current handbook, styled by the VSN plugin. Choose Menu or Accordion in the block settings.',
+			'Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings.',
 			'Table of Contents',
 			'Placement',
 			'Desktop (side column, open)',

@@ -4,15 +4,15 @@ How to get Markdown into the handbook, and how a page can stay synced from a Git
 
 ## The import screen
 
-Under **Handbook → Import**, the screen accepts three kinds of input:
+Under **Handbook → Import**, the screen accepts three kinds of input, each with its own button:
 
-1. **Paste** a Markdown draft into the text area.
-2. **Upload a ZIP** of `.md` files. The ZIP may be a flat set of files or a structured MkDocs project (see below).
-3. **Enter a GitHub URL**. Both a single file and a whole folder work:
+1. **Paste** a Markdown draft into the text area, then **Import Markdown**.
+2. **Upload a ZIP** of `.md` files, then **Import ZIP**. The ZIP may be a flat set of files or a structured MkDocs project (see below).
+3. **Enter a GitHub URL**, then **Import from GitHub**. Both a single file and a whole folder work:
    - a file, either a `raw.githubusercontent.com` URL or a `github.com/.../blob/...` URL (the blob URL is normalised to raw automatically);
    - a folder, a `github.com/.../tree/...` URL. Every `.md` file in that folder (including `README.md`) is imported through the GitHub contents API. Subfolders are not descended into.
 
-Pick a **target handbook** at the top before you import. Pages that land without a handbook are invisible on the front end, because access is fail-closed.
+Each source has its own button, so a pasted draft is never ignored just because a URL is still in a field. Pick a **target handbook** at the top before you import. Pages that land without a handbook are invisible on the front end, because access is fail-closed.
 
 **How the conversion works:** league/commonmark renders the Markdown to HTML, and WordPress's own paste conversion turns that HTML into editable blocks. A ```` ```mermaid ```` code fence becomes a live-rendered Mermaid block, collapsible `<details>` sections become details blocks, and images referenced from an `assets` folder are sideloaded into the media library. Once all pages exist, a shared post-processor applies the transport metadata and resolves parents and internal `.md` links, both the link target and the visible link text.
 
@@ -36,7 +36,7 @@ The fields (German labels, one per list item):
 ## Transport-Metadaten
 * Seitentyp: Anleitung
 * Verantwortliche Rolle: Handbuch-Redaktion
-* Bereich: Applikation
+* Thema: Applikation
 * Zielgruppe: Alle Mitglieder, Technik
 * Eltern-Seite: Übersicht
 * Reihenfolge: 3
@@ -47,7 +47,7 @@ The fields (German labels, one per list item):
 
 Notes:
 
-- **`Bereich` also answers to `Themengebiet`.** The taxonomy is called "Areas" in the interface, but drafts written before the rename use `Themengebiet`. Both labels are read, `Bereich` is preferred for new drafts, and `Themengebiet` keeps working, so you do not have to touch an existing corpus. If a draft carries both, `Bereich` wins.
+- **The topic field accepts `Thema`, `Bereich` or `Themengebiet`.** The taxonomy is called "Topics" in the interface. `Thema` matches that label and is preferred for new drafts; `Bereich` and the older `Themengebiet` keep existing drafts working, so you do not have to touch a corpus written before the rename. If a draft carries more than one, `Thema` wins, then `Bereich`.
 - `Zielgruppe` is a comma-separated list.
 - `Eltern-Seite` is matched by title after all pages of the import exist, so the parent may appear later in the same import.
 - Bracketed placeholders such as `[Rolle]` or `[JJJJ-MM-TT]` are treated as empty; `[ANNAHME: FAQ]` resolves to its value (`FAQ`).
@@ -78,7 +78,7 @@ A failed pull is recorded on the page and flagged. An admin notice on the handbo
 
 Live sync fetches the raw Markdown over HTTP, so it works for public repositories. For a private repository, import from a ZIP export instead (the MkDocs structure is preserved) rather than storing an access token.
 
-For safety the source URL must point at an allowed host (`raw.githubusercontent.com` by default), so nobody can aim the server at an internal address. Extend the list with the `living_handbook_sync_allowed_hosts` filter, see [hooks.md](hooks.md).
+For safety the source URL must point at an allowed host (`raw.githubusercontent.com` by default) over https, so nobody can aim the server at an internal address. Extend the list with the `living_handbook_sync_allowed_hosts` filter, see [hooks.md](hooks.md).
 
 ## What the plugin sends where
 
@@ -88,11 +88,13 @@ The unauthenticated GitHub API allows about 60 requests per hour. Importing a la
 
 ## Uninstalling
 
-By default, deleting the plugin keeps your content and removes only the plugin's own settings and caches. On **Handbook → Settings** you can opt in to remove everything the plugin created, including handbook pages, handbooks, their metadata and any of the plugin's templates you edited in the Site Editor. The option is off by default on purpose: an accidental delete should not cost you the handbook.
+By default, deleting the plugin keeps your content and removes only the plugin's own settings and caches. On **Handbook → Settings** you can opt in to remove everything the plugin created, including handbook pages, handbooks, their metadata, the seeded vocabularies and any of the plugin's templates you edited in the Site Editor. The option is off by default on purpose: an accidental delete should not cost you the handbook.
 
 ## Limits
 
 - Folder import reads one folder, not its subfolders. Import each folder, or use a structured ZIP for a whole tree.
+- A ZIP is read within limits (at most 2000 entries, 5 MB per file, 50 MB uncompressed in total), so a prepared archive cannot exhaust the server's memory.
 - The transport marker and its field labels are German.
 - Synced content is stored as rendered HTML, not editable blocks, because a cron job has no browser to convert HTML into blocks.
 - MkDocs-specific syntax degrades to plain text: admonitions (`!!! note`) and pymdownx tabs are not part of GitHub Flavored Markdown, so the converter does not understand them.
+- Living Handbook is built for single-site installations; on a multisite network, import per site.

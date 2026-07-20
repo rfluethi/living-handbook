@@ -1,6 +1,6 @@
 # Customizing the frontend
 
-The plugin ships default styles and exposes CSS custom properties, so you can adapt the colours to your theme without touching the plugin. Typography and spacing come from your theme. The navigation is a core Navigation block styled by the VSN plugin; everything else is plugin markup.
+The plugin ships default styles and exposes CSS custom properties, so you can adapt the colours to your theme without touching the plugin. Typography and spacing come from your theme. The navigation is a self-contained, collapsible page tree rendered by the plugin; everything the plugin shows is its own markup, styled through the `--lh-*` variables below.
 
 Put your rules in the Site Editor under **Styles → Additional CSS**, or in your theme's stylesheet.
 
@@ -20,9 +20,9 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 .living-handbook-badge {
 	--lh-accent: var(--wp--preset--color--accent, #2c5f8a);
 	--lh-accent-soft: #eaf1f8;
-	--lh-ok: #1e8449;          /* freshness badge "Reviewed" */
-	--lh-due: #b26a00;         /* freshness badge "Review due" */
-	--lh-overdue: #c0392b;     /* freshness badge "Unchecked" (the escalation state) */
+	--lh-ok: #176e3c;          /* freshness badge "Reviewed" */
+	--lh-due: #8a5200;         /* freshness badge "Review due" */
+	--lh-overdue: #c0392b;     /* freshness badge "Review overdue" (the escalation state) */
 	--lh-border: #e2e6ea;
 	--lh-muted: #5f6b75;       /* secondary text */
 	--lh-sticky-top: 2rem;     /* offset for sticky nav and TOC under a fixed header */
@@ -30,21 +30,21 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 }
 ```
 
-Point `--lh-accent` at your theme's accent colour to match your palette. `--lh-sticky-top` controls the top offset of the sticky navigation and table of contents, and the scroll offset when jumping to a heading, so raise it if your theme has a fixed header. `--lh-nav-top-weight` sets how bold the top level of the sidebar navigation is.
+Point `--lh-accent` at your theme's accent colour to match your palette. `--lh-sticky-top` controls the top offset of the sticky navigation and table of contents, and the scroll offset when jumping to a heading, so raise it if your theme has a fixed header. `--lh-nav-top-weight` sets how bold the navigation title is.
 
 ### A note on the freshness names
 
-The three freshness colours carry meaning, and the variable and class names do not read exactly like the badges:
+The three freshness colours carry meaning. The variable and class names use short internal words that mostly match the badges:
 
 | Badge in the interface | Variable | Class modifier | Meaning |
 | --- | --- | --- | --- |
 | Reviewed | `--lh-ok` | `--ok` | Within the review interval |
 | Review due | `--lh-due` | `--due` | The interval has passed |
-| Unchecked | `--lh-overdue` | `--overdue` | Twice the interval has passed |
+| Review overdue | `--lh-overdue` | `--overdue` | Twice the interval has passed |
 
-So `--lh-overdue` is the colour of the badge that reads **Unchecked**. The name is internal, the badge is what your readers see.
+So `--lh-ok` is the colour of the badge that reads **Reviewed**, and `--lh-overdue` the one that reads **Review overdue**. The variable names are internal; the badges are what your readers see.
 
-Keep the three distinguishable from each other, and ideally not by hue alone, since the state is also conveyed by a small dot on the cards.
+Keep the three distinguishable from each other, and ideally not by hue alone, since the state is also conveyed by the shape of a small dot on the cards.
 
 `--lh-muted` is used for small secondary text; the default meets WCAG AA (4.5:1 on white), so if you lighten it, check the contrast.
 
@@ -72,7 +72,7 @@ Every handbook view carries the body class `living-handbook-page`. Use it to sty
 
 - `.living-handbook-cards`, with `--areas` or `--books`: the responsive grid.
 - `.living-handbook-card`, with `--area` or `--book`, plus `.living-handbook-card__link`, `__title`, `__excerpt`, `__meta`.
-- `.living-handbook-card__dot`, with `--ok`, `--due` or `--overdue`: the freshness dot.
+- `.living-handbook-card__dot`, with `--ok`, `--due` or `--overdue`: the freshness dot. Its shape varies per state (circle, rounded square, diamond) so the status does not rely on colour alone.
 
 In list display the cards lose their box and become flat rows; target them with the parent modifier, for example `.living-handbook-entry--list .living-handbook-card`.
 
@@ -81,23 +81,18 @@ In list display the cards lose their box and become flat rows; target them with 
 - `.living-handbook-menu`, `.living-handbook-menu__list`, `.living-handbook-menu__link`: the compact handbook list for a header.
 - `.living-handbook-menu__toggle`: the button that collapses the list on narrow screens. The open state is `.living-handbook-menu.is-open`.
 
-### Navigation (VSN sidebar)
+### Navigation
 
-- `.living-handbook-navwrap`: wraps the core Navigation block and keeps it left-aligned.
-- `.living-handbook-nav-top`: the top-level navigation item, weighted via `--lh-nav-top-weight`.
-- `.living-handbook-nav`, `.living-handbook-nav__title`: the bordered, sticky navigation tree. The current page's list item carries `.is-current`.
+The navigation is a native `<details>` element, styled entirely by the plugin through the `--lh-*` variables above; no other plugin is involved.
 
-The navigation itself is themed through VSN's own `--vsn-*` variables, not the `--lh-*` ones:
-
-```css
-:is(.is-style-vsn-sidebar, .is-style-vsn-sidebar-accordion) {
-	--vsn-color-text-hover: var(--wp--preset--color--accent);
-	--vsn-active-border-color: var(--wp--preset--color--accent);
-	--vsn-indent: 1rem; /* indent per level */
-}
-```
-
-See the VSN documentation for the full list of `--vsn-*` variables.
+- `.living-handbook-navwrap`: wraps the navigation and keeps it left-aligned.
+- `.living-handbook-nav`: the bordered, sticky navigation. It carries `.living-handbook-nav--tree` (the **Menu** display, the whole tree open) or `.living-handbook-nav--accordion` (the **Accordion** display, branches collapse).
+- `.living-handbook-nav__top`: the title (the `<summary>`), which opens and closes the whole navigation. Its weight is set by `--lh-nav-top-weight`.
+- `.living-handbook-nav__home`: the small arrow link next to the title that leads to the handbook's start page.
+- `.living-handbook-nav__list`, `.living-handbook-nav__sublist`: the tree and its nested levels.
+- `.living-handbook-nav__item`: one page. It carries `.has-children` on a branch, `.is-current` on the current page, and `.is-open` on an open branch.
+- `.living-handbook-nav__row`: the row inside an item, holding the toggle (or a spacer) and the page link.
+- `.living-handbook-nav__toggle`, `.living-handbook-nav__spacer`: the open/close button on a branch, and the equal-width spacer that keeps leaf labels aligned.
 
 ### Table of contents
 
@@ -110,6 +105,7 @@ See the VSN documentation for the full list of `--vsn-*` variables.
 - `.living-handbook-meta`, `.living-handbook-metagrid`, `.living-handbook-metagrid__item`, `__label`, `__date`.
 - `.living-handbook-person`, `__avatar`, `__name`: the responsible person in the footer.
 - `.living-handbook-feedback`: the "Was this helpful?" row and its buttons.
+- `.living-handbook-visually-hidden`: text shown only to screen readers (for example the freshness label on a card). Keep it visually hidden but readable by assistive technology.
 
 ## Accessibility: what not to remove
 
