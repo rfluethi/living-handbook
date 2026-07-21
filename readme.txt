@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.18.0
+Stable tag: 0.19.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.19.0 =
+* Access-control hardening (code review F1): a coarse pre_get_posts layer now restricts handbook queries to the handbooks the current user may view. A third-party query that sets suppress_filters (the get_posts default), or a front-end read over admin-ajax, can no longer list the titles or excerpts of handbooks the user may not read. The precise, fail-closed per-page check on the display path is unchanged; this closes the two channels that bypassed it.
 
 = 0.18.0 =
 * Security hardening from the 0.16.0 code review. GitHub fetches now use wp_safe_remote_get with redirects disabled, so a redirect cannot lead the sync to an unchecked host. Imported SVG images are sanitised (enshrined/svg-sanitize) before they reach the media library. The HTML sanitiser no longer allows raw input elements from imported Markdown.
@@ -190,6 +193,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.19.0 =
+Access-control hardening: a pre-query layer restricts handbook queries to the handbooks you may view, closing side-channels through suppress_filters and admin-ajax. No visible change. Pre-release: best on a fresh database.
 
 = 0.18.0 =
 Security hardening from a code review: GitHub fetches without redirects, sanitised SVG imports, no raw input elements in imported HTML, and a fixed background-sync follow-up. Pre-release: best on a fresh database.

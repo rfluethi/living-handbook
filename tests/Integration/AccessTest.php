@@ -140,4 +140,61 @@ final class AccessTest extends WP_UnitTestCase {
 		$user = self::factory()->user->create( array( 'role' => 'editor' ) );
 		$this->assertTrue( AccessController::can_view_post( $page, (int) $user ) );
 	}
+
+	/**
+	 * A query that sets suppress_filters (the get_posts default) still hides a
+	 * members-only page from a guest: the pre_get_posts layer restricts it even
+	 * though the_posts is bypassed. This is the F1 side-channel.
+	 *
+	 * @return void
+	 */
+	public function test_suppress_filters_query_hides_members_page_from_guest(): void {
+		$public_page  = $this->make_page( $this->make_handbook( 'public' ) );
+		$members_page = $this->make_page( $this->make_handbook( 'members' ) );
+
+		wp_set_current_user( 0 );
+		$ids = array_map(
+			'intval',
+			get_posts(
+				array(
+					'post_type'        => 'handbook',
+					'post_status'      => 'publish',
+					'fields'           => 'ids',
+					'suppress_filters' => true,
+					'posts_per_page'   => -1,
+				)
+			)
+		);
+
+		$this->assertContains( $public_page, $ids );
+		$this->assertNotContains( $members_page, $ids );
+	}
+
+	/**
+	 * The same suppress_filters query shows the members-only page to a logged-in
+	 * user, so the coarse layer restricts without over-blocking.
+	 *
+	 * @return void
+	 */
+	public function test_suppress_filters_query_shows_members_page_to_member(): void {
+		$members_page = $this->make_page( $this->make_handbook( 'members' ) );
+		$user         = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+
+		wp_set_current_user( (int) $user );
+		$ids = array_map(
+			'intval',
+			get_posts(
+				array(
+					'post_type'        => 'handbook',
+					'post_status'      => 'publish',
+					'fields'           => 'ids',
+					'suppress_filters' => true,
+					'posts_per_page'   => -1,
+				)
+			)
+		);
+		wp_set_current_user( 0 );
+
+		$this->assertContains( $members_page, $ids );
+	}
 }

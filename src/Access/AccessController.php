@@ -54,6 +54,9 @@ final class AccessController {
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'guard_singular' ) );
 		add_action( 'template_redirect', array( $this, 'guard_term_archive' ) );
+		// Coarse pre-query layer: restricts handbook queries to the viewable
+		// handbooks independent of suppress_filters, which the_posts cannot reach.
+		add_action( 'pre_get_posts', array( $this, 'restrict_query' ) );
 		add_filter( 'the_posts', array( $this, 'filter_posts' ), 10, 2 );
 		add_filter( 'rest_prepare_' . Handbook::POST_TYPE, array( $this, 'guard_rest_item' ), 10, 2 );
 
@@ -127,6 +130,59 @@ final class AccessController {
 	}
 
 	/**
+	 * Coarse pre-query access layer.
+	 *
+	 * Runs on pre_get_posts, so it also covers queries that set suppress_filters
+	 * (the get_posts default) and would never reach the_posts, and front-end
+	 * admin-ajax reads. It appends a tax_query that keeps only pages in a handbook
+	 * the user may view. This is deliberately the coarse layer: it checks "at
+	 * least one viewable handbook", while a page may belong to several handbooks
+	 * and needs all of them to allow the user. The precise, fail-closed decision
+	 * stays in filter_posts() and can_view_post() on the display path; this layer
+	 * only closes the channels that bypass it.
+	 *
+	 * @param WP_Query $query The query being prepared.
+	 * @return void
+	 */
+	public function restrict_query( WP_Query $query ): void {
+		if ( is_admin() && ! wp_doing_ajax() ) {
+			return;
+		}
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			return;
+		}
+		$types = (array) $query->get( 'post_type' );
+		if ( ! in_array( Handbook::POST_TYPE, $types, true ) ) {
+			return;
+		}
+
+		$viewable    = self::viewable_term_ids( get_current_user_id() );
+		$restriction = array(
+			'taxonomy' => Handbooks::TAXONOMY,
+			'field'    => 'term_id',
+			// An empty set must match nothing, not everything, so fall back to a
+			// term id that no page carries.
+			'terms'    => empty( $viewable ) ? array( 0 ) : $viewable,
+		);
+
+		$existing = $query->get( 'tax_query' );
+		if ( empty( $existing ) || ! is_array( $existing ) ) {
+			$query->set( 'tax_query', array( $restriction ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			return;
+		}
+		// Nest the existing tax_query and AND our restriction, so an existing OR
+		// relation cannot dissolve the restriction.
+		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			'tax_query',
+			array(
+				'relation' => 'AND',
+				$existing,
+				$restriction,
+			)
+		);
+	}
+
+	/**
 	 * Remove handbook posts the current user may not view from any result set.
 	 *
 	 * This runs on the_posts, which core applies to full-object queries (the
@@ -143,7 +199,9 @@ final class AccessController {
 	public function filter_posts( array $posts, WP_Query $query ): array {
 		unset( $query );
 
-		if ( is_admin() ) {
+		// admin-ajax.php runs with is_admin() true; a front-end AJAX read must
+		// still be filtered, so only a real wp-admin request bypasses this.
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			return $posts;
 		}
 
@@ -240,7 +298,9 @@ final class AccessController {
 	 * @return bool
 	 */
 	private static function should_filter_comments(): bool {
-		if ( is_admin() ) {
+		// admin-ajax.php runs with is_admin() true; a front-end AJAX read must
+		// still be filtered, so only a real wp-admin request bypasses this.
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			return false;
 		}
 		if ( current_user_can( 'edit_others_posts' ) ) {
