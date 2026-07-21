@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-21T13:14:23+00:00\n"
+"POT-Creation-Date: 2026-07-21T14:08:22+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 # Block category
 #. Plugin Name of the plugin
-#: living-handbook.php src/Blocks/Blocks.php:93
+#: living-handbook.php src/Blocks/Blocks.php:94
 msgid "Living Handbook"
 msgstr "Living Handbook"
 
@@ -77,16 +77,16 @@ msgstr "Feedback"
 msgid "%1$d yes, %2$d no"
 msgstr "%1$d Ja, %2$d Nein"
 
-#: src/Blocks/Blocks.php:195 src/Blocks/Blocks.php:196 assets/blocks.js:133
+#: src/Blocks/Blocks.php:198 src/Blocks/Blocks.php:199 assets/blocks.js:133
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
 # Search and filters
-#: src/Blocks/Blocks.php:240 src/Frontend/Filters.php:246
+#: src/Blocks/Blocks.php:246 src/Frontend/Filters.php:246
 msgid "Search this handbook"
 msgstr "Dieses Handbuch durchsuchen"
 
-#: src/Blocks/Blocks.php:241 src/Frontend/Filters.php:247
+#: src/Blocks/Blocks.php:247 src/Frontend/Filters.php:247
 msgid "Search this handbook …"
 msgstr "Dieses Handbuch durchsuchen …"
 

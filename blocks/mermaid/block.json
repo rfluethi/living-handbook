@@ -13,6 +13,9 @@
 			"code": "graph TD;\n  A[Start] --> B{Decision};\n  B -->|Yes| C[Result];\n  B -->|No| A;"
 		}
 	},
+	"supports": {
+		"anchor": true
+	},
 	"attributes": {
 		"code": {
 			"type": "string",

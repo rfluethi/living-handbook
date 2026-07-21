@@ -9,6 +9,9 @@
 	"textdomain": "living-handbook",
 	"editorScript": "living-handbook-git-source-note-block",
 	"example": {},
+	"supports": {
+		"anchor": true
+	},
 	"attributes": {
 		"label": {
 			"type": "string",

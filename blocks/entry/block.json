@@ -17,8 +17,8 @@
 	},
 	"supports": {
 		"html": false,
-		"anchor": false,
-		"customClassName": false,
+		"anchor": true,
+		"customClassName": true,
 		"color": false,
 		"typography": false,
 		"spacing": false,

@@ -69,6 +69,8 @@ Every handbook view carries the body class `living-handbook-page`. Use it to sty
 
 ## Classes
 
+Every handbook block also offers, under its **Advanced** panel in the editor, an **Additional CSS class** and an **HTML anchor**. The class is added to the block's own root element and the anchor becomes its `id`, so you can target one specific instance (for example one navigation block) or link straight to a block, without touching the shared classes below.
+
 ### Overview and entry pages
 
 - `.living-handbook-overview`, `.living-handbook-entry`: the block wrappers. Each also carries a `--list` or `--cards` modifier reflecting the block's Display setting, for example `.living-handbook-entry--list`.

@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.23.1
+Stable tag: 0.24.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ Core features:
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
 * Fully translatable (English source), with a German translation included.
-* No external WordPress plugin is required; a block theme is. The import and sync use two bundled Composer libraries (league/commonmark, symfony/yaml), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
+* No external WordPress plugin is required; a block theme is. The import and sync use three bundled Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
 
 == Installation ==
 
@@ -58,7 +58,7 @@ Only when you use the GitHub features, and only to addresses you enter yourself.
 
 = What third-party libraries does the plugin bundle? =
 
-The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also bundle two PHP libraries in vendor/: league/commonmark (BSD-3-Clause license) and symfony/yaml (MIT license). All bundled libraries use GPL-compatible licenses.
+The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also bundle three PHP libraries in vendor/: league/commonmark (BSD-3-Clause license), symfony/yaml (MIT license), and enshrined/svg-sanitize (GPL-2.0-or-later license), which cleans imported SVG images before they are stored. All bundled libraries use GPL-compatible licenses.
 
 = Who can see a handbook? =
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.24.0 =
+* Every handbook block now offers an HTML anchor and an additional CSS class under the block's Advanced panel. The anchor becomes the id of the block's root element and the class is added to it, so you can link to a block or target a single instance from the Custom CSS field or your theme.
 
 = 0.23.1 =
 * Packaging: the build now strips every hidden file from the release ZIP, so a stray .fuse_hidden orphan from a network or FUSE mount, which the plugin repository check rejects, never ships. Silenced a false-positive lint warning on the one-time feedback-meta migration. No functional change.
@@ -212,6 +215,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.24.0 =
+Handbook blocks now offer an HTML anchor and an additional CSS class under Advanced, so you can link to a block or target one instance from Custom CSS. Pre-release: best on a fresh database.
 
 = 0.23.1 =
 Packaging fix: the release ZIP no longer includes stray hidden files that the plugin repository check rejected. No functional change. Pre-release: best on a fresh database.
