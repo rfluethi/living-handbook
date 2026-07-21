@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.27.0
+Stable tag: 0.28.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.28.0 =
+* The block editor now loads the handbook stylesheet only when you edit a handbook page, not in every editor. No visible change on handbook pages; other post-type editors just load a little less.
 
 = 0.27.0 =
 * The handbook list now has a filter dropdown for every vocabulary too: page type, topic, responsibility and audience, next to the existing handbook and source filters, the same way the category filter works for posts. Filtering by taxonomy is standard; sorting the taxonomy columns stays off, because a page can belong to several terms.
@@ -229,6 +232,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.28.0 =
+The block editor loads the handbook stylesheet only on handbook pages now, not in every editor. No visible change. Pre-release: best on a fresh database.
 
 = 0.27.0 =
 The handbook list gains a filter dropdown for each vocabulary too (page type, topic, responsibility, audience), alongside the handbook and source filters. Pre-release: best on a fresh database.

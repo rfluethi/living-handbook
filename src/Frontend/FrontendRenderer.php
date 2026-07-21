@@ -95,11 +95,16 @@ final class FrontendRenderer {
 	 * look like the real page instead of an unstyled list. enqueue_block_assets
 	 * runs in both contexts; the admin check keeps this out of the frontend,
 	 * where enqueue() already handles the stylesheet on handbook views only.
+	 * Scoped to the handbook editor, so other post-type editors do not load it.
 	 *
 	 * @return void
 	 */
 	public function enqueue_editor_preview(): void {
 		if ( ! is_admin() ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( null === $screen || Handbook::POST_TYPE !== $screen->post_type ) {
 			return;
 		}
 		wp_enqueue_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
