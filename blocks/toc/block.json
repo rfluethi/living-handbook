@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/toc",
+	"title": "Table of Contents",
+	"category": "living-handbook",
+	"icon": "editor-ol",
+	"description": "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.",
+	"keywords": [ "handbook", "living handbook", "documentation" ],
+	"textdomain": "living-handbook",
+	"example": {},
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "desktop"
+		},
+		"maxDepth": {
+			"type": "number",
+			"default": 6
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"customClassName": false,
+		"color": false,
+		"typography": false,
+		"spacing": false,
+		"dimensions": false,
+		"border": false
+	}
+}

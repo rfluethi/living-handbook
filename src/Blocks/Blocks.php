@@ -54,133 +54,29 @@ final class Blocks {
 	}
 
 	/**
-	 * Supports shared by every handbook block. These blocks render their own
-	 * markup in PHP and do not apply the editor's design controls, so the
-	 * design panels (colour, typography, spacing, additional CSS class, HTML
-	 * edit, anchor) are turned off to avoid controls that have no effect. The
-	 * editor reads supports from the client registration in blocks.js; this
-	 * mirror keeps the server registration consistent.
-	 *
-	 * @return array<string, mixed>
-	 */
-	private static function supports(): array {
-		return array(
-			'html'            => false,
-			'anchor'          => false,
-			'customClassName' => false,
-			'color'           => false,
-			'typography'      => false,
-			'spacing'         => false,
-			'dimensions'      => false,
-			'border'          => false,
-		);
-	}
-
-	/**
 	 * Register the block types with their server render callbacks.
 	 *
 	 * @return void
 	 */
 	public function register_blocks(): void {
-		$supports = self::supports();
-
-		register_block_type(
-			'living-handbook/navigation',
-			array(
-				'attributes'      => array(
-					'variant' => array(
-						'type'    => 'string',
-						'default' => 'sidebar',
-					),
-				),
-				'supports'        => $supports,
-				'render_callback' => array( $this, 'render_navigation' ),
-			)
+		// Each block takes its metadata (title, category, icon, attributes,
+		// supports, keywords, description) from blocks/<name>/block.json, the
+		// single source; only the server render callback is supplied here.
+		$blocks = array(
+			'navigation' => array( $this, 'render_navigation' ),
+			'toc'        => array( $this, 'render_toc' ),
+			'pagemeta'   => array( $this, 'render_pagemeta' ),
+			'overview'   => array( $this, 'render_overview' ),
+			'entry'      => array( $this, 'render_entry' ),
+			'menu'       => array( $this, 'render_menu' ),
+			'badges'     => array( $this, 'render_badges' ),
+			'feedback'   => array( $this, 'render_feedback' ),
+			'search'     => array( $this, 'render_search' ),
 		);
-
-		register_block_type(
-			'living-handbook/toc',
-			array(
-				'attributes'      => array(
-					'variant'  => array(
-						'type'    => 'string',
-						'default' => 'desktop',
-					),
-					'maxDepth' => array(
-						'type'    => 'number',
-						'default' => 6,
-					),
-				),
-				'supports'        => $supports,
-				'render_callback' => array( $this, 'render_toc' ),
-			)
-		);
-
-		register_block_type(
-			'living-handbook/pagemeta',
-			array(
-				'attributes'      => array(
-					'showPeople' => array(
-						'type'    => 'boolean',
-						'default' => true,
-					),
-				),
-				'supports'        => $supports,
-				'render_callback' => array( $this, 'render_pagemeta' ),
-			)
-		);
-
-		register_block_type(
-			'living-handbook/overview',
-			array(
-				'attributes'      => array(
-					// The overview lists whole handbooks, usually only a handful,
-					// so a list reads better than a card grid on first insert.
-					// Must match the default in blocks.js.
-					'display' => array(
-						'type'    => 'string',
-						'default' => 'list',
-					),
-				),
-				'supports'        => $supports,
-				'render_callback' => array( $this, 'render_overview' ),
-			)
-		);
-
-		register_block_type(
-			'living-handbook/entry',
-			array(
-				'attributes'      => array(
-					'display' => array(
-						'type'    => 'string',
-						'default' => 'cards',
-					),
-				),
-				'supports'        => $supports,
-				'render_callback' => array( $this, 'render_entry' ),
-			)
-		);
-
-		register_block_type(
-			'living-handbook/menu',
-			array(
-				'supports'        => $supports,
-				'render_callback' => array( $this, 'render_menu' ),
-			)
-		);
-
-		$simple = array(
-			'living-handbook/badges'   => array( $this, 'render_badges' ),
-			'living-handbook/feedback' => array( $this, 'render_feedback' ),
-			'living-handbook/search'   => array( $this, 'render_search' ),
-		);
-		foreach ( $simple as $name => $callback ) {
+		foreach ( $blocks as $dir => $callback ) {
 			register_block_type(
-				$name,
-				array(
-					'supports'        => $supports,
-					'render_callback' => $callback,
-				)
+				LIVING_HANDBOOK_DIR . 'blocks/' . $dir,
+				array( 'render_callback' => $callback )
 			);
 		}
 	}

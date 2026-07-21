@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/entry",
+	"title": "Handbook entry",
+	"category": "living-handbook",
+	"icon": "welcome-learn-more",
+	"description": "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.",
+	"keywords": [ "handbook", "living handbook", "documentation" ],
+	"textdomain": "living-handbook",
+	"example": {},
+	"attributes": {
+		"display": {
+			"type": "string",
+			"default": "cards"
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"customClassName": false,
+		"color": false,
+		"typography": false,
+		"spacing": false,
+		"dimensions": false,
+		"border": false
+	}
+}

@@ -1,0 +1,22 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/badges",
+	"title": "Handbook badges",
+	"category": "living-handbook",
+	"icon": "tag",
+	"description": "Handbook badges: page type, topic and audience of the current page.",
+	"keywords": [ "handbook", "living handbook", "documentation" ],
+	"textdomain": "living-handbook",
+	"example": {},
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"customClassName": false,
+		"color": false,
+		"typography": false,
+		"spacing": false,
+		"dimensions": false,
+		"border": false
+	}
+}

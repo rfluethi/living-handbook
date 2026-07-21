@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.21.0
+Stable tag: 0.22.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.22.0 =
+* Code review F7: the nine handbook blocks now take their metadata (title, category, icon, attributes, supports, keywords) from a block.json file each, a single source, instead of duplicating the definitions between the PHP registration and the editor script. The server render callbacks are unchanged, so nothing changes on the page, and the blocks gain a preview in the inserter.
 
 = 0.21.0 =
 * The ZIP import's uncompressed size limit is now adjustable in code through the `living_handbook_zip_max_bytes` filter (default 100 MB), and the "too large" message reflects the active limit. It stays a safety limit; the real ceiling is the server's PHP upload and memory configuration.
@@ -203,6 +206,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.22.0 =
+The handbook blocks now use a block.json file each as the single source of their metadata, removing duplicated definitions, and gain an inserter preview. No change on the page. Pre-release: best on a fresh database.
 
 = 0.21.0 =
 The ZIP import limit is now adjustable through the living_handbook_zip_max_bytes filter, and the navigation injection uses the HTML API instead of regex for robustness. No visible change. Pre-release: best on a fresh database.

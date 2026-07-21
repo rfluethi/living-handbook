@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/overview",
+	"title": "Handbook overview",
+	"category": "living-handbook",
+	"icon": "book",
+	"description": "Lists the handbooks a visitor may read.",
+	"keywords": [ "handbook", "living handbook", "documentation" ],
+	"textdomain": "living-handbook",
+	"example": {},
+	"attributes": {
+		"display": {
+			"type": "string",
+			"default": "list"
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"customClassName": false,
+		"color": false,
+		"typography": false,
+		"spacing": false,
+		"dimensions": false,
+		"border": false
+	}
+}

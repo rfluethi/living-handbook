@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/pagemeta",
+	"title": "Handbook page meta",
+	"category": "living-handbook",
+	"icon": "info-outline",
+	"description": "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings.",
+	"keywords": [ "handbook", "living handbook", "documentation" ],
+	"textdomain": "living-handbook",
+	"example": {},
+	"attributes": {
+		"showPeople": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"customClassName": false,
+		"color": false,
+		"typography": false,
+		"spacing": false,
+		"dimensions": false,
+		"border": false
+	}
+}

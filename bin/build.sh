@@ -43,6 +43,7 @@ cp uninstall.php "$dest"/
 cp composer.json "$dest"/
 cp -R src "$dest"/
 cp -R assets "$dest"/
+if [ -d blocks ]; then cp -R blocks "$dest"/; fi
 cp -R languages "$dest"/
 cp -R vendor "$dest"/
 if [ -f readme.txt ]; then cp readme.txt "$dest"/; fi

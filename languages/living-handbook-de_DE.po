@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-21T12:14:42+00:00\n"
+"POT-Creation-Date: 2026-07-21T12:44:46+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 # Block category
 #. Plugin Name of the plugin
-#: living-handbook.php src/Blocks/Blocks.php:197
+#: living-handbook.php src/Blocks/Blocks.php:93
 msgid "Living Handbook"
 msgstr "Living Handbook"
 
@@ -77,17 +77,16 @@ msgstr "Feedback"
 msgid "%1$d yes, %2$d no"
 msgstr "%1$d Ja, %2$d Nein"
 
-#: src/Blocks/Blocks.php:299 src/Blocks/Blocks.php:300 assets/blocks.js:146
-#: assets/blocks.js:187
+#: src/Blocks/Blocks.php:195 src/Blocks/Blocks.php:196 assets/blocks.js:133
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
 # Search and filters
-#: src/Blocks/Blocks.php:344 src/Frontend/Filters.php:246
+#: src/Blocks/Blocks.php:240 src/Frontend/Filters.php:246
 msgid "Search this handbook"
 msgstr "Dieses Handbuch durchsuchen"
 
-#: src/Blocks/Blocks.php:345 src/Frontend/Filters.php:247
+#: src/Blocks/Blocks.php:241 src/Frontend/Filters.php:247
 msgid "Search this handbook …"
 msgstr "Dieses Handbuch durchsuchen …"
 
@@ -268,7 +267,7 @@ msgstr "Zuletzt aktualisiert"
 msgid "Responsible role"
 msgstr "Verantwortliche Rolle"
 
-#: src/Frontend/Templates.php:56 assets/blocks.js:229
+#: src/Frontend/Templates.php:56
 msgid "Handbook entry"
 msgstr "Handbuch-Eintrag"
 
@@ -1015,48 +1014,35 @@ msgstr "Nichts gefunden."
 msgid "Back to %s"
 msgstr "Zurück zu %s"
 
-#: assets/blocks.js:14
-msgid "handbook"
-msgstr "Handbuch"
-
-#: assets/blocks.js:14
-msgid "living handbook"
-msgstr "Living Handbook"
-
-#: assets/blocks.js:14
-msgid "documentation"
-msgstr "Dokumentation"
-
-#: assets/blocks.js:52 assets/blocks.js:122
+#: assets/blocks.js:37 assets/blocks.js:79
 msgid "Display"
 msgstr "Anzeige"
 
-#: assets/blocks.js:55
+#: assets/blocks.js:40
 msgid "Cards"
 msgstr "Karten"
 
-#: assets/blocks.js:56
+#: assets/blocks.js:41
 msgid "List"
 msgstr "Liste"
 
-# Editor (block) labels. Source strings live in assets/blocks.js.
-#: assets/blocks.js:84
-msgid "Handbook overview"
-msgstr "Handbuch-Übersicht"
-
-#: assets/blocks.js:85
-msgid "Lists the handbooks a visitor may read."
-msgstr "Listet die Handbücher auf, die eine Besucherin lesen darf."
-
-#: assets/blocks.js:100
+#: assets/blocks.js:67
 msgid "Overview"
 msgstr "Übersicht"
 
-#: assets/blocks.js:111
-msgid "Handbook navigation"
-msgstr "Handbuch-Navigation"
+#: assets/blocks.js:82
+msgid "Menu"
+msgstr "Menü"
 
-#: assets/blocks.js:112 assets/blocks.js:136
+#: assets/blocks.js:83
+msgid "Accordion"
+msgstr "Akkordeon"
+
+#: assets/blocks.js:92
+msgid "Navigation"
+msgstr "Navigation"
+
+#: assets/blocks.js:93
 msgid ""
 "Handbook navigation: the page tree of the current handbook. Choose Menu or "
 "Accordion in the block settings."
@@ -1064,19 +1050,23 @@ msgstr ""
 "Handbuch-Navigation: der Seitenbaum des aktuellen Handbuchs. Wähle in den "
 "Blockeinstellungen Menü oder Akkordeon."
 
-#: assets/blocks.js:125
-msgid "Menu"
-msgstr "Menü"
+#: assets/blocks.js:107
+msgid "Placement"
+msgstr "Platzierung"
 
-#: assets/blocks.js:126
-msgid "Accordion"
-msgstr "Akkordeon"
+#: assets/blocks.js:110
+msgid "Desktop (side column, open)"
+msgstr "Desktop (Seitenspalte, offen)"
 
-#: assets/blocks.js:135
-msgid "Navigation"
-msgstr "Navigation"
+#: assets/blocks.js:111
+msgid "Mobile (above content, collapsed)"
+msgstr "Mobil (über dem Inhalt, eingeklappt)"
 
-#: assets/blocks.js:147 assets/blocks.js:188
+#: assets/blocks.js:121
+msgid "Heading depth (up to H…)"
+msgstr "Überschriftentiefe (bis H…)"
+
+#: assets/blocks.js:134
 msgid ""
 "Table of Contents: a collapsible list built from the headings of the current "
 "page, up to the chosen depth. A page can override the depth in its Handbook "
@@ -1087,27 +1077,15 @@ msgstr ""
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
 
-#: assets/blocks.js:161
-msgid "Placement"
-msgstr "Platzierung"
+#: assets/blocks.js:145
+msgid "Show people (avatar and name)"
+msgstr "Personen anzeigen (Avatar und Name)"
 
-#: assets/blocks.js:164
-msgid "Desktop (side column, open)"
-msgstr "Desktop (Seitenspalte, offen)"
+#: assets/blocks.js:154
+msgid "Page meta"
+msgstr "Seiten-Meta"
 
-#: assets/blocks.js:165
-msgid "Mobile (above content, collapsed)"
-msgstr "Mobil (über dem Inhalt, eingeklappt)"
-
-#: assets/blocks.js:175
-msgid "Heading depth (up to H…)"
-msgstr "Überschriftentiefe (bis H…)"
-
-#: assets/blocks.js:198
-msgid "Handbook page meta"
-msgstr "Handbuch-Seiten-Meta"
-
-#: assets/blocks.js:199 assets/blocks.js:219
+#: assets/blocks.js:155
 msgid ""
 "Handbook page meta: the created, updated, reviewed and responsible-role "
 "footer. Turn the people on or off in the block settings."
@@ -1116,15 +1094,11 @@ msgstr ""
 "verantwortlicher Rolle. Schalte die Personen in den Blockeinstellungen ein "
 "oder aus."
 
-#: assets/blocks.js:209
-msgid "Show people (avatar and name)"
-msgstr "Personen anzeigen (Avatar und Name)"
+#: assets/blocks.js:168
+msgid "Entry"
+msgstr "Eintrag"
 
-#: assets/blocks.js:218
-msgid "Page meta"
-msgstr "Seiten-Meta"
-
-#: assets/blocks.js:230 assets/blocks.js:243
+#: assets/blocks.js:169
 msgid ""
 "Handbook entry: on a handbook page it shows the search, filters, areas and "
 "recently updated pages of that handbook."
@@ -1132,41 +1106,17 @@ msgstr ""
 "Handbuch-Eintrag: auf einer Handbuch-Seite zeigt er Suche, Filter, Bereiche "
 "und zuletzt aktualisierte Seiten dieses Handbuchs."
 
-#: assets/blocks.js:242
-msgid "Entry"
-msgstr "Eintrag"
-
-#: assets/blocks.js:253
-msgid "Handbook menu"
-msgstr "Handbuch-Menü"
-
-#: assets/blocks.js:254
-msgid "A compact list of the handbooks a visitor may read."
-msgstr "Eine kompakte Liste der Handbücher, die eine Besucherin lesen darf."
-
-#: assets/blocks.js:269
-msgid "Handbook badges"
-msgstr "Handbuch-Badges"
-
-#: assets/blocks.js:271
+#: assets/blocks.js:188
 msgid "Handbook badges: page type, topic and audience of the current page."
 msgstr "Handbuch-Badges: Seitentyp, Thema und Zielgruppe der aktuellen Seite."
 
-#: assets/blocks.js:276
-msgid "Handbook feedback"
-msgstr "Handbuch-Feedback"
-
-#: assets/blocks.js:278
+#: assets/blocks.js:193
 msgid ""
 "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 "Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite."
 
-#: assets/blocks.js:283
-msgid "Handbook search"
-msgstr "Handbuch-Suche"
-
-#: assets/blocks.js:285
+#: assets/blocks.js:198
 msgid ""
 "Handbook search: a search-as-you-type box for the current handbook, for a "
 "single page. It lists matching pages as you type."
@@ -1274,6 +1224,177 @@ msgstr "Diagramm-Titel (Bildunterschrift)"
 #: assets/js/mermaid-block.js:110
 msgid "Diagram description (for screen readers)"
 msgstr "Diagramm-Beschreibung (für Screenreader)"
+
+#: blocks/badges/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook badges"
+msgstr "Handbuch-Badges"
+
+#: blocks/badges/block.json
+#, fuzzy
+msgctxt "block description"
+msgid "Handbook badges: page type, topic and audience of the current page."
+msgstr "Handbuch-Badges: Seitentyp, Thema und Zielgruppe der aktuellen Seite."
+
+#: blocks/badges/block.json blocks/entry/block.json blocks/feedback/block.json
+#: blocks/menu/block.json blocks/navigation/block.json
+#: blocks/overview/block.json blocks/pagemeta/block.json
+#: blocks/search/block.json blocks/toc/block.json
+#, fuzzy
+msgctxt "block keyword"
+msgid "handbook"
+msgstr "Handbuch"
+
+#: blocks/badges/block.json blocks/entry/block.json blocks/feedback/block.json
+#: blocks/menu/block.json blocks/navigation/block.json
+#: blocks/overview/block.json blocks/pagemeta/block.json
+#: blocks/search/block.json blocks/toc/block.json
+#, fuzzy
+msgctxt "block keyword"
+msgid "living handbook"
+msgstr "Living Handbook"
+
+#: blocks/badges/block.json blocks/entry/block.json blocks/feedback/block.json
+#: blocks/menu/block.json blocks/navigation/block.json
+#: blocks/overview/block.json blocks/pagemeta/block.json
+#: blocks/search/block.json blocks/toc/block.json
+#, fuzzy
+msgctxt "block keyword"
+msgid "documentation"
+msgstr "Dokumentation"
+
+#: blocks/entry/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook entry"
+msgstr "Handbuch-Eintrag"
+
+#: blocks/entry/block.json
+#, fuzzy
+msgctxt "block description"
+msgid ""
+"Handbook entry: on a handbook page it shows the search, filters, areas and "
+"recently updated pages of that handbook."
+msgstr ""
+"Handbuch-Eintrag: auf einer Handbuch-Seite zeigt er Suche, Filter, Bereiche "
+"und zuletzt aktualisierte Seiten dieses Handbuchs."
+
+#: blocks/feedback/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook feedback"
+msgstr "Handbuch-Feedback"
+
+#: blocks/feedback/block.json
+#, fuzzy
+msgctxt "block description"
+msgid ""
+"Handbook feedback: the \"Was this helpful?\" prompt for the current page."
+msgstr ""
+"Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite."
+
+#: blocks/menu/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook menu"
+msgstr "Handbuch-Menü"
+
+#: blocks/menu/block.json
+#, fuzzy
+msgctxt "block description"
+msgid "A compact list of the handbooks a visitor may read."
+msgstr "Eine kompakte Liste der Handbücher, die eine Besucherin lesen darf."
+
+#: blocks/navigation/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook navigation"
+msgstr "Handbuch-Navigation"
+
+#: blocks/navigation/block.json
+#, fuzzy
+msgctxt "block description"
+msgid ""
+"Handbook navigation: the page tree of the current handbook. Choose Menu or "
+"Accordion in the block settings."
+msgstr ""
+"Handbuch-Navigation: der Seitenbaum des aktuellen Handbuchs. Wähle in den "
+"Blockeinstellungen Menü oder Akkordeon."
+
+# Editor (block) labels. Source strings live in assets/blocks.js.
+#: blocks/overview/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook overview"
+msgstr "Handbuch-Übersicht"
+
+#: blocks/overview/block.json
+#, fuzzy
+msgctxt "block description"
+msgid "Lists the handbooks a visitor may read."
+msgstr "Listet die Handbücher auf, die eine Besucherin lesen darf."
+
+#: blocks/pagemeta/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook page meta"
+msgstr "Handbuch-Seiten-Meta"
+
+#: blocks/pagemeta/block.json
+#, fuzzy
+msgctxt "block description"
+msgid ""
+"Handbook page meta: the created, updated, reviewed and responsible-role "
+"footer. Turn the people on or off in the block settings."
+msgstr ""
+"Handbuch-Seiten-Meta: die Fußzeile mit Erstellt, Aktualisiert, Geprüft und "
+"verantwortlicher Rolle. Schalte die Personen in den Blockeinstellungen ein "
+"oder aus."
+
+#: blocks/search/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Handbook search"
+msgstr "Handbuch-Suche"
+
+#: blocks/search/block.json
+#, fuzzy
+msgctxt "block description"
+msgid ""
+"Handbook search: a search-as-you-type box for the current handbook, for a "
+"single page. It lists matching pages as you type."
+msgstr ""
+"Handbuch-Suche: ein Suchfeld mit Sofort-Vorschlägen für das aktuelle "
+"Handbuch, für eine Einzelseite. Es listet passende Seiten, während du tippst."
+
+#: blocks/toc/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "Table of Contents"
+msgstr "Inhaltsverzeichnis"
+
+#: blocks/toc/block.json
+#, fuzzy
+msgctxt "block description"
+msgid ""
+"Table of Contents: a collapsible list built from the headings of the current "
+"page, up to the chosen depth. A page can override the depth in its Handbook "
+"maintenance box. Empty if the page has no headings."
+msgstr ""
+"Inhaltsverzeichnis: eine aufklappbare Liste aus den Überschriften der "
+"aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
+"Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
+"Überschriften hat."
+
+#~ msgid "handbook"
+#~ msgstr "Handbuch"
+
+#~ msgid "living handbook"
+#~ msgstr "Living Handbook"
+
+#~ msgid "documentation"
+#~ msgstr "Dokumentation"
 
 #~ msgid "Once weekly"
 #~ msgstr "Einmal wöchentlich"

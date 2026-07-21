@@ -2,21 +2,21 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.21.0\n"
+"Project-Id-Version: Living Handbook 0.22.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-21T12:14:57+00:00\n"
+"POT-Creation-Date: 2026-07-21T12:44:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
 
 #. Plugin Name of the plugin
 #: living-handbook.php
-#: src/Blocks/Blocks.php:197
+#: src/Blocks/Blocks.php:93
 msgid "Living Handbook"
 msgstr ""
 
@@ -75,19 +75,18 @@ msgstr ""
 msgid "%1$d yes, %2$d no"
 msgstr ""
 
-#: src/Blocks/Blocks.php:299
-#: src/Blocks/Blocks.php:300
-#: assets/blocks.js:146
-#: assets/blocks.js:187
+#: src/Blocks/Blocks.php:195
+#: src/Blocks/Blocks.php:196
+#: assets/blocks.js:133
 msgid "Table of Contents"
 msgstr ""
 
-#: src/Blocks/Blocks.php:344
+#: src/Blocks/Blocks.php:240
 #: src/Frontend/Filters.php:246
 msgid "Search this handbook"
 msgstr ""
 
-#: src/Blocks/Blocks.php:345
+#: src/Blocks/Blocks.php:241
 #: src/Frontend/Filters.php:247
 msgid "Search this handbook …"
 msgstr ""
@@ -271,7 +270,6 @@ msgid "Responsible role"
 msgstr ""
 
 #: src/Frontend/Templates.php:56
-#: assets/blocks.js:229
 msgid "Handbook entry"
 msgstr ""
 
@@ -906,140 +904,88 @@ msgstr ""
 msgid "Back to %s"
 msgstr ""
 
-#: assets/blocks.js:14
-msgid "handbook"
-msgstr ""
-
-#: assets/blocks.js:14
-msgid "living handbook"
-msgstr ""
-
-#: assets/blocks.js:14
-msgid "documentation"
-msgstr ""
-
-#: assets/blocks.js:52
-#: assets/blocks.js:122
+#: assets/blocks.js:37
+#: assets/blocks.js:79
 msgid "Display"
 msgstr ""
 
-#: assets/blocks.js:55
+#: assets/blocks.js:40
 msgid "Cards"
 msgstr ""
 
-#: assets/blocks.js:56
+#: assets/blocks.js:41
 msgid "List"
 msgstr ""
 
-#: assets/blocks.js:84
-msgid "Handbook overview"
-msgstr ""
-
-#: assets/blocks.js:85
-msgid "Lists the handbooks a visitor may read."
-msgstr ""
-
-#: assets/blocks.js:100
+#: assets/blocks.js:67
 msgid "Overview"
 msgstr ""
 
-#: assets/blocks.js:111
-msgid "Handbook navigation"
-msgstr ""
-
-#: assets/blocks.js:112
-#: assets/blocks.js:136
-msgid "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings."
-msgstr ""
-
-#: assets/blocks.js:125
+#: assets/blocks.js:82
 msgid "Menu"
 msgstr ""
 
-#: assets/blocks.js:126
+#: assets/blocks.js:83
 msgid "Accordion"
 msgstr ""
 
-#: assets/blocks.js:135
+#: assets/blocks.js:92
 msgid "Navigation"
 msgstr ""
 
-#: assets/blocks.js:147
-#: assets/blocks.js:188
-msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
+#: assets/blocks.js:93
+msgid "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings."
 msgstr ""
 
-#: assets/blocks.js:161
+#: assets/blocks.js:107
 msgid "Placement"
 msgstr ""
 
-#: assets/blocks.js:164
+#: assets/blocks.js:110
 msgid "Desktop (side column, open)"
 msgstr ""
 
-#: assets/blocks.js:165
+#: assets/blocks.js:111
 msgid "Mobile (above content, collapsed)"
 msgstr ""
 
-#: assets/blocks.js:175
+#: assets/blocks.js:121
 msgid "Heading depth (up to H…)"
 msgstr ""
 
-#: assets/blocks.js:198
-msgid "Handbook page meta"
+#: assets/blocks.js:134
+msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
 msgstr ""
 
-#: assets/blocks.js:199
-#: assets/blocks.js:219
-msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
-msgstr ""
-
-#: assets/blocks.js:209
+#: assets/blocks.js:145
 msgid "Show people (avatar and name)"
 msgstr ""
 
-#: assets/blocks.js:218
+#: assets/blocks.js:154
 msgid "Page meta"
 msgstr ""
 
-#: assets/blocks.js:230
-#: assets/blocks.js:243
-msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
+#: assets/blocks.js:155
+msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
 msgstr ""
 
-#: assets/blocks.js:242
+#: assets/blocks.js:168
 msgid "Entry"
 msgstr ""
 
-#: assets/blocks.js:253
-msgid "Handbook menu"
+#: assets/blocks.js:169
+msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
 msgstr ""
 
-#: assets/blocks.js:254
-msgid "A compact list of the handbooks a visitor may read."
-msgstr ""
-
-#: assets/blocks.js:269
-msgid "Handbook badges"
-msgstr ""
-
-#: assets/blocks.js:271
+#: assets/blocks.js:188
 msgid "Handbook badges: page type, topic and audience of the current page."
 msgstr ""
 
-#: assets/blocks.js:276
-msgid "Handbook feedback"
-msgstr ""
-
-#: assets/blocks.js:278
+#: assets/blocks.js:193
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 
-#: assets/blocks.js:283
-msgid "Handbook search"
-msgstr ""
-
-#: assets/blocks.js:285
+#: assets/blocks.js:198
 msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type."
 msgstr ""
 
@@ -1138,4 +1084,133 @@ msgstr ""
 
 #: assets/js/mermaid-block.js:110
 msgid "Diagram description (for screen readers)"
+msgstr ""
+
+#: blocks/badges/block.json
+msgctxt "block title"
+msgid "Handbook badges"
+msgstr ""
+
+#: blocks/badges/block.json
+msgctxt "block description"
+msgid "Handbook badges: page type, topic and audience of the current page."
+msgstr ""
+
+#: blocks/badges/block.json
+#: blocks/entry/block.json
+#: blocks/feedback/block.json
+#: blocks/menu/block.json
+#: blocks/navigation/block.json
+#: blocks/overview/block.json
+#: blocks/pagemeta/block.json
+#: blocks/search/block.json
+#: blocks/toc/block.json
+msgctxt "block keyword"
+msgid "handbook"
+msgstr ""
+
+#: blocks/badges/block.json
+#: blocks/entry/block.json
+#: blocks/feedback/block.json
+#: blocks/menu/block.json
+#: blocks/navigation/block.json
+#: blocks/overview/block.json
+#: blocks/pagemeta/block.json
+#: blocks/search/block.json
+#: blocks/toc/block.json
+msgctxt "block keyword"
+msgid "living handbook"
+msgstr ""
+
+#: blocks/badges/block.json
+#: blocks/entry/block.json
+#: blocks/feedback/block.json
+#: blocks/menu/block.json
+#: blocks/navigation/block.json
+#: blocks/overview/block.json
+#: blocks/pagemeta/block.json
+#: blocks/search/block.json
+#: blocks/toc/block.json
+msgctxt "block keyword"
+msgid "documentation"
+msgstr ""
+
+#: blocks/entry/block.json
+msgctxt "block title"
+msgid "Handbook entry"
+msgstr ""
+
+#: blocks/entry/block.json
+msgctxt "block description"
+msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
+msgstr ""
+
+#: blocks/feedback/block.json
+msgctxt "block title"
+msgid "Handbook feedback"
+msgstr ""
+
+#: blocks/feedback/block.json
+msgctxt "block description"
+msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
+msgstr ""
+
+#: blocks/menu/block.json
+msgctxt "block title"
+msgid "Handbook menu"
+msgstr ""
+
+#: blocks/menu/block.json
+msgctxt "block description"
+msgid "A compact list of the handbooks a visitor may read."
+msgstr ""
+
+#: blocks/navigation/block.json
+msgctxt "block title"
+msgid "Handbook navigation"
+msgstr ""
+
+#: blocks/navigation/block.json
+msgctxt "block description"
+msgid "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings."
+msgstr ""
+
+#: blocks/overview/block.json
+msgctxt "block title"
+msgid "Handbook overview"
+msgstr ""
+
+#: blocks/overview/block.json
+msgctxt "block description"
+msgid "Lists the handbooks a visitor may read."
+msgstr ""
+
+#: blocks/pagemeta/block.json
+msgctxt "block title"
+msgid "Handbook page meta"
+msgstr ""
+
+#: blocks/pagemeta/block.json
+msgctxt "block description"
+msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
+msgstr ""
+
+#: blocks/search/block.json
+msgctxt "block title"
+msgid "Handbook search"
+msgstr ""
+
+#: blocks/search/block.json
+msgctxt "block description"
+msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type."
+msgstr ""
+
+#: blocks/toc/block.json
+msgctxt "block title"
+msgid "Table of Contents"
+msgstr ""
+
+#: blocks/toc/block.json
+msgctxt "block description"
+msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
 msgstr ""

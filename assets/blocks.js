@@ -10,24 +10,9 @@
 	var ToggleControl = components ? components.ToggleControl : null;
 	var RangeControl = components ? components.RangeControl : null;
 
-	// Shared inserter search terms so the handbook blocks are easy to find.
-	var keywords = [ __( 'handbook', 'living-handbook' ), __( 'living handbook', 'living-handbook' ), __( 'documentation', 'living-handbook' ) ];
-
-	// These blocks render their own markup in PHP and do not apply the editor's
-	// design controls, so the design panels (colour, typography, spacing,
-	// additional CSS class, HTML edit, anchor) are turned off. The editor reads
-	// supports from this client registration, so they must be set here, not only
-	// in the PHP registration.
-	var SUPPORTS = {
-		html: false,
-		anchor: false,
-		customClassName: false,
-		color: false,
-		typography: false,
-		spacing: false,
-		dimensions: false,
-		border: false
-	};
+	// Block metadata (title, category, icon, keywords, attributes, supports) comes
+	// from each block's blocks/<name>/block.json, registered server-side; this
+	// script only supplies the editor edit and save functions.
 
 	function note( text ) {
 		return el(
@@ -61,15 +46,10 @@
 		} );
 	}
 
-	function dynamic( name, title, icon, text ) {
+	// A block that only shows a descriptive note in the editor, because it renders
+	// from the front-end page context, which the editor does not have.
+	function dynamic( name, text ) {
 		blocks.registerBlockType( name, {
-			apiVersion: 3,
-			title: title,
-			description: text,
-			keywords: keywords,
-			category: 'living-handbook',
-			icon: icon,
-			supports: SUPPORTS,
 			edit: function () {
 				return note( text );
 			},
@@ -80,19 +60,6 @@
 	}
 
 	blocks.registerBlockType( 'living-handbook/overview', {
-		apiVersion: 3,
-		title: __( 'Handbook overview', 'living-handbook' ),
-		description: __( 'Lists the handbooks a visitor may read.', 'living-handbook' ),
-		keywords: keywords,
-		category: 'living-handbook',
-		icon: 'book',
-		supports: SUPPORTS,
-		attributes: {
-			// The overview lists whole handbooks, usually only a handful, so a
-			// list reads better than a card grid on first insert. Must match the
-			// default of the PHP registration.
-			display: { type: 'string', default: 'list' }
-		},
 		edit: function ( props ) {
 			return el(
 				Fragment,
@@ -107,16 +74,6 @@
 	} );
 
 	blocks.registerBlockType( 'living-handbook/navigation', {
-		apiVersion: 3,
-		title: __( 'Handbook navigation', 'living-handbook' ),
-		description: __( 'Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings.', 'living-handbook' ),
-		keywords: keywords,
-		category: 'living-handbook',
-		icon: 'list-view',
-		supports: SUPPORTS,
-		attributes: {
-			variant: { type: 'string', default: 'sidebar' }
-		},
 		edit: function ( props ) {
 			var control = SelectControl ? el( SelectControl, {
 				label: __( 'Display', 'living-handbook' ),
@@ -142,17 +99,6 @@
 	} );
 
 	blocks.registerBlockType( 'living-handbook/toc', {
-		apiVersion: 3,
-		title: __( 'Table of Contents', 'living-handbook' ),
-		description: __( 'Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.', 'living-handbook' ),
-		keywords: keywords,
-		category: 'living-handbook',
-		icon: 'editor-ol',
-		supports: SUPPORTS,
-		attributes: {
-			variant: { type: 'string', default: 'desktop' },
-			maxDepth: { type: 'number', default: 6 }
-		},
 		edit: function ( props ) {
 			var controls = [];
 			if ( SelectControl ) {
@@ -194,16 +140,6 @@
 	} );
 
 	blocks.registerBlockType( 'living-handbook/pagemeta', {
-		apiVersion: 3,
-		title: __( 'Handbook page meta', 'living-handbook' ),
-		description: __( 'Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings.', 'living-handbook' ),
-		keywords: keywords,
-		category: 'living-handbook',
-		icon: 'info-outline',
-		supports: SUPPORTS,
-		attributes: {
-			showPeople: { type: 'boolean', default: true }
-		},
 		edit: function ( props ) {
 			var control = ToggleControl ? el( ToggleControl, {
 				label: __( 'Show people (avatar and name)', 'living-handbook' ),
@@ -225,16 +161,6 @@
 	} );
 
 	blocks.registerBlockType( 'living-handbook/entry', {
-		apiVersion: 3,
-		title: __( 'Handbook entry', 'living-handbook' ),
-		description: __( 'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.', 'living-handbook' ),
-		keywords: keywords,
-		category: 'living-handbook',
-		icon: 'welcome-learn-more',
-		supports: SUPPORTS,
-		attributes: {
-			display: { type: 'string', default: 'cards' }
-		},
 		edit: function ( props ) {
 			return el(
 				Fragment,
@@ -249,13 +175,6 @@
 	} );
 
 	blocks.registerBlockType( 'living-handbook/menu', {
-		apiVersion: 3,
-		title: __( 'Handbook menu', 'living-handbook' ),
-		description: __( 'A compact list of the handbooks a visitor may read.', 'living-handbook' ),
-		keywords: keywords,
-		category: 'living-handbook',
-		icon: 'menu',
-		supports: SUPPORTS,
 		edit: function () {
 			return el( serverSideRender, { block: 'living-handbook/menu' } );
 		},
@@ -266,22 +185,16 @@
 
 	dynamic(
 		'living-handbook/badges',
-		__( 'Handbook badges', 'living-handbook' ),
-		'tag',
 		__( 'Handbook badges: page type, topic and audience of the current page.', 'living-handbook' )
 	);
 
 	dynamic(
 		'living-handbook/feedback',
-		__( 'Handbook feedback', 'living-handbook' ),
-		'thumbs-up',
 		__( 'Handbook feedback: the "Was this helpful?" prompt for the current page.', 'living-handbook' )
 	);
 
 	dynamic(
 		'living-handbook/search',
-		__( 'Handbook search', 'living-handbook' ),
-		'search',
 		__( 'Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type.', 'living-handbook' )
 	);
 }( window.wp.blocks, window.wp.element, window.wp.serverSideRender, window.wp.i18n, window.wp.blockEditor, window.wp.components ) );

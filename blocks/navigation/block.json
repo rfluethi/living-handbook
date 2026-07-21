@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/navigation",
+	"title": "Handbook navigation",
+	"category": "living-handbook",
+	"icon": "list-view",
+	"description": "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings.",
+	"keywords": [ "handbook", "living handbook", "documentation" ],
+	"textdomain": "living-handbook",
+	"example": {},
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"default": "sidebar"
+		}
+	},
+	"supports": {
+		"html": false,
+		"anchor": false,
+		"customClassName": false,
+		"color": false,
+		"typography": false,
+		"spacing": false,
+		"dimensions": false,
+		"border": false
+	}
+}
