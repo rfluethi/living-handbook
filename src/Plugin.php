@@ -128,13 +128,15 @@ final class Plugin {
 			'living_handbook_feedback_no'     => '_living_handbook_feedback_no',
 			'living_handbook_feedback_voters' => '_living_handbook_feedback_voters',
 		);
+		// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- One-time migration renaming meta keys, not a repeated runtime query.
 		foreach ( $feedback_meta as $old_key => $new_key ) {
-			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->postmeta,
 				array( 'meta_key' => $new_key ),
 				array( 'meta_key' => $old_key )
 			);
 		}
+		// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 
 		GitSync::reschedule();
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );

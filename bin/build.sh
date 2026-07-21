@@ -50,13 +50,14 @@ if [ -f readme.txt ]; then cp readme.txt "$dest"/; fi
 if [ -f README.md ]; then cp README.md "$dest"/; fi
 if [ -f LICENSE ]; then cp LICENSE "$dest"/; fi
 
-# Strip hidden files. Plugin Check rejects them, and macOS scatters .DS_Store
-# and ._* resource forks through any folder that has been opened in Finder.
-find "$dest" -name '.DS_Store' -delete
-find "$dest" -name '._*' -delete
+# Strip every hidden file. Plugin Check rejects them outright: macOS scatters
+# .DS_Store and ._* resource forks, and a network or FUSE mount (Nextcloud)
+# leaves .fuse_hidden* orphans when an open file is deleted. Removed from the
+# staged copy, so a locked hidden file in the working tree never reaches the zip.
+find "$dest" -name '.*' -type f -delete
 
 rm -f "$output"
-( cd "$stage" && zip -rq "${root}/${output}" living-handbook -x '*.DS_Store' -x '*/._*' -x '__MACOSX/*' )
+( cd "$stage" && zip -rq "${root}/${output}" living-handbook -x '*/.*' -x '__MACOSX/*' )
 rm -rf "$stage"
 
 echo "Built ${output} (version ${version}) with production vendor from the working tree."

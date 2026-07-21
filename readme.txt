@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.23.0
+Stable tag: 0.23.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.23.1 =
+* Packaging: the build now strips every hidden file from the release ZIP, so a stray .fuse_hidden orphan from a network or FUSE mount, which the plugin repository check rejects, never ships. Silenced a false-positive lint warning on the one-time feedback-meta migration. No functional change.
 
 = 0.23.0 =
 * Code review F7 completed: the Mermaid diagram block and the GitHub source-note block now also take their metadata from a block.json file, so every handbook block uses the same single-source registration. The render callbacks are unchanged, so nothing changes on the page. The Mermaid block shows a sample diagram in the inserter preview, and an empty Mermaid block no longer loads the diagram library until it has code.
@@ -209,6 +212,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.23.1 =
+Packaging fix: the release ZIP no longer includes stray hidden files that the plugin repository check rejected. No functional change. Pre-release: best on a fresh database.
 
 = 0.23.0 =
 F7 completed: the Mermaid and GitHub source-note blocks now also use block.json, so every handbook block shares the single-source registration. No change on the page. Pre-release: best on a fresh database.
