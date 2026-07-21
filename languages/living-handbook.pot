@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.15.0\n"
+"Project-Id-Version: Living Handbook 0.16.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-20T16:07:05+00:00\n"
+"POT-Creation-Date: 2026-07-21T07:47:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -60,7 +60,8 @@ msgstr ""
 
 #: src/Admin/Maintenance.php:157
 #: src/Frontend/PageMeta.php:79
-#: src/Meta/Metadata.php:156
+#: src/Meta/Metadata.php:162
+#: src/Meta/Metadata.php:299
 msgid "Last reviewed"
 msgstr ""
 
@@ -74,19 +75,19 @@ msgstr ""
 msgid "%1$d yes, %2$d no"
 msgstr ""
 
-#: src/Blocks/Blocks.php:381
-#: src/Blocks/Blocks.php:382
-#: assets/blocks.js:137
-#: assets/blocks.js:176
+#: src/Blocks/Blocks.php:386
+#: src/Blocks/Blocks.php:387
+#: assets/blocks.js:146
+#: assets/blocks.js:187
 msgid "Table of Contents"
 msgstr ""
 
-#: src/Blocks/Blocks.php:426
+#: src/Blocks/Blocks.php:431
 #: src/Frontend/Filters.php:246
 msgid "Search this handbook"
 msgstr ""
 
-#: src/Blocks/Blocks.php:427
+#: src/Blocks/Blocks.php:432
 #: src/Frontend/Filters.php:247
 msgid "Search this handbook …"
 msgstr ""
@@ -109,7 +110,7 @@ msgid "Audience: %s"
 msgstr ""
 
 #. translators: %d: number of subpages.
-#: src/Frontend/Cards.php:194
+#: src/Frontend/Cards.php:195
 #, php-format
 msgid "%d subpage"
 msgid_plural "%d subpages"
@@ -117,38 +118,38 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of pages in a handbook.
-#: src/Frontend/Cards.php:230
+#: src/Frontend/Cards.php:231
 #, php-format
 msgid "%d page"
 msgid_plural "%d pages"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Frontend/Entry.php:54
+#: src/Frontend/Entry.php:41
 msgid "No handbooks available."
 msgstr ""
 
-#: src/Frontend/Entry.php:96
-#: src/Frontend/Entry.php:98
-#: src/Frontend/FrontendRenderer.php:274
-#: src/Frontend/FrontendRenderer.php:311
+#: src/Frontend/Entry.php:69
+#: src/Frontend/Entry.php:71
+#: src/Frontend/FrontendRenderer.php:273
+#: src/Frontend/FrontendRenderer.php:310
 #: src/Handbook/Handbooks.php:74
 msgid "Handbooks"
 msgstr ""
 
-#: src/Frontend/Entry.php:160
+#: src/Frontend/Entry.php:133
 msgid "Areas"
 msgstr ""
 
-#: src/Frontend/Entry.php:165
+#: src/Frontend/Entry.php:138
 msgid "Recently updated"
 msgstr ""
 
-#: src/Frontend/Entry.php:169
+#: src/Frontend/Entry.php:142
 msgid "This handbook has no pages yet."
 msgstr ""
 
-#: src/Frontend/Entry.php:174
+#: src/Frontend/Entry.php:147
 msgid "Log in to see more."
 msgstr ""
 
@@ -177,7 +178,7 @@ msgid "No matches. Adjust the filters or the search."
 msgstr ""
 
 #: src/Frontend/Filters.php:528
-#: src/Git/GitSync.php:645
+#: src/Git/GitSync.php:643
 #: src/PostType/Handbook.php:76
 msgid "Handbook pages"
 msgstr ""
@@ -215,28 +216,28 @@ msgstr ""
 msgid "Review overdue"
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:76
+#: src/Frontend/FrontendRenderer.php:75
 msgid "Thanks for your feedback."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:77
+#: src/Frontend/FrontendRenderer.php:76
 msgid "Your feedback could not be sent. Please try again."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:78
+#: src/Frontend/FrontendRenderer.php:77
 msgid "The list could not be updated. Please reload the page."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:79
+#: src/Frontend/FrontendRenderer.php:78
 msgid "No matches."
 msgstr ""
 
-#: src/Frontend/Navigation.php:90
+#: src/Frontend/Navigation.php:91
 msgid "Open the handbook start page"
 msgstr ""
 
 #. translators: %s: page title.
-#: src/Frontend/Navigation.php:207
+#: src/Frontend/Navigation.php:203
 #, php-format
 msgid "Toggle %s"
 msgstr ""
@@ -270,7 +271,7 @@ msgid "Responsible role"
 msgstr ""
 
 #: src/Frontend/Templates.php:56
-#: assets/blocks.js:216
+#: assets/blocks.js:229
 msgid "Handbook entry"
 msgstr ""
 
@@ -311,83 +312,83 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: src/Git/GitSync.php:283
+#: src/Git/GitSync.php:281
 msgid "GitHub page"
 msgstr ""
 
-#: src/Git/GitSync.php:348
+#: src/Git/GitSync.php:346
 msgid "Not a GitHub folder URL."
 msgstr ""
 
-#: src/Git/GitSync.php:371
+#: src/Git/GitSync.php:369
 msgid "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later."
 msgstr ""
 
 #. translators: %d: HTTP status code returned by the GitHub API.
-#: src/Git/GitSync.php:374
+#: src/Git/GitSync.php:372
 #, php-format
 msgid "GitHub API HTTP %d"
 msgstr ""
 
-#: src/Git/GitSync.php:378
+#: src/Git/GitSync.php:376
 msgid "Unexpected GitHub API response."
 msgstr ""
 
-#: src/Git/GitSync.php:480
-#: src/Git/GitSync.php:856
+#: src/Git/GitSync.php:478
+#: src/Git/GitSync.php:861
 msgid "Source"
 msgstr ""
 
-#: src/Git/GitSync.php:502
+#: src/Git/GitSync.php:500
 msgid "Maintained in WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:503
+#: src/Git/GitSync.php:501
 msgid "Synced from GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:505
+#: src/Git/GitSync.php:503
 msgid "Markdown source (raw or blob URL)"
 msgstr ""
 
-#: src/Git/GitSync.php:510
+#: src/Git/GitSync.php:508
 msgid "Sync now"
 msgstr ""
 
-#: src/Git/GitSync.php:514
+#: src/Git/GitSync.php:512
 msgid "Last sync:"
 msgstr ""
 
-#: src/Git/GitSync.php:516
+#: src/Git/GitSync.php:514
 msgid "A GitHub page is pulled when you save it, and its content editor is locked. Change the source here."
 msgstr ""
 
-#: src/Git/GitSync.php:593
+#: src/Git/GitSync.php:591
 msgid "This page is synced from GitHub. Its content is managed in the repository and cannot be edited here."
 msgstr ""
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:635
+#: src/Git/GitSync.php:633
 #, php-format
 msgid "Living Handbook: %d GitHub page could not be synced. Open it to see the error."
 msgid_plural "Living Handbook: %d GitHub pages could not be synced. Open them to see the error."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Git/GitSync.php:658
+#: src/Git/GitSync.php:656
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Git/GitSync.php:733
+#: src/Git/GitSync.php:731
 msgid "Error: CommonMark is not installed."
 msgstr ""
 
-#: src/Git/GitSync.php:741
+#: src/Git/GitSync.php:739
 msgid "Error: source host not allowed."
 msgstr ""
 
 #. translators: %s: error message from the HTTP request.
-#: src/Git/GitSync.php:753
+#: src/Git/GitSync.php:751
 #: assets/js/markdown-import.js:181
 #: assets/js/markdown-import.js:257
 #, php-format,js-format
@@ -395,25 +396,27 @@ msgid "Error: %s"
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:759
+#: src/Git/GitSync.php:757
 #, php-format
 msgid "Error: HTTP %d"
 msgstr ""
 
-#: src/Git/GitSync.php:785
-msgid "OK "
+#. translators: %s: date and time of the successful sync.
+#: src/Git/GitSync.php:787
+#, php-format
+msgid "OK %s"
 msgstr ""
 
-#: src/Git/GitSync.php:872
+#: src/Git/GitSync.php:877
 #: src/Import/MarkdownImportPage.php:795
 msgid "GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:872
+#: src/Git/GitSync.php:877
 msgid "WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:876
+#: src/Git/GitSync.php:881
 msgid "(sync failed)"
 msgstr ""
 
@@ -630,45 +633,48 @@ msgstr ""
 msgid "Import from GitHub"
 msgstr ""
 
-#: src/Meta/Metadata.php:134
+#: src/Meta/Metadata.php:140
 msgid "Handbook maintenance"
 msgstr ""
 
-#: src/Meta/Metadata.php:160
+#: src/Meta/Metadata.php:166
+#: src/Meta/Metadata.php:303
 msgid "Review interval (days)"
 msgstr ""
 
-#: src/Meta/Metadata.php:164
+#: src/Meta/Metadata.php:170
+#: src/Meta/Metadata.php:307
 msgid "Reviewed by"
 msgstr ""
 
-#: src/Meta/Metadata.php:171
+#: src/Meta/Metadata.php:177
+#: src/Meta/Metadata.php:312
 msgid "none"
 msgstr ""
 
-#: src/Meta/Metadata.php:178
+#: src/Meta/Metadata.php:184
 msgid "On this page: heading depth"
 msgstr ""
 
-#: src/Meta/Metadata.php:180
+#: src/Meta/Metadata.php:186
 msgid "Use the block default"
 msgstr ""
 
 #. translators: %d: heading level, e.g. up to H2.
-#: src/Meta/Metadata.php:185
+#: src/Meta/Metadata.php:191
 #, php-format
 msgid "Up to H%d"
 msgstr ""
 
-#: src/Meta/Metadata.php:194
+#: src/Meta/Metadata.php:200
 msgid "Exclude this page from AI use"
 msgstr ""
 
-#: src/Meta/Metadata.php:197
+#: src/Meta/Metadata.php:203
 msgid "A marker only. It does not block anything by itself; it is published in the page REST data (living_handbook_status), so an AI tool or export that reads the handbook can choose to skip this page."
 msgstr ""
 
-#: src/Meta/Metadata.php:198
+#: src/Meta/Metadata.php:204
 msgid "The last updated date is set automatically on save."
 msgstr ""
 
@@ -903,116 +909,140 @@ msgstr ""
 msgid "Back to %s"
 msgstr ""
 
-#: assets/blocks.js:49
-#: assets/blocks.js:113
-msgid "Display"
+#: assets/blocks.js:14
+msgid "handbook"
+msgstr ""
+
+#: assets/blocks.js:14
+msgid "living handbook"
+msgstr ""
+
+#: assets/blocks.js:14
+msgid "documentation"
 msgstr ""
 
 #: assets/blocks.js:52
+#: assets/blocks.js:122
+msgid "Display"
+msgstr ""
+
+#: assets/blocks.js:55
 msgid "Cards"
 msgstr ""
 
-#: assets/blocks.js:53
+#: assets/blocks.js:56
 msgid "List"
 msgstr ""
 
-#: assets/blocks.js:79
+#: assets/blocks.js:84
 msgid "Handbook overview"
 msgstr ""
 
-#: assets/blocks.js:93
+#: assets/blocks.js:85
+msgid "Lists the handbooks a visitor may read."
+msgstr ""
+
+#: assets/blocks.js:100
 msgid "Overview"
 msgstr ""
 
-#: assets/blocks.js:104
+#: assets/blocks.js:111
 msgid "Handbook navigation"
 msgstr ""
 
-#: assets/blocks.js:116
-msgid "Menu"
-msgstr ""
-
-#: assets/blocks.js:117
-msgid "Accordion"
-msgstr ""
-
-#: assets/blocks.js:126
-msgid "Navigation"
-msgstr ""
-
-#: assets/blocks.js:127
+#: assets/blocks.js:112
+#: assets/blocks.js:136
 msgid "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings."
 msgstr ""
 
-#: assets/blocks.js:150
-msgid "Placement"
+#: assets/blocks.js:125
+msgid "Menu"
 msgstr ""
 
-#: assets/blocks.js:153
-msgid "Desktop (side column, open)"
+#: assets/blocks.js:126
+msgid "Accordion"
 msgstr ""
 
-#: assets/blocks.js:154
-msgid "Mobile (above content, collapsed)"
+#: assets/blocks.js:135
+msgid "Navigation"
 msgstr ""
 
-#: assets/blocks.js:164
-msgid "Heading depth (up to H…)"
-msgstr ""
-
-#: assets/blocks.js:177
+#: assets/blocks.js:147
+#: assets/blocks.js:188
 msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
 msgstr ""
 
-#: assets/blocks.js:187
+#: assets/blocks.js:161
+msgid "Placement"
+msgstr ""
+
+#: assets/blocks.js:164
+msgid "Desktop (side column, open)"
+msgstr ""
+
+#: assets/blocks.js:165
+msgid "Mobile (above content, collapsed)"
+msgstr ""
+
+#: assets/blocks.js:175
+msgid "Heading depth (up to H…)"
+msgstr ""
+
+#: assets/blocks.js:198
 msgid "Handbook page meta"
 msgstr ""
 
-#: assets/blocks.js:196
-msgid "Show people (avatar and name)"
-msgstr ""
-
-#: assets/blocks.js:205
-msgid "Page meta"
-msgstr ""
-
-#: assets/blocks.js:206
+#: assets/blocks.js:199
+#: assets/blocks.js:219
 msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
 msgstr ""
 
-#: assets/blocks.js:227
-msgid "Entry"
+#: assets/blocks.js:209
+msgid "Show people (avatar and name)"
 msgstr ""
 
-#: assets/blocks.js:228
+#: assets/blocks.js:218
+msgid "Page meta"
+msgstr ""
+
+#: assets/blocks.js:230
+#: assets/blocks.js:243
 msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
 msgstr ""
 
-#: assets/blocks.js:238
+#: assets/blocks.js:242
+msgid "Entry"
+msgstr ""
+
+#: assets/blocks.js:253
 msgid "Handbook menu"
 msgstr ""
 
-#: assets/blocks.js:252
+#: assets/blocks.js:254
+msgid "A compact list of the handbooks a visitor may read."
+msgstr ""
+
+#: assets/blocks.js:269
 msgid "Handbook badges"
 msgstr ""
 
-#: assets/blocks.js:254
+#: assets/blocks.js:271
 msgid "Handbook badges: page type, topic and audience of the current page."
 msgstr ""
 
-#: assets/blocks.js:259
+#: assets/blocks.js:276
 msgid "Handbook feedback"
 msgstr ""
 
-#: assets/blocks.js:261
+#: assets/blocks.js:278
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 
-#: assets/blocks.js:266
+#: assets/blocks.js:283
 msgid "Handbook search"
 msgstr ""
 
-#: assets/blocks.js:268
+#: assets/blocks.js:285
 msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type."
 msgstr ""
 

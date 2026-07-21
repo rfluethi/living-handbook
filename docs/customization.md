@@ -18,19 +18,29 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 .living-handbook-meta,
 .living-handbook-feedback,
 .living-handbook-badge {
+	/* Surface, text and accent default to your theme's colour presets. */
+	--lh-surface: var(--wp--preset--color--base, #fff);
+	--lh-surface-text: var(--wp--preset--color--contrast, #1d2327);
 	--lh-accent: var(--wp--preset--color--accent, #2c5f8a);
-	--lh-accent-soft: #eaf1f8;
-	--lh-ok: #176e3c;          /* freshness badge "Reviewed" */
-	--lh-due: #8a5200;         /* freshness badge "Review due" */
-	--lh-overdue: #c0392b;     /* freshness badge "Review overdue" (the escalation state) */
-	--lh-border: #e2e6ea;
-	--lh-muted: #5f6b75;       /* secondary text */
+	--lh-on-accent: #fff;      /* text on an accent-filled button */
+
+	/* Lines and secondary text are mixed from the surface and its text. */
+	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
+	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
+
+	/* Freshness colours stay fixed. */
+	--lh-ok: #176e3c;          /* "Reviewed" */
+	--lh-due: #8a5200;         /* "Review due" */
+	--lh-overdue: #c0392b;     /* "Review overdue" (the escalation state) */
+
 	--lh-sticky-top: 2rem;     /* offset for sticky nav and TOC under a fixed header */
 	--lh-nav-top-weight: 700;  /* weight of the top navigation level */
 }
 ```
 
-Point `--lh-accent` at your theme's accent colour to match your palette. `--lh-sticky-top` controls the top offset of the sticky navigation and table of contents, and the scroll offset when jumping to a heading, so raise it if your theme has a fixed header. `--lh-nav-top-weight` sets how bold the navigation title is.
+Dark mode follows your theme automatically. Because `--lh-surface`, `--lh-surface-text` and `--lh-accent` default to the theme's own colour presets, a dark theme, or a dark style variation a visitor selects, turns the cards, navigation and table of contents dark with it; the borders and secondary text adapt too, because they are mixed from the surface. Themes that expose no such presets (many classic themes) keep the light fallback. To pin a fixed palette regardless of the theme, set `--lh-surface`, `--lh-surface-text` and `--lh-accent` to fixed colours in the Custom CSS field.
+
+`--lh-sticky-top` controls the top offset of the sticky navigation and table of contents, and the scroll offset when jumping to a heading, so raise it if your theme has a fixed header. `--lh-nav-top-weight` sets how bold the navigation title is.
 
 ### A note on the freshness names
 

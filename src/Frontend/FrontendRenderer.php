@@ -18,7 +18,6 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Settings;
-use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -319,22 +318,8 @@ final class FrontendRenderer {
 	 * @return string
 	 */
 	private static function handbook_items_html(): string {
-		$terms = get_terms(
-			array(
-				'taxonomy'   => Handbooks::TAXONOMY,
-				'hide_empty' => false,
-			)
-		);
-		if ( is_wp_error( $terms ) ) {
-			return '';
-		}
-
-		$user_id = get_current_user_id();
-		$items   = '';
-		foreach ( $terms as $term ) {
-			if ( ! $term instanceof WP_Term || ! AccessController::can_view_term( $term->term_id, $user_id ) ) {
-				continue;
-			}
+		$items = '';
+		foreach ( AccessController::readable_terms( get_current_user_id() ) as $term ) {
 			$link = get_term_link( $term );
 			if ( is_wp_error( $link ) ) {
 				continue;

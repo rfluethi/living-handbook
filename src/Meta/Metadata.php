@@ -40,6 +40,12 @@ final class Metadata {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
 		add_action( 'save_post_' . Handbook::POST_TYPE, array( $this, 'save' ) );
 		add_action( 'save_post_' . Handbook::POST_TYPE, array( $this, 'set_updated' ) );
+
+		// Quick Edit for the three freshness fields in the handbook list.
+		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'quick_edit_data' ), 20, 2 );
+		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_box' ), 10, 2 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_quick_edit' ) );
+		add_action( 'save_post_' . Handbook::POST_TYPE, array( $this, 'save_quick_edit' ) );
 	}
 
 	/**
@@ -250,5 +256,123 @@ final class Metadata {
 			return;
 		}
 		update_post_meta( $post_id, self::UPDATED, current_time( 'Y-m-d' ) );
+	}
+
+	/**
+	 * Carry the current freshness values into the review column as data
+	 * attributes, so the Quick Edit script can prefill its fields (the inline
+	 * editor renders them empty and does not know the stored values).
+	 *
+	 * @param string $column  Column key.
+	 * @param int    $post_id Post ID.
+	 * @return void
+	 */
+	public function quick_edit_data( string $column, int $post_id ): void {
+		if ( 'living_handbook_reviewed' !== $column ) {
+			return;
+		}
+		printf(
+			'<span class="living-handbook-qe-data" style="display:none" data-reviewed="%1$s" data-interval="%2$d" data-reviewer="%3$d"></span>',
+			esc_attr( (string) get_post_meta( $post_id, self::REVIEWED, true ) ),
+			(int) get_post_meta( $post_id, self::INTERVAL, true ),
+			(int) get_post_meta( $post_id, self::REVIEWER, true )
+		);
+	}
+
+	/**
+	 * Render the three freshness fields in the Quick Edit form: last reviewed,
+	 * review interval and reviewer. Hooked once, on the review column.
+	 *
+	 * @param string $column_name Column being rendered.
+	 * @param string $post_type   Post type of the list.
+	 * @return void
+	 */
+	public function quick_edit_box( string $column_name, string $post_type ): void {
+		if ( Handbook::POST_TYPE !== $post_type || 'living_handbook_reviewed' !== $column_name ) {
+			return;
+		}
+		wp_nonce_field( 'living_handbook_quick_edit', 'living_handbook_qe_nonce' );
+		?>
+		<fieldset class="inline-edit-col-right">
+			<div class="inline-edit-col">
+				<label class="inline-edit-group">
+					<span class="title"><?php esc_html_e( 'Last reviewed', 'living-handbook' ); ?></span>
+					<input type="date" name="living_handbook_reviewed" value="">
+				</label>
+				<label class="inline-edit-group">
+					<span class="title"><?php esc_html_e( 'Review interval (days)', 'living-handbook' ); ?></span>
+					<input type="number" name="living_handbook_interval" min="0" step="1" value="">
+				</label>
+				<label class="inline-edit-group">
+					<span class="title"><?php esc_html_e( 'Reviewed by', 'living-handbook' ); ?></span>
+					<?php
+					wp_dropdown_users(
+						array(
+							'name'              => 'living_handbook_reviewer',
+							'show_option_none'  => __( 'none', 'living-handbook' ),
+							'option_none_value' => 0,
+						)
+					);
+					?>
+				</label>
+			</div>
+		</fieldset>
+		<?php
+	}
+
+	/**
+	 * Enqueue the Quick Edit prefill script, only on the handbook list screen.
+	 *
+	 * @param string $hook Current admin page hook.
+	 * @return void
+	 */
+	public function enqueue_quick_edit( string $hook ): void {
+		if ( 'edit.php' !== $hook ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( null === $screen || Handbook::POST_TYPE !== $screen->post_type ) {
+			return;
+		}
+		wp_enqueue_script(
+			'living-handbook-quick-edit',
+			LIVING_HANDBOOK_URL . 'assets/js/quick-edit.js',
+			array( 'jquery', 'inline-edit-post' ),
+			LIVING_HANDBOOK_VERSION,
+			true
+		);
+	}
+
+	/**
+	 * Save the three freshness fields submitted from Quick Edit. Guarded by its
+	 * own nonce, which is absent on a normal editor save and on bulk edit, so
+	 * this path runs for the inline Quick Edit only.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return void
+	 */
+	public function save_quick_edit( int $post_id ): void {
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+		if ( ! isset( $_POST['living_handbook_qe_nonce'] )
+			|| ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['living_handbook_qe_nonce'] ) ), 'living_handbook_quick_edit' ) ) {
+			return;
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		$reviewed = isset( $_POST['living_handbook_reviewed'] ) ? sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewed'] ) ) : '';
+		if ( '' !== $reviewed && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $reviewed ) ) {
+			$reviewed = '';
+		}
+		update_post_meta( $post_id, self::REVIEWED, $reviewed );
+
+		$interval = isset( $_POST['living_handbook_interval'] ) ? absint( $_POST['living_handbook_interval'] ) : 0;
+		update_post_meta( $post_id, self::INTERVAL, $interval );
+
+		$reviewer = isset( $_POST['living_handbook_reviewer'] ) ? absint( $_POST['living_handbook_reviewer'] ) : 0;
+		update_post_meta( $post_id, self::REVIEWER, $reviewer );
 	}
 }

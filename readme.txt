@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.15.0
+Stable tag: 0.16.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,10 @@ Access is set per handbook: public (no login), all logged-in members, or restric
 
 By default your content is kept and only the plugin's own settings and caches are removed. On the settings page you can opt in to remove everything the plugin created, including any templates you edited in the Site Editor.
 
+= What does the plugin store about visitors? =
+
+Very little, and nothing is sent anywhere. The "Was this helpful?" feedback records which logged-in users voted on a page (their user IDs) so it can count one vote per user; it accepts no vote from logged-out visitors. The counts and the voter list are stored as post meta in your own database and are removed with the content option when you delete the plugin.
+
 == Screenshots ==
 
 1. The handbook overview: a card for each handbook a visitor may read.
@@ -77,6 +81,16 @@ By default your content is kept and only the plugin's own settings and caches ar
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.16.0 =
+* Appearance: the handbook now follows your theme's colours. Surfaces, text and accent default to the theme's colour presets, and borders and secondary text are derived from them, so a dark theme, or a dark style variation a visitor selects, turns the cards, navigation and table of contents dark on their own. The stylesheet is consolidated and its breakpoints are documented.
+* The entry search and the on-page search field now take the surface colour with a thin border, matching the navigation and the table of contents, and stay legible on a dark theme.
+* Quick Edit: the last-reviewed date, the reviewer and the review interval can be set straight from the handbook page list, without opening each page.
+* The metadata footer places each person below its date instead of beside it.
+* Performance: the navigation and the area tiles load a whole handbook in a single query instead of one query per branch, and the shared list of readable handbooks is built in one place; the navigation cache is refreshed only for handbook changes.
+* Continuous integration runs the integration test suite automatically on push and pull request; the database service, WordPress core and the test config are set up in the workflow.
+* Privacy and housekeeping: the feedback counters use hidden meta keys (migrated automatically), the readme notes that a logged-in voter's user ID is stored, and the GitHub sync clears all of its scheduled events on deactivation.
+* Inserter and internationalisation: the handbook blocks carry a description and search keywords, and small fixes ("OK" now shows the sync date, the sync-failed marker is translatable).
 
 = 0.15.0 =
 * The import screen is reorganised into two steps: choose the target handbook, then pick one source in a tabbed switcher (paste, ZIP, or GitHub). Only the chosen source is shown, with a single import button, and the explanation moved into a collapsible help section.
@@ -150,7 +164,7 @@ By default your content is kept and only the plugin's own settings and caches ar
 
 = 0.5.0 =
 * Frontend design following the prototype: overview cards with a freshness dot, a bordered navigation tree, and styled metadata footer, badges and feedback.
-* Colours exposed as CSS custom properties for theme adaptation; see docs/customization.md.
+* Colours exposed as CSS custom properties for theme adaptation; see https://github.com/rfluethi/living-handbook/blob/main/docs/customization.md.
 
 = 0.4.0 =
 * Overview and navigation blocks, and a "Living Handbook" block category.
@@ -165,6 +179,9 @@ By default your content is kept and only the plugin's own settings and caches ar
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.16.0 =
+The handbook now follows your theme's colours, including dark mode. Search fields match the navigation, and you can set the review date, reviewer and interval from the page list via Quick Edit. Pre-release: best on a fresh database.
 
 = 0.15.0 =
 A clearer two-step import screen with a tabbed source switcher, an on-page Handbook search block, a Custom CSS field in the settings, a weekly default sync frequency for new installs, and a divider in the admin menu. Pre-release: best on a fresh database.

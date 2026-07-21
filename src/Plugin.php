@@ -118,6 +118,24 @@ final class Plugin {
 
 		// Future migrations keyed by the previously installed version go here.
 
+		global $wpdb;
+		// 0.16.0: the feedback counters and voter list moved to underscore-
+		// prefixed meta keys, so they no longer appear in the Custom Fields box.
+		// Rename any rows written before the change. Idempotent: once renamed,
+		// the old keys are gone.
+		$feedback_meta = array(
+			'living_handbook_feedback_yes'    => '_living_handbook_feedback_yes',
+			'living_handbook_feedback_no'     => '_living_handbook_feedback_no',
+			'living_handbook_feedback_voters' => '_living_handbook_feedback_voters',
+		);
+		foreach ( $feedback_meta as $old_key => $new_key ) {
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				$wpdb->postmeta,
+				array( 'meta_key' => $new_key ),
+				array( 'meta_key' => $old_key )
+			);
+		}
+
 		GitSync::reschedule();
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 	}

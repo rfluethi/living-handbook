@@ -26,6 +26,8 @@ The badge is not colour alone: each state has its own shape and a text label, so
 
 Open a page and find the **Handbook maintenance** meta box at the bottom of the editor. Set the responsible role, the last review date and the review interval there. When you review a page and it still holds, update the review date even though the content did not change: that is exactly the signal the freshness state exists to carry.
 
+For the common case, "I reviewed this today", you do not need to open the page: use **Quick Edit** in the handbook list (hover a row, then Quick Edit). It offers the last review date, the reviewer and the review interval inline, prefilled with the current values, so you can update the review of several pages quickly.
+
 On import, the review date and interval travel in the Markdown transport block (`Letzte Prüfung`, `Prüfintervall`) and are written into these fields. See [import and sync](import-and-sync.md).
 
 ## The overdue dashboard

@@ -18,16 +18,49 @@
 .living-handbook-feedback,
 .living-handbook-badge,
 .living-handbook-count,
-.living-handbook-empty {
-	--lh-accent: #2c5f8a;
-	--lh-accent-soft: #eaf1f8;
-	--lh-ok: #1e8449;
-	--lh-due: #b26a00;
-	--lh-overdue: #c0392b;
-	--lh-border: #e2e6ea;
-	--lh-muted: #76828d;
+.living-handbook-empty,
+.living-handbook-page-search {
+	/* Surfaces follow the active theme: the surface and its text default to the
+	   theme's own background and text presets, so a dark theme, or a dark style
+	   variation the visitor picks, turns the cards, navigation and TOC dark on
+	   their own. The hex values are fallbacks for themes that expose no such
+	   presets (many classic themes); there the plugin stays light. */
+	--lh-surface: var(--wp--preset--color--base, #fff);
+	--lh-surface-text: var(--wp--preset--color--contrast, #1d2327);
+	--lh-accent: var(--wp--preset--color--accent, var(--wp--preset--color--primary, #2c5f8a));
+	--lh-on-accent: #fff;      /* text on an accent-filled control */
+
+	/* Lines and secondary text are mixed from the surface and its text, so they
+	   track the surface on both light and dark themes (color-mix: modern
+	   browsers; older ones fall back to the surface colour). */
+	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
+	--lh-border-strong: color-mix(in srgb, var(--lh-surface-text) 48%, transparent);
+	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
+	--lh-accent-soft: color-mix(in srgb, var(--lh-accent) 12%, var(--lh-surface));
+
+	/* Status colours and badge chips keep fixed values: the chips are small,
+	   self-contained labels that stay legible as light stickers on any surface. */
+	--lh-ok: #176e3c;          /* "Reviewed" */
+	--lh-due: #8a5200;         /* "Review due" */
+	--lh-overdue: #c0392b;     /* "Review overdue" (escalation) */
+	--lh-badge-text: #5f6b75;  /* neutral chip label; fixed, not the surface muted */
+	--lh-badge-bg: #eef1f4;
+	--lh-badge-audience-bg: #f3eafc;
+	--lh-badge-audience-text: #6b3fa0;
+	--lh-badge-ok-bg: #e7f6ec;
+	--lh-badge-due-bg: #fdf0e0;
+	--lh-badge-overdue-bg: #fdecea;
 	--lh-sticky-top: 2rem;
 }
+
+/*
+ * Breakpoints used below, kept few and deliberate:
+ *   781px  the entry two-column layout and the nav collapse to one column
+ *          (matches the WordPress mobile breakpoint).
+ *   1000px the on-this-page table of contents switches between the desktop
+ *          side column (>= 1000px) and the mobile box above the content
+ *          (<= 999px).
+ */
 
 /* Give headings room below a sticky header when jumped to from the TOC. */
 
@@ -48,6 +81,8 @@
 	flex: 1;
 	padding: 0.85rem 1rem;
 	font-size: 1.05rem;
+	background: var(--lh-surface);
+	color: var(--lh-surface-text);
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 }
@@ -57,7 +92,7 @@
 	border: 0;
 	border-radius: 10px;
 	background: var(--lh-accent);
-	color: #fff;
+	color: var(--lh-on-accent);
 	cursor: pointer;
 }
 
@@ -84,7 +119,7 @@
 }
 
 .living-handbook-count {
-	color: #5a6772;
+	color: var(--lh-muted);
 	font-size: 0.85rem;
 	margin: 0 0 0.75rem;
 }
@@ -96,7 +131,8 @@
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 	padding: 0.75rem 0.9rem;
-	background: #fff;
+	background: var(--lh-surface);
+	color: var(--lh-surface-text);
 	position: sticky;
 	top: var(--lh-sticky-top, 2rem);
 }
@@ -163,7 +199,8 @@
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 	overflow: hidden;
-	background: #fff;
+	background: var(--lh-surface);
+	color: var(--lh-surface-text);
 	transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
@@ -193,7 +230,7 @@
 
 .living-handbook-card__excerpt {
 	font-size: 0.85rem;
-	color: #5a6772;
+	color: var(--lh-muted);
 	margin: 0 0 0.6rem;
 }
 
@@ -230,7 +267,7 @@
 .living-handbook-empty {
 	padding: 1.5rem;
 	text-align: center;
-	color: #5a6772;
+	color: var(--lh-muted);
 	border: 1px dashed var(--lh-border);
 	border-radius: 8px;
 }
@@ -387,7 +424,8 @@
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 	padding: 0.6rem 0.9rem;
-	background: #fff;
+	background: var(--lh-surface);
+	color: var(--lh-surface-text);
 }
 
 .living-handbook-toc--desktop {
@@ -477,9 +515,10 @@
 }
 
 .living-handbook-person {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
 	gap: 0.45rem;
+	margin-top: 0.35rem;
 }
 
 .living-handbook-person__avatar {
@@ -499,8 +538,8 @@
 	padding: 0.15rem 0.5rem;
 	font-size: 0.72rem;
 	font-weight: 600;
-	background: #eef1f4;
-	color: var(--lh-muted);
+	background: var(--lh-badge-bg);
+	color: var(--lh-badge-text);
 }
 
 .living-handbook-badge--type {
@@ -509,22 +548,22 @@
 }
 
 .living-handbook-badge--audience {
-	background: #f3eafc;
-	color: #6b3fa0;
+	background: var(--lh-badge-audience-bg);
+	color: var(--lh-badge-audience-text);
 }
 
 .living-handbook-badge--ok {
-	background: #e7f6ec;
+	background: var(--lh-badge-ok-bg);
 	color: var(--lh-ok);
 }
 
 .living-handbook-badge--due {
-	background: #fdf0e0;
+	background: var(--lh-badge-due-bg);
 	color: var(--lh-due);
 }
 
 .living-handbook-badge--overdue {
-	background: #fdecea;
+	background: var(--lh-badge-overdue-bg);
 	color: var(--lh-overdue);
 }
 
@@ -555,22 +594,13 @@
 	color: var(--lh-accent);
 }
 
-/* List display: overview and entry can render their cards as a single column
- * instead of a grid (block setting "Display: List"). */
+/* List display: overview and entry render their cards as a single column of
+ * flat rows instead of a card grid (block setting "Display: List"). The row
+ * look itself is defined once, further down. */
 
 .living-handbook-overview--list .living-handbook-cards,
 .living-handbook-entry--list .living-handbook-cards {
 	display: block;
-}
-
-.living-handbook-overview--list .living-handbook-card,
-.living-handbook-entry--list .living-handbook-card {
-	margin: 0 0 0.6rem;
-}
-
-.living-handbook-overview--list .living-handbook-card__link,
-.living-handbook-entry--list .living-handbook-card__link {
-	padding: 0.6rem 0.9rem;
 }
 
 /* AJAX filtering: dim the result column while the new list is loading. */
@@ -632,11 +662,6 @@
 .living-handbook-entry--list .living-handbook-card__title {
 	font-size: 1rem;
 	margin: 0 0 0.1rem;
-}
-
-.living-handbook-overview--list .living-handbook-card__excerpt,
-.living-handbook-entry--list .living-handbook-card__excerpt {
-	display: none;
 }
 
 /* Handbook menu: mobile toggle. On wide screens the list shows inline and the
@@ -721,27 +746,6 @@
 	}
 }
 
-/* Contrast (WCAG 1.4.3): darken the muted grey so small secondary text clears
- * AA (4.5:1 on white). The previous value #76828d was about 3.9:1. Revert this
- * block if it clashes with your theme. */
-.living-handbook-overview,
-.living-handbook-entry,
-.living-handbook-cards,
-.living-handbook-card,
-.living-handbook-layout,
-.living-handbook-sidebar,
-.living-handbook-aside,
-.living-handbook-nav,
-.living-handbook-toc,
-.living-handbook-badges,
-.living-handbook-meta,
-.living-handbook-feedback,
-.living-handbook-badge,
-.living-handbook-count,
-.living-handbook-empty {
-	--lh-muted: #5f6b75;
-}
-
 /* Handbook navigation: the arrow link to the handbook start page, sitting next
  * to the collapsible title. The title (summary) only opens or closes the tree;
  * this arrow is the way back to the handbook start page. */
@@ -798,30 +802,6 @@
 	color: var(--lh-overdue, #c0392b);
 }
 
-/* Contrast (WCAG 1.4.3): darken the "review due" and "reviewed" tones so the
- * badge text clears AA on its tinted background, and give form controls a
- * border that clears 3:1 against white (WCAG 1.4.11). */
-.living-handbook-overview,
-.living-handbook-entry,
-.living-handbook-cards,
-.living-handbook-card,
-.living-handbook-layout,
-.living-handbook-sidebar,
-.living-handbook-aside,
-.living-handbook-nav,
-.living-handbook-toc,
-.living-handbook-badges,
-.living-handbook-meta,
-.living-handbook-feedback,
-.living-handbook-badge,
-.living-handbook-count,
-.living-handbook-empty {
-	--lh-due: #8a5200;
-	--lh-ok: #176e3c;
-	--lh-border-strong: #6b7784;
-}
-
-.living-handbook-start__search .living-handbook-search__input,
 .living-handbook-reset,
 .living-handbook-feedback button,
 .living-handbook-menu__toggle {
@@ -863,16 +843,25 @@
 	margin: 0 0 1.25rem;
 }
 
-.living-handbook-page-search__input {
+.living-handbook-page-search .living-handbook-page-search__input {
 	width: 100%;
 	box-sizing: border-box;
 	padding: 0.85rem 1rem;
 	font-size: 1.05rem;
-	border: 1px solid var(--lh-border-strong, #6b7784);
+	background: var(--lh-surface, #fff);
+	color: var(--lh-surface-text, #1d2327);
+	border: 1px solid var(--lh-border, #e2e6ea);
 	border-radius: 10px;
 }
 
-.living-handbook-page-search__input:focus-visible {
+/* Placeholder text follows the surface's muted tone, so it stays legible on a
+ * dark surface too. */
+.living-handbook-search__input::placeholder,
+.living-handbook-page-search__input::placeholder {
+	color: var(--lh-muted);
+}
+
+.living-handbook-page-search .living-handbook-page-search__input:focus-visible {
 	outline: 2px solid var(--lh-accent, #2c5f8a);
 	outline-offset: 2px;
 }
@@ -934,7 +923,7 @@
 .living-handbook-pagination .page-numbers.current {
 	background: var(--lh-accent, #2c5f8a);
 	border-color: var(--lh-accent, #2c5f8a);
-	color: #fff;
+	color: var(--lh-on-accent, #fff);
 }
 
 /* Touch targets (WCAG 2.5.8): keep the small controls at least 24px high, with

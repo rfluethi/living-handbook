@@ -1,6 +1,9 @@
 name: Integration
 
 on:
+  push:
+    branches: [ main ]
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -37,15 +40,29 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      # wp-phpunit needs a test config that defines the database constants.
-      # It ships a sample; copy it and point the DB settings at the service.
-      - name: Prepare wp-tests-config
+      # wp-phpunit ships the test framework but not WordPress itself, so a core
+      # checkout is needed for ABSPATH. This mirrors the local recipe in
+      # CONTRIBUTING.md.
+      - name: Download WordPress core
+        run: git clone --depth=1 https://github.com/WordPress/WordPress.git /tmp/wordpress
+
+      - name: Write wp-tests-config
         run: |
-          cp vendor/wp-phpunit/wp-phpunit/wp-tests-config-sample.php wp-tests-config.php
-          sed -i "s/youremptytestdbnamehere/wordpress_test/" wp-tests-config.php
-          sed -i "s/yourusernamehere/root/" wp-tests-config.php
-          sed -i "s/yourpasswordhere/root/" wp-tests-config.php
-          sed -i "s|localhost|127.0.0.1:3306|" wp-tests-config.php
+          cat > wp-tests-config.php <<'PHP'
+          <?php
+          define( 'ABSPATH', '/tmp/wordpress/' );
+          define( 'DB_NAME', 'wordpress_test' );
+          define( 'DB_USER', 'root' );
+          define( 'DB_PASSWORD', 'root' );
+          define( 'DB_HOST', '127.0.0.1:3306' );
+          define( 'DB_CHARSET', 'utf8' );
+          define( 'DB_COLLATE', '' );
+          $table_prefix = 'wptests_';
+          define( 'WP_TESTS_DOMAIN', 'example.org' );
+          define( 'WP_TESTS_EMAIL', 'admin@example.org' );
+          define( 'WP_TESTS_TITLE', 'Test' );
+          define( 'WP_PHP_BINARY', 'php' );
+          PHP
 
       - name: Run integration tests
         env:

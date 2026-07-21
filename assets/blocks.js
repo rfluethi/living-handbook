@@ -10,6 +10,9 @@
 	var ToggleControl = components ? components.ToggleControl : null;
 	var RangeControl = components ? components.RangeControl : null;
 
+	// Shared inserter search terms so the handbook blocks are easy to find.
+	var keywords = [ __( 'handbook', 'living-handbook' ), __( 'living handbook', 'living-handbook' ), __( 'documentation', 'living-handbook' ) ];
+
 	// These blocks render their own markup in PHP and do not apply the editor's
 	// design controls, so the design panels (colour, typography, spacing,
 	// additional CSS class, HTML edit, anchor) are turned off. The editor reads
@@ -62,6 +65,8 @@
 		blocks.registerBlockType( name, {
 			apiVersion: 3,
 			title: title,
+			description: text,
+			keywords: keywords,
 			category: 'living-handbook',
 			icon: icon,
 			supports: SUPPORTS,
@@ -77,6 +82,8 @@
 	blocks.registerBlockType( 'living-handbook/overview', {
 		apiVersion: 3,
 		title: __( 'Handbook overview', 'living-handbook' ),
+		description: __( 'Lists the handbooks a visitor may read.', 'living-handbook' ),
+		keywords: keywords,
 		category: 'living-handbook',
 		icon: 'book',
 		supports: SUPPORTS,
@@ -102,6 +109,8 @@
 	blocks.registerBlockType( 'living-handbook/navigation', {
 		apiVersion: 3,
 		title: __( 'Handbook navigation', 'living-handbook' ),
+		description: __( 'Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings.', 'living-handbook' ),
+		keywords: keywords,
 		category: 'living-handbook',
 		icon: 'list-view',
 		supports: SUPPORTS,
@@ -135,6 +144,8 @@
 	blocks.registerBlockType( 'living-handbook/toc', {
 		apiVersion: 3,
 		title: __( 'Table of Contents', 'living-handbook' ),
+		description: __( 'Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.', 'living-handbook' ),
+		keywords: keywords,
 		category: 'living-handbook',
 		icon: 'editor-ol',
 		supports: SUPPORTS,
@@ -185,6 +196,8 @@
 	blocks.registerBlockType( 'living-handbook/pagemeta', {
 		apiVersion: 3,
 		title: __( 'Handbook page meta', 'living-handbook' ),
+		description: __( 'Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings.', 'living-handbook' ),
+		keywords: keywords,
 		category: 'living-handbook',
 		icon: 'info-outline',
 		supports: SUPPORTS,
@@ -214,6 +227,8 @@
 	blocks.registerBlockType( 'living-handbook/entry', {
 		apiVersion: 3,
 		title: __( 'Handbook entry', 'living-handbook' ),
+		description: __( 'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.', 'living-handbook' ),
+		keywords: keywords,
 		category: 'living-handbook',
 		icon: 'welcome-learn-more',
 		supports: SUPPORTS,
@@ -236,6 +251,8 @@
 	blocks.registerBlockType( 'living-handbook/menu', {
 		apiVersion: 3,
 		title: __( 'Handbook menu', 'living-handbook' ),
+		description: __( 'A compact list of the handbooks a visitor may read.', 'living-handbook' ),
+		keywords: keywords,
 		category: 'living-handbook',
 		icon: 'menu',
 		supports: SUPPORTS,

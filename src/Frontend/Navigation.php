@@ -30,7 +30,6 @@ namespace LivingHandbook\Frontend;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use WP_Post;
-use WP_Query;
 use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -71,7 +70,9 @@ final class Navigation {
 			$open_ids[] = $current;
 		}
 
-		$tree = self::branch( 0, $term_id, $current, $open_ids );
+		// One query for the whole handbook; the tree is built from the map.
+		$map  = PageTree::children_map( $term_id );
+		$tree = self::branch( 0, $map, $current, $open_ids );
 		if ( '' === $tree ) {
 			return '';
 		}
@@ -128,6 +129,20 @@ final class Navigation {
 	}
 
 	/**
+	 * Invalidate only when the changed post is a handbook page, so the generic
+	 * trashed_post and untrashed_post hooks (which fire for every post type) do
+	 * not bump the cache on unrelated content.
+	 *
+	 * @param int $post_id The changed post ID.
+	 * @return void
+	 */
+	public static function invalidate_for_post( int $post_id ): void {
+		if ( Handbook::POST_TYPE === get_post_type( $post_id ) ) {
+			self::invalidate();
+		}
+	}
+
+	/**
 	 * Render the navigation for the handbook a page belongs to.
 	 *
 	 * @param int    $post_id Current post ID.
@@ -146,41 +161,22 @@ final class Navigation {
 	/**
 	 * Recursively build the list markup for one branch of the tree.
 	 *
-	 * @param int   $parent_id Parent post ID (0 for the top level).
-	 * @param int   $term_id   Handbook term ID.
-	 * @param int   $current   The current page ID (0 when not on a page).
-	 * @param int[] $open_ids  Page IDs on the path to the current page.
+	 * @param int                             $parent_id Parent post ID (0 for the top level).
+	 * @param array<int, array<int, WP_Post>> $map       Parent-to-children map from PageTree.
+	 * @param int                             $current   The current page ID (0 when not on a page).
+	 * @param int[]                           $open_ids  Page IDs on the path to the current page.
 	 * @return string
 	 */
-	private static function branch( int $parent_id, int $term_id, int $current, array $open_ids ): string {
-		$query = new WP_Query(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_parent'    => $parent_id,
-				'posts_per_page' => -1,
-				'post_status'    => 'publish',
-				'orderby'        => array(
-					'menu_order' => 'ASC',
-					'title'      => 'ASC',
-				),
-				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-					array(
-						'taxonomy' => Handbooks::TAXONOMY,
-						'field'    => 'term_id',
-						'terms'    => $term_id,
-					),
-				),
-			)
-		);
+	private static function branch( int $parent_id, array $map, int $current, array $open_ids ): string {
+		$posts = $map[ $parent_id ] ?? array();
 
 		$out = '';
-		foreach ( $query->posts as $post ) {
+		foreach ( $posts as $post ) {
 			if ( ! $post instanceof WP_Post ) {
 				continue;
 			}
 			$pid          = (int) $post->ID;
-			$children     = self::branch( $pid, $term_id, $current, $open_ids );
+			$children     = self::branch( $pid, $map, $current, $open_ids );
 			$has_children = '' !== $children;
 			$is_open      = $has_children && in_array( $pid, $open_ids, true );
 			$title        = get_the_title( $post );

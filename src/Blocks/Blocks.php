@@ -46,8 +46,8 @@ final class Blocks {
 		// Invalidate the cached per-handbook navigation markup when a handbook
 		// page or a handbook term changes.
 		add_action( 'save_post_' . Handbook::POST_TYPE, array( Navigation::class, 'invalidate' ) );
-		add_action( 'trashed_post', array( Navigation::class, 'invalidate' ) );
-		add_action( 'untrashed_post', array( Navigation::class, 'invalidate' ) );
+		add_action( 'trashed_post', array( Navigation::class, 'invalidate_for_post' ) );
+		add_action( 'untrashed_post', array( Navigation::class, 'invalidate_for_post' ) );
 		add_action( 'created_' . Handbooks::TAXONOMY, array( Navigation::class, 'invalidate' ) );
 		add_action( 'edited_' . Handbooks::TAXONOMY, array( Navigation::class, 'invalidate' ) );
 		add_action( 'delete_' . Handbooks::TAXONOMY, array( Navigation::class, 'invalidate' ) );
@@ -301,6 +301,11 @@ final class Blocks {
 			'Diagram title (caption)',
 			'Diagram description (for screen readers)',
 			'mermaid.min.js is missing in assets/js/.',
+			'handbook',
+			'living handbook',
+			'documentation',
+			'Lists the handbooks a visitor may read.',
+			'A compact list of the handbooks a visitor may read.',
 		);
 	}
 

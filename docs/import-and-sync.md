@@ -72,6 +72,8 @@ There is no webhook. WordPress pulls: on save, on demand (Sync now), and on a ba
 
 A large handbook is synced in batches rather than all at once, so a single request never has to fetch every page.
 
+The pull on save runs inside the save request: saving a GitHub-synced page fetches the source and re-renders it before the save returns, so the new content is visible right away. The trade-off is that the save waits for the network round-trip to GitHub. For normal page sizes this is not noticeable; only if a source were unusually large or the network very slow could a save feel slow. Moving this pull into a background event (so the save returns at once and the content updates a moment later) is noted as a possible future change; it is not done today because it would break the "pulled when you save" behaviour that makes the editor show the fetched content immediately.
+
 ### When a sync fails
 
 A failed pull is recorded on the page and flagged. An admin notice on the handbook screens tells you how many pages could not be synced; open a page and look at "Last sync" in the Source box for the reason (a rate limit, an HTTP error, an unreachable host). The page keeps its previous content, so a failed sync never empties a page.

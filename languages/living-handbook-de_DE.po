@@ -325,8 +325,8 @@ msgstr "Fehler: "
 msgid "Error: HTTP "
 msgstr "Fehler: HTTP "
 
-msgid "OK "
-msgstr "OK "
+msgid "OK %s"
+msgstr "OK %s"
 
 msgid "Error: source host not allowed."
 msgstr "Fehler: Quell-Host nicht erlaubt."
@@ -866,3 +866,18 @@ msgstr "Melde dich an, um mehr zu sehen."
 
 msgid "Importing page %1$d of %2$d …"
 msgstr "Importiere Seite %1$d von %2$d …"
+
+msgid "handbook"
+msgstr "Handbuch"
+
+msgid "living handbook"
+msgstr "Living Handbook"
+
+msgid "documentation"
+msgstr "Dokumentation"
+
+msgid "Lists the handbooks a visitor may read."
+msgstr "Listet die Handbücher auf, die eine Besucherin lesen darf."
+
+msgid "A compact list of the handbooks a visitor may read."
+msgstr "Eine kompakte Liste der Handbücher, die eine Besucherin lesen darf."

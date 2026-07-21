@@ -171,15 +171,13 @@ final class GitSync {
 	}
 
 	/**
-	 * Clear the scheduled sync.
+	 * Clear the scheduled sync. Clears every event for the hook, including any
+	 * one-off follow-up runs, so no straggler is left behind.
 	 *
 	 * @return void
 	 */
 	public static function unschedule(): void {
-		$timestamp = wp_next_scheduled( self::CRON_HOOK );
-		if ( false !== $timestamp ) {
-			wp_unschedule_event( $timestamp, self::CRON_HOOK );
-		}
+		wp_clear_scheduled_hook( self::CRON_HOOK );
 	}
 
 	/**
@@ -782,7 +780,14 @@ final class GitSync {
 
 		update_post_meta( $post_id, Metadata::UPDATED, current_time( 'Y-m-d' ) );
 		delete_post_meta( $post_id, self::META_ERROR );
-		$this->set_status( $post_id, __( 'OK ', 'living-handbook' ) . current_time( 'Y-m-d H:i' ) );
+		$this->set_status(
+			$post_id,
+			sprintf(
+				/* translators: %s: date and time of the successful sync. */
+				__( 'OK %s', 'living-handbook' ),
+				current_time( 'Y-m-d H:i' )
+			)
+		);
 	}
 
 	/**

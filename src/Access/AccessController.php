@@ -300,6 +300,36 @@ final class AccessController {
 	}
 
 	/**
+	 * The handbook terms the given user may view, as full term objects.
+	 *
+	 * The single source for the three frontend lists of readable handbooks (the
+	 * overview cards, the compact menu, and the navigation-block links), so the
+	 * "load all handbooks, keep the ones this user may read" step lives in one
+	 * place. Each caller renders the returned terms in its own markup.
+	 *
+	 * @param int $user_id User ID (0 for a guest).
+	 * @return array<int, WP_Term>
+	 */
+	public static function readable_terms( int $user_id ): array {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => Handbooks::TAXONOMY,
+				'hide_empty' => false,
+			)
+		);
+		if ( is_wp_error( $terms ) ) {
+			return array();
+		}
+		$readable = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term && self::can_view_term( $term->term_id, $user_id ) ) {
+				$readable[] = $term;
+			}
+		}
+		return $readable;
+	}
+
+	/**
 	 * Whether a user may view a handbook page.
 	 *
 	 * A page may belong to more than one handbook. Access is combined

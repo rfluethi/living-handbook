@@ -158,8 +158,8 @@ final class Cards {
 	/**
 	 * Render the top-level pages of a handbook as area tiles.
 	 *
-	 * The tiles walk the hierarchy (one query for the top level plus one per top
-	 * page to count children), so the rendered markup is cached per handbook and
+	 * The whole handbook is loaded in one query (PageTree) and the child counts
+	 * are read from that map, so the rendered markup is cached per handbook and
 	 * reused until a handbook page or term changes. The cache shares the version
 	 * counter that Navigation::invalidate() bumps.
 	 *
@@ -177,7 +177,8 @@ final class Cards {
 			return $cached;
 		}
 
-		$tops = self::child_pages( 0, $term_id );
+		$map  = PageTree::children_map( $term_id );
+		$tops = $map[0] ?? array();
 		if ( empty( $tops ) ) {
 			set_transient( $cache_key, '', HOUR_IN_SECONDS );
 			return '';
@@ -185,7 +186,7 @@ final class Cards {
 
 		$out = '<div class="living-handbook-cards living-handbook-cards--areas">';
 		foreach ( $tops as $post ) {
-			$children = count( self::child_pages( $post->ID, $term_id ) );
+			$children = count( $map[ (int) $post->ID ] ?? array() );
 			$excerpt  = has_excerpt( $post->ID )
 				? wp_strip_all_tags( get_the_excerpt( $post->ID ) )
 				: wp_trim_words( wp_strip_all_tags( (string) $post->post_content ), 18 );
@@ -238,44 +239,6 @@ final class Cards {
 			$excerpt,
 			esc_html( $count_label )
 		);
-	}
-
-	/**
-	 * Return the published child pages of a page within a handbook.
-	 *
-	 * @param int $parent_id Parent post ID (0 for the top level).
-	 * @param int $term_id   Handbook term ID.
-	 * @return array<int, WP_Post>
-	 */
-	private static function child_pages( int $parent_id, int $term_id ): array {
-		$query = new WP_Query(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_parent'    => $parent_id,
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'no_found_rows'  => true,
-				'orderby'        => array(
-					'menu_order' => 'ASC',
-					'title'      => 'ASC',
-				),
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-					array(
-						'taxonomy' => Handbooks::TAXONOMY,
-						'field'    => 'term_id',
-						'terms'    => $term_id,
-					),
-				),
-			)
-		);
-
-		$posts = array();
-		foreach ( $query->posts as $post ) {
-			if ( $post instanceof WP_Post ) {
-				$posts[] = $post;
-			}
-		}
-		return $posts;
 	}
 
 	/**

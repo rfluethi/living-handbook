@@ -29,13 +29,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Feedback {
 
-	public const YES = 'living_handbook_feedback_yes';
-	public const NO  = 'living_handbook_feedback_no';
+	public const YES = '_living_handbook_feedback_yes';
+	public const NO  = '_living_handbook_feedback_no';
 
 	/**
 	 * Meta key holding the list of user IDs that already voted on a page.
 	 */
-	public const VOTERS = 'living_handbook_feedback_voters';
+	public const VOTERS = '_living_handbook_feedback_voters';
 
 	/**
 	 * Hook registration into WordPress.
