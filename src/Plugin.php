@@ -46,7 +46,7 @@ final class Plugin {
 	/**
 	 * Option that stores the version the database was last set up for.
 	 */
-	private const DB_VERSION_OPTION = 'living_handbook_db_version';
+	public const DB_VERSION_OPTION = 'living_handbook_db_version';
 
 	/**
 	 * Singleton instance.

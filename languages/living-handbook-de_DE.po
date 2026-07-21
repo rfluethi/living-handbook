@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-21T08:44:47+00:00\n"
+"POT-Creation-Date: 2026-07-21T10:37:50+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -177,7 +177,7 @@ msgid "No matches. Adjust the filters or the search."
 msgstr "Keine Treffer. Passe die Filter oder die Suche an."
 
 # Menu labels and taxonomy label set (batch: backend menu and labels)
-#: src/Frontend/Filters.php:528 src/Git/GitSync.php:643
+#: src/Frontend/Filters.php:528 src/Git/GitSync.php:631
 #: src/PostType/Handbook.php:76
 msgid "Handbook pages"
 msgstr "Handbuch-Seiten"
@@ -291,39 +291,35 @@ msgid ""
 msgstr ""
 
 #: src/Git/GitSync.php:124
-msgid "Once weekly"
-msgstr "Einmal wöchentlich"
-
-#: src/Git/GitSync.php:138
 msgid "Off (only on save and Sync now)"
 msgstr "Aus (nur beim Speichern und über «Jetzt synchronisieren»)"
 
-#: src/Git/GitSync.php:139
+#: src/Git/GitSync.php:125
 msgid "Hourly"
 msgstr "Stündlich"
 
-#: src/Git/GitSync.php:140
+#: src/Git/GitSync.php:126
 msgid "Twice daily"
 msgstr "Zweimal täglich"
 
-#: src/Git/GitSync.php:141
+#: src/Git/GitSync.php:127
 msgid "Daily"
 msgstr "Täglich"
 
-#: src/Git/GitSync.php:142
+#: src/Git/GitSync.php:128
 msgid "Weekly"
 msgstr "Wöchentlich"
 
-#: src/Git/GitSync.php:281
+#: src/Git/GitSync.php:268
 msgid "GitHub page"
 msgstr "GitHub-Seite"
 
 # GitHub sync: folder import and pull errors. Source strings live in src/Git/GitSync.php.
-#: src/Git/GitSync.php:346
+#: src/Git/GitSync.php:333
 msgid "Not a GitHub folder URL."
 msgstr "Keine GitHub-Ordner-URL."
 
-#: src/Git/GitSync.php:369
+#: src/Git/GitSync.php:357
 msgid ""
 "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try "
 "again later."
@@ -332,41 +328,41 @@ msgstr ""
 "Versuche es später erneut."
 
 #. translators: %d: HTTP status code returned by the GitHub API.
-#: src/Git/GitSync.php:372
+#: src/Git/GitSync.php:360
 #, php-format
 msgid "GitHub API HTTP %d"
 msgstr "GitHub-API HTTP %d"
 
-#: src/Git/GitSync.php:376
+#: src/Git/GitSync.php:364
 msgid "Unexpected GitHub API response."
 msgstr "Unerwartete Antwort der GitHub-API."
 
 # GitHub sync: source box
-#: src/Git/GitSync.php:478 src/Git/GitSync.php:861
+#: src/Git/GitSync.php:466 src/Git/GitSync.php:850
 msgid "Source"
 msgstr "Quelle"
 
-#: src/Git/GitSync.php:500
+#: src/Git/GitSync.php:488
 msgid "Maintained in WordPress"
 msgstr "In WordPress gepflegt"
 
-#: src/Git/GitSync.php:501
+#: src/Git/GitSync.php:489
 msgid "Synced from GitHub"
 msgstr "Aus GitHub synchronisiert"
 
-#: src/Git/GitSync.php:503
+#: src/Git/GitSync.php:491
 msgid "Markdown source (raw or blob URL)"
 msgstr "Markdown-Quelle (Raw- oder Blob-URL)"
 
-#: src/Git/GitSync.php:508
+#: src/Git/GitSync.php:496
 msgid "Sync now"
 msgstr "Jetzt synchronisieren"
 
-#: src/Git/GitSync.php:512
+#: src/Git/GitSync.php:500
 msgid "Last sync:"
 msgstr "Letzter Sync:"
 
-#: src/Git/GitSync.php:514
+#: src/Git/GitSync.php:502
 msgid ""
 "A GitHub page is pulled when you save it, and its content editor is locked. "
 "Change the source here."
@@ -374,7 +370,7 @@ msgstr ""
 "Eine GitHub-Seite wird beim Speichern gezogen, und ihr Inhalts-Editor ist "
 "gesperrt. Die Quelle änderst du hier."
 
-#: src/Git/GitSync.php:591
+#: src/Git/GitSync.php:579
 msgid ""
 "This page is synced from GitHub. Its content is managed in the repository "
 "and cannot be edited here."
@@ -383,7 +379,7 @@ msgstr ""
 "gepflegt und kann hier nicht bearbeitet werden."
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:633
+#: src/Git/GitSync.php:621
 #, php-format
 msgid ""
 "Living Handbook: %d GitHub page could not be synced. Open it to see the "
@@ -398,48 +394,48 @@ msgstr[1] ""
 "Living Handbook: %d GitHub-Seiten konnten nicht synchronisiert werden. Öffne "
 "sie, um den Fehler zu sehen."
 
-#: src/Git/GitSync.php:656
+#: src/Git/GitSync.php:644
 msgid "You are not allowed to do this."
 msgstr "Dazu bist du nicht berechtigt."
 
 # GitHub sync: status messages
-#: src/Git/GitSync.php:731
+#: src/Git/GitSync.php:719
 msgid "Error: CommonMark is not installed."
 msgstr "Fehler: CommonMark ist nicht installiert."
 
-#: src/Git/GitSync.php:739
+#: src/Git/GitSync.php:727
 msgid "Error: source host not allowed."
 msgstr "Fehler: Quell-Host nicht erlaubt."
 
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
-#: src/Git/GitSync.php:751 assets/js/markdown-import.js:196
+#: src/Git/GitSync.php:740 assets/js/markdown-import.js:196
 #: assets/js/markdown-import.js:274
 #, php-format
 msgid "Error: %s"
 msgstr "Fehler: %s"
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:757
+#: src/Git/GitSync.php:746
 #, php-format
 msgid "Error: HTTP %d"
 msgstr "Fehler: HTTP %d"
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:787
+#: src/Git/GitSync.php:776
 #, php-format
 msgid "OK %s"
 msgstr "OK %s"
 
-#: src/Git/GitSync.php:877 src/Import/MarkdownImportPage.php:737
+#: src/Git/GitSync.php:866 src/Import/MarkdownImportPage.php:769
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/Git/GitSync.php:877
+#: src/Git/GitSync.php:866
 msgid "WordPress"
 msgstr "WordPress"
 
-#: src/Git/GitSync.php:881
+#: src/Git/GitSync.php:870
 msgid "(sync failed)"
 msgstr "(Sync fehlgeschlagen)"
 
@@ -507,8 +503,8 @@ msgstr "Handbuch"
 msgid "Markdown import"
 msgstr "Markdown-Import"
 
-#: src/Import/MarkdownImportPage.php:83 src/Import/MarkdownImportPage.php:679
-#: src/Import/MarkdownImportPage.php:692
+#: src/Import/MarkdownImportPage.php:83 src/Import/MarkdownImportPage.php:711
+#: src/Import/MarkdownImportPage.php:724
 msgid "Import"
 msgstr "Import"
 
@@ -585,7 +581,7 @@ msgstr "Seite konnte nicht erstellt werden. Prüfe die URL."
 msgid "Imported page"
 msgstr "Importierte Seite"
 
-#: src/Import/MarkdownImportPage.php:680
+#: src/Import/MarkdownImportPage.php:712
 msgid ""
 "The Markdown library is missing. Run in the plugin folder: composer require "
 "league/commonmark"
@@ -593,19 +589,19 @@ msgstr ""
 "Die Markdown-Bibliothek fehlt. Im Plugin-Ordner ausführen: composer require "
 "league/commonmark"
 
-#: src/Import/MarkdownImportPage.php:702
+#: src/Import/MarkdownImportPage.php:734
 msgid "1. Target"
 msgstr "1. Ziel"
 
-#: src/Import/MarkdownImportPage.php:706
+#: src/Import/MarkdownImportPage.php:738
 msgid "Target handbook"
 msgstr "Ziel-Handbuch"
 
-#: src/Import/MarkdownImportPage.php:709
+#: src/Import/MarkdownImportPage.php:741
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
-#: src/Import/MarkdownImportPage.php:716
+#: src/Import/MarkdownImportPage.php:748
 msgid ""
 "Applied to the imported page(s). A \"Handbuch\" line in the transport block "
 "overrides it."
@@ -613,16 +609,16 @@ msgstr ""
 "Gilt für die importierte(n) Seite(n). Eine «Handbuch»-Zeile im Transport-"
 "Block hat Vorrang."
 
-#: src/Import/MarkdownImportPage.php:718
+#: src/Import/MarkdownImportPage.php:750
 msgid "No handbooks yet. Create one first under Handbook, Handbooks."
 msgstr ""
 "Noch keine Handbücher. Lege zuerst eines unter Handbuch, Handbücher an."
 
-#: src/Import/MarkdownImportPage.php:723
+#: src/Import/MarkdownImportPage.php:755
 msgid "Page title (optional)"
 msgstr "Seitentitel (optional)"
 
-#: src/Import/MarkdownImportPage.php:726
+#: src/Import/MarkdownImportPage.php:758
 msgid ""
 "For a pasted draft or a single GitHub file. If empty, the first heading is "
 "used. For a ZIP, a GitHub folder, or a mkdocs.yml, each file keeps its own "
@@ -632,39 +628,39 @@ msgstr ""
 "wird die erste Überschrift verwendet. Bei einem ZIP, einem GitHub-Ordner "
 "oder einer mkdocs.yml behält jede Datei ihren eigenen Titel."
 
-#: src/Import/MarkdownImportPage.php:731
+#: src/Import/MarkdownImportPage.php:763
 msgid "2. Source"
 msgstr "2. Quelle"
 
-#: src/Import/MarkdownImportPage.php:732
+#: src/Import/MarkdownImportPage.php:764
 msgid "Choose one source, then import."
 msgstr "Eine Quelle wählen, dann importieren."
 
-#: src/Import/MarkdownImportPage.php:734
+#: src/Import/MarkdownImportPage.php:766
 msgid "Import source"
 msgstr "Importquelle"
 
-#: src/Import/MarkdownImportPage.php:735
+#: src/Import/MarkdownImportPage.php:767
 msgid "Paste text"
 msgstr "Text einfügen"
 
-#: src/Import/MarkdownImportPage.php:736 src/Import/MarkdownImportPage.php:747
+#: src/Import/MarkdownImportPage.php:768 src/Import/MarkdownImportPage.php:779
 msgid "ZIP file"
 msgstr "ZIP-Datei"
 
-#: src/Import/MarkdownImportPage.php:741
+#: src/Import/MarkdownImportPage.php:773
 msgid "Paste Markdown"
 msgstr "Markdown einfügen"
 
-#: src/Import/MarkdownImportPage.php:742
+#: src/Import/MarkdownImportPage.php:774
 msgid "Paste a Markdown draft here"
 msgstr "Hier einen Markdown-Entwurf einfügen"
 
-#: src/Import/MarkdownImportPage.php:743
+#: src/Import/MarkdownImportPage.php:775
 msgid "Import Markdown"
 msgstr "Markdown importieren"
 
-#: src/Import/MarkdownImportPage.php:749
+#: src/Import/MarkdownImportPage.php:781
 msgid ""
 "Flat set of .md files, or a repository export with a mkdocs.yml for a "
 "structured import."
@@ -672,21 +668,21 @@ msgstr ""
 "Flacher Satz von .md-Dateien, oder ein Repository-Export mit einer "
 "mkdocs.yml für einen strukturierten Import."
 
-#: src/Import/MarkdownImportPage.php:750
+#: src/Import/MarkdownImportPage.php:782
 msgid "Import ZIP"
 msgstr "ZIP importieren"
 
-#: src/Import/MarkdownImportPage.php:754
+#: src/Import/MarkdownImportPage.php:786
 msgid "GitHub URL"
 msgstr "GitHub-URL"
 
-#: src/Import/MarkdownImportPage.php:756
+#: src/Import/MarkdownImportPage.php:788
 msgid "Creates locked pages pulled from a public GitHub repository."
 msgstr ""
 "Legt gesperrte Seiten an, die aus einem öffentlichen GitHub-Repository "
 "gezogen werden."
 
-#: src/Import/MarkdownImportPage.php:757
+#: src/Import/MarkdownImportPage.php:789
 msgid "Import from GitHub"
 msgstr "Aus GitHub importieren"
 
@@ -1277,6 +1273,9 @@ msgstr "Diagramm-Titel (Bildunterschrift)"
 #: assets/js/mermaid-block.js:110
 msgid "Diagram description (for screen readers)"
 msgstr "Diagramm-Beschreibung (für Screenreader)"
+
+#~ msgid "Once weekly"
+#~ msgstr "Einmal wöchentlich"
 
 #~ msgid "Responsible roles"
 #~ msgstr "Verantwortliche Rollen"

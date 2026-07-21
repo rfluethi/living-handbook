@@ -76,13 +76,15 @@ final class HtmlSanitizerTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A read-only GitHub task-list checkbox survives as a display element.
+	 * No <input> survives the sanitizer. Task-list checkboxes are turned into
+	 * characters before this runs, so an input in the raw HTML is hostile markup
+	 * and must be stripped (kses cannot pin its type or force it disabled).
 	 *
 	 * @return void
 	 */
-	public function test_keeps_disabled_task_checkbox(): void {
-		$clean = HtmlSanitizer::clean( '<input type="checkbox" disabled checked class="task-list-item-checkbox">' );
-		$this->assertStringContainsString( 'type="checkbox"', $clean );
-		$this->assertStringContainsString( 'disabled', $clean );
+	public function test_strips_input_element(): void {
+		$clean = HtmlSanitizer::clean( '<p>ok</p><input type="text" name="x">' );
+		$this->assertStringNotContainsString( '<input', $clean );
+		$this->assertStringContainsString( '<p>ok</p>', $clean );
 	}
 }

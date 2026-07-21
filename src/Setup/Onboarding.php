@@ -43,7 +43,7 @@ final class Onboarding {
 	/**
 	 * Option that shows the one-time setup notice until it is dismissed.
 	 */
-	private const OPTION_SETUP_NOTICE = 'living_handbook_setup_notice';
+	public const OPTION_SETUP_NOTICE = 'living_handbook_setup_notice';
 
 	private const OVERVIEW_BLOCK = 'wp:living-handbook/overview';
 

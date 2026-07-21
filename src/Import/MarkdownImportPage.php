@@ -608,6 +608,17 @@ final class MarkdownImportPage {
 			return is_string( $url ) ? $url : '';
 		}
 
+		// An SVG can carry script, so a hostile SVG from an imported ZIP would be
+		// stored XSS in the media library. Sanitize it before storing; if it
+		// cannot be sanitized (library missing or invalid SVG), skip it rather
+		// than store an unchecked file.
+		if ( 'svg' === strtolower( (string) pathinfo( $file_name, PATHINFO_EXTENSION ) ) ) {
+			$data = self::sanitize_svg( $data );
+			if ( '' === $data ) {
+				return '';
+			}
+		}
+
 		$upload = wp_upload_bits( sanitize_file_name( $file_name ), null, $data );
 		if ( ! empty( $upload['error'] ) ) {
 			return '';
@@ -634,9 +645,30 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Enqueue the import app on this page only, and bridge the script's label
-	 * translations into wp.i18n (same approach as the block editor: look up the
-	 * current locale's translations in PHP and hand them to the editor).
+	 * Sanitize raw SVG markup with enshrined/svg-sanitize before it is stored.
+	 * The library is loaded from vendor/ on demand, like the Markdown converter.
+	 *
+	 * @param string $data Raw SVG file contents.
+	 * @return string Sanitized SVG, or an empty string when it cannot be sanitized.
+	 */
+	private static function sanitize_svg( string $data ): string {
+		if ( ! class_exists( \enshrined\svgSanitize\Sanitizer::class ) ) {
+			$autoload = LIVING_HANDBOOK_DIR . 'vendor/autoload.php';
+			if ( is_readable( $autoload ) ) {
+				require_once $autoload;
+			}
+		}
+		if ( ! class_exists( \enshrined\svgSanitize\Sanitizer::class ) ) {
+			return '';
+		}
+		$sanitizer = new \enshrined\svgSanitize\Sanitizer();
+		$clean     = $sanitizer->sanitize( $data );
+		return is_string( $clean ) ? $clean : '';
+	}
+
+	/**
+	 * Enqueue the import app on this admin page only, and load its JavaScript
+	 * translations with wp_set_script_translations().
 	 *
 	 * @param string $hook Current admin page hook suffix.
 	 * @return void

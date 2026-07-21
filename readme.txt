@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.17.0
+Stable tag: 0.18.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.18.0 =
+* Security hardening from the 0.16.0 code review. GitHub fetches now use wp_safe_remote_get with redirects disabled, so a redirect cannot lead the sync to an unchecked host. Imported SVG images are sanitised (enshrined/svg-sanitize) before they reach the media library. The HTML sanitiser no longer allows raw input elements from imported Markdown.
+* Fixed the background sync follow-up: a large sync continues on its own one-off event instead of a guard that never matched, so a full pass no longer stalls until the next scheduled run.
+* Uninstall uses the plugin's own option-name constants and flushes the object cache, so versioned caches are also cleared on sites with Redis or Memcached.
+* Housekeeping: the build verifies that the version matches in the header, the constant and the readme, and a redundant weekly-schedule shim was removed (WordPress ships it since 5.4).
 
 = 0.17.0 =
 * Internationalisation of the JavaScript now follows the WordPress standard: translations load through wp_set_script_translations() and per-script JSON files generated from the .po at build time, replacing the previous hand-maintained bridge and its two string lists.
@@ -184,6 +190,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.18.0 =
+Security hardening from a code review: GitHub fetches without redirects, sanitised SVG imports, no raw input elements in imported HTML, and a fixed background-sync follow-up. Pre-release: best on a fresh database.
 
 = 0.17.0 =
 JavaScript internationalisation moves to the WordPress standard (wp_set_script_translations plus JSON language files), and the importer counts use proper plural forms. No change on an English site. Pre-release: best on a fresh database.

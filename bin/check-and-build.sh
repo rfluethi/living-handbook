@@ -14,6 +14,17 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
+echo "==> Version consistency (header, constant, readme Stable tag)"
+header_version="$(grep -oE "Version:[[:space:]]*[0-9]+\.[0-9]+\.[0-9]+" living-handbook.php | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")"
+const_version="$(grep -oE "LIVING_HANDBOOK_VERSION', '[0-9]+\.[0-9]+\.[0-9]+" living-handbook.php | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")"
+readme_version="$(grep -oE "Stable tag:[[:space:]]*[0-9]+\.[0-9]+\.[0-9]+" readme.txt | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")"
+if [ "$header_version" != "$const_version" ] || [ "$header_version" != "$readme_version" ]; then
+	echo "Version mismatch: header=$header_version constant=$const_version readme=$readme_version" >&2
+	echo "Align all three before building." >&2
+	exit 1
+fi
+echo "All three read $header_version."
+
 echo "==> Coding standards (phpcs)"
 composer lint
 

@@ -22,8 +22,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * The allowlist is the standard post allowlist plus the markup the plugin's own
  * features rely on: the Mermaid code fence (pre and code keep their class so the
- * diagram is still recognised), the details/summary disclosure markup, and the
- * disabled checkbox of a GitHub task list.
+ * diagram is still recognised) and the details/summary disclosure markup. GitHub
+ * task-list checkboxes are converted to characters before sanitizing, so no
+ * <input> is on the list.
  */
 final class HtmlSanitizer {
 
@@ -53,16 +54,11 @@ final class HtmlSanitizer {
 		}
 		$allowed['code']['class'] = true;
 
-		// Task-list checkboxes from GitHub Flavored Markdown ("- [ ]"). Only the
-		// read-only checkbox is allowed: type is pinned by kses to a safe value,
-		// and the box is always disabled, so this adds a display element, not an
-		// input the visitor can interact with.
-		$allowed['input'] = array(
-			'type'     => true,
-			'checked'  => true,
-			'disabled' => true,
-			'class'    => true,
-		);
+		// No <input> is allowed. GitHub task-list checkboxes ("- [ ]") are turned
+		// into ballot characters by MarkdownConverter before this runs, so no
+		// input needs to survive. kses could not secure one anyway: it only checks
+		// that an attribute is allowed, it does not pin the type value or force
+		// disabled, so an allowed <input> could carry type="text" or "submit".
 
 		return $allowed;
 	}

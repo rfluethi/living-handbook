@@ -68,7 +68,7 @@ final class GitSync {
 
 	private const CRON_HOOK = 'living_handbook_git_sync';
 
-	private const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
+	public const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
 
 	private const SETTINGS_SLUG = 'living-handbook-sync';
 
@@ -104,27 +104,13 @@ final class GitSync {
 		add_action( 'admin_notices', array( $this, 'locked_notice' ) );
 		add_action( 'admin_notices', array( $this, 'sync_error_notice' ) );
 		add_action( 'admin_post_living_handbook_git_sync_now', array( $this, 'sync_now' ) );
-		add_filter( 'cron_schedules', array( $this, 'add_schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 		add_action( self::CRON_HOOK, array( $this, 'run_sync' ) );
+		// One-off follow-up runs of a large sync use their own hook, so the guard
+		// in run_sync() can tell them apart from the recurring event.
+		add_action( self::CRON_HOOK . '_continue', array( $this, 'run_sync' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend' ) );
 		add_filter( 'manage_' . Handbook::POST_TYPE . '_posts_columns', array( $this, 'add_column' ) );
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
-	}
-
-	/**
-	 * Add a weekly cron schedule (hourly, twicedaily, daily are built in).
-	 *
-	 * @param array<string, array{interval:int, display:string}> $schedules Schedules.
-	 * @return array<string, array{interval:int, display:string}>
-	 */
-	public function add_schedules( array $schedules ): array {
-		if ( ! isset( $schedules['weekly'] ) ) {
-			$schedules['weekly'] = array(
-				'interval' => WEEK_IN_SECONDS,
-				'display'  => __( 'Once weekly', 'living-handbook' ),
-			);
-		}
-		return $schedules;
 	}
 
 	/**
@@ -178,6 +164,7 @@ final class GitSync {
 	 */
 	public static function unschedule(): void {
 		wp_clear_scheduled_hook( self::CRON_HOOK );
+		wp_clear_scheduled_hook( self::CRON_HOOK . '_continue' );
 	}
 
 	/**
@@ -349,10 +336,11 @@ final class GitSync {
 		$api = 'https://api.github.com/repos/' . $parsed['owner'] . '/' . $parsed['repo']
 			. '/contents/' . $parsed['path'] . '?ref=' . rawurlencode( $parsed['branch'] );
 
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			$api,
 			array(
 				'timeout'             => 20,
+				'redirection'         => 0,
 				'limit_response_size' => 5 * MB_IN_BYTES,
 				'headers'             => array(
 					'User-Agent' => 'LivingHandbook',
@@ -710,7 +698,7 @@ final class GitSync {
 		if ( $next < $total ) {
 			update_option( self::OPTION_CRON_OFFSET, $next );
 			if ( false === wp_next_scheduled( self::CRON_HOOK . '_continue' ) ) {
-				wp_schedule_single_event( time() + 60, self::CRON_HOOK );
+				wp_schedule_single_event( time() + 60, self::CRON_HOOK . '_continue' );
 			}
 		} else {
 			update_option( self::OPTION_CRON_OFFSET, 0 );
@@ -739,10 +727,11 @@ final class GitSync {
 			$this->set_sync_error( $post_id, __( 'Error: source host not allowed.', 'living-handbook' ) );
 			return;
 		}
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			$url,
 			array(
 				'timeout'             => 15,
+				'redirection'         => 0,
 				'limit_response_size' => 5 * MB_IN_BYTES,
 			)
 		);

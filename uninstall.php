@@ -44,20 +44,26 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 function living_handbook_run_uninstall(): void {
 	global $wpdb;
 
-	// Read the choices before the options are deleted below.
-	$remove_content   = (bool) get_option( 'living_handbook_uninstall_content', false );
-	$overview_page_id = (int) get_option( 'living_handbook_overview_page', 0 );
+	// Load the plugin so the autoloader and the option-name constants are
+	// available. Requiring the file only defines constants and registers the
+	// autoloader; the plugins_loaded bootstrap does not fire during uninstall.
+	require_once __DIR__ . '/living-handbook.php';
 
-	// Always: clear the scheduled sync and the plugin's own options.
-	wp_clear_scheduled_hook( 'living_handbook_git_sync' );
-	delete_option( 'living_handbook_sync_schedule' );
-	delete_option( 'living_handbook_sync_offset' );
-	delete_option( 'living_handbook_nav_version' );
-	delete_option( 'living_handbook_db_version' );
-	delete_option( 'living_handbook_uninstall_content' );
-	delete_option( 'living_handbook_setup_notice' );
-	delete_option( 'living_handbook_overview_page' );
-	delete_option( 'living_handbook_custom_css' );
+	// Read the choices before the options are deleted below.
+	$remove_content   = (bool) get_option( LivingHandbook\Git\GitSync::OPTION_UNINSTALL, false );
+	$overview_page_id = (int) get_option( LivingHandbook\Setup\Onboarding::OPTION_OVERVIEW_PAGE, 0 );
+
+	// Always: clear the scheduled sync (both the recurring hook and its one-off
+	// follow-up) and the plugin's own options.
+	LivingHandbook\Git\GitSync::unschedule();
+	delete_option( LivingHandbook\Git\GitSync::OPTION_SCHEDULE );
+	delete_option( LivingHandbook\Git\GitSync::OPTION_CRON_OFFSET );
+	delete_option( LivingHandbook\Frontend\Navigation::CACHE_VERSION_OPTION );
+	delete_option( LivingHandbook\Plugin::DB_VERSION_OPTION );
+	delete_option( LivingHandbook\Git\GitSync::OPTION_UNINSTALL );
+	delete_option( LivingHandbook\Setup\Onboarding::OPTION_SETUP_NOTICE );
+	delete_option( LivingHandbook\Setup\Onboarding::OPTION_OVERVIEW_PAGE );
+	delete_option( LivingHandbook\Setup\Settings::OPTION_CUSTOM_CSS );
 
 	// Always: remove the navigation and area caches (transients keyed by version).
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
@@ -70,6 +76,11 @@ function living_handbook_run_uninstall(): void {
 	);
 	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
+	// Versioned transient keys cannot be enumerated one by one, and on a
+	// persistent object cache (Redis, Memcached) the transients live in the cache
+	// rather than the options table above. A full flush on uninstall clears both.
+	wp_cache_flush();
+
 	/**
 	 * Opt in to remove all handbook content on uninstall.
 	 *
@@ -79,10 +90,9 @@ function living_handbook_run_uninstall(): void {
 		return;
 	}
 
-	// Load the autoloader and register the data model so wp_delete_post and
-	// wp_delete_term run cleanly (init has not fired during uninstall). All
-	// taxonomies must be registered before their terms can be deleted.
-	require_once __DIR__ . '/living-handbook.php';
+	// Register the data model so wp_delete_post and wp_delete_term run cleanly
+	// (init has not fired during uninstall). All taxonomies must be registered
+	// before their terms can be deleted. The plugin is already loaded above.
 	( new LivingHandbook\PostType\Handbook() )->register_post_type();
 	$handbooks = new LivingHandbook\Handbook\Handbooks();
 	$handbooks->register_taxonomy();

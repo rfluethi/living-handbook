@@ -46,7 +46,7 @@ final class Navigation {
 	 * a future cache can key off it. The current renderer builds fresh, so the
 	 * value is only bumped, not read.
 	 */
-	private const CACHE_VERSION_OPTION = 'living_handbook_nav_version';
+	public const CACHE_VERSION_OPTION = 'living_handbook_nav_version';
 
 	/**
 	 * Render the sidebar navigation for a handbook.
