@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.24.0\n"
+"Project-Id-Version: Living Handbook 0.25.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-21T14:08:22+00:00\n"
+"POT-Creation-Date: 2026-07-21T14:44:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -117,8 +117,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of pages in a handbook.
+#. translators: %d is a number of pages.
 #: src/Frontend/Cards.php:231
-#, php-format
+#: assets/js/markdown-import.js:15
+#, php-format,js-format
 msgid "%d page"
 msgid_plural "%d pages"
 msgstr[0] ""
@@ -993,6 +995,22 @@ msgstr ""
 msgid "Note text (shown only on GitHub pages)"
 msgstr ""
 
+#. translators: %d is a number of images.
+#: assets/js/markdown-import.js:17
+#, js-format
+msgid "%d image"
+msgid_plural "%d images"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d is a number of converted internal links.
+#: assets/js/markdown-import.js:19
+#, js-format
+msgid "%d link converted"
+msgid_plural "%d links converted"
+msgstr[0] ""
+msgstr[1] ""
+
 #. translators: %1$s pages, %2$s images, %3$s converted links, each already pluralised.
 #: assets/js/markdown-import.js:21
 #, js-format
@@ -1022,9 +1040,25 @@ msgstr ""
 msgid "Creating draft…"
 msgstr ""
 
+#. translators: %d is the number of internal links that were converted.
+#: assets/js/markdown-import.js:277
+#, js-format
+msgid "Done: 1 page, %d link converted."
+msgid_plural "Done: 1 page, %d links converted."
+msgstr[0] ""
+msgstr[1] ""
+
 #: assets/js/markdown-import.js:287
 msgid "No pages found in the mkdocs.yml."
 msgstr ""
+
+#. translators: %d is the number of pages being created.
+#: assets/js/markdown-import.js:291
+#, js-format
+msgid "Creating %d page…"
+msgid_plural "Creating %d pages…"
+msgstr[0] ""
+msgstr[1] ""
 
 #. translators: %1$d is the current page number, %2$d the total number of pages.
 #: assets/js/markdown-import.js:317
@@ -1046,6 +1080,14 @@ msgstr ""
 msgid "No pages in the ZIP."
 msgstr ""
 
+#. translators: %d is the number of draft pages being created.
+#: assets/js/markdown-import.js:352
+#, js-format
+msgid "Creating %d draft…"
+msgid_plural "Creating %d drafts…"
+msgstr[0] ""
+msgstr[1] ""
+
 #: assets/js/markdown-import.js:387
 msgid "Fetching pages from GitHub…"
 msgstr ""
@@ -1053,6 +1095,14 @@ msgstr ""
 #: assets/js/markdown-import.js:395
 msgid "No Markdown pages found."
 msgstr ""
+
+#. translators: %d is the number of pages created from GitHub.
+#: assets/js/markdown-import.js:402
+#, js-format
+msgid "Done: created %d GitHub page."
+msgid_plural "Done: created %d GitHub pages."
+msgstr[0] ""
+msgstr[1] ""
 
 #: assets/js/markdown-import.js:413
 msgid "wp.blocks is not loaded."

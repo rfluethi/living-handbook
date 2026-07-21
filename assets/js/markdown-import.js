@@ -12,11 +12,11 @@
 	// (pages, images, converted links) gets its own singular or plural form.
 	function doneSummary( pages, images, links ) {
 		// translators: %d is a number of pages.
-		var pagesText = sprintf( _n( '%d page', '%d pages', pages ), pages );
+		var pagesText = sprintf( _n( '%d page', '%d pages', pages, 'living-handbook' ), pages );
 		// translators: %d is a number of images.
-		var imagesText = sprintf( _n( '%d image', '%d images', images ), images );
+		var imagesText = sprintf( _n( '%d image', '%d images', images, 'living-handbook' ), images );
 		// translators: %d is a number of converted internal links.
-		var linksText = sprintf( _n( '%d link converted', '%d links converted', links ), links );
+		var linksText = sprintf( _n( '%d link converted', '%d links converted', links, 'living-handbook' ), links );
 		// translators: %1$s pages, %2$s images, %3$s converted links, each already pluralised.
 		return sprintf( __( 'Done: %1$s, %2$s, %3$s.', 'living-handbook' ), pagesText, imagesText, linksText );
 	}
@@ -274,7 +274,7 @@
 					return finalize( [ created.id ] ).then( function ( fin ) {
 						var conv = ( fin && fin.converted ) || 0;
 						// translators: %d is the number of internal links that were converted.
-						setStatus( sprintf( _n( 'Done: 1 page, %d link converted.', 'Done: 1 page, %d links converted.', conv ), conv ) );
+						setStatus( sprintf( _n( 'Done: 1 page, %d link converted.', 'Done: 1 page, %d links converted.', conv, 'living-handbook' ), conv ) );
 					} );
 				} );
 			} ).catch( function ( err ) {
@@ -288,7 +288,7 @@
 				return Promise.resolve();
 			}
 			// translators: %d is the number of pages being created.
-			setStatus( sprintf( _n( 'Creating %d page…', 'Creating %d pages…', pages.length ), pages.length ) );
+			setStatus( sprintf( _n( 'Creating %d page…', 'Creating %d pages…', pages.length, 'living-handbook' ), pages.length ) );
 			var byPath = {};
 			var ids = [];
 			var done = 0;
@@ -349,7 +349,7 @@
 					return;
 				}
 				// translators: %d is the number of draft pages being created.
-			setStatus( sprintf( _n( 'Creating %d draft…', 'Creating %d drafts…', files.length ), files.length ) );
+				setStatus( sprintf( _n( 'Creating %d draft…', 'Creating %d drafts…', files.length, 'living-handbook' ), files.length ) );
 				var ids = [];
 				var done = 0;
 				var total = files.length;
@@ -399,7 +399,7 @@
 					addResult( p, p.title );
 				} );
 				// translators: %d is the number of pages created from GitHub.
-			setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', pages.length ), pages.length ) );
+				setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', pages.length, 'living-handbook' ), pages.length ) );
 			} ).catch( function ( err ) {
 				setStatus( errorMessage( err ) );
 			} );

@@ -197,4 +197,99 @@ final class AccessTest extends WP_UnitTestCase {
 
 		$this->assertContains( $members_page, $ids );
 	}
+
+	/**
+	 * Run the coarse layer in isolation: suppress_filters bypasses the_posts, so
+	 * only restrict_query() shapes the result.
+	 *
+	 * @return int[]
+	 */
+	private function handbook_ids(): array {
+		return array_map(
+			'intval',
+			get_posts(
+				array(
+					'post_type'        => 'handbook',
+					'post_status'      => 'publish',
+					'fields'           => 'ids',
+					'suppress_filters' => true,
+					'posts_per_page'   => -1,
+				)
+			)
+		);
+	}
+
+	/**
+	 * On the front end the coarse layer restricts an editing user just like any
+	 * other: an author who is not in a restricted handbook does not see its page.
+	 * This is the control for the AJAX case below.
+	 *
+	 * @return void
+	 */
+	public function test_frontend_query_restricts_editing_user(): void {
+		$page   = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
+		$author = self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->assertFalse( AccessController::can_view_post( $page, (int) $author ) );
+
+		wp_set_current_user( (int) $author );
+		$ids = $this->handbook_ids();
+		wp_set_current_user( 0 );
+
+		$this->assertNotContains( $page, $ids );
+	}
+
+	/**
+	 * A back-end AJAX read (admin-ajax.php, for example the classic editor's link
+	 * search) does not apply the coarse restriction to a user who may edit posts.
+	 * Their back-end view is unrestricted, so the link picker stays consistent
+	 * with it. This is the N3 decision, Variante A.
+	 *
+	 * @return void
+	 */
+	public function test_backend_ajax_does_not_restrict_editing_user(): void {
+		$page   = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
+		$author = self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->assertFalse( AccessController::can_view_post( $page, (int) $author ) );
+
+		wp_set_current_user( (int) $author );
+		set_current_screen( 'edit.php' );
+		add_filter( 'wp_doing_ajax', '__return_true' );
+
+		$this->assertTrue( is_admin(), 'precondition: admin context' );
+		$this->assertTrue( wp_doing_ajax(), 'precondition: AJAX' );
+
+		$ids = $this->handbook_ids();
+
+		remove_filter( 'wp_doing_ajax', '__return_true' );
+		set_current_screen( 'front' );
+		wp_set_current_user( 0 );
+
+		$this->assertContains( $page, $ids );
+	}
+
+	/**
+	 * A back-end AJAX read still restricts a user who may not edit posts: a
+	 * subscriber does not gain the bypass, so a restricted handbook page stays
+	 * hidden from them even over admin-ajax.
+	 *
+	 * @return void
+	 */
+	public function test_backend_ajax_still_restricts_non_editing_user(): void {
+		$page       = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
+		$subscriber = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+
+		wp_set_current_user( (int) $subscriber );
+		set_current_screen( 'edit.php' );
+		add_filter( 'wp_doing_ajax', '__return_true' );
+
+		$ids = $this->handbook_ids();
+
+		remove_filter( 'wp_doing_ajax', '__return_true' );
+		set_current_screen( 'front' );
+		wp_set_current_user( 0 );
+
+		$this->assertNotContains( $page, $ids );
+	}
 }

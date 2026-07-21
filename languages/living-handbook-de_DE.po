@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-21T14:08:22+00:00\n"
+"POT-Creation-Date: 2026-07-21T14:41:18+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -117,7 +117,8 @@ msgstr[0] "%d Unterseite"
 msgstr[1] "%d Unterseiten"
 
 #. translators: %d: number of pages in a handbook.
-#: src/Frontend/Cards.php:231
+#. translators: %d is a number of pages.
+#: src/Frontend/Cards.php:231 assets/js/markdown-import.js:15
 #, php-format
 msgid "%d page"
 msgid_plural "%d pages"
@@ -1128,6 +1129,20 @@ msgstr ""
 msgid "Note text (shown only on GitHub pages)"
 msgstr "Hinweistext (nur auf GitHub-Seiten sichtbar)"
 
+#. translators: %d is a number of images.
+#: assets/js/markdown-import.js:17
+msgid "%d image"
+msgid_plural "%d images"
+msgstr[0] "%d Bild"
+msgstr[1] "%d Bilder"
+
+#. translators: %d is a number of converted internal links.
+#: assets/js/markdown-import.js:19
+msgid "%d link converted"
+msgid_plural "%d links converted"
+msgstr[0] "%d Link konvertiert"
+msgstr[1] "%d Links konvertiert"
+
 #. translators: %1$s pages, %2$s images, %3$s converted links, each already pluralised.
 #: assets/js/markdown-import.js:21
 msgid "Done: %1$s, %2$s, %3$s."
@@ -1157,9 +1172,23 @@ msgstr "Konvertiere …"
 msgid "Creating draft…"
 msgstr "Erstelle Entwurf …"
 
+#. translators: %d is the number of internal links that were converted.
+#: assets/js/markdown-import.js:277
+msgid "Done: 1 page, %d link converted."
+msgid_plural "Done: 1 page, %d links converted."
+msgstr[0] "Fertig: 1 Seite, %d Link konvertiert."
+msgstr[1] "Fertig: 1 Seite, %d Links konvertiert."
+
 #: assets/js/markdown-import.js:287
 msgid "No pages found in the mkdocs.yml."
 msgstr "Keine Seiten in der mkdocs.yml gefunden."
+
+#. translators: %d is the number of pages being created.
+#: assets/js/markdown-import.js:291
+msgid "Creating %d page…"
+msgid_plural "Creating %d pages…"
+msgstr[0] "Erstelle %d Seite …"
+msgstr[1] "Erstelle %d Seiten …"
 
 #. translators: %1$d is the current page number, %2$d the total number of pages.
 #: assets/js/markdown-import.js:317 assets/js/markdown-import.js:363
@@ -1178,6 +1207,13 @@ msgstr "Lade ZIP hoch …"
 msgid "No pages in the ZIP."
 msgstr "Keine Seiten im ZIP."
 
+#. translators: %d is the number of draft pages being created.
+#: assets/js/markdown-import.js:352
+msgid "Creating %d draft…"
+msgid_plural "Creating %d drafts…"
+msgstr[0] "Erstelle %d Entwurf …"
+msgstr[1] "Erstelle %d Entwürfe …"
+
 #: assets/js/markdown-import.js:387
 msgid "Fetching pages from GitHub…"
 msgstr "Hole Seiten von GitHub …"
@@ -1185,6 +1221,13 @@ msgstr "Hole Seiten von GitHub …"
 #: assets/js/markdown-import.js:395
 msgid "No Markdown pages found."
 msgstr "Keine Markdown-Seiten gefunden."
+
+#. translators: %d is the number of pages created from GitHub.
+#: assets/js/markdown-import.js:402
+msgid "Done: created %d GitHub page."
+msgid_plural "Done: created %d GitHub pages."
+msgstr[0] "Fertig: %d GitHub-Seite erstellt."
+msgstr[1] "Fertig: %d GitHub-Seiten erstellt."
 
 #: assets/js/markdown-import.js:413
 msgid "wp.blocks is not loaded."
@@ -1468,36 +1511,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Handbuch-Menü: eine kompakte Liste der Handbücher, die der Besucher lesen "
 #~ "darf, für Kopfbereich oder Navigation."
-
-#~ msgid "Done: 1 page, %d link converted."
-#~ msgid_plural "Done: 1 page, %d links converted."
-#~ msgstr[0] "Fertig: 1 Seite, %d Link konvertiert."
-#~ msgstr[1] "Fertig: 1 Seite, %d Links konvertiert."
-
-#~ msgid "Creating %d page…"
-#~ msgid_plural "Creating %d pages…"
-#~ msgstr[0] "Erstelle %d Seite …"
-#~ msgstr[1] "Erstelle %d Seiten …"
-
-#~ msgid "%d image"
-#~ msgid_plural "%d images"
-#~ msgstr[0] "%d Bild"
-#~ msgstr[1] "%d Bilder"
-
-#~ msgid "%d link converted"
-#~ msgid_plural "%d links converted"
-#~ msgstr[0] "%d Link konvertiert"
-#~ msgstr[1] "%d Links konvertiert"
-
-#~ msgid "Creating %d draft…"
-#~ msgid_plural "Creating %d drafts…"
-#~ msgstr[0] "Erstelle %d Entwurf …"
-#~ msgstr[1] "Erstelle %d Entwürfe …"
-
-#~ msgid "Done: created %d GitHub page."
-#~ msgid_plural "Done: created %d GitHub pages."
-#~ msgstr[0] "Fertig: %d GitHub-Seite erstellt."
-#~ msgstr[1] "Fertig: %d GitHub-Seiten erstellt."
 
 #~ msgid "Dismiss this notice"
 #~ msgstr "Hinweis ausblenden"

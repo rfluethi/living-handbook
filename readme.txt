@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.24.0
+Stable tag: 0.25.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.25.0 =
+* Fixed: the import progress messages ("Creating 3 pages", "2 links converted" and the like) are translatable again. Seven plural strings were calling the translation function without the plugin's text domain, so on a German site they stayed English; they now read in the site language.
+* Access: back-end tools that run over admin-ajax, such as the classic editor's "link to existing content" search, again find handbook pages for users who may edit posts. The frontend visibility rules are unchanged; a page's content stays guarded, and comment visibility keeps its stricter rule.
 
 = 0.24.0 =
 * Every handbook block now offers an HTML anchor and an additional CSS class under the block's Advanced panel. The anchor becomes the id of the block's root element and the class is added to it, so you can link to a block or target a single instance from the Custom CSS field or your theme.
@@ -215,6 +219,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.25.0 =
+Fixes the untranslated import progress messages on non-English sites, and lets editing users find handbook pages again in the classic editor's link search. Frontend visibility is unchanged. Pre-release: best on a fresh database.
 
 = 0.24.0 =
 Handbook blocks now offer an HTML anchor and an additional CSS class under Advanced, so you can link to a block or target one instance from Custom CSS. Pre-release: best on a fresh database.

@@ -145,7 +145,17 @@ final class AccessController {
 	 * @return void
 	 */
 	public function restrict_query( WP_Query $query ): void {
-		if ( is_admin() && ! wp_doing_ajax() ) {
+		// admin-ajax.php always runs with is_admin() true. A front-end AJAX read
+		// must still be filtered, but back-end tools use admin-ajax too, for
+		// example the classic editor's "link to existing content" search
+		// (wp-link-ajax), which queries every public post type. A user who may
+		// edit posts is let through there so the link picker stays consistent
+		// with the back end, where editing is not restricted. Only titles and
+		// existence are exposed this way; the actual content read stays guarded
+		// by guard_singular() and can_view_post(). The comment channel keeps the
+		// stricter edit_others_posts gate (see should_filter_comments()), because
+		// comment bodies are content, not titles.
+		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_posts' ) ) ) {
 			return;
 		}
 		if ( current_user_can( 'edit_others_posts' ) ) {
@@ -199,9 +209,11 @@ final class AccessController {
 	public function filter_posts( array $posts, WP_Query $query ): array {
 		unset( $query );
 
-		// admin-ajax.php runs with is_admin() true; a front-end AJAX read must
-		// still be filtered, so only a real wp-admin request bypasses this.
-		if ( is_admin() && ! wp_doing_ajax() ) {
+		// admin-ajax.php runs with is_admin() true. A front-end AJAX read must
+		// still be filtered, but a user who may edit posts is let through on
+		// admin-ajax so back-end tools (the classic editor's link search) match
+		// the unrestricted back-end view, consistent with restrict_query().
+		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_posts' ) ) ) {
 			return $posts;
 		}
 
@@ -300,6 +312,11 @@ final class AccessController {
 	private static function should_filter_comments(): bool {
 		// admin-ajax.php runs with is_admin() true; a front-end AJAX read must
 		// still be filtered, so only a real wp-admin request bypasses this.
+		// Unlike restrict_query() and filter_posts(), edit_posts does not open an
+		// AJAX bypass here: comment bodies are content, and the capability to see
+		// them is edit_others_posts (comment moderation), not the ability to edit
+		// one's own posts. Keeping the stricter gate avoids exposing comments on
+		// non-viewable handbooks to contributors.
 		if ( is_admin() && ! wp_doing_ajax() ) {
 			return false;
 		}
