@@ -87,6 +87,25 @@ Return a boolean. Because it runs during uninstall, put it in a must-use plugin 
 add_filter( 'living_handbook_uninstall_remove_content', '__return_true' );
 ```
 
+### `living_handbook_zip_max_bytes`
+
+Filters the maximum uncompressed total of a ZIP import, in bytes (default 100 MB). This is a safety limit against memory exhaustion, not a size the plugin can guarantee: the real ceiling for a large import is the server's PHP configuration (`upload_max_filesize`, `post_max_size`, `memory_limit`, and the execution time limit), which this filter does not change. Raise it only if the server has the memory to read that much at once, and remember that the uploaded ZIP file itself is still bounded by `upload_max_filesize` and `post_max_size`.
+
+Parameters:
+
+- `int $bytes` The default limit in bytes.
+
+Return an integer. Example, raise the uncompressed limit to 250 MB:
+
+```php
+add_filter(
+	'living_handbook_zip_max_bytes',
+	function ( int $bytes ): int {
+		return 250 * MB_IN_BYTES;
+	}
+);
+```
+
 _Planned: filters for the navigation markup, the metadata output and the freshness evaluation._
 
 ## Actions

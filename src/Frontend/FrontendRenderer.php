@@ -18,6 +18,7 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Settings;
+use WP_HTML_Tag_Processor;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -216,13 +217,20 @@ final class FrontendRenderer {
 	 * @return string
 	 */
 	private static function convert_link_to_submenu( string $content, string $items ): string {
-		$content = (string) preg_replace(
-			'/(<li\b[^>]*class="wp-block-navigation-item)\b/',
-			'$1 wp-block-navigation-submenu has-child',
-			$content,
-			1
-		);
+		$processor = new WP_HTML_Tag_Processor( $content );
+		if ( $processor->next_tag(
+			array(
+				'tag_name'   => 'li',
+				'class_name' => 'wp-block-navigation-item',
+			)
+		) ) {
+			$processor->add_class( 'wp-block-navigation-submenu' );
+			$processor->add_class( 'has-child' );
+		}
+		$content = $processor->get_updated_html();
 
+		// The container is new markup; the HTML API cannot insert child nodes, so
+		// it is appended as a string before the item's closing tag.
 		$container = self::submenu_toggle() . '<ul class="wp-block-navigation__submenu-container wp-block-navigation-submenu">' . $items . '</ul>';
 		return (string) preg_replace( '/<\/li>\s*$/', $container . '</li>', $content, 1 );
 	}
@@ -234,15 +242,17 @@ final class FrontendRenderer {
 	 * @return string
 	 */
 	private static function ensure_has_child( string $content ): string {
-		if ( false !== strpos( $content, 'has-child' ) ) {
-			return $content;
+		$processor = new WP_HTML_Tag_Processor( $content );
+		if ( $processor->next_tag(
+			array(
+				'tag_name'   => 'li',
+				'class_name' => 'wp-block-navigation-item',
+			)
+		) ) {
+			// add_class is idempotent, so it is safe if the class is already there.
+			$processor->add_class( 'has-child' );
 		}
-		return (string) preg_replace(
-			'/(<li\b[^>]*class="wp-block-navigation-item)\b/',
-			'$1 has-child',
-			$content,
-			1
-		);
+		return $processor->get_updated_html();
 	}
 
 	/**

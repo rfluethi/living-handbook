@@ -258,6 +258,17 @@ final class MarkdownImportPage {
 		$image_files    = array();
 		$mkdocs_yaml    = '';
 		$total_bytes    = 0;
+
+		/**
+		 * Maximum uncompressed total of an imported ZIP, in bytes. This is a safety
+		 * limit against memory exhaustion; the real ceiling is the server's PHP
+		 * config (upload_max_filesize, post_max_size, memory_limit). Raise it in
+		 * code only if the server can handle it.
+		 *
+		 * @param int $bytes Default limit in bytes.
+		 */
+		$max_total = (int) apply_filters( 'living_handbook_zip_max_bytes', self::ZIP_MAX_TOTAL_BYTES );
+
 		for ( $i = 0; $i < $file_count; $i++ ) {
 			$name = (string) $zip->getNameIndex( $i );
 			$base = basename( $name );
@@ -273,9 +284,10 @@ final class MarkdownImportPage {
 				continue;
 			}
 			$total_bytes += $size;
-			if ( $total_bytes > self::ZIP_MAX_TOTAL_BYTES ) {
+			if ( $total_bytes > $max_total ) {
 				$zip->close();
-				return self::import_error( __( 'The ZIP is too large: the uncompressed contents exceed 100 MB.', 'living-handbook' ) );
+				/* translators: %d: maximum uncompressed size in whole megabytes. */
+				return self::import_error( sprintf( __( 'The ZIP is too large: the uncompressed contents exceed %d MB.', 'living-handbook' ), (int) round( $max_total / MB_IN_BYTES ) ) );
 			}
 
 			$content = $zip->getFromIndex( $i );
