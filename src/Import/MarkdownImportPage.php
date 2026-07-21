@@ -12,7 +12,7 @@ namespace LivingHandbook\Import;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
-use WP_Post;
+use WP_Error;
 use WP_REST_Request;
 use WP_Term;
 use ZipArchive;
@@ -53,12 +53,17 @@ final class MarkdownImportPage {
 
 	private const IMAGE_EXTENSIONS = array( 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg' );
 
+	// Attachment meta that marks an image the plugin imported, so a re-import
+	// reuses only its own uploads and re-uploads when the source image changed.
+	private const META_IMPORT_FILE = '_lh_import_file';
+	private const META_IMPORT_HASH = '_lh_import_hash';
+
 	/**
 	 * ZIP import limits, checked before the archive is read into memory.
 	 */
 	private const ZIP_MAX_ENTRIES     = 2000;
 	private const ZIP_MAX_FILE_BYTES  = 5242880;  // 5 MB uncompressed per file.
-	private const ZIP_MAX_TOTAL_BYTES = 52428800; // 50 MB uncompressed total.
+	private const ZIP_MAX_TOTAL_BYTES = 104857600; // 100 MB uncompressed total.
 
 	/**
 	 * Hook registration into WordPress.
@@ -181,14 +186,37 @@ final class MarkdownImportPage {
 	}
 
 	/**
+	 * An operation-level import error as a WP_Error, which the REST server turns
+	 * into a 4xx/5xx response and apiFetch turns into a rejected promise. Used for
+	 * failures that abort a whole import (not per-page failures, which stay a data
+	 * field so a batch can list them and continue).
+	 *
+	 * @param string $message Human-readable message.
+	 * @param int    $status  HTTP status code.
+	 * @return WP_Error
+	 */
+	private static function import_error( string $message, int $status = 400 ): WP_Error {
+		return new WP_Error( 'living_handbook_import', $message, array( 'status' => $status ) );
+	}
+
+	/**
+	 * The "CommonMark is missing" operation error, shared by the callbacks.
+	 *
+	 * @return WP_Error
+	 */
+	private static function no_commonmark(): WP_Error {
+		return self::import_error( __( 'CommonMark is not installed. Run: composer require league/commonmark', 'living-handbook' ), 501 );
+	}
+
+	/**
 	 * REST callback: convert one pasted Markdown draft.
 	 *
 	 * @param WP_REST_Request $request Request.
-	 * @return array<string, mixed>
+	 * @return array<string, mixed>|WP_Error
 	 */
-	public function convert_callback( WP_REST_Request $request ): array {
+	public function convert_callback( WP_REST_Request $request ) {
 		if ( ! MarkdownConverter::available() ) {
-			return array( 'error' => __( 'CommonMark is not installed. Run: composer require league/commonmark', 'living-handbook' ) );
+			return self::no_commonmark();
 		}
 		return ( new MarkdownConverter() )->convert( (string) $request->get_param( 'markdown' ) );
 	}
@@ -198,32 +226,32 @@ final class MarkdownImportPage {
 	 * page specs; otherwise it returns each Markdown file as a flat page.
 	 *
 	 * @param WP_REST_Request $request Request.
-	 * @return array<string, mixed>
+	 * @return array<string, mixed>|WP_Error
 	 */
-	public function import_zip_callback( WP_REST_Request $request ): array {
+	public function import_zip_callback( WP_REST_Request $request ) {
 		if ( ! MarkdownConverter::available() ) {
-			return array( 'error' => __( 'CommonMark is not installed. Run: composer require league/commonmark', 'living-handbook' ) );
+			return self::no_commonmark();
 		}
 		if ( ! class_exists( 'ZipArchive' ) ) {
-			return array( 'error' => __( 'ZipArchive is not available on the server.', 'living-handbook' ) );
+			return self::import_error( __( 'ZipArchive is not available on the server.', 'living-handbook' ), 501 );
 		}
 
 		$params = $request->get_file_params();
 		$tmp    = ( isset( $params['zip']['tmp_name'] ) && is_string( $params['zip']['tmp_name'] ) ) ? $params['zip']['tmp_name'] : '';
 		if ( '' === $tmp ) {
-			return array( 'error' => __( 'No ZIP file received.', 'living-handbook' ) );
+			return self::import_error( __( 'No ZIP file received.', 'living-handbook' ) );
 		}
 
 		$zip = new ZipArchive();
 		if ( true !== $zip->open( $tmp ) ) {
-			return array( 'error' => __( 'Could not open the ZIP file.', 'living-handbook' ) );
+			return self::import_error( __( 'Could not open the ZIP file.', 'living-handbook' ) );
 		}
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- ZipArchive::$numFiles is a PHP core property.
 		$file_count = $zip->numFiles;
 		if ( $file_count > self::ZIP_MAX_ENTRIES ) {
 			$zip->close();
-			return array( 'error' => __( 'The ZIP has too many entries (maximum is 2000).', 'living-handbook' ) );
+			return self::import_error( __( 'The ZIP has too many entries (maximum is 2000).', 'living-handbook' ) );
 		}
 
 		$markdown_files = array();
@@ -247,7 +275,7 @@ final class MarkdownImportPage {
 			$total_bytes += $size;
 			if ( $total_bytes > self::ZIP_MAX_TOTAL_BYTES ) {
 				$zip->close();
-				return array( 'error' => __( 'The ZIP is too large: the uncompressed contents exceed 50 MB.', 'living-handbook' ) );
+				return self::import_error( __( 'The ZIP is too large: the uncompressed contents exceed 100 MB.', 'living-handbook' ) );
 			}
 
 			$content = $zip->getFromIndex( $i );
@@ -266,7 +294,7 @@ final class MarkdownImportPage {
 		$zip->close();
 
 		if ( empty( $markdown_files ) ) {
-			return array( 'error' => __( 'No .md files found in the ZIP.', 'living-handbook' ) );
+			return self::import_error( __( 'No .md files found in the ZIP.', 'living-handbook' ) );
 		}
 
 		$image_map = array();
@@ -316,15 +344,15 @@ final class MarkdownImportPage {
 	 * REST callback: create locked GitHub pages from a file URL or a folder URL.
 	 *
 	 * @param WP_REST_Request $request Request.
-	 * @return array<string, mixed>
+	 * @return array<string, mixed>|WP_Error
 	 */
-	public function import_github_callback( WP_REST_Request $request ): array {
+	public function import_github_callback( WP_REST_Request $request ) {
 		if ( ! MarkdownConverter::available() ) {
-			return array( 'error' => __( 'CommonMark is not installed. Run: composer require league/commonmark', 'living-handbook' ) );
+			return self::no_commonmark();
 		}
 		$url = trim( (string) $request->get_param( 'url' ) );
 		if ( '' === $url ) {
-			return array( 'error' => __( 'No GitHub URL given.', 'living-handbook' ) );
+			return self::import_error( __( 'No GitHub URL given.', 'living-handbook' ) );
 		}
 		$title       = sanitize_text_field( (string) $request->get_param( 'title' ) );
 		$handbook_id = absint( $request->get_param( 'handbook' ) );
@@ -336,7 +364,7 @@ final class MarkdownImportPage {
 
 		$post_id = $git->create_github_page( $url, $handbook_id, $title );
 		if ( 0 === $post_id ) {
-			return array( 'error' => __( 'Could not create the page. Check the URL.', 'living-handbook' ) );
+			return self::import_error( __( 'Could not create the page. Check the URL.', 'living-handbook' ) );
 		}
 		Postprocessor::finalize( array( $post_id ) );
 		return array(
@@ -585,26 +613,39 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Sideload one image into the media library, reusing an existing attachment
-	 * with the same slug if present.
+	 * Sideload one image into the media library. A re-import reuses only a
+	 * previously imported attachment for the same file whose contents are
+	 * unchanged, so a foreign upload that happens to share the file name is never
+	 * picked up, and a changed source image is re-imported rather than reused.
 	 *
 	 * @param string $file_name Image file name.
 	 * @param string $data      Binary data.
 	 * @return string Media URL, or an empty string on failure.
 	 */
 	private function sideload_image( string $file_name, string $data ): string {
-		$slug     = sanitize_title( pathinfo( $file_name, PATHINFO_FILENAME ) );
+		$hash     = md5( $data );
 		$existing = get_posts(
 			array(
 				'post_type'   => 'attachment',
-				'name'        => $slug,
 				'post_status' => 'inherit',
 				'numberposts' => 1,
+				'fields'      => 'ids',
+				'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					'relation' => 'AND',
+					array(
+						'key'   => self::META_IMPORT_FILE,
+						'value' => $file_name,
+					),
+					array(
+						'key'   => self::META_IMPORT_HASH,
+						'value' => $hash,
+					),
+				),
 			)
 		);
-		$found    = $existing[0] ?? null;
-		if ( $found instanceof WP_Post ) {
-			$url = wp_get_attachment_url( (int) $found->ID );
+		$found    = isset( $existing[0] ) ? (int) $existing[0] : 0;
+		if ( $found > 0 ) {
+			$url = wp_get_attachment_url( $found );
 			return is_string( $url ) ? $url : '';
 		}
 
@@ -636,6 +677,11 @@ final class MarkdownImportPage {
 		if ( 0 === $attachment_id ) {
 			return '';
 		}
+
+		// Mark this as an imported file so a re-import can find and reuse it, and
+		// store a content hash so a changed source image is re-uploaded, not reused.
+		update_post_meta( $attachment_id, self::META_IMPORT_FILE, $file_name );
+		update_post_meta( $attachment_id, self::META_IMPORT_HASH, $hash );
 
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, (string) $upload['file'] ) );

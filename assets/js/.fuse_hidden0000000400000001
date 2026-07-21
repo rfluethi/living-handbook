@@ -259,6 +259,10 @@
 			}
 			setStatus( __( 'Converting…', 'living-handbook' ) );
 			return wp.apiFetch( { path: lhImport.convertPath, method: 'POST', data: { markdown: md } } ).then( function ( res ) {
+				if ( res && res.error ) {
+					setStatus( res.error );
+					return;
+				}
 				var markup = libraryHtmlToMarkup( res.html || '' );
 				var userTitle = trimVal( titleField );
 				var title = userTitle || res.title || __( 'Imported page', 'living-handbook' );
@@ -340,6 +344,10 @@
 			var fd = new FormData();
 			fd.append( 'zip', file );
 			return wp.apiFetch( { path: lhImport.zipPath, method: 'POST', body: fd } ).then( function ( res ) {
+				if ( res && res.error ) {
+					setStatus( res.error );
+					return;
+				}
 				if ( res && res.mode === 'mkdocs' ) {
 					return importMkdocs( res.pages || [], res.images || 0 );
 				}
@@ -390,6 +398,10 @@
 				method: 'POST',
 				data: { url: url, title: trimVal( titleField ), handbook: handbookId() }
 			} ).then( function ( res ) {
+				if ( res && res.error ) {
+					setStatus( res.error );
+					return;
+				}
 				var pages = ( res && res.pages ) ? res.pages : [];
 				if ( ! pages.length ) {
 					setStatus( __( 'No Markdown pages found.', 'living-handbook' ) );

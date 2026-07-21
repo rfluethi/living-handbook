@@ -97,7 +97,7 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 ## Limits
 
 - Folder import reads one folder, not its subfolders. Import each folder, or use a structured ZIP for a whole tree.
-- A ZIP is read within limits (at most 2000 entries, 5 MB per file, 50 MB uncompressed in total), so a prepared archive cannot exhaust the server's memory.
+- A ZIP is read within limits (at most 2000 entries, 5 MB per file, 100 MB uncompressed in total), so a prepared archive cannot exhaust the server's memory.
 - The transport marker and its field labels are German.
 - Synced content is stored as rendered HTML, not editable blocks, because a cron job has no browser to convert HTML into blocks.
 - MkDocs-specific syntax degrades to plain text: admonitions (`!!! note`) and pymdownx tabs are not part of GitHub Flavored Markdown, so the converter does not understand them.

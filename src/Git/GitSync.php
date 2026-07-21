@@ -15,6 +15,7 @@ use LivingHandbook\Import\MarkdownConverter;
 use LivingHandbook\Import\Postprocessor;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use WP_Error;
 use WP_Post;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -260,7 +261,8 @@ final class GitSync {
 		if ( $post_id > 0 && ! current_user_can( 'edit_post', $post_id ) ) {
 			$post_id = 0;
 		}
-		if ( 0 === $post_id ) {
+		$created_new = ( 0 === $post_id );
+		if ( $created_new ) {
 			$inserted = wp_insert_post(
 				array(
 					'post_type'   => Handbook::POST_TYPE,
@@ -283,6 +285,16 @@ final class GitSync {
 		}
 
 		$this->sync_page( $post_id );
+
+		// A wrong URL (a valid host but a missing file) only fails when the page
+		// is fetched. For a page we just created, do not leave an empty draft
+		// behind: delete it and report the failure to the import screen. An
+		// existing page keeps its previous content on a failed refresh.
+		if ( $created_new && '' !== (string) get_post_meta( $post_id, self::META_ERROR, true ) ) {
+			wp_delete_post( $post_id, true );
+			return 0;
+		}
+
 		return $post_id;
 	}
 
@@ -325,12 +337,12 @@ final class GitSync {
 	 *
 	 * @param string $tree_url    A github.com tree URL to a folder.
 	 * @param int    $handbook_id Optional handbook term id.
-	 * @return array<string, mixed> Either { pages: [...] } or { error: string }.
+	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
 	 */
-	public function import_folder( string $tree_url, int $handbook_id = 0 ): array {
+	public function import_folder( string $tree_url, int $handbook_id = 0 ) {
 		$parsed = self::parse_tree_url( $tree_url );
 		if ( null === $parsed ) {
-			return array( 'error' => __( 'Not a GitHub folder URL.', 'living-handbook' ) );
+			return new WP_Error( 'living_handbook_import', __( 'Not a GitHub folder URL.', 'living-handbook' ), array( 'status' => 400 ) );
 		}
 
 		$api = 'https://api.github.com/repos/' . $parsed['owner'] . '/' . $parsed['repo']
@@ -349,19 +361,19 @@ final class GitSync {
 			)
 		);
 		if ( is_wp_error( $response ) ) {
-			return array( 'error' => $response->get_error_message() );
+			return new WP_Error( 'living_handbook_import', $response->get_error_message(), array( 'status' => 502 ) );
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
 			if ( 403 === $code && '0' === (string) wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' ) ) {
-				return array( 'error' => __( 'GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later.', 'living-handbook' ) );
+				return new WP_Error( 'living_handbook_import', __( 'GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later.', 'living-handbook' ), array( 'status' => 429 ) );
 			}
 			/* translators: %d: HTTP status code returned by the GitHub API. */
-			return array( 'error' => sprintf( __( 'GitHub API HTTP %d', 'living-handbook' ), $code ) );
+			return new WP_Error( 'living_handbook_import', sprintf( __( 'GitHub API HTTP %d', 'living-handbook' ), $code ), array( 'status' => 502 ) );
 		}
 		$items = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 		if ( ! is_array( $items ) ) {
-			return array( 'error' => __( 'Unexpected GitHub API response.', 'living-handbook' ) );
+			return new WP_Error( 'living_handbook_import', __( 'Unexpected GitHub API response.', 'living-handbook' ), array( 'status' => 502 ) );
 		}
 
 		$pages = array();

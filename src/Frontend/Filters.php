@@ -498,7 +498,23 @@ final class Filters {
 		}
 
 		$query = new WP_Query( $args );
-		$count = (int) $query->found_posts;
+
+		$cards    = '';
+		$rendered = 0;
+		foreach ( $query->posts as $post ) {
+			if ( $post instanceof WP_Post ) {
+				$cards .= Cards::page_card( $post->ID );
+				++$rendered;
+			}
+		}
+
+		// The rendered count is exact when everything fits on one page. With
+		// pagination we cannot recount across pages cheaply and show the query
+		// total; it can be off only by the rare page that also belongs to a
+		// second, more restrictive handbook, which the precise access filter
+		// (the_posts) removes but the coarse query count still includes.
+		$paginated = $query->max_num_pages > 1;
+		$count     = $paginated ? (int) $query->found_posts : $rendered;
 
 		/* translators: %d: number of matching pages. */
 		$out = '<p class="living-handbook-count">' . esc_html( sprintf( _n( '%d page found', '%d pages found', $count, 'living-handbook' ), $count ) ) . '</p>';
@@ -507,15 +523,9 @@ final class Filters {
 			return $out . '<p class="living-handbook-empty">' . esc_html__( 'No matches. Adjust the filters or the search.', 'living-handbook' ) . '</p>';
 		}
 
-		$cards = '';
-		foreach ( $query->posts as $post ) {
-			if ( $post instanceof WP_Post ) {
-				$cards .= Cards::page_card( $post->ID );
-			}
-		}
 		$out .= '<div class="living-handbook-cards">' . $cards . '</div>';
 
-		if ( $query->max_num_pages > 1 ) {
+		if ( $paginated ) {
 			$links = paginate_links(
 				array(
 					'base'    => self::pagination_base( $term, $selections, $search ),

@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.19.0
+Stable tag: 0.20.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.20.0 =
+* Code review round 3. Import errors that abort a whole operation (CommonMark missing, an unreadable or oversized ZIP, a GitHub API failure) are now returned as WP_Error with an HTTP status, so a failure shows up as a failed request in logs and dev tools instead of a 200 with an error field. Per-page failures within a batch still list the page and let the rest continue.
+* Imported images are reused only when the plugin imported them before and their content is unchanged (matched by an import marker and a content hash), so a foreign upload that happens to share a file name is never picked up, and an updated source image is re-imported.
+* The result count and pagination on a handbook now reflect the pages actually shown after the access filter, so the number matches the cards on a single page.
+* The ZIP import limit is raised to 100 MB uncompressed. A GitHub file URL that cannot be fetched now reports the error on the import screen and creates no page, instead of leaving an empty draft that only reveals the sync error once opened.
 
 = 0.19.0 =
 * Access-control hardening (code review F1): a coarse pre_get_posts layer now restricts handbook queries to the handbooks the current user may view. A third-party query that sets suppress_filters (the get_posts default), or a front-end read over admin-ajax, can no longer list the titles or excerpts of handbooks the user may not read. The precise, fail-closed per-page check on the display path is unchanged; this closes the two channels that bypassed it.
@@ -193,6 +199,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.20.0 =
+Code review round 3: import failures return proper HTTP errors, imported images are reused only when unchanged (matched by a content hash), and the result count matches the cards shown. Pre-release: best on a fresh database.
 
 = 0.19.0 =
 Access-control hardening: a pre-query layer restricts handbook queries to the handbooks you may view, closing side-channels through suppress_filters and admin-ajax. No visible change. Pre-release: best on a fresh database.
