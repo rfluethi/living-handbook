@@ -1,11 +1,25 @@
 ( function () {
 	var i18n = ( window.wp && window.wp.i18n ) ? window.wp.i18n : null;
 	var __ = i18n ? i18n.__ : function ( s ) { return s; };
+	var _n = i18n ? i18n._n : function ( s, p, n ) { return 1 === n ? s : p; };
 	var sprintf = i18n ? i18n.sprintf : function ( fmt ) {
 		var args = Array.prototype.slice.call( arguments, 1 );
 		var i = 0;
 		return String( fmt ).replace( /%(\d+\$)?[ds]/g, function () { return args[ i++ ]; } );
 	};
+
+	// Compose the "Done" summary from already-pluralised parts, so each count
+	// (pages, images, converted links) gets its own singular or plural form.
+	function doneSummary( pages, images, links ) {
+		// translators: %d is a number of pages.
+		var pagesText = sprintf( _n( '%d page', '%d pages', pages ), pages );
+		// translators: %d is a number of images.
+		var imagesText = sprintf( _n( '%d image', '%d images', images ), images );
+		// translators: %d is a number of converted internal links.
+		var linksText = sprintf( _n( '%d link converted', '%d links converted', links ), links );
+		// translators: %1$s pages, %2$s images, %3$s converted links, each already pluralised.
+		return sprintf( __( 'Done: %1$s, %2$s, %3$s.', 'living-handbook' ), pagesText, imagesText, linksText );
+	}
 
 	function ready( fn ) {
 		if ( window.wp && wp.domReady ) {
@@ -178,6 +192,7 @@
 		}
 
 		function errorMessage( err ) {
+			// translators: %s is the error message.
 			return sprintf( __( 'Error: %s', 'living-handbook' ), ( err && err.message ) ? err.message : __( 'unknown', 'living-handbook' ) );
 		}
 
@@ -196,6 +211,7 @@
 			var li = document.createElement( 'li' );
 			var a = document.createElement( 'a' );
 			a.href = created.editUrl || '#';
+			// translators: %d is the new page's numeric ID, used as a fallback title.
 			a.textContent = title || sprintf( __( 'Page %d', 'living-handbook' ), created.id );
 			li.appendChild( a );
 			results.appendChild( li );
@@ -254,12 +270,15 @@
 				return createPage( title, markup, res.transport, '' ).then( function ( created ) {
 					if ( created && created.error ) {
 						addFailure( title, created.error );
+						// translators: %s is the error message.
 						setStatus( sprintf( __( 'Error: %s', 'living-handbook' ), created.error ) );
 						return;
 					}
 					addResult( created, title );
 					return finalize( [ created.id ] ).then( function ( fin ) {
-						setStatus( sprintf( __( 'Done: 1 page, %d links converted.', 'living-handbook' ), ( fin && fin.converted ) || 0 ) );
+						var conv = ( fin && fin.converted ) || 0;
+						// translators: %d is the number of internal links that were converted.
+						setStatus( sprintf( _n( 'Done: 1 page, %d link converted.', 'Done: 1 page, %d links converted.', conv ), conv ) );
 					} );
 				} );
 			} ).catch( function ( err ) {
@@ -272,7 +291,8 @@
 				setStatus( __( 'No pages found in the mkdocs.yml.', 'living-handbook' ) );
 				return Promise.resolve();
 			}
-			setStatus( sprintf( __( 'Creating %d page(s)…', 'living-handbook' ), pages.length ) );
+			// translators: %d is the number of pages being created.
+			setStatus( sprintf( _n( 'Creating %d page…', 'Creating %d pages…', pages.length ), pages.length ) );
 			var byPath = {};
 			var ids = [];
 			var done = 0;
@@ -297,6 +317,7 @@
 						}
 					} ).then( function ( created ) {
 						++done;
+						// translators: %1$d is the current page number, %2$d the total number of pages.
 						setStatus( sprintf( __( 'Importing page %1$d of %2$d …', 'living-handbook' ), done, total ) );
 						if ( created && created.error ) {
 							addFailure( spec.navTitle, created.error );
@@ -313,7 +334,7 @@
 			return chain.then( function () {
 				setStatus( __( 'Linking…', 'living-handbook' ) );
 				return finalize( ids ).then( function ( fin ) {
-					setStatus( sprintf( __( 'Done: %1$d page(s), %2$d image(s), %3$d links converted.', 'living-handbook' ), ids.length, images || 0, ( fin && fin.converted ) || 0 ) );
+					setStatus( doneSummary( ids.length, images || 0, ( fin && fin.converted ) || 0 ) );
 				} );
 			} );
 		}
@@ -335,7 +356,8 @@
 					setStatus( __( 'No pages in the ZIP.', 'living-handbook' ) );
 					return;
 				}
-				setStatus( sprintf( __( 'Creating %d drafts…', 'living-handbook' ), files.length ) );
+				// translators: %d is the number of draft pages being created.
+			setStatus( sprintf( _n( 'Creating %d draft…', 'Creating %d drafts…', files.length ), files.length ) );
 				var ids = [];
 				var done = 0;
 				var total = files.length;
@@ -345,6 +367,7 @@
 						var markup = libraryHtmlToMarkup( f.html || '' );
 						return createPage( f.title, markup, f.transport, f.slug ).then( function ( created ) {
 							++done;
+							// translators: %1$d is the current page number, %2$d the total number of pages.
 							setStatus( sprintf( __( 'Importing page %1$d of %2$d …', 'living-handbook' ), done, total ) );
 							if ( created && created.error ) {
 								addFailure( f.title, created.error );
@@ -360,7 +383,7 @@
 				return chain.then( function () {
 					setStatus( __( 'Linking…', 'living-handbook' ) );
 					return finalize( ids ).then( function ( fin ) {
-						setStatus( sprintf( __( 'Done: %1$d page(s), %2$d image(s), %3$d links converted.', 'living-handbook' ), ids.length, res.images || 0, ( fin && fin.converted ) || 0 ) );
+						setStatus( doneSummary( ids.length, res.images || 0, ( fin && fin.converted ) || 0 ) );
 					} );
 				} );
 			} ).catch( function ( err ) {
@@ -369,7 +392,7 @@
 		}
 
 		function importGithub( url ) {
-			setStatus( __( 'Fetching page(s) from GitHub…', 'living-handbook' ) );
+			setStatus( __( 'Fetching pages from GitHub…', 'living-handbook' ) );
 			return wp.apiFetch( {
 				path: lhImport.githubPath,
 				method: 'POST',
@@ -387,7 +410,8 @@
 				pages.forEach( function ( p ) {
 					addResult( p, p.title );
 				} );
-				setStatus( sprintf( __( 'Done: created %d GitHub page(s).', 'living-handbook' ), pages.length ) );
+				// translators: %d is the number of pages created from GitHub.
+			setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', pages.length ), pages.length ) );
 			} ).catch( function ( err ) {
 				setStatus( errorMessage( err ) );
 			} );

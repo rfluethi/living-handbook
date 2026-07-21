@@ -201,17 +201,13 @@ final class Blocks {
 	}
 
 	/**
-	 * Enqueue the hand-written editor script that registers the blocks, and
-	 * bridge the editor label translations into wp.i18n.
+	 * Enqueue the hand-written editor script that registers the blocks, and load
+	 * its JavaScript translations the WordPress way.
 	 *
-	 * The block scripts are hand-written and use wp.i18n.__ for their labels.
-	 * Rather than ship a compiled JSON translation per script, the current
-	 * locale's translations are looked up in PHP (from the loaded text domain)
-	 * and handed to the editor with setLocaleData. It is attached to the shared
-	 * wp-i18n handle so it runs before every handbook block script, whichever
-	 * one registers first. The English source strings live in the JS files, so
-	 * `wp i18n make-pot` extracts them into the template, and the plugin is
-	 * translatable into any language through the .po files.
+	 * The block scripts use wp.i18n.__ and _n for their labels. Their
+	 * translations are loaded with wp_set_script_translations(), which reads the
+	 * per-script JSON files that the build generates from the .po with
+	 * `wp i18n make-json` into the languages folder.
 	 *
 	 * @return void
 	 */
@@ -223,90 +219,7 @@ final class Blocks {
 			LIVING_HANDBOOK_VERSION,
 			true
 		);
-
-		$locale = determine_locale();
-		if ( 0 === strpos( $locale, 'en' ) ) {
-			return;
-		}
-
-		$data = array(
-			'' => array(
-				'domain' => 'living-handbook',
-				'lang'   => $locale,
-			),
-		);
-		foreach ( self::editor_js_strings() as $string ) {
-			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Bridging already-extracted JS strings to the editor; source strings are extracted from the JS files.
-			$translated = __( $string, 'living-handbook' );
-			if ( $translated !== $string ) {
-				$data[ $string ] = array( $translated );
-			}
-		}
-
-		if ( count( $data ) > 1 ) {
-			wp_add_inline_script(
-				'wp-i18n',
-				'wp.i18n.setLocaleData( ' . wp_json_encode( $data ) . ', "living-handbook" );',
-				'after'
-			);
-		}
-	}
-
-	/**
-	 * The English source strings used by the editor scripts (blocks.js,
-	 * git-source-note-block.js, mermaid-block.js). They are translated in the
-	 * .po files like any other string; this list only tells the bridge which
-	 * ones to hand to the editor. Keep it in sync with the __() calls in the JS.
-	 *
-	 * @return string[]
-	 */
-	private static function editor_js_strings(): array {
-		return array(
-			'Handbook overview',
-			'Overview',
-			'Display',
-			'Cards',
-			'List',
-			'Handbook navigation',
-			'Navigation',
-			'Menu',
-			'Accordion',
-			'Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings.',
-			'Table of Contents',
-			'Placement',
-			'Desktop (side column, open)',
-			'Mobile (above content, collapsed)',
-			'Heading depth (up to H…)',
-			'Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.',
-			'Handbook page meta',
-			'Page meta',
-			'Show people (avatar and name)',
-			'Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings.',
-			'Handbook entry',
-			'Entry',
-			'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.',
-			'Handbook menu',
-			'Handbook menu: a compact list of the handbooks the visitor may read, for a header or navigation area.',
-			'Handbook badges',
-			'Handbook badges: page type, topic and audience of the current page.',
-			'Handbook feedback',
-			'Handbook feedback: the "Was this helpful?" prompt for the current page.',
-			'Handbook search',
-			'Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type.',
-			'GitHub source note',
-			'Shows a note on pages synced from GitHub; renders nothing on other pages.',
-			'Note text (shown only on GitHub pages)',
-			'This page is maintained on GitHub and updated automatically.',
-			'Mermaid code',
-			'Diagram title (caption)',
-			'Diagram description (for screen readers)',
-			'mermaid.min.js is missing in assets/js/.',
-			'handbook',
-			'living handbook',
-			'documentation',
-			'Lists the handbooks a visitor may read.',
-			'A compact list of the handbooks a visitor may read.',
-		);
+		wp_set_script_translations( 'living-handbook-blocks', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 	}
 
 	/**

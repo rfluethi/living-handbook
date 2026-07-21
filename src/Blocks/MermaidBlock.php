@@ -68,6 +68,7 @@ final class MermaidBlock {
 			'lhMermaid',
 			array( 'src' => LIVING_HANDBOOK_URL . $lib_rel )
 		);
+		wp_set_script_translations( 'living-handbook-mermaid-block', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 
 		wp_register_script(
 			'living-handbook-mermaid-view',

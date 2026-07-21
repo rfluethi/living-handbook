@@ -666,65 +666,7 @@ final class MarkdownImportPage {
 			)
 		);
 
-		$locale = determine_locale();
-		if ( 0 === strpos( $locale, 'en' ) ) {
-			return;
-		}
-		$data = array(
-			'' => array(
-				'domain' => 'living-handbook',
-				'lang'   => $locale,
-			),
-		);
-		foreach ( self::import_js_strings() as $string ) {
-			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Bridging already-extracted JS strings to the import script; source strings are extracted from markdown-import.js.
-			$translated = __( $string, 'living-handbook' );
-			if ( $translated !== $string ) {
-				$data[ $string ] = array( $translated );
-			}
-		}
-		if ( count( $data ) > 1 ) {
-			wp_add_inline_script(
-				'wp-i18n',
-				'wp.i18n.setLocaleData( ' . wp_json_encode( $data ) . ', "living-handbook" );',
-				'after'
-			);
-		}
-	}
-
-	/**
-	 * The English source strings used by the import script (markdown-import.js).
-	 * Keep in sync with the __() calls there; used only by the translation
-	 * bridge in enqueue().
-	 *
-	 * @return string[]
-	 */
-	private static function import_js_strings(): array {
-		return array(
-			'Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL.',
-			'Converting…',
-			'Creating draft…',
-			'Error: %s',
-			'unknown',
-			'Done: 1 page, %d links converted.',
-			'Page %d',
-			'Imported page',
-			'No pages found in the mkdocs.yml.',
-			'Creating %d page(s)…',
-			'Linking…',
-			'Done: %1$d page(s), %2$d image(s), %3$d links converted.',
-			'Uploading ZIP…',
-			'No pages in the ZIP.',
-			'Creating %d drafts…',
-			'Fetching page(s) from GitHub…',
-			'No Markdown pages found.',
-			'Done: created %d GitHub page(s).',
-			'wp.blocks is not loaded.',
-			'No ZIP file received.',
-			'No GitHub URL given.',
-			'No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?',
-			'Importing page %1$d of %2$d …',
-		);
+		wp_set_script_translations( 'living-handbook-markdown-import', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 	}
 
 	/**

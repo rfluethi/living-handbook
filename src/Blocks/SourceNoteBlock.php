@@ -47,6 +47,7 @@ final class SourceNoteBlock {
 			LIVING_HANDBOOK_VERSION,
 			true
 		);
+		wp_set_script_translations( 'living-handbook-git-source-note-block', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 
 		register_block_type(
 			self::BLOCK,
