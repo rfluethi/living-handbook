@@ -32,7 +32,9 @@ On import, the review date and interval travel in the Markdown transport block (
 
 ## Finding pages in the list
 
-The handbook list carries a few columns and filters to help you work through it. The **Last reviewed** column sorts by review date (oldest first is the useful direction for triage), and the **Feedback** column sorts by net feedback, the yes votes minus the no votes, so the best and worst received pages are one click away. Two dropdowns above the list filter it: by handbook, and by source (GitHub or WordPress). The taxonomy columns themselves do not sort, on purpose, because a page can belong to several handbooks; the handbook filter is the reliable way to group by one.
+The handbook list carries a few columns and filters to help you work through it. The **Last reviewed** column sorts by review date (oldest first is the useful direction for triage), and the **Feedback** column sorts by net feedback, the yes votes minus the no votes, so the best and worst received pages are one click away. Above the list, a dropdown for each taxonomy filters it: handbook, page type, topic, responsibility and audience, plus a source filter (GitHub or WordPress), the same way the category filter works for posts. The taxonomy columns themselves do not sort, on purpose, because a page can belong to several terms and so has no single order; the dropdowns are the reliable way to narrow the list.
+
+A **review-status filter** (reviewed, due, overdue, never reviewed) sits alongside them. The status is not a stored field: it is computed from each page's review date and its review interval, so it lives as its own filter rather than as a sortable column. Sort the Last reviewed column by date to see the oldest reviews, or filter by status to pull out everything overdue at once.
 
 Two warnings can appear above the list: pages that belong to no handbook (and so stay invisible on the front end), and GitHub pages whose last sync failed. Both list the affected pages as direct links, so you reach each one in a click.
 

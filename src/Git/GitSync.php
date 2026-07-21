@@ -113,9 +113,12 @@ final class GitSync {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend' ) );
 		add_filter( 'manage_' . Handbook::POST_TYPE . '_posts_columns', array( $this, 'add_column' ) );
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
-		add_action( 'restrict_manage_posts', array( $this, 'source_filter_dropdown' ) );
-		// Priority 20 so this runs after Maintenance::sort_by_reviewed() (10) and
-		// merges with any meta_query it set, instead of overwriting it.
+		// Priority 20 so the source dropdown renders after the taxonomy filters
+		// (Maintenance, priority 10), keeping the on-screen order in step with the
+		// list columns: the vocabularies, the handbook, then the source.
+		add_action( 'restrict_manage_posts', array( $this, 'source_filter_dropdown' ), 20 );
+		// filter_by_source() merges with any existing meta_query instead of
+		// overwriting it, so the source filter coexists with other list filters.
 		add_action( 'pre_get_posts', array( $this, 'filter_by_source' ), 20 );
 	}
 
@@ -954,8 +957,7 @@ final class GitSync {
 	 * "WordPress" matches every page that is not GitHub, including pages that never
 	 * stored a source row (the registered default is WordPress but writes no row),
 	 * so the filter never drops manually created pages. Merges with any existing
-	 * meta_query (for example the review-date sort) under AND instead of replacing
-	 * it.
+	 * meta_query (from another list filter) under AND instead of replacing it.
 	 *
 	 * @param WP_Query $query The current query.
 	 * @return void

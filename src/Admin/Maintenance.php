@@ -14,6 +14,7 @@ use LivingHandbook\Frontend\FreshnessStatus;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Taxonomy\Taxonomies;
 use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -36,9 +37,13 @@ final class Maintenance {
 		add_filter( 'manage_' . Handbook::POST_TYPE . '_posts_columns', array( $this, 'columns' ) );
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
 		add_filter( 'manage_edit-' . Handbook::POST_TYPE . '_sortable_columns', array( $this, 'sortable_columns' ) );
-		add_action( 'pre_get_posts', array( $this, 'sort_by_reviewed' ) );
+		add_filter( 'posts_clauses', array( $this, 'order_by_reviewed' ), 10, 2 );
 		add_filter( 'posts_clauses', array( $this, 'order_by_feedback' ), 10, 2 );
-		add_action( 'restrict_manage_posts', array( $this, 'handbook_filter_dropdown' ) );
+		add_action( 'restrict_manage_posts', array( $this, 'taxonomy_filter_dropdowns' ) );
+		// Priority 25 so the status filter renders after the source dropdown (20),
+		// matching the columns: source, then the review status of "Last reviewed".
+		add_action( 'restrict_manage_posts', array( $this, 'status_filter_dropdown' ), 25 );
+		add_action( 'pre_get_posts', array( $this, 'filter_by_status' ), 15 );
 	}
 
 	/**
@@ -210,35 +215,37 @@ final class Maintenance {
 
 	/**
 	 * Order the handbook list by the last review date when that column header is
-	 * clicked. Pages without a review date are kept in the list (NOT EXISTS), so
-	 * sorting never hides them.
+	 * clicked. A single LEFT JOIN reads the review date; pages without one (no meta
+	 * row or an empty value) are grouped together and always trail the dated pages,
+	 * in both directions, so they never split to both ends of the list. The join
+	 * key is a fixed plugin constant and the direction is validated, so the
+	 * fragment carries no user input.
 	 *
-	 * @param WP_Query $query The current query.
-	 * @return void
+	 * @param array<string, string> $clauses The SQL clauses of the query.
+	 * @param WP_Query              $query   The current query.
+	 * @return array<string, string>
 	 */
-	public function sort_by_reviewed( WP_Query $query ): void {
+	public function order_by_reviewed( array $clauses, WP_Query $query ): array {
 		if ( ! is_admin() || ! $query->is_main_query() ) {
-			return;
+			return $clauses;
 		}
 		if ( 'living_handbook_reviewed' !== $query->get( 'orderby' ) ) {
-			return;
+			return $clauses;
 		}
+		if ( Handbook::POST_TYPE !== $query->get( 'post_type' ) ) {
+			return $clauses;
+		}
+
+		global $wpdb;
+		$key   = esc_sql( Metadata::REVIEWED );
 		$order = 'DESC' === strtoupper( (string) $query->get( 'order' ) ) ? 'DESC' : 'ASC';
-		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			'meta_query',
-			array(
-				'relation'    => 'OR',
-				'lh_reviewed' => array(
-					'key'     => Metadata::REVIEWED,
-					'compare' => 'EXISTS',
-				),
-				array(
-					'key'     => Metadata::REVIEWED,
-					'compare' => 'NOT EXISTS',
-				),
-			)
-		);
-		$query->set( 'orderby', array( 'lh_reviewed' => $order ) );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$clauses['join']   .= " LEFT JOIN {$wpdb->postmeta} lh_rev ON ( lh_rev.post_id = {$wpdb->posts}.ID AND lh_rev.meta_key = '{$key}' )";
+		$clauses['orderby'] = "( CASE WHEN lh_rev.meta_value IS NULL OR lh_rev.meta_value = '' THEN 1 ELSE 0 END ) ASC, lh_rev.meta_value {$order}, {$wpdb->posts}.post_title ASC";
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $clauses;
 	}
 
 	/**
@@ -279,31 +286,137 @@ final class Maintenance {
 	}
 
 	/**
-	 * Add a "Handbook" filter dropdown above the handbook list. Selecting a
-	 * handbook narrows the list through the taxonomy query var, which is the
-	 * robust way to group by handbook; the taxonomy column itself is deliberately
-	 * not sortable, because a page may belong to several handbooks.
+	 * Add a filter dropdown above the handbook list for the handbook and each
+	 * vocabulary (page type, topic, responsibility, audience). Selecting a term
+	 * narrows the list through that taxonomy's query var, the same mechanism the
+	 * category filter uses for posts. This is filtering, not sorting: the taxonomy
+	 * columns stay unsortable on purpose, because a page can belong to several
+	 * terms and so has no single order to sort by.
 	 *
 	 * @param string $post_type The post type of the list being shown.
 	 * @return void
 	 */
-	public function handbook_filter_dropdown( string $post_type ): void {
+	public function taxonomy_filter_dropdowns( string $post_type ): void {
 		if ( Handbook::POST_TYPE !== $post_type ) {
 			return;
 		}
-		$taxonomy = Handbooks::TAXONOMY;
+
+		// Order matches the list columns: the four vocabularies, then the handbook.
+		// The source filter follows, rendered by GitSync at a later priority.
+		$taxonomies = array(
+			Taxonomies::PAGE_TYPE,
+			Taxonomies::TOPIC,
+			Taxonomies::ROLE,
+			Taxonomies::AUDIENCE,
+			Handbooks::TAXONOMY,
+		);
+
+		foreach ( $taxonomies as $taxonomy ) {
+			$object = get_taxonomy( $taxonomy );
+			if ( false === $object ) {
+				continue;
+			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
+			/* translators: %s: the plural taxonomy name, for example "Topics". */
+			$all_label = sprintf( __( 'All %s', 'living-handbook' ), $object->labels->name );
+			wp_dropdown_categories(
+				array(
+					'taxonomy'        => $taxonomy,
+					'name'            => $taxonomy,
+					'value_field'     => 'slug',
+					'show_option_all' => $all_label,
+					'hide_empty'      => false,
+					'hierarchical'    => is_taxonomy_hierarchical( $taxonomy ),
+					'orderby'         => 'name',
+					'selected'        => $current,
+				)
+			);
+		}
+	}
+
+	/**
+	 * Add a "Review status" filter dropdown above the handbook list. The status
+	 * (reviewed, due, overdue, never) is derived from the review date and the
+	 * per-page interval, so it is not a stored value the taxonomy filters could
+	 * cover; this filter complements the date sort on the "Last reviewed" column.
+	 *
+	 * @param string $post_type The post type of the list being shown.
+	 * @return void
+	 */
+	public function status_filter_dropdown( string $post_type ): void {
+		if ( Handbook::POST_TYPE !== $post_type ) {
+			return;
+		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
-		wp_dropdown_categories(
+		$current = isset( $_GET['lh_status'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_status'] ) ) : '';
+		$options = array(
+			''                       => __( 'All review statuses', 'living-handbook' ),
+			FreshnessStatus::OVERDUE => FreshnessStatus::label( FreshnessStatus::OVERDUE ),
+			FreshnessStatus::DUE     => FreshnessStatus::label( FreshnessStatus::DUE ),
+			FreshnessStatus::OK      => FreshnessStatus::label( FreshnessStatus::OK ),
+			FreshnessStatus::NONE    => __( 'Never reviewed', 'living-handbook' ),
+		);
+		echo '<select name="lh_status">';
+		foreach ( $options as $value => $label ) {
+			printf(
+				'<option value="%1$s"%2$s>%3$s</option>',
+				esc_attr( $value ),
+				selected( $current, $value, false ),
+				esc_html( $label )
+			);
+		}
+		echo '</select>';
+	}
+
+	/**
+	 * Narrow the handbook list to one review status. The status is computed, not
+	 * stored, so this resolves the matching pages in PHP through FreshnessStatus
+	 * (the single source of the rule) and constrains the query to those ids. The
+	 * meta cache is primed first, so the per-page status reads do not each hit the
+	 * database. The inner lookup is not the main query, so the other pre_get_posts
+	 * hooks skip it and it does not recurse.
+	 *
+	 * @param WP_Query $query The current query.
+	 * @return void
+	 */
+	public function filter_by_status( WP_Query $query ): void {
+		if ( ! is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+		if ( Handbook::POST_TYPE !== $query->get( 'post_type' ) ) {
+			return;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$status = isset( $_GET['lh_status'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_status'] ) ) : '';
+		$valid  = array( FreshnessStatus::OK, FreshnessStatus::DUE, FreshnessStatus::OVERDUE, FreshnessStatus::NONE );
+		if ( ! in_array( $status, $valid, true ) ) {
+			return;
+		}
+
+		$ids = get_posts(
 			array(
-				'taxonomy'        => $taxonomy,
-				'name'            => $taxonomy,
-				'value_field'     => 'slug',
-				'show_option_all' => __( 'All handbooks', 'living-handbook' ),
-				'hide_empty'      => false,
-				'hierarchical'    => true,
-				'selected'        => $current,
+				'post_type'        => Handbook::POST_TYPE,
+				'post_status'      => 'any',
+				'posts_per_page'   => -1,
+				'fields'           => 'ids',
+				'no_found_rows'    => true,
+				'suppress_filters' => true,
 			)
 		);
+		if ( ! empty( $ids ) ) {
+			update_meta_cache( 'post', $ids );
+		}
+
+		$match = array();
+		foreach ( $ids as $id ) {
+			if ( FreshnessStatus::for_post( (int) $id ) === $status ) {
+				$match[] = (int) $id;
+			}
+		}
+
+		// An empty match must show nothing, not everything, so fall back to an id
+		// no post carries.
+		$query->set( 'post__in', empty( $match ) ? array( 0 ) : $match );
 	}
 }
