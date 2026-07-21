@@ -249,21 +249,67 @@ final class Onboarding {
 			return;
 		}
 
-		printf(
-			'<div class="notice notice-warning"><p>%s</p></div>',
-			esc_html(
-				sprintf(
-					/* translators: %d: number of handbook pages without a handbook. */
-					_n(
-						'%d handbook page is not assigned to a handbook, so it stays invisible on the front end. Open it and pick a handbook in the sidebar.',
-						'%d handbook pages are not assigned to a handbook, so they stay invisible on the front end. Open them and pick a handbook in the sidebar.',
-						$count,
-						'living-handbook'
-					),
-					$count
-				)
-			)
+		$message = sprintf(
+			/* translators: %d: number of handbook pages without a handbook. */
+			_n(
+				'%d handbook page is not assigned to a handbook, so it stays invisible on the front end. Open it and pick a handbook in the sidebar.',
+				'%d handbook pages are not assigned to a handbook, so they stay invisible on the front end. Open them and pick a handbook in the sidebar.',
+				$count,
+				'living-handbook'
+			),
+			$count
 		);
+
+		printf(
+			'<div class="notice notice-warning"><p>%1$s</p>%2$s</div>',
+			esc_html( $message ),
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url and esc_html below.
+			self::page_links( $ids, $count )
+		);
+	}
+
+	/**
+	 * Build a list of edit links to the affected pages for an admin notice, so a
+	 * warning points straight at the pages it is about. Shows at most ten links,
+	 * then a short "and N more" note.
+	 *
+	 * @param int[] $ids   Post IDs.
+	 * @param int   $count Total number of affected pages.
+	 * @return string HTML (a <ul>, possibly followed by a note), or '' when empty.
+	 */
+	private static function page_links( array $ids, int $count ): string {
+		$limit = 10;
+		$items = '';
+		foreach ( array_slice( $ids, 0, $limit ) as $id ) {
+			$id   = (int) $id;
+			$edit = (string) get_edit_post_link( $id );
+			if ( '' === $edit ) {
+				continue;
+			}
+			$title  = get_the_title( $id );
+			$items .= sprintf(
+				'<li><a href="%1$s">%2$s</a></li>',
+				esc_url( $edit ),
+				esc_html( '' !== $title ? $title : __( '(no title)', 'living-handbook' ) )
+			);
+		}
+		if ( '' === $items ) {
+			return '';
+		}
+		$html = '<ul>' . $items . '</ul>';
+		if ( $count > $limit ) {
+			$html .= sprintf(
+				'<p>%s</p>',
+				esc_html(
+					sprintf(
+						/* translators: %d: number of further affected pages not listed. */
+						__( '… and %d more.', 'living-handbook' ),
+						$count - $limit
+					)
+				)
+			);
+		}
+		return $html;
 	}
 
 	/**

@@ -11,6 +11,7 @@ namespace LivingHandbook\Admin;
 
 use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\FreshnessStatus;
+use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use WP_Query;
@@ -36,6 +37,8 @@ final class Maintenance {
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
 		add_filter( 'manage_edit-' . Handbook::POST_TYPE . '_sortable_columns', array( $this, 'sortable_columns' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_reviewed' ) );
+		add_filter( 'posts_clauses', array( $this, 'order_by_feedback' ), 10, 2 );
+		add_action( 'restrict_manage_posts', array( $this, 'handbook_filter_dropdown' ) );
 	}
 
 	/**
@@ -201,6 +204,7 @@ final class Maintenance {
 	 */
 	public function sortable_columns( array $columns ): array {
 		$columns['living_handbook_reviewed'] = 'living_handbook_reviewed';
+		$columns['living_handbook_feedback'] = 'living_handbook_feedback';
 		return $columns;
 	}
 
@@ -235,5 +239,71 @@ final class Maintenance {
 			)
 		);
 		$query->set( 'orderby', array( 'lh_reviewed' => $order ) );
+	}
+
+	/**
+	 * Order the handbook list by net feedback (yes votes minus no votes) when that
+	 * column header is clicked. Both counts are post meta, so the difference cannot
+	 * be expressed as a meta_query orderby; this joins both meta rows and orders by
+	 * their difference. Pages without votes count as zero (COALESCE) and are kept,
+	 * so sorting never hides a page. The join keys are fixed plugin constants and
+	 * the direction is validated, so the fragment carries no user input.
+	 *
+	 * @param array<string, string> $clauses The SQL clauses of the query.
+	 * @param WP_Query              $query   The current query.
+	 * @return array<string, string>
+	 */
+	public function order_by_feedback( array $clauses, WP_Query $query ): array {
+		if ( ! is_admin() || ! $query->is_main_query() ) {
+			return $clauses;
+		}
+		if ( 'living_handbook_feedback' !== $query->get( 'orderby' ) ) {
+			return $clauses;
+		}
+		if ( Handbook::POST_TYPE !== $query->get( 'post_type' ) ) {
+			return $clauses;
+		}
+
+		global $wpdb;
+		$yes   = esc_sql( Feedback::YES );
+		$no    = esc_sql( Feedback::NO );
+		$order = 'ASC' === strtoupper( (string) $query->get( 'order' ) ) ? 'ASC' : 'DESC';
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$clauses['join']   .= " LEFT JOIN {$wpdb->postmeta} lh_fy ON ( lh_fy.post_id = {$wpdb->posts}.ID AND lh_fy.meta_key = '{$yes}' )";
+		$clauses['join']   .= " LEFT JOIN {$wpdb->postmeta} lh_fn ON ( lh_fn.post_id = {$wpdb->posts}.ID AND lh_fn.meta_key = '{$no}' )";
+		$clauses['orderby'] = "( COALESCE( lh_fy.meta_value + 0, 0 ) - COALESCE( lh_fn.meta_value + 0, 0 ) ) {$order}, {$wpdb->posts}.post_title ASC";
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $clauses;
+	}
+
+	/**
+	 * Add a "Handbook" filter dropdown above the handbook list. Selecting a
+	 * handbook narrows the list through the taxonomy query var, which is the
+	 * robust way to group by handbook; the taxonomy column itself is deliberately
+	 * not sortable, because a page may belong to several handbooks.
+	 *
+	 * @param string $post_type The post type of the list being shown.
+	 * @return void
+	 */
+	public function handbook_filter_dropdown( string $post_type ): void {
+		if ( Handbook::POST_TYPE !== $post_type ) {
+			return;
+		}
+		$taxonomy = Handbooks::TAXONOMY;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
+		wp_dropdown_categories(
+			array(
+				'taxonomy'        => $taxonomy,
+				'name'            => $taxonomy,
+				'value_field'     => 'slug',
+				'show_option_all' => __( 'All handbooks', 'living-handbook' ),
+				'hide_empty'      => false,
+				'hierarchical'    => true,
+				'selected'        => $current,
+			)
+		);
 	}
 }

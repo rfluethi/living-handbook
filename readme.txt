@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.25.0
+Stable tag: 0.26.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,11 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.26.0 =
+* The handbook list now has a Feedback column that sorts by net feedback (yes votes minus no votes), so the best and worst received pages are one click away.
+* Two filter dropdowns above the handbook list: filter by handbook, and by source (GitHub or WordPress). Taxonomy columns stay unsorted on purpose, because a page can belong to several handbooks; filtering is the reliable way to group them.
+* The two warnings on the handbook list, pages without a handbook and GitHub pages that failed to sync, now list the affected pages as direct links, so you reach each one in a click instead of hunting for it.
 
 = 0.25.0 =
 * Fixed: the import progress messages ("Creating 3 pages", "2 links converted" and the like) are translatable again. Seven plural strings were calling the translation function without the plugin's text domain, so on a German site they stayed English; they now read in the site language.
@@ -219,6 +224,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.26.0 =
+The handbook list gains a sortable Feedback column (net votes), filter dropdowns for handbook and source, and direct links from the two list warnings to the affected pages. Pre-release: best on a fresh database.
 
 = 0.25.0 =
 Fixes the untranslated import progress messages on non-English sites, and lets editing users find handbook pages again in the classic editor's link search. Frontend visibility is unchanged. Pre-release: best on a fresh database.

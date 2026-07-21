@@ -17,6 +17,7 @@ use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use WP_Error;
 use WP_Post;
+use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -112,6 +113,10 @@ final class GitSync {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend' ) );
 		add_filter( 'manage_' . Handbook::POST_TYPE . '_posts_columns', array( $this, 'add_column' ) );
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
+		add_action( 'restrict_manage_posts', array( $this, 'source_filter_dropdown' ) );
+		// Priority 20 so this runs after Maintenance::sort_by_reviewed() (10) and
+		// merges with any meta_query it set, instead of overwriting it.
+		add_action( 'pre_get_posts', array( $this, 'filter_by_source' ), 20 );
 	}
 
 	/**
@@ -625,22 +630,53 @@ final class GitSync {
 			return;
 		}
 
-		printf(
-			'<div class="notice notice-warning"><p>%1$s <a href="%2$s">%3$s</a></p></div>',
-			esc_html(
-				sprintf(
-					/* translators: %d: number of GitHub pages that failed to sync. */
-					_n(
-						'Living Handbook: %d GitHub page could not be synced. Open it to see the error.',
-						'Living Handbook: %d GitHub pages could not be synced. Open them to see the error.',
-						$count,
-						'living-handbook'
-					),
-					$count
-				)
+		$message = sprintf(
+			/* translators: %d: number of GitHub pages that failed to sync. */
+			_n(
+				'Living Handbook: %d GitHub page could not be synced. Open it to see the error.',
+				'Living Handbook: %d GitHub pages could not be synced. Open them to see the error.',
+				$count,
+				'living-handbook'
 			),
-			esc_url( admin_url( 'edit.php?post_type=' . Handbook::POST_TYPE ) ),
-			esc_html__( 'Handbook pages', 'living-handbook' )
+			$count
+		);
+
+		$limit = 10;
+		$items = '';
+		foreach ( array_slice( $ids, 0, $limit ) as $id ) {
+			$id   = (int) $id;
+			$edit = (string) get_edit_post_link( $id );
+			if ( '' === $edit ) {
+				continue;
+			}
+			$title  = get_the_title( $id );
+			$items .= sprintf(
+				'<li><a href="%1$s">%2$s</a></li>',
+				esc_url( $edit ),
+				esc_html( '' !== $title ? $title : __( '(no title)', 'living-handbook' ) )
+			);
+		}
+		$more = '';
+		if ( $count > $limit ) {
+			$more = sprintf(
+				'<p>%s</p>',
+				esc_html(
+					sprintf(
+						/* translators: %d: number of further failed pages not listed. */
+						__( '… and %d more.', 'living-handbook' ),
+						$count - $limit
+					)
+				)
+			);
+		}
+
+		printf(
+			'<div class="notice notice-warning"><p>%1$s</p><ul>%2$s</ul>%3$s</div>',
+			esc_html( $message ),
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url and esc_html above.
+			$items,
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html above.
+			$more
 		);
 	}
 
@@ -881,5 +917,94 @@ final class GitSync {
 		if ( $is_github && '1' === (string) get_post_meta( $post_id, self::META_ERROR, true ) ) {
 			echo ' <span class="living-handbook-sync-failed" style="color:#b32d2e;font-weight:600;">' . esc_html__( '(sync failed)', 'living-handbook' ) . '</span>';
 		}
+	}
+
+	/**
+	 * Add a "Source" filter dropdown above the handbook list (all, GitHub,
+	 * WordPress), matching the Source column.
+	 *
+	 * @param string $post_type The post type of the list being shown.
+	 * @return void
+	 */
+	public function source_filter_dropdown( string $post_type ): void {
+		if ( Handbook::POST_TYPE !== $post_type ) {
+			return;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$current = isset( $_GET['lh_source'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_source'] ) ) : '';
+		$options = array(
+			''                     => __( 'All sources', 'living-handbook' ),
+			self::SOURCE_GITHUB    => __( 'GitHub', 'living-handbook' ),
+			self::SOURCE_WORDPRESS => __( 'WordPress', 'living-handbook' ),
+		);
+		echo '<select name="lh_source">';
+		foreach ( $options as $value => $label ) {
+			printf(
+				'<option value="%1$s"%2$s>%3$s</option>',
+				esc_attr( $value ),
+				selected( $current, $value, false ),
+				esc_html( $label )
+			);
+		}
+		echo '</select>';
+	}
+
+	/**
+	 * Translate the source filter into a meta query on the handbook list.
+	 * "WordPress" matches every page that is not GitHub, including pages that never
+	 * stored a source row (the registered default is WordPress but writes no row),
+	 * so the filter never drops manually created pages. Merges with any existing
+	 * meta_query (for example the review-date sort) under AND instead of replacing
+	 * it.
+	 *
+	 * @param WP_Query $query The current query.
+	 * @return void
+	 */
+	public function filter_by_source( WP_Query $query ): void {
+		if ( ! is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+		if ( Handbook::POST_TYPE !== $query->get( 'post_type' ) ) {
+			return;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$source = isset( $_GET['lh_source'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_source'] ) ) : '';
+		if ( self::SOURCE_GITHUB !== $source && self::SOURCE_WORDPRESS !== $source ) {
+			return;
+		}
+
+		if ( self::SOURCE_GITHUB === $source ) {
+			$clause = array(
+				'key'   => self::META_SOURCE,
+				'value' => self::SOURCE_GITHUB,
+			);
+		} else {
+			$clause = array(
+				'relation' => 'OR',
+				array(
+					'key'     => self::META_SOURCE,
+					'value'   => self::SOURCE_GITHUB,
+					'compare' => '!=',
+				),
+				array(
+					'key'     => self::META_SOURCE,
+					'compare' => 'NOT EXISTS',
+				),
+			);
+		}
+
+		$existing = $query->get( 'meta_query' );
+		if ( empty( $existing ) || ! is_array( $existing ) ) {
+			$query->set( 'meta_query', array( $clause ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			return;
+		}
+		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			'meta_query',
+			array(
+				'relation' => 'AND',
+				$existing,
+				$clause,
+			)
+		);
 	}
 }

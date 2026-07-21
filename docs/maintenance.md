@@ -30,6 +30,12 @@ For the common case, "I reviewed this today", you do not need to open the page: 
 
 On import, the review date and interval travel in the Markdown transport block (`Letzte Prüfung`, `Prüfintervall`) and are written into these fields. See [import and sync](import-and-sync.md).
 
+## Finding pages in the list
+
+The handbook list carries a few columns and filters to help you work through it. The **Last reviewed** column sorts by review date (oldest first is the useful direction for triage), and the **Feedback** column sorts by net feedback, the yes votes minus the no votes, so the best and worst received pages are one click away. Two dropdowns above the list filter it: by handbook, and by source (GitHub or WordPress). The taxonomy columns themselves do not sort, on purpose, because a page can belong to several handbooks; the handbook filter is the reliable way to group by one.
+
+Two warnings can appear above the list: pages that belong to no handbook (and so stay invisible on the front end), and GitHub pages whose last sync failed. Both list the affected pages as direct links, so you reach each one in a click.
+
 ## The overdue dashboard
 
 The plugin adds a dashboard widget that lists the pages whose review is due or overdue, so you do not have to open pages one by one to find them. It reads the same review dates and intervals. The widget is the triage surface: work down it, review each page, and reset its review date.

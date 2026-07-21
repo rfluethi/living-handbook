@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-21T14:41:18+00:00\n"
+"POT-Creation-Date: 2026-07-21T15:28:03+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -44,38 +44,42 @@ msgid "https://rfluethi.com"
 msgstr ""
 
 # Dashboard
-#: src/Admin/Maintenance.php:52
+#: src/Admin/Maintenance.php:55
 msgid "Handbook: reviews overdue"
 msgstr "Handbuch: überfällige Prüfungen"
 
 #. translators: 1: overdue count, 2: total count, 3: percentage.
-#: src/Admin/Maintenance.php:107
+#: src/Admin/Maintenance.php:110
 #, php-format
 msgid "%1$d of %2$d pages overdue (%3$d%%)."
 msgstr "%1$d von %2$d Seiten überfällig (%3$d%%)."
 
-#: src/Admin/Maintenance.php:116
+#: src/Admin/Maintenance.php:119
 msgid "All pages are currently reviewed."
 msgstr "Alle Seiten sind aktuell geprüft."
 
-#: src/Admin/Maintenance.php:145
+#: src/Admin/Maintenance.php:148
 msgid "Show all handbook pages, oldest review first"
 msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
-#: src/Admin/Maintenance.php:157 src/Frontend/PageMeta.php:79
+#: src/Admin/Maintenance.php:160 src/Frontend/PageMeta.php:79
 #: src/Meta/Metadata.php:162 src/Meta/Metadata.php:299
 msgid "Last reviewed"
 msgstr "Zuletzt geprüft"
 
-#: src/Admin/Maintenance.php:158
+#: src/Admin/Maintenance.php:161
 msgid "Feedback"
 msgstr "Feedback"
 
 #. translators: 1: number of positive votes, 2: number of negative votes.
-#: src/Admin/Maintenance.php:188
+#: src/Admin/Maintenance.php:191
 #, php-format
 msgid "%1$d yes, %2$d no"
 msgstr "%1$d Ja, %2$d Nein"
+
+#: src/Admin/Maintenance.php:302
+msgid "All handbooks"
+msgstr "Alle Handbücher"
 
 #: src/Blocks/Blocks.php:198 src/Blocks/Blocks.php:199 assets/blocks.js:133
 msgid "Table of Contents"
@@ -177,8 +181,7 @@ msgid "No matches. Adjust the filters or the search."
 msgstr "Keine Treffer. Passe die Filter oder die Suche an."
 
 # Menu labels and taxonomy label set (batch: backend menu and labels)
-#: src/Frontend/Filters.php:538 src/Git/GitSync.php:643
-#: src/PostType/Handbook.php:76
+#: src/Frontend/Filters.php:538 src/PostType/Handbook.php:76
 msgid "Handbook pages"
 msgstr "Handbuch-Seiten"
 
@@ -290,36 +293,36 @@ msgid ""
 "Single handbook page: navigation left, content centre, on-this-page right."
 msgstr ""
 
-#: src/Git/GitSync.php:125
+#: src/Git/GitSync.php:130
 msgid "Off (only on save and Sync now)"
 msgstr "Aus (nur beim Speichern und über «Jetzt synchronisieren»)"
 
-#: src/Git/GitSync.php:126
+#: src/Git/GitSync.php:131
 msgid "Hourly"
 msgstr "Stündlich"
 
-#: src/Git/GitSync.php:127
+#: src/Git/GitSync.php:132
 msgid "Twice daily"
 msgstr "Zweimal täglich"
 
-#: src/Git/GitSync.php:128
+#: src/Git/GitSync.php:133
 msgid "Daily"
 msgstr "Täglich"
 
-#: src/Git/GitSync.php:129
+#: src/Git/GitSync.php:134
 msgid "Weekly"
 msgstr "Wöchentlich"
 
-#: src/Git/GitSync.php:270
+#: src/Git/GitSync.php:275
 msgid "GitHub page"
 msgstr "GitHub-Seite"
 
 # GitHub sync: folder import and pull errors. Source strings live in src/Git/GitSync.php.
-#: src/Git/GitSync.php:345
+#: src/Git/GitSync.php:350
 msgid "Not a GitHub folder URL."
 msgstr "Keine GitHub-Ordner-URL."
 
-#: src/Git/GitSync.php:369
+#: src/Git/GitSync.php:374
 msgid ""
 "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try "
 "again later."
@@ -328,41 +331,41 @@ msgstr ""
 "Versuche es später erneut."
 
 #. translators: %d: HTTP status code returned by the GitHub API.
-#: src/Git/GitSync.php:372
+#: src/Git/GitSync.php:377
 #, php-format
 msgid "GitHub API HTTP %d"
 msgstr "GitHub-API HTTP %d"
 
-#: src/Git/GitSync.php:376
+#: src/Git/GitSync.php:381
 msgid "Unexpected GitHub API response."
 msgstr "Unerwartete Antwort der GitHub-API."
 
 # GitHub sync: source box
-#: src/Git/GitSync.php:478 src/Git/GitSync.php:862
+#: src/Git/GitSync.php:483 src/Git/GitSync.php:898
 msgid "Source"
 msgstr "Quelle"
 
-#: src/Git/GitSync.php:500
+#: src/Git/GitSync.php:505
 msgid "Maintained in WordPress"
 msgstr "In WordPress gepflegt"
 
-#: src/Git/GitSync.php:501
+#: src/Git/GitSync.php:506
 msgid "Synced from GitHub"
 msgstr "Aus GitHub synchronisiert"
 
-#: src/Git/GitSync.php:503
+#: src/Git/GitSync.php:508
 msgid "Markdown source (raw or blob URL)"
 msgstr "Markdown-Quelle (Raw- oder Blob-URL)"
 
-#: src/Git/GitSync.php:508
+#: src/Git/GitSync.php:513
 msgid "Sync now"
 msgstr "Jetzt synchronisieren"
 
-#: src/Git/GitSync.php:512
+#: src/Git/GitSync.php:517
 msgid "Last sync:"
 msgstr "Letzter Sync:"
 
-#: src/Git/GitSync.php:514
+#: src/Git/GitSync.php:519
 msgid ""
 "A GitHub page is pulled when you save it, and its content editor is locked. "
 "Change the source here."
@@ -370,7 +373,7 @@ msgstr ""
 "Eine GitHub-Seite wird beim Speichern gezogen, und ihr Inhalts-Editor ist "
 "gesperrt. Die Quelle änderst du hier."
 
-#: src/Git/GitSync.php:591
+#: src/Git/GitSync.php:596
 msgid ""
 "This page is synced from GitHub. Its content is managed in the repository "
 "and cannot be edited here."
@@ -379,7 +382,7 @@ msgstr ""
 "gepflegt und kann hier nicht bearbeitet werden."
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:633
+#: src/Git/GitSync.php:635
 #, php-format
 msgid ""
 "Living Handbook: %d GitHub page could not be synced. Open it to see the "
@@ -394,50 +397,66 @@ msgstr[1] ""
 "Living Handbook: %d GitHub-Seiten konnten nicht synchronisiert werden. Öffne "
 "sie, um den Fehler zu sehen."
 
-#: src/Git/GitSync.php:656
+#: src/Git/GitSync.php:656 src/Setup/Onboarding.php:293
+msgid "(no title)"
+msgstr "(ohne Titel)"
+
+#. translators: %d: number of further failed pages not listed.
+#. translators: %d: number of further affected pages not listed.
+#: src/Git/GitSync.php:666 src/Setup/Onboarding.php:306
+#, php-format
+msgid "… and %d more."
+msgstr "… und %d weitere."
+
+#: src/Git/GitSync.php:692
 msgid "You are not allowed to do this."
 msgstr "Dazu bist du nicht berechtigt."
 
 # GitHub sync: status messages
-#: src/Git/GitSync.php:731
+#: src/Git/GitSync.php:767
 msgid "Error: CommonMark is not installed."
 msgstr "Fehler: CommonMark ist nicht installiert."
 
-#: src/Git/GitSync.php:739
+#: src/Git/GitSync.php:775
 msgid "Error: source host not allowed."
 msgstr "Fehler: Quell-Host nicht erlaubt."
 
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
-#: src/Git/GitSync.php:752 assets/js/markdown-import.js:196
+#: src/Git/GitSync.php:788 assets/js/markdown-import.js:196
 #: assets/js/markdown-import.js:270
 #, php-format
 msgid "Error: %s"
 msgstr "Fehler: %s"
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:758
+#: src/Git/GitSync.php:794
 #, php-format
 msgid "Error: HTTP %d"
 msgstr "Fehler: HTTP %d"
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:788
+#: src/Git/GitSync.php:824
 #, php-format
 msgid "OK %s"
 msgstr "OK %s"
 
-#: src/Git/GitSync.php:878 src/Import/MarkdownImportPage.php:827
+#: src/Git/GitSync.php:914 src/Git/GitSync.php:937
+#: src/Import/MarkdownImportPage.php:827
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/Git/GitSync.php:878
+#: src/Git/GitSync.php:914 src/Git/GitSync.php:938
 msgid "WordPress"
 msgstr "WordPress"
 
-#: src/Git/GitSync.php:882
+#: src/Git/GitSync.php:918
 msgid "(sync failed)"
 msgstr "(Sync fehlgeschlagen)"
+
+#: src/Git/GitSync.php:936
+msgid "All sources"
+msgstr "Alle Quellen"
 
 # Access configuration (handbook term)
 #: src/Handbook/HandbookAdmin.php:78 src/Handbook/HandbookAdmin.php:117
@@ -788,7 +807,7 @@ msgid "Create a handbook"
 msgstr "Handbuch anlegen"
 
 #. translators: %d: number of handbook pages without a handbook.
-#: src/Setup/Onboarding.php:257
+#: src/Setup/Onboarding.php:254
 #, php-format
 msgid ""
 "%d handbook page is not assigned to a handbook, so it stays invisible on the "
