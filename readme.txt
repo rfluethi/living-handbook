@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.28.0
+Stable tag: 0.29.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.29.0 =
+* New: export a handbook as a self-contained bundle (a ZIP with a manifest and the media) from Handbook, Import, at the bottom of the page. First half of the export/import feature; the matching import follows. The bundle carries the pages, the handbook configuration, the vocabularies and the freshness data, and keeps GitHub-sourced pages pointing at their repository. Requires the content-manager role.
 
 = 0.28.0 =
 * The block editor now loads the handbook stylesheet only when you edit a handbook page, not in every editor. No visible change on handbook pages; other post-type editors just load a little less.
@@ -232,6 +235,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.29.0 =
+Adds handbook export: download a handbook as a self-contained bundle (ZIP) under Handbook, Import. The matching import follows in a later release. Pre-release: best on a fresh database.
 
 = 0.28.0 =
 The block editor loads the handbook stylesheet only on handbook pages now, not in every editor. No visible change. Pre-release: best on a fresh database.

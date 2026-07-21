@@ -28,6 +28,14 @@ Re-importing the same source **updates the existing pages instead of creating du
 
 When a page is updated this way it keeps its **slug and its publication status**, so URLs stay stable and a published page does not silently drop back to draft. Title, content and parent are refreshed from the source.
 
+## Exporting a handbook
+
+At the bottom of the import screen, a content manager can **export a whole handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick a handbook, then **Export handbook**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one.
+
+The bundle carries the handbook's configuration (visibility, roles, allowed users by e-mail or login), every page as a block-markup snapshot with its place in the hierarchy, the four vocabularies, the freshness metadata, and the referenced media. A GitHub-sourced page keeps its source URL, so on the target site it resumes syncing from the same repository. Local, site-specific data is deliberately left out: the feedback counts and the sync status belong to each site.
+
+The matching import, which reads a bundle back in with a choice of what to do when a page already exists, follows in a later release.
+
 ## Transport metadata
 
 A page can carry a metadata block that maps it onto the handbook's taxonomies and freshness fields. The block is detected by the German heading marker `## Transport-Metadaten`; everything above it is the page body, and the first `# H1` becomes the title. An English heading is not recognised as the marker.

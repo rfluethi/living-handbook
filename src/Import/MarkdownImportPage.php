@@ -849,6 +849,32 @@ final class MarkdownImportPage {
 			</div>
 			<p><span id="lh-import-status" aria-live="polite"></span></p>
 			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
+
+			<?php if ( HandbookExport::can_export() ) : ?>
+				<hr style="margin:2rem 0 1rem">
+				<h2 class="living-handbook-import__step"><?php esc_html_e( 'Export', 'living-handbook' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Download a handbook as a bundle (a ZIP with its pages, configuration and media) to import it on another site running the plugin.', 'living-handbook' ); ?></p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="living_handbook_export">
+					<?php wp_nonce_field( 'living_handbook_export' ); ?>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="lh-export-handbook"><?php esc_html_e( 'Handbook to export', 'living-handbook' ); ?></label></th>
+							<td>
+								<select id="lh-export-handbook" name="handbook">
+									<option value="0"><?php esc_html_e( '— select a handbook —', 'living-handbook' ); ?></option>
+									<?php foreach ( $handbooks as $term ) : ?>
+										<?php if ( $term instanceof WP_Term ) : ?>
+											<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
+										<?php endif; ?>
+									<?php endforeach; ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Export handbook', 'living-handbook' ); ?></button></p>
+				</form>
+			<?php endif; ?>
 		</div>
 		<?php
 	}

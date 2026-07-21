@@ -21,6 +21,7 @@ use LivingHandbook\Frontend\Templates;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Handbook\HandbookAdmin;
 use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\Import\HandbookExport;
 use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -90,6 +91,7 @@ final class Plugin {
 		( new Filters() )->register();
 		( new Maintenance() )->register();
 		( new MarkdownImportPage() )->register();
+		( new HandbookExport() )->register();
 		( new GitSync() )->register();
 		( new Settings() )->register();
 		( new Blocks() )->register();

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-21T16:34:33+00:00\n"
+"POT-Creation-Date: 2026-07-21T17:20:01+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -527,6 +527,22 @@ msgstr "Beschränkt (Rollen und/oder Personen)"
 msgid "Handbook"
 msgstr "Handbuch"
 
+#: src/Import/HandbookExport.php:81
+msgid "You are not allowed to export handbooks."
+msgstr "Du darfst keine Handbücher exportieren."
+
+#: src/Import/HandbookExport.php:89
+msgid "Choose a handbook to export."
+msgstr "Wähle ein Handbuch zum Exportieren."
+
+#: src/Import/HandbookExport.php:92 src/Import/MarkdownImportPage.php:236
+msgid "ZipArchive is not available on the server."
+msgstr "ZipArchive ist auf dem Server nicht verfügbar."
+
+#: src/Import/HandbookExport.php:97
+msgid "The export bundle could not be created."
+msgstr "Das Export-Bündel konnte nicht erstellt werden."
+
 # Import page
 #: src/Import/MarkdownImportPage.php:87
 msgid "Markdown import"
@@ -571,10 +587,6 @@ msgid "CommonMark is not installed. Run: composer require league/commonmark"
 msgstr ""
 "CommonMark ist nicht installiert. Ausführen: composer require league/"
 "commonmark"
-
-#: src/Import/MarkdownImportPage.php:236
-msgid "ZipArchive is not available on the server."
-msgstr "ZipArchive ist auf dem Server nicht verfügbar."
 
 #: src/Import/MarkdownImportPage.php:242 assets/js/markdown-import.js:445
 msgid "No ZIP file received."
@@ -627,7 +639,7 @@ msgstr "1. Ziel"
 msgid "Target handbook"
 msgstr "Ziel-Handbuch"
 
-#: src/Import/MarkdownImportPage.php:799
+#: src/Import/MarkdownImportPage.php:799 src/Import/MarkdownImportPage.php:865
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
@@ -715,6 +727,28 @@ msgstr ""
 #: src/Import/MarkdownImportPage.php:847
 msgid "Import from GitHub"
 msgstr "Aus GitHub importieren"
+
+# Handbook export (bundle). Source strings live in src/Import/HandbookExport.php and MarkdownImportPage.php.
+#: src/Import/MarkdownImportPage.php:855
+msgid "Export"
+msgstr "Export"
+
+#: src/Import/MarkdownImportPage.php:856
+msgid ""
+"Download a handbook as a bundle (a ZIP with its pages, configuration and "
+"media) to import it on another site running the plugin."
+msgstr ""
+"Lade ein Handbuch als Bündel herunter (ein ZIP mit seinen Seiten, der "
+"Konfiguration und den Medien), um es auf einer anderen Seite mit dem Plugin "
+"zu importieren."
+
+#: src/Import/MarkdownImportPage.php:862
+msgid "Handbook to export"
+msgstr "Zu exportierendes Handbuch"
+
+#: src/Import/MarkdownImportPage.php:875
+msgid "Export handbook"
+msgstr "Handbuch exportieren"
 
 # Maintenance meta box
 #: src/Meta/Metadata.php:140
