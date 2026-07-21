@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/mermaid",
+	"title": "Mermaid",
+	"category": "living-handbook",
+	"icon": "chart-area",
+	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-mermaid-block",
+	"viewScript": "living-handbook-mermaid-view",
+	"example": {
+		"attributes": {
+			"code": "graph TD;\n  A[Start] --> B{Decision};\n  B -->|Yes| C[Result];\n  B -->|No| A;"
+		}
+	},
+	"attributes": {
+		"code": {
+			"type": "string",
+			"default": ""
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		},
+		"description": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

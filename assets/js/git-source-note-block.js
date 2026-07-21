@@ -4,15 +4,9 @@
 	var __ = i18n.__;
 	var defaultLabel = __( 'This page is maintained on GitHub and updated automatically.', 'living-handbook' );
 
+	// Metadata comes from blocks/git-source-note/block.json; only edit and save
+	// live here.
 	blocks.registerBlockType( 'living-handbook/git-source-note', {
-		apiVersion: 3,
-		title: __( 'GitHub source note', 'living-handbook' ),
-		description: __( 'Shows a note on pages synced from GitHub; renders nothing on other pages.', 'living-handbook' ),
-		icon: 'admin-links',
-		category: 'living-handbook',
-		attributes: {
-			label: { type: 'string', default: '' }
-		},
 		edit: function ( props ) {
 			var value = props.attributes.label || '';
 			return el(

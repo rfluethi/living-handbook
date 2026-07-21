@@ -49,19 +49,11 @@ final class SourceNoteBlock {
 		);
 		wp_set_script_translations( 'living-handbook-git-source-note-block', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 
+		// Metadata (title, category, icon, attributes, editorScript) comes from
+		// blocks/git-source-note/block.json; only the render callback is added here.
 		register_block_type(
-			self::BLOCK,
-			array(
-				'api_version'     => '3',
-				'editor_script'   => 'living-handbook-git-source-note-block',
-				'render_callback' => array( $this, 'render' ),
-				'attributes'      => array(
-					'label' => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-				),
-			)
+			LIVING_HANDBOOK_DIR . 'blocks/git-source-note',
+			array( 'render_callback' => array( $this, 'render' ) )
 		);
 	}
 

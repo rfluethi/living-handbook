@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "living-handbook/git-source-note",
+	"title": "GitHub source note",
+	"category": "living-handbook",
+	"icon": "admin-links",
+	"description": "Shows a note on pages synced from GitHub; renders nothing on other pages.",
+	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-git-source-note-block",
+	"example": {},
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}

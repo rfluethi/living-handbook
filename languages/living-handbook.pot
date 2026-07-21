@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.22.0\n"
+"Project-Id-Version: Living Handbook 0.23.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-21T12:44:46+00:00\n"
+"POT-Creation-Date: 2026-07-21T13:14:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -91,7 +91,7 @@ msgstr ""
 msgid "Search this handbook …"
 msgstr ""
 
-#: src/Blocks/SourceNoteBlock.php:84
+#: src/Blocks/SourceNoteBlock.php:76
 #: assets/js/git-source-note-block.js:5
 msgid "This page is maintained on GitHub and updated automatically."
 msgstr ""
@@ -989,15 +989,7 @@ msgstr ""
 msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type."
 msgstr ""
 
-#: assets/js/git-source-note-block.js:9
-msgid "GitHub source note"
-msgstr ""
-
-#: assets/js/git-source-note-block.js:10
-msgid "Shows a note on pages synced from GitHub; renders nothing on other pages."
-msgstr ""
-
-#: assets/js/git-source-note-block.js:22
+#: assets/js/git-source-note-block.js:16
 msgid "Note text (shown only on GitHub pages)"
 msgstr ""
 
@@ -1070,19 +1062,19 @@ msgstr ""
 msgid "No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?"
 msgstr ""
 
-#: assets/js/mermaid-block.js:67
+#: assets/js/mermaid-block.js:64
 msgid "mermaid.min.js is missing in assets/js/."
 msgstr ""
 
-#: assets/js/mermaid-block.js:95
+#: assets/js/mermaid-block.js:92
 msgid "Mermaid code"
 msgstr ""
 
-#: assets/js/mermaid-block.js:103
+#: assets/js/mermaid-block.js:100
 msgid "Diagram title (caption)"
 msgstr ""
 
-#: assets/js/mermaid-block.js:110
+#: assets/js/mermaid-block.js:107
 msgid "Diagram description (for screen readers)"
 msgstr ""
 
@@ -1155,6 +1147,16 @@ msgctxt "block description"
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 
+#: blocks/git-source-note/block.json
+msgctxt "block title"
+msgid "GitHub source note"
+msgstr ""
+
+#: blocks/git-source-note/block.json
+msgctxt "block description"
+msgid "Shows a note on pages synced from GitHub; renders nothing on other pages."
+msgstr ""
+
 #: blocks/menu/block.json
 msgctxt "block title"
 msgid "Handbook menu"
@@ -1163,6 +1165,11 @@ msgstr ""
 #: blocks/menu/block.json
 msgctxt "block description"
 msgid "A compact list of the handbooks a visitor may read."
+msgstr ""
+
+#: blocks/mermaid/block.json
+msgctxt "block title"
+msgid "Mermaid"
 msgstr ""
 
 #: blocks/navigation/block.json

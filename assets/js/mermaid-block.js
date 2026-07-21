@@ -36,16 +36,8 @@
 		document.head.appendChild( s );
 	}
 
+	// Metadata comes from blocks/mermaid/block.json; only edit and save live here.
 	blocks.registerBlockType( 'living-handbook/mermaid', {
-		apiVersion: 3,
-		title: 'Mermaid',
-		icon: 'chart-area',
-		category: 'living-handbook',
-		attributes: {
-			code: { type: 'string', default: '' },
-			title: { type: 'string', default: '' },
-			description: { type: 'string', default: '' }
-		},
 		edit: function ( props ) {
 			var code = props.attributes.code || '';
 			var title = props.attributes.title || '';
@@ -56,6 +48,11 @@
 			useEffect( function () {
 				var node = previewRef.current;
 				if ( ! node ) {
+					return;
+				}
+				if ( ! code ) {
+					// Nothing to render yet, so do not load the ~3.5 MB library.
+					node.innerHTML = '';
 					return;
 				}
 				ensureMermaid( function () {

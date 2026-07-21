@@ -43,7 +43,7 @@ if command -v wp >/dev/null 2>&1; then
 		# strings. Keeps existing translations; needs gettext.
 		for po in languages/*.po; do
 			[ -e "$po" ] || continue
-			msgmerge --update --backup=none "$po" languages/living-handbook.pot
+			msgmerge --update --backup=none --no-fuzzy-matching "$po" languages/living-handbook.pot
 		done
 	else
 		echo "msgmerge (gettext) not found; the .po keeps its current references."

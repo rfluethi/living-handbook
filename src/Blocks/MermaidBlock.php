@@ -78,28 +78,11 @@ final class MermaidBlock {
 			true
 		);
 
+		// Metadata (title, category, icon, attributes, editorScript, viewScript)
+		// comes from blocks/mermaid/block.json; only the render callback is here.
 		register_block_type(
-			self::BLOCK,
-			array(
-				'api_version'     => '3',
-				'editor_script'   => 'living-handbook-mermaid-block',
-				'view_script'     => 'living-handbook-mermaid-view',
-				'render_callback' => array( $this, 'render' ),
-				'attributes'      => array(
-					'code'        => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-					'title'       => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-					'description' => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-				),
-			)
+			LIVING_HANDBOOK_DIR . 'blocks/mermaid',
+			array( 'render_callback' => array( $this, 'render' ) )
 		);
 	}
 

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-21T12:44:46+00:00\n"
+"POT-Creation-Date: 2026-07-21T13:14:23+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -91,7 +91,7 @@ msgid "Search this handbook …"
 msgstr "Dieses Handbuch durchsuchen …"
 
 # GitHub source note block
-#: src/Blocks/SourceNoteBlock.php:84 assets/js/git-source-note-block.js:5
+#: src/Blocks/SourceNoteBlock.php:76 assets/js/git-source-note-block.js:5
 msgid "This page is maintained on GitHub and updated automatically."
 msgstr "Diese Seite wird auf GitHub gepflegt und automatisch aktualisiert."
 
@@ -1124,18 +1124,7 @@ msgstr ""
 "Handbuch-Suche: ein Suchfeld mit Sofort-Vorschlägen für das aktuelle "
 "Handbuch, für eine Einzelseite. Es listet passende Seiten, während du tippst."
 
-#: assets/js/git-source-note-block.js:9
-msgid "GitHub source note"
-msgstr "GitHub-Quellenhinweis"
-
-#: assets/js/git-source-note-block.js:10
-msgid ""
-"Shows a note on pages synced from GitHub; renders nothing on other pages."
-msgstr ""
-"Zeigt auf aus GitHub synchronisierten Seiten einen Hinweis; auf anderen "
-"Seiten wird nichts angezeigt."
-
-#: assets/js/git-source-note-block.js:22
+#: assets/js/git-source-note-block.js:16
 msgid "Note text (shown only on GitHub pages)"
 msgstr "Hinweistext (nur auf GitHub-Seiten sichtbar)"
 
@@ -1209,19 +1198,19 @@ msgstr ""
 "Kein Ziel-Handbuch gewählt. Importierte Seiten bleiben unsichtbar, bis du "
 "sie einem Handbuch zuweist. Trotzdem importieren?"
 
-#: assets/js/mermaid-block.js:67
+#: assets/js/mermaid-block.js:64
 msgid "mermaid.min.js is missing in assets/js/."
 msgstr "mermaid.min.js fehlt in assets/js/."
 
-#: assets/js/mermaid-block.js:95
+#: assets/js/mermaid-block.js:92
 msgid "Mermaid code"
 msgstr "Mermaid-Code"
 
-#: assets/js/mermaid-block.js:103
+#: assets/js/mermaid-block.js:100
 msgid "Diagram title (caption)"
 msgstr "Diagramm-Titel (Bildunterschrift)"
 
-#: assets/js/mermaid-block.js:110
+#: assets/js/mermaid-block.js:107
 msgid "Diagram description (for screen readers)"
 msgstr "Diagramm-Beschreibung (für Screenreader)"
 
@@ -1294,6 +1283,21 @@ msgid ""
 msgstr ""
 "Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite."
 
+#: blocks/git-source-note/block.json
+#, fuzzy
+msgctxt "block title"
+msgid "GitHub source note"
+msgstr "GitHub-Quellenhinweis"
+
+#: blocks/git-source-note/block.json
+#, fuzzy
+msgctxt "block description"
+msgid ""
+"Shows a note on pages synced from GitHub; renders nothing on other pages."
+msgstr ""
+"Zeigt auf aus GitHub synchronisierten Seiten einen Hinweis; auf anderen "
+"Seiten wird nichts angezeigt."
+
 #: blocks/menu/block.json
 #, fuzzy
 msgctxt "block title"
@@ -1305,6 +1309,11 @@ msgstr "Handbuch-Menü"
 msgctxt "block description"
 msgid "A compact list of the handbooks a visitor may read."
 msgstr "Eine kompakte Liste der Handbücher, die eine Besucherin lesen darf."
+
+#: blocks/mermaid/block.json
+msgctxt "block title"
+msgid "Mermaid"
+msgstr "Mermaid"
 
 #: blocks/navigation/block.json
 #, fuzzy
