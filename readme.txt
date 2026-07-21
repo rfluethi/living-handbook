@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.29.0
+Stable tag: 0.30.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.30.0 =
+* Housekeeping: the review-status filter no longer sets suppress_filters on its internal lookup, which the Plugin Check flags. No functional change.
 
 = 0.29.0 =
 * New: export a handbook as a self-contained bundle (a ZIP with a manifest and the media) from Handbook, Import, at the bottom of the page. First half of the export/import feature; the matching import follows. The bundle carries the pages, the handbook configuration, the vocabularies and the freshness data, and keeps GitHub-sourced pages pointing at their repository. Requires the content-manager role.
@@ -235,6 +238,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.30.0 =
+Housekeeping only: removes a suppress_filters flag the Plugin Check flags. No functional change. Pre-release: best on a fresh database.
 
 = 0.29.0 =
 Adds handbook export: download a handbook as a self-contained bundle (ZIP) under Handbook, Import. The matching import follows in a later release. Pre-release: best on a fresh database.

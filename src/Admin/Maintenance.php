@@ -394,14 +394,16 @@ final class Maintenance {
 			return;
 		}
 
+		// No suppress_filters here: this inner lookup is not the main query, so the
+		// other pre_get_posts hooks skip it, and the_posts does not run for an
+		// id-only query, so there is nothing to suppress and no recursion.
 		$ids = get_posts(
 			array(
-				'post_type'        => Handbook::POST_TYPE,
-				'post_status'      => 'any',
-				'posts_per_page'   => -1,
-				'fields'           => 'ids',
-				'no_found_rows'    => true,
-				'suppress_filters' => true,
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
 			)
 		);
 		if ( ! empty( $ids ) ) {
