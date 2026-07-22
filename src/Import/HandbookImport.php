@@ -308,17 +308,12 @@ final class HandbookImport {
 			update_term_meta( $term_id, Handbooks::META_ROLES, $roles );
 		}
 
-		$users = array();
-		foreach ( ( isset( $data['users'] ) && is_array( $data['users'] ) ? $data['users'] : array() ) as $identifier ) {
-			$user_id = $this->user_id_from_identifier( (string) $identifier );
-			if ( $user_id > 0 ) {
-				$users[] = $user_id;
-			} else {
-				$report['notes'][] = __( 'One allowed user from the bundle has no account here and was left out.', 'living-handbook' );
-			}
-		}
-		if ( ! empty( $users ) ) {
-			update_term_meta( $term_id, Handbooks::META_USERS, $users );
+		// A per-user allowlist is not taken from a bundle. Current exports do not
+		// write one, and an older bundle may still carry e-mail addresses from
+		// another site's user base; restoring those here would be neither correct
+		// nor data-minimal. Whoever imports sets the people by hand.
+		if ( ! empty( $data['users'] ) ) {
+			$report['notes'][] = __( 'The bundle carried a list of individually allowed users. It was not applied; set the people by hand if the handbook should be restricted.', 'living-handbook' );
 		}
 
 		return $term_id;

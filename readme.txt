@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.37.0
+Stable tag: 0.38.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.38.0 =
+* Privacy: an export no longer writes the list of individually allowed people into the bundle. Those are e-mail addresses, and a bundle is a file that gets downloaded and passed on; the target site has its own users anyway. Visibility and allowed roles still travel. If a handbook is restricted to named people, set them again after importing.
+* The separation of internal content over the REST API is now covered by tests: a logged-out guest and a subscriber get nothing from a members-only or restricted handbook, over the plugin's own filter and search routes as well as the core collection and single-item routes. Those two plugin routes are open on purpose so a public handbook stays searchable; the docblock now says so, and the tests make sure the checks inside them cannot quietly go missing.
 
 = 0.37.0 =
 * Security: content that arrives already converted to blocks is now cleaned before it is stored. This closes a hole in the bundle import, where a prepared bundle could have carried active markup into the handbook and run it in the browser of every logged-in reader. Cleaning runs block by block, so the block structure is untouched; scripts, event handlers and unsafe URLs are removed. The same cleaning now also runs on the import screen's create endpoint, so it is a property of writing rather than of converting.
@@ -267,6 +271,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.38.0 =
+An export no longer carries the e-mail addresses of individually allowed people, and the REST access separation is now covered by tests. Pre-release: best on a fresh database.
 
 = 0.37.0 =
 Security fix: imported block content is now cleaned before it is stored, closing a hole where a prepared bundle could carry active markup into the handbook. Recommended for anyone using the bundle import. Pre-release: best on a fresh database.

@@ -62,6 +62,17 @@ final class Filters {
 	/**
 	 * Register the REST route that returns the filtered result list.
 	 *
+	 * Both routes carry `permission_callback => '__return_true'` on purpose. A
+	 * public handbook has to stay searchable for logged-out visitors, so a blanket
+	 * login requirement would be wrong here. The access decision sits one level
+	 * deeper instead: rest_search() and rest_filter() check can_view_term() for the
+	 * handbook and can_view_post() for every single hit before anything is
+	 * returned, so the routes never hand out more than the caller may see.
+	 *
+	 * That makes the in-handler check load-bearing. Anyone adding a new return path
+	 * here must run it through the same check; `tests/Integration/RestAccessTest.php`
+	 * guards this, so a regression fails the suite instead of reaching the frontend.
+	 *
 	 * @return void
 	 */
 	public function register_rest(): void {

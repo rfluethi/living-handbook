@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-22T15:49:23+00:00\n"
+"POT-Creation-Date: 2026-07-22T16:15:47+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -96,11 +96,11 @@ msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
 # Search and filters
-#: src/Blocks/Blocks.php:246 src/Frontend/Filters.php:246
+#: src/Blocks/Blocks.php:246 src/Frontend/Filters.php:257
 msgid "Search this handbook"
 msgstr "Dieses Handbuch durchsuchen"
 
-#: src/Blocks/Blocks.php:247 src/Frontend/Filters.php:247
+#: src/Blocks/Blocks.php:247 src/Frontend/Filters.php:258
 msgid "Search this handbook …"
 msgstr "Dieses Handbuch durchsuchen …"
 
@@ -166,49 +166,49 @@ msgstr "Dieses Handbuch hat noch keine Seiten."
 msgid "Log in to see more."
 msgstr "Melde dich an, um mehr zu sehen."
 
-#: src/Frontend/Filters.php:249
+#: src/Frontend/Filters.php:260
 msgid "Search"
 msgstr "Suchen"
 
-#: src/Frontend/Filters.php:326
+#: src/Frontend/Filters.php:337
 msgid "Apply filters"
 msgstr "Filter anwenden"
 
-#: src/Frontend/Filters.php:327
+#: src/Frontend/Filters.php:338
 msgid "Reset"
 msgstr "Zurücksetzen"
 
 #. translators: %d: number of matching pages.
-#: src/Frontend/Filters.php:520
+#: src/Frontend/Filters.php:531
 #, php-format
 msgid "%d page found"
 msgid_plural "%d pages found"
 msgstr[0] "%d Seite gefunden"
 msgstr[1] "%d Seiten gefunden"
 
-#: src/Frontend/Filters.php:523
+#: src/Frontend/Filters.php:534
 msgid "No matches. Adjust the filters or the search."
 msgstr "Keine Treffer. Passe die Filter oder die Suche an."
 
 # Menu labels and taxonomy label set (batch: backend menu and labels)
-#: src/Frontend/Filters.php:538 src/PostType/Handbook.php:76
+#: src/Frontend/Filters.php:549 src/PostType/Handbook.php:76
 msgid "Handbook pages"
 msgstr "Handbuch-Seiten"
 
-#: src/Frontend/Filters.php:651 src/Taxonomy/Taxonomies.php:52
+#: src/Frontend/Filters.php:662 src/Taxonomy/Taxonomies.php:52
 msgid "Page type"
 msgstr "Seitentyp"
 
-#: src/Frontend/Filters.php:653 src/Taxonomy/Taxonomies.php:62
+#: src/Frontend/Filters.php:664 src/Taxonomy/Taxonomies.php:62
 msgid "Topics"
 msgstr "Themen"
 
-#: src/Frontend/Filters.php:655 src/Taxonomy/Taxonomies.php:73
+#: src/Frontend/Filters.php:666 src/Taxonomy/Taxonomies.php:73
 #: src/Taxonomy/Taxonomies.php:74
 msgid "Responsibility"
 msgstr "Verantwortung"
 
-#: src/Frontend/Filters.php:657 src/Taxonomy/Taxonomies.php:85
+#: src/Frontend/Filters.php:668 src/Taxonomy/Taxonomies.php:85
 msgid "Audience"
 msgstr "Zielgruppe"
 
@@ -655,13 +655,14 @@ msgstr ""
 "Das Handbuch wurde mit der Sichtbarkeit „Mitglieder“ angelegt. Stelle sie "
 "von Hand höher, wenn der Inhalt wirklich öffentlich sein soll."
 
-#: src/Import/HandbookImport.php:317
-msgid "One allowed user from the bundle has no account here and was left out."
+#: src/Import/HandbookImport.php:316
+msgid ""
+"The bundle carried a list of individually allowed users. It was not applied; "
+"set the people by hand if the handbook should be restricted."
 msgstr ""
-"Ein im Bündel erlaubter Benutzer hat hier kein Konto und wurde weggelassen."
 
 #. translators: 1: created count, 2: updated count, 3: skipped count, 4: protected count.
-#: src/Import/HandbookImport.php:623
+#: src/Import/HandbookImport.php:618
 #, php-format
 msgid ""
 "Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected."
@@ -1632,6 +1633,12 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#~ msgid ""
+#~ "One allowed user from the bundle has no account here and was left out."
+#~ msgstr ""
+#~ "Ein im Bündel erlaubter Benutzer hat hier kein Konto und wurde "
+#~ "weggelassen."
 
 #~ msgid ""
 #~ "For a pasted draft or a single GitHub file. If empty, the first heading "

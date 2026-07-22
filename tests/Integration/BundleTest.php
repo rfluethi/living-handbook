@@ -308,6 +308,31 @@ final class BundleTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The export carries no personal data: the per-user allowlist of a restricted
+	 * handbook stays behind, because a bundle is a file that gets passed around.
+	 *
+	 * @return void
+	 */
+	public function test_export_carries_no_user_addresses(): void {
+		$handbook = $this->make_handbook( 'Restricted' );
+		$user     = self::factory()->user->create(
+			array(
+				'role'       => 'subscriber',
+				'user_email' => 'person@example.com',
+			)
+		);
+		update_term_meta( $handbook, 'living_handbook_visibility', 'restricted' );
+		update_term_meta( $handbook, 'living_handbook_users', array( (int) $user ) );
+		$this->make_page( $handbook, 'A page' );
+
+		$manifest = $this->export( $handbook );
+		$encoded  = (string) wp_json_encode( $manifest );
+
+		$this->assertArrayNotHasKey( 'users', $manifest['handbook'] );
+		$this->assertStringNotContainsString( 'person@example.com', $encoded );
+	}
+
+	/**
 	 * A bundle is a file from another site, so its content is sanitised on the way
 	 * in: active markup is removed, while the block delimiters survive, which is the
 	 * whole point of cleaning block by block instead of running kses over the lot.

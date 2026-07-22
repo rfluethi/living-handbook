@@ -354,8 +354,7 @@ JS;
 		if ( '' === $visibility ) {
 			$visibility = Handbooks::VISIBILITY_MEMBERS;
 		}
-		$roles    = array_values( array_filter( array_map( 'strval', (array) get_term_meta( $term->term_id, Handbooks::META_ROLES, true ) ) ) );
-		$user_ids = array_map( 'intval', (array) get_term_meta( $term->term_id, Handbooks::META_USERS, true ) );
+		$roles = array_values( array_filter( array_map( 'strval', (array) get_term_meta( $term->term_id, Handbooks::META_ROLES, true ) ) ) );
 
 		$posts = get_posts(
 			array(
@@ -427,7 +426,11 @@ JS;
 				'name'       => $term->name,
 				'visibility' => $visibility,
 				'roles'      => $roles,
-				'users'      => $this->user_identifiers( $user_ids ),
+				// The per-user allowlist is deliberately not exported. It is personal
+				// data (e-mail addresses) in a file that gets downloaded and passed
+				// around, and it would not apply on the target anyway: a handbook
+				// created by an import starts at "members" visibility, and the target
+				// has a different set of users. Whoever imports sets the people.
 			),
 			'pages'    => $pages,
 			'media'    => $this->media_manifest( $media ),
@@ -662,24 +665,6 @@ JS;
 				'original_url' => (string) $item['original_url'],
 				'alt'          => (string) $item['alt'],
 			);
-		}
-		return $out;
-	}
-
-	/**
-	 * Map user IDs to a stable identifier (e-mail, falling back to login), dropping
-	 * users that no longer exist.
-	 *
-	 * @param int[] $user_ids User IDs.
-	 * @return string[]
-	 */
-	private function user_identifiers( array $user_ids ): array {
-		$out = array();
-		foreach ( $user_ids as $user_id ) {
-			$identifier = $this->user_identifier( (int) $user_id );
-			if ( '' !== $identifier ) {
-				$out[] = $identifier;
-			}
 		}
 		return $out;
 	}
