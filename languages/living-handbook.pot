@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.34.0\n"
+"Project-Id-Version: Living Handbook 0.35.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-22T11:31:03+00:00\n"
+"POT-Creation-Date: 2026-07-22T11:43:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -568,28 +568,28 @@ msgstr ""
 msgid "This file is not a Living Handbook bundle."
 msgstr ""
 
-#: src/Import/HandbookImport.php:201
+#: src/Import/HandbookImport.php:223
 msgid "The bundle names no handbook."
 msgstr ""
 
-#: src/Import/HandbookImport.php:248
+#: src/Import/HandbookImport.php:270
 msgid "The pages went into the handbook you chose; its access configuration was left unchanged."
 msgstr ""
 
-#: src/Import/HandbookImport.php:262
+#: src/Import/HandbookImport.php:284
 msgid "An existing handbook was reused; its access configuration was left unchanged."
 msgstr ""
 
-#: src/Import/HandbookImport.php:273
+#: src/Import/HandbookImport.php:295
 msgid "The handbook was created with visibility \"members\". Raise it by hand if the content really should be public."
 msgstr ""
 
-#: src/Import/HandbookImport.php:292
+#: src/Import/HandbookImport.php:314
 msgid "One allowed user from the bundle has no account here and was left out."
 msgstr ""
 
 #. translators: 1: created count, 2: updated count, 3: skipped count, 4: protected count.
-#: src/Import/HandbookImport.php:592
+#: src/Import/HandbookImport.php:614
 #, php-format
 msgid "Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected."
 msgstr ""

@@ -188,6 +188,28 @@ final class HandbookImport {
 	 * @return array<string, mixed>
 	 */
 	private function import_bundle( array $manifest, ZipArchive $zip, string $rule, int $chosen = 0 ): array {
+		return $this->import_manifest(
+			$manifest,
+			static function ( string $file ) use ( $zip ) {
+				return $zip->getFromName( $file );
+			},
+			$rule,
+			$chosen
+		);
+	}
+
+	/**
+	 * Import a decoded manifest. The media reader hands back the bytes of a file
+	 * inside the bundle, or false. Keeping that a callable means the import logic
+	 * does not depend on ZipArchive and can be exercised directly in tests.
+	 *
+	 * @param array<string, mixed> $manifest     Decoded manifest.
+	 * @param callable             $media_reader Returns the bytes of a bundle file, or false.
+	 * @param string               $rule         Run rule.
+	 * @param int                  $chosen       Chosen target handbook term ID, or 0 for the bundle's own.
+	 * @return array<string, mixed>
+	 */
+	public function import_manifest( array $manifest, callable $media_reader, string $rule, int $chosen = 0 ): array {
 		$report = array(
 			'created'   => 0,
 			'updated'   => 0,
@@ -201,7 +223,7 @@ final class HandbookImport {
 			return array( 'error' => __( 'The bundle names no handbook.', 'living-handbook' ) );
 		}
 
-		$media_map = $this->import_media( $manifest, $zip );
+		$media_map = $this->import_media( $manifest, $media_reader );
 
 		$pages = isset( $manifest['pages'] ) && is_array( $manifest['pages'] ) ? $manifest['pages'] : array();
 		// Shallow keys first, so a parent always exists before its children.
@@ -303,11 +325,11 @@ final class HandbookImport {
 	 * Sideload the bundle's media and return a map of the original URL to the new
 	 * one, so page content can be pointed at this site's copies.
 	 *
-	 * @param array<string, mixed> $manifest Decoded manifest.
-	 * @param ZipArchive           $zip      The open bundle.
+	 * @param array<string, mixed> $manifest     Decoded manifest.
+	 * @param callable             $media_reader Returns the bytes of a bundle file, or false.
 	 * @return array<string, string>
 	 */
-	private function import_media( array $manifest, ZipArchive $zip ): array {
+	private function import_media( array $manifest, callable $media_reader ): array {
 		$map   = array();
 		$items = isset( $manifest['media'] ) && is_array( $manifest['media'] ) ? $manifest['media'] : array();
 		foreach ( $items as $item ) {
@@ -319,8 +341,8 @@ final class HandbookImport {
 			if ( '' === $file || '' === $original ) {
 				continue;
 			}
-			$data = $zip->getFromName( $file );
-			if ( false === $data ) {
+			$data = $media_reader( $file );
+			if ( ! is_string( $data ) || '' === $data ) {
 				continue;
 			}
 			$url = MarkdownImportPage::sideload_image( basename( $file ), $data );
