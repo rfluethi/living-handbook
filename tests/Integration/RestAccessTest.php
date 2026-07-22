@@ -214,6 +214,48 @@ final class RestAccessTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The counter-check for all of the above: someone who may read the handbook
+	 * does get the content over the same four routes.
+	 *
+	 * Without this, the tests above could pass for the wrong reason. A route that
+	 * returns nothing to anyone, or a query that never matches, would satisfy every
+	 * "must not contain" assertion while proving nothing. This test fails in exactly
+	 * that case, so the negative tests keep their meaning.
+	 *
+	 * @return void
+	 */
+	public function test_a_content_manager_does_get_the_content(): void {
+		$handbook = $this->make_handbook( Handbooks::VISIBILITY_RESTRICTED, array( 'administrator' ) );
+		$page     = $this->make_page( $handbook, 'Restricted page' );
+
+		$this->become( 'administrator' );
+
+		$filter = $this->get( '/' . Filters::REST_NAMESPACE . Filters::REST_ROUTE, array( 'term_id' => $handbook ) );
+		$this->assertStringContainsString( 'Restricted page', (string) wp_json_encode( $filter['data'] ) );
+
+		$search = $this->get(
+			'/' . Filters::REST_NAMESPACE . Filters::REST_ROUTE_SEARCH,
+			array(
+				'term_id' => $handbook,
+				'q'       => 'Restricted',
+			)
+		);
+		$this->assertStringContainsString( 'Restricted page', (string) wp_json_encode( $search['data'] ) );
+
+		$collection = $this->get( '/wp/v2/' . Handbook::POST_TYPE );
+		$ids        = array();
+		foreach ( (array) $collection['data'] as $item ) {
+			if ( is_array( $item ) && isset( $item['id'] ) ) {
+				$ids[] = (int) $item['id'];
+			}
+		}
+		$this->assertContains( $page, $ids );
+
+		$single = $this->get( '/wp/v2/' . Handbook::POST_TYPE . '/' . $page );
+		$this->assertSame( 200, $single['status'] );
+	}
+
+	/**
 	 * The core single-item route does not hand out a page of a restricted handbook.
 	 *
 	 * @dataProvider outsiders

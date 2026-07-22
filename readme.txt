@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.38.0
+Stable tag: 0.38.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.38.1 =
+* Test quality: the new REST access tests got a counter-check. A test that only asserts "the answer does not contain this" passes just as happily when the answer is empty for everyone, which would prove nothing. The counter-check confirms that a content manager does get the content over the same four routes, so the negative tests fail if the routes ever stop returning anything.
 
 = 0.38.0 =
 * Privacy: an export no longer writes the list of individually allowed people into the bundle. Those are e-mail addresses, and a bundle is a file that gets downloaded and passed on; the target site has its own users anyway. Visibility and allowed roles still travel. If a handbook is restricted to named people, set them again after importing.
@@ -271,6 +274,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.38.1 =
+Adds a counter-check to the new REST access tests, so they cannot pass for the wrong reason. No functional change. Pre-release: best on a fresh database.
 
 = 0.38.0 =
 An export no longer carries the e-mail addresses of individually allowed people, and the REST access separation is now covered by tests. Pre-release: best on a fresh database.
