@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.30.0
+Stable tag: 0.31.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.31.0 =
+* Export now also does a single area: pick a top-level page and export just it and its subpages, instead of the whole handbook. The bundle still carries the handbook's configuration.
 
 = 0.30.0 =
 * Housekeeping: the review-status filter no longer sets suppress_filters on its internal lookup, which the Plugin Check flags. No functional change.
@@ -238,6 +241,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.31.0 =
+Export now also handles a single area (a top-level page and its subpages), not just a whole handbook. Pre-release: best on a fresh database.
 
 = 0.30.0 =
 Housekeeping only: removes a suppress_filters flag the Plugin Check flags. No functional change. Pre-release: best on a fresh database.

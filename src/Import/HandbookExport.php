@@ -83,21 +83,45 @@ final class HandbookExport {
 		check_admin_referer( self::ACTION );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
+		$area_id = isset( $_POST['area'] ) ? absint( wp_unslash( $_POST['area'] ) ) : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
 		$handbook_id = isset( $_POST['handbook'] ) ? absint( wp_unslash( $_POST['handbook'] ) ) : 0;
-		$term        = $handbook_id > 0 ? get_term( $handbook_id, Handbooks::TAXONOMY ) : null;
-		if ( ! $term instanceof WP_Term ) {
-			wp_die( esc_html__( 'Choose a handbook to export.', 'living-handbook' ), '', array( 'response' => 400 ) );
+
+		$root_id   = 0;
+		$root_slug = '';
+		if ( $area_id > 0 ) {
+			// An area export: the chosen top page and its descendants. The handbook
+			// is taken from that page, so its configuration still travels.
+			$post = get_post( $area_id );
+			if ( ! $post instanceof WP_Post || Handbook::POST_TYPE !== $post->post_type ) {
+				wp_die( esc_html__( 'Choose an area to export.', 'living-handbook' ), '', array( 'response' => 400 ) );
+			}
+			$terms = wp_get_object_terms( $area_id, Handbooks::TAXONOMY );
+			$term  = ( is_array( $terms ) && isset( $terms[0] ) && $terms[0] instanceof WP_Term ) ? $terms[0] : null;
+			if ( ! $term instanceof WP_Term ) {
+				wp_die( esc_html__( 'That page is not in a handbook.', 'living-handbook' ), '', array( 'response' => 400 ) );
+			}
+			$root_id   = $area_id;
+			$root_slug = '' !== $post->post_name ? $post->post_name : sanitize_title( $post->post_title );
+		} else {
+			$term = $handbook_id > 0 ? get_term( $handbook_id, Handbooks::TAXONOMY ) : null;
+			if ( ! $term instanceof WP_Term ) {
+				wp_die( esc_html__( 'Choose a handbook to export.', 'living-handbook' ), '', array( 'response' => 400 ) );
+			}
 		}
+
 		if ( ! class_exists( 'ZipArchive' ) ) {
 			wp_die( esc_html__( 'ZipArchive is not available on the server.', 'living-handbook' ), '', array( 'response' => 501 ) );
 		}
 
-		$path = $this->build_zip( $term );
+		$path = $this->build_zip( $term, $root_id );
 		if ( '' === $path ) {
 			wp_die( esc_html__( 'The export bundle could not be created.', 'living-handbook' ), '', array( 'response' => 500 ) );
 		}
 
-		$filename = 'living-handbook-' . ( '' !== $term->slug ? $term->slug : 'handbook' ) . '-' . gmdate( 'Y-m-d' ) . '.zip';
+		$base     = '' !== $term->slug ? $term->slug : 'handbook';
+		$suffix   = '' !== $root_slug ? '-' . $root_slug : '';
+		$filename = 'living-handbook-' . $base . $suffix . '-' . gmdate( 'Y-m-d' ) . '.zip';
 
 		nocache_headers();
 		header( 'Content-Type: application/zip' );
@@ -113,12 +137,13 @@ final class HandbookExport {
 	 * Build the export bundle for a handbook and return the temp ZIP path, or an
 	 * empty string on failure.
 	 *
-	 * @param WP_Term $term Handbook term.
+	 * @param WP_Term $term    Handbook term.
+	 * @param int     $root_id Optional area root page ID; 0 exports the whole handbook.
 	 * @return string
 	 */
-	public function build_zip( WP_Term $term ): string {
+	public function build_zip( WP_Term $term, int $root_id = 0 ): string {
 		$media    = array();
-		$manifest = $this->build_manifest( $term, $media );
+		$manifest = $this->build_manifest( $term, $media, $root_id );
 
 		$json = wp_json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 		if ( false === $json ) {
@@ -149,11 +174,12 @@ final class HandbookExport {
 	/**
 	 * Build the manifest array for a handbook and collect its media by reference.
 	 *
-	 * @param WP_Term                     $term  Handbook term.
-	 * @param array<string, array<mixed>> $media Collected media, keyed by attachment ID (out).
+	 * @param WP_Term                     $term    Handbook term.
+	 * @param array<string, array<mixed>> $media   Collected media, keyed by attachment ID (out).
+	 * @param int                         $root_id Optional area root page ID; 0 exports the whole handbook.
 	 * @return array<string, mixed>
 	 */
-	public function build_manifest( WP_Term $term, array &$media ): array {
+	public function build_manifest( WP_Term $term, array &$media, int $root_id = 0 ): array {
 		$visibility = (string) get_term_meta( $term->term_id, Handbooks::META_VISIBILITY, true );
 		if ( '' === $visibility ) {
 			$visibility = Handbooks::VISIBILITY_MEMBERS;
@@ -179,18 +205,41 @@ final class HandbookExport {
 			)
 		);
 
-		$in_set = array();
+		$all = array();
 		foreach ( $posts as $post ) {
 			if ( $post instanceof WP_Post ) {
-				$in_set[ $post->ID ] = $post;
+				$all[ $post->ID ] = $post;
 			}
 		}
 
-		$pages = array();
-		foreach ( $posts as $post ) {
-			if ( $post instanceof WP_Post ) {
-				$pages[] = $this->build_page( $post, $in_set, $media );
+		// For an area export, keep only the chosen top page and its descendants.
+		// Keys and parents are then computed against that reduced set, so the area
+		// root becomes top-level in the bundle.
+		$exported = $all;
+		if ( $root_id > 0 && isset( $all[ $root_id ] ) ) {
+			$subtree  = $this->subtree_ids( $root_id, $all );
+			$exported = array();
+			foreach ( $all as $id => $post ) {
+				if ( isset( $subtree[ $id ] ) ) {
+					$exported[ $id ] = $post;
+				}
 			}
+		} else {
+			$root_id = 0;
+		}
+
+		$pages = array();
+		foreach ( $exported as $post ) {
+			$pages[] = $this->build_page( $post, $exported, $media );
+		}
+
+		// A root id that survived the block above is guaranteed to be in the set.
+		$area = null;
+		if ( $root_id > 0 ) {
+			$area = array(
+				'root_key' => $this->page_key( $all[ $root_id ], $exported ),
+				'title'    => $all[ $root_id ]->post_title,
+			);
 		}
 
 		return array(
@@ -201,7 +250,8 @@ final class HandbookExport {
 				'plugin_version' => LIVING_HANDBOOK_VERSION,
 				'date'           => gmdate( 'c' ),
 			),
-			'scope'    => 'handbook',
+			'scope'    => $root_id > 0 ? 'area' : 'handbook',
+			'area'     => $area,
 			'handbook' => array(
 				'slug'       => $term->slug,
 				'name'       => $term->name,
@@ -212,6 +262,38 @@ final class HandbookExport {
 			'pages'    => $pages,
 			'media'    => $this->media_manifest( $media ),
 		);
+	}
+
+	/**
+	 * The IDs of a page subtree: the root and every descendant, resolved against
+	 * the full handbook set by walking each page's ancestors up to the root.
+	 *
+	 * @param int                 $root_id Root page ID.
+	 * @param array<int, WP_Post> $all     All handbook pages, keyed by ID.
+	 * @return array<int, bool> IDs in the subtree, as keys.
+	 */
+	private function subtree_ids( int $root_id, array $all ): array {
+		$ids = array();
+		foreach ( $all as $id => $post ) {
+			if ( ! $post instanceof WP_Post ) {
+				continue;
+			}
+			$current = $post;
+			$guard   = 0;
+			while ( $current instanceof WP_Post && $guard < 100 ) {
+				if ( $current->ID === $root_id ) {
+					$ids[ $id ] = true;
+					break;
+				}
+				$parent = $current->post_parent;
+				if ( $parent <= 0 || ! isset( $all[ $parent ] ) ) {
+					break;
+				}
+				$current = $all[ $parent ];
+				++$guard;
+			}
+		}
+		return $ids;
 	}
 
 	/**

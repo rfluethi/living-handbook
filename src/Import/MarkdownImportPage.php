@@ -13,6 +13,7 @@ use LivingHandbook\Git\GitSync;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use WP_Error;
+use WP_Post;
 use WP_REST_Request;
 use WP_Term;
 use ZipArchive;
@@ -760,6 +761,54 @@ final class MarkdownImportPage {
 	}
 
 	/**
+	 * The top-level handbook pages offered as an export area, grouped by handbook.
+	 * An area is a top-level page (no parent) that belongs to a handbook; its
+	 * subpages travel with it on export.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	private function export_areas(): array {
+		$posts = get_posts(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_parent'    => 0,
+				'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+				'no_found_rows'  => true,
+			)
+		);
+
+		$groups = array();
+		foreach ( $posts as $post ) {
+			if ( ! $post instanceof WP_Post ) {
+				continue;
+			}
+			$terms = wp_get_object_terms( $post->ID, Handbooks::TAXONOMY );
+			if ( is_wp_error( $terms ) ) {
+				continue;
+			}
+			foreach ( $terms as $term ) {
+				if ( ! $term instanceof WP_Term ) {
+					continue;
+				}
+				if ( ! isset( $groups[ $term->term_id ] ) ) {
+					$groups[ $term->term_id ] = array(
+						'name'  => $term->name,
+						'items' => array(),
+					);
+				}
+				$groups[ $term->term_id ]['items'][] = array(
+					'id'    => $post->ID,
+					'title' => $post->post_title,
+				);
+			}
+		}
+		return $groups;
+	}
+
+	/**
 	 * Render the import page.
 	 *
 	 * @return void
@@ -851,9 +900,10 @@ final class MarkdownImportPage {
 			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
 
 			<?php if ( HandbookExport::can_export() ) : ?>
+				<?php $areas_by_handbook = $this->export_areas(); ?>
 				<hr style="margin:2rem 0 1rem">
 				<h2 class="living-handbook-import__step"><?php esc_html_e( 'Export', 'living-handbook' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Download a handbook as a bundle (a ZIP with its pages, configuration and media) to import it on another site running the plugin.', 'living-handbook' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Download a handbook, or a single area, as a bundle (a ZIP with its pages, configuration and media) to import it on another site running the plugin.', 'living-handbook' ); ?></p>
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="living_handbook_export">
 					<?php wp_nonce_field( 'living_handbook_export' ); ?>
@@ -871,8 +921,26 @@ final class MarkdownImportPage {
 								</select>
 							</td>
 						</tr>
+						<?php if ( ! empty( $areas_by_handbook ) ) : ?>
+							<tr>
+								<th scope="row"><label for="lh-export-area"><?php esc_html_e( 'Single area (optional)', 'living-handbook' ); ?></label></th>
+								<td>
+									<select id="lh-export-area" name="area">
+										<option value="0"><?php esc_html_e( '— the whole handbook —', 'living-handbook' ); ?></option>
+										<?php foreach ( $areas_by_handbook as $group ) : ?>
+											<optgroup label="<?php echo esc_attr( (string) $group['name'] ); ?>">
+												<?php foreach ( $group['items'] as $item ) : ?>
+													<option value="<?php echo esc_attr( (string) $item['id'] ); ?>"><?php echo esc_html( (string) $item['title'] ); ?></option>
+												<?php endforeach; ?>
+											</optgroup>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Export just one area (a top-level page and its subpages) instead of the whole handbook. This overrides the handbook chosen above.', 'living-handbook' ); ?></p>
+								</td>
+							</tr>
+						<?php endif; ?>
 					</table>
-					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Export handbook', 'living-handbook' ); ?></button></p>
+					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Export bundle', 'living-handbook' ); ?></button></p>
 				</form>
 			<?php endif; ?>
 		</div>
