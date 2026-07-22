@@ -23,6 +23,21 @@ use WP_UnitTestCase;
 final class BundleTest extends WP_UnitTestCase {
 
 	/**
+	 * Run as a content manager, which is who may export and import.
+	 *
+	 * Without a user the frontend access layer applies to the queries the export
+	 * makes: a guest may not view a members-only handbook, so every page would be
+	 * filtered out and the export would come back empty. In the backend, where the
+	 * export actually runs, that layer steps aside.
+	 *
+	 * @return void
+	 */
+	public function set_up(): void {
+		parent::set_up();
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+	}
+
+	/**
 	 * Create a handbook (grouping term).
 	 *
 	 * @param string $name Handbook name.
