@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.31.0
+Stable tag: 0.32.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.32.0 =
+* The export picker now works in two dependent steps: choose the handbook, and the second field lists only that handbook's areas. Previously it offered every handbook's areas at once, which is unusable once a site has more than a few.
 
 = 0.31.0 =
 * Export now also does a single area: pick a top-level page and export just it and its subpages, instead of the whole handbook. The bundle still carries the handbook's configuration.
@@ -241,6 +244,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.32.0 =
+The export picker now has two dependent fields: pick the handbook, and the second field lists only that handbook's areas. Pre-release: best on a fresh database.
 
 = 0.31.0 =
 Export now also handles a single area (a top-level page and its subpages), not just a whole handbook. Pre-release: best on a fresh database.

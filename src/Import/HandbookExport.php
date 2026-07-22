@@ -82,32 +82,37 @@ final class HandbookExport {
 		}
 		check_admin_referer( self::ACTION );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
-		$area_id = isset( $_POST['area'] ) ? absint( wp_unslash( $_POST['area'] ) ) : 0;
+		// The handbook is chosen first; the area field is filled from it and, when
+		// set, narrows the export to that page and its descendants.
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
 		$handbook_id = isset( $_POST['handbook'] ) ? absint( wp_unslash( $_POST['handbook'] ) ) : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
+		$area_id = isset( $_POST['area'] ) ? absint( wp_unslash( $_POST['area'] ) ) : 0;
 
+		$term      = null;
 		$root_id   = 0;
 		$root_slug = '';
 		if ( $area_id > 0 ) {
 			// An area export: the chosen top page and its descendants. The handbook
 			// is taken from that page, so its configuration still travels.
 			$post = get_post( $area_id );
-			if ( ! $post instanceof WP_Post || Handbook::POST_TYPE !== $post->post_type ) {
-				wp_die( esc_html__( 'Choose an area to export.', 'living-handbook' ), '', array( 'response' => 400 ) );
+			if ( $post instanceof WP_Post && Handbook::POST_TYPE === $post->post_type ) {
+				$terms = wp_get_object_terms( $area_id, Handbooks::TAXONOMY );
+				$found = ( is_array( $terms ) && isset( $terms[0] ) && $terms[0] instanceof WP_Term ) ? $terms[0] : null;
+				if ( ! $found instanceof WP_Term ) {
+					wp_die( esc_html__( 'That page is not in a handbook.', 'living-handbook' ), '', array( 'response' => 400 ) );
+				}
+				$term      = $found;
+				$root_id   = $area_id;
+				$root_slug = '' !== $post->post_name ? $post->post_name : sanitize_title( $post->post_title );
 			}
-			$terms = wp_get_object_terms( $area_id, Handbooks::TAXONOMY );
-			$term  = ( is_array( $terms ) && isset( $terms[0] ) && $terms[0] instanceof WP_Term ) ? $terms[0] : null;
-			if ( ! $term instanceof WP_Term ) {
-				wp_die( esc_html__( 'That page is not in a handbook.', 'living-handbook' ), '', array( 'response' => 400 ) );
-			}
-			$root_id   = $area_id;
-			$root_slug = '' !== $post->post_name ? $post->post_name : sanitize_title( $post->post_title );
-		} else {
-			$term = $handbook_id > 0 ? get_term( $handbook_id, Handbooks::TAXONOMY ) : null;
-			if ( ! $term instanceof WP_Term ) {
-				wp_die( esc_html__( 'Choose a handbook to export.', 'living-handbook' ), '', array( 'response' => 400 ) );
-			}
+		} elseif ( $handbook_id > 0 ) {
+			$found = get_term( $handbook_id, Handbooks::TAXONOMY );
+			$term  = $found instanceof WP_Term ? $found : null;
+		}
+
+		if ( ! $term instanceof WP_Term ) {
+			wp_die( esc_html__( 'Choose what to export.', 'living-handbook' ), '', array( 'response' => 400 ) );
 		}
 
 		if ( ! class_exists( 'ZipArchive' ) ) {

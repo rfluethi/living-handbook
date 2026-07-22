@@ -758,14 +758,59 @@ final class MarkdownImportPage {
 		);
 
 		wp_set_script_translations( 'living-handbook-markdown-import', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
+
+		// The export area field depends on the chosen handbook, so it is filled
+		// from this map instead of listing every handbook's areas at once, which
+		// would be unusable on a large site.
+		if ( HandbookExport::can_export() ) {
+			wp_localize_script( 'living-handbook-markdown-import', 'lhExportAreas', $this->export_areas() );
+			wp_add_inline_script( 'living-handbook-markdown-import', self::export_area_script() );
+		}
 	}
 
 	/**
-	 * The top-level handbook pages offered as an export area, grouped by handbook.
-	 * An area is a top-level page (no parent) that belongs to a handbook; its
-	 * subpages travel with it on export.
+	 * The small script that refills the export area field whenever the handbook
+	 * selection changes. Without JavaScript the field keeps its single "whole
+	 * handbook" entry, so a whole-handbook export still works.
 	 *
-	 * @return array<int, array<string, mixed>>
+	 * @return string
+	 */
+	private static function export_area_script(): string {
+		return <<<'JS'
+( function () {
+	var handbook = document.getElementById( 'lh-export-handbook' );
+	var area = document.getElementById( 'lh-export-area' );
+	if ( ! handbook || ! area || typeof lhExportAreas === 'undefined' ) {
+		return;
+	}
+	var whole = area.getAttribute( 'data-whole' ) || '';
+	function fill() {
+		var list = lhExportAreas[ handbook.value ] || [];
+		area.innerHTML = '';
+		var first = document.createElement( 'option' );
+		first.value = '0';
+		first.textContent = whole;
+		area.appendChild( first );
+		for ( var i = 0; i < list.length; i++ ) {
+			var option = document.createElement( 'option' );
+			option.value = String( list[ i ].id );
+			option.textContent = list[ i ].title;
+			area.appendChild( option );
+		}
+		area.disabled = ( '0' === handbook.value );
+	}
+	handbook.addEventListener( 'change', fill );
+	fill();
+}() );
+JS;
+	}
+
+	/**
+	 * The top-level handbook pages offered as an export area, keyed by handbook
+	 * term ID. An area is a top-level page (no parent) that belongs to a handbook;
+	 * its subpages travel with it on export.
+	 *
+	 * @return array<int, array<int, array<string, mixed>>>
 	 */
 	private function export_areas(): array {
 		$posts = get_posts(
@@ -794,12 +839,9 @@ final class MarkdownImportPage {
 					continue;
 				}
 				if ( ! isset( $groups[ $term->term_id ] ) ) {
-					$groups[ $term->term_id ] = array(
-						'name'  => $term->name,
-						'items' => array(),
-					);
+					$groups[ $term->term_id ] = array();
 				}
-				$groups[ $term->term_id ]['items'][] = array(
+				$groups[ $term->term_id ][] = array(
 					'id'    => $post->ID,
 					'title' => $post->post_title,
 				);
@@ -900,16 +942,15 @@ final class MarkdownImportPage {
 			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
 
 			<?php if ( HandbookExport::can_export() ) : ?>
-				<?php $areas_by_handbook = $this->export_areas(); ?>
 				<hr style="margin:2rem 0 1rem">
 				<h2 class="living-handbook-import__step"><?php esc_html_e( 'Export', 'living-handbook' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Download a handbook, or a single area, as a bundle (a ZIP with its pages, configuration and media) to import it on another site running the plugin.', 'living-handbook' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Download a handbook, or a single area within it, as a bundle (a ZIP with its pages, configuration and media) to import it on another site running the plugin.', 'living-handbook' ); ?></p>
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="living_handbook_export">
 					<?php wp_nonce_field( 'living_handbook_export' ); ?>
 					<table class="form-table" role="presentation">
 						<tr>
-							<th scope="row"><label for="lh-export-handbook"><?php esc_html_e( 'Handbook to export', 'living-handbook' ); ?></label></th>
+							<th scope="row"><label for="lh-export-handbook"><?php esc_html_e( 'Handbook', 'living-handbook' ); ?></label></th>
 							<td>
 								<select id="lh-export-handbook" name="handbook">
 									<option value="0"><?php esc_html_e( '— select a handbook —', 'living-handbook' ); ?></option>
@@ -921,24 +962,15 @@ final class MarkdownImportPage {
 								</select>
 							</td>
 						</tr>
-						<?php if ( ! empty( $areas_by_handbook ) ) : ?>
-							<tr>
-								<th scope="row"><label for="lh-export-area"><?php esc_html_e( 'Single area (optional)', 'living-handbook' ); ?></label></th>
-								<td>
-									<select id="lh-export-area" name="area">
-										<option value="0"><?php esc_html_e( '— the whole handbook —', 'living-handbook' ); ?></option>
-										<?php foreach ( $areas_by_handbook as $group ) : ?>
-											<optgroup label="<?php echo esc_attr( (string) $group['name'] ); ?>">
-												<?php foreach ( $group['items'] as $item ) : ?>
-													<option value="<?php echo esc_attr( (string) $item['id'] ); ?>"><?php echo esc_html( (string) $item['title'] ); ?></option>
-												<?php endforeach; ?>
-											</optgroup>
-										<?php endforeach; ?>
-									</select>
-									<p class="description"><?php esc_html_e( 'Export just one area (a top-level page and its subpages) instead of the whole handbook. This overrides the handbook chosen above.', 'living-handbook' ); ?></p>
-								</td>
-							</tr>
-						<?php endif; ?>
+						<tr>
+							<th scope="row"><label for="lh-export-area"><?php esc_html_e( 'What to export', 'living-handbook' ); ?></label></th>
+							<td>
+								<select id="lh-export-area" name="area" data-whole="<?php esc_attr_e( '— the whole handbook —', 'living-handbook' ); ?>">
+									<option value="0"><?php esc_html_e( '— the whole handbook —', 'living-handbook' ); ?></option>
+								</select>
+								<p class="description"><?php esc_html_e( 'Lists the areas of the handbook chosen above. An area is a top-level page; it exports with its subpages.', 'living-handbook' ); ?></p>
+							</td>
+						</tr>
 					</table>
 					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Export bundle', 'living-handbook' ); ?></button></p>
 				</form>

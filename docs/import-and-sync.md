@@ -30,7 +30,7 @@ When a page is updated this way it keeps its **slug and its publication status**
 
 ## Exporting a handbook
 
-At the bottom of the import screen, a content manager can **export a handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick a handbook, then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. Instead of the whole handbook you can pick a single **area** (a top-level page and its subpages) to export just that part; the bundle still carries the handbook's configuration.
+At the bottom of the import screen, a content manager can **export a handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick the **handbook** first; the second field then lists that handbook's **areas** (an area is a top-level page, and it exports together with its subpages). Leave it on *the whole handbook* to export everything. Then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. An area bundle still carries the handbook's configuration, so the target knows where the pages belong.
 
 The bundle carries the handbook's configuration (visibility, roles, allowed users by e-mail or login), every page as a block-markup snapshot with its place in the hierarchy, the four vocabularies, the freshness metadata, and the referenced media. A GitHub-sourced page keeps its source URL, so on the target site it resumes syncing from the same repository. Local, site-specific data is deliberately left out: the feedback counts and the sync status belong to each site.
 
