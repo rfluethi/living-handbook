@@ -83,7 +83,8 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Changelog ==
 
 = 0.35.0 =
-* Tests for the bundle export and import: a round trip into another handbook, each of the three conflict rules, the protected flag, the vocabularies travelling with a page, and an area export carrying only its own subtree. No functional change.
+* Tests for the bundle export and import: a round trip into another handbook, each of the three conflict rules, the protected flag, the vocabularies travelling with a page, and an area export carrying only its own subtree.
+* Fixed, found by those tests: when a page was matched by slug, the restriction to the target handbook did not apply, because a query by name is treated as a lookup for a single page. An import into one handbook could therefore match a page of the same slug in a different handbook and, depending on the rule, skip or overwrite it. Both the bundle import and the Markdown re-import used that lookup and are corrected.
 
 = 0.34.0 =
 * The bundle import can now be pointed at an existing handbook instead of the one named in the bundle. The chosen handbook keeps its own access configuration.
@@ -258,7 +259,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Upgrade Notice ==
 
 = 0.35.0 =
-Adds tests for the bundle export and import, covering the rules that decide whether existing content is touched. No functional change. Pre-release: best on a fresh database.
+Adds tests for the bundle export and import, and fixes a matching bug they found: an import could match a page of the same slug in a different handbook. Pre-release: best on a fresh database.
 
 = 0.34.0 =
 The bundle import can now be pointed at an existing handbook instead of the one named in the bundle. Pre-release: best on a fresh database.

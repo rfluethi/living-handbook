@@ -495,7 +495,10 @@ final class HandbookImport {
 		}
 
 		if ( '' !== $slug ) {
-			$found = get_posts( array_merge( $base, array( 'name' => $slug ) ) );
+			// post_name__in, not name: a "name" query is treated as a singular
+			// lookup, and the handbook restriction above would then not apply, so
+			// a page of the same slug in another handbook would match.
+			$found = get_posts( array_merge( $base, array( 'post_name__in' => array( $slug ) ) ) );
 			if ( ! empty( $found ) ) {
 				return (int) $found[0];
 			}

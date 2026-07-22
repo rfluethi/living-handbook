@@ -554,7 +554,10 @@ final class MarkdownImportPage {
 		}
 
 		if ( $allow_slug_match && '' !== $slug ) {
-			$by_slug = get_posts( array_merge( $base, array( 'name' => $slug ) ) );
+			// post_name__in, not name: a "name" query is treated as a singular
+			// lookup, and the handbook restriction in $base would then not apply,
+			// so a page of the same slug in another handbook would match.
+			$by_slug = get_posts( array_merge( $base, array( 'post_name__in' => array( $slug ) ) ) );
 			if ( ! empty( $by_slug ) ) {
 				return (int) $by_slug[0];
 			}
