@@ -18,6 +18,19 @@ Activation does three things for you:
 - It creates a normal WordPress page called **Handbook** with the **Handbook overview** block on it, so a fresh install shows something instead of an empty archive. You can move, restyle or replace this page later.
 - It flushes rewrite rules, so the handbook URLs work right away.
 
+## Shortcut: load the app handbook first
+
+The plugin brings its own handbook along. It documents how a Living Handbook is built, and because it is written as a working handbook it is at the same time an example of one. Go to **Handbook → Import**, open the tab **App handbook** and press **Load app handbook**. You get nine pages in three areas, with several page types, filled vocabularies and pages in every review state, so the page type, the filters and the freshness badges are visible doing their job.
+
+Some details worth knowing:
+
+- It is never loaded on activation, only when you ask for it. It follows the admin language and exists in English and German.
+- By default it goes into a handbook of its own with visibility **members**, so nothing becomes public. You can pick an existing handbook instead, under **Load into**; that handbook keeps its own visibility.
+- Loading it a second time never overwrites your edits; only pages you deleted come back.
+- To get rid of it, delete its pages and then the handbook. Nothing else depends on it.
+
+The rest of this guide builds a handbook from scratch, which is what you will do for real content.
+
 ## 2. Create your first handbook
 
 A handbook is the container your pages live in. Go to **Handbook → Handbooks → Add New**, give it a name (for example "General") and a short description, and save.

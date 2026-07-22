@@ -68,6 +68,18 @@ final class GitSync {
 
 	private const META_ERROR = '_lh_sync_error';
 
+	/**
+	 * Marks a page that stands for a repository folder with no Markdown file of
+	 * its own, so a second import finds it again instead of creating another.
+	 */
+	private const META_FOLDER = '_lh_github_folder';
+
+	/**
+	 * How many files one folder import may create. A guard against pointing the
+	 * import at a repository root and waiting for a thousand pages.
+	 */
+	private const MAX_FOLDER_FILES = 200;
+
 	private const CRON_HOOK = 'living_handbook_git_sync';
 
 	public const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
@@ -338,10 +350,19 @@ final class GitSync {
 	}
 
 	/**
-	 * Import every Markdown file in a GitHub folder (a tree URL) as a locked page.
+	 * Import every Markdown file under a GitHub folder (a tree URL) as a locked
+	 * page, keeping the folder structure as page hierarchy.
 	 *
-	 * Uses the GitHub contents API. Only the given folder is read (no recursion
-	 * into subfolders); README.md is included.
+	 * Subfolders are descended into. The whole repository tree is read in a
+	 * single request to the Git trees API, not one contents request per folder:
+	 * unauthenticated GitHub allows 60 requests an hour, so a walk that spends
+	 * one on every folder runs out on a documentation repository of any size.
+	 *
+	 * A folder becomes a page, so the structure survives the import. Which page
+	 * depends on what is in it: an index.md or README.md becomes the folder's own
+	 * page and its siblings hang under it; a folder with neither gets a page made
+	 * from its name, holding the area entries block, because a level that exists
+	 * in the repository but not in the handbook would break the navigation.
 	 *
 	 * @param string $tree_url    A github.com tree URL to a folder.
 	 * @param int    $handbook_id Optional handbook term id.
@@ -353,8 +374,86 @@ final class GitSync {
 			return new WP_Error( 'living_handbook_import', __( 'Not a GitHub folder URL.', 'living-handbook' ), array( 'status' => 400 ) );
 		}
 
-		$api = 'https://api.github.com/repos/' . $parsed['owner'] . '/' . $parsed['repo']
-			. '/contents/' . $parsed['path'] . '?ref=' . rawurlencode( $parsed['branch'] );
+		$tree = $this->fetch_tree( $parsed );
+		if ( is_wp_error( $tree ) ) {
+			return $tree;
+		}
+
+		$files = self::markdown_under( $tree['entries'], $parsed['path'] );
+		if ( array() === $files ) {
+			return new WP_Error( 'living_handbook_import', __( 'No Markdown files found in that folder.', 'living-handbook' ), array( 'status' => 404 ) );
+		}
+
+		$notes = array();
+		if ( true === $tree['truncated'] ) {
+			$notes[] = __( 'The repository is too large for GitHub to return its tree in one piece, so this import may be incomplete.', 'living-handbook' );
+		}
+		if ( count( $files ) > self::MAX_FOLDER_FILES ) {
+			$files   = array_slice( $files, 0, self::MAX_FOLDER_FILES );
+			$notes[] = sprintf(
+				/* translators: %d: maximum number of files imported from one folder. */
+				__( 'Only the first %d files were imported. Import the remaining subfolders separately.', 'living-handbook' ),
+				self::MAX_FOLDER_FILES
+			);
+		}
+
+		$base = rtrim( $parsed['path'], '/' );
+		$plan = self::plan_folder_import( $files, $base );
+
+		// Folders first, shallow before deep, so a parent page always exists
+		// before the pages that hang under it.
+		$pages     = array();
+		$ids       = array();
+		$folder_id = array( $base => 0 );
+
+		foreach ( $plan['folders'] as $folder ) {
+			if ( '' !== $folder['index'] ) {
+				$post_id = $this->create_github_page( self::raw_url( $parsed, $folder['index'] ), $handbook_id );
+			} else {
+				$post_id = $this->create_folder_page( $parsed, $folder['path'], $handbook_id );
+			}
+			if ( 0 === $post_id ) {
+				continue;
+			}
+			$folder_id[ $folder['path'] ] = $post_id;
+			$this->set_parent( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ) );
+			$ids[]   = $post_id;
+			$pages[] = self::page_result( $post_id );
+		}
+
+		$order = 0;
+		foreach ( $plan['files'] as $file ) {
+			$post_id = $this->create_github_page( self::raw_url( $parsed, $file['path'] ), $handbook_id );
+			if ( 0 === $post_id ) {
+				continue;
+			}
+			$order += 10;
+			$this->set_parent( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $order );
+			$ids[]   = $post_id;
+			$pages[] = self::page_result( $post_id );
+		}
+
+		// Resolve internal links once every page of the import exists. Parents are
+		// set here from the folder structure, which is more reliable than the
+		// transport block for a repository that carries none.
+		Postprocessor::finalize( $ids );
+
+		$result = array( 'pages' => $pages );
+		if ( array() !== $notes ) {
+			$result['notes'] = $notes;
+		}
+		return $result;
+	}
+
+	/**
+	 * Read the repository tree in one request.
+	 *
+	 * @param array{owner:string, repo:string, branch:string, path:string} $parsed Parsed tree URL.
+	 * @return array{entries: array<int, array<string, mixed>>, truncated: bool}|WP_Error
+	 */
+	private function fetch_tree( array $parsed ) {
+		$api = 'https://api.github.com/repos/' . rawurlencode( $parsed['owner'] ) . '/' . rawurlencode( $parsed['repo'] )
+			. '/git/trees/' . rawurlencode( $parsed['branch'] ) . '?recursive=1';
 
 		$response = wp_safe_remote_get(
 			$api,
@@ -371,6 +470,7 @@ final class GitSync {
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( 'living_handbook_import', $response->get_error_message(), array( 'status' => 502 ) );
 		}
+
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
 			if ( 403 === $code && '0' === (string) wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' ) ) {
@@ -379,47 +479,300 @@ final class GitSync {
 			/* translators: %d: HTTP status code returned by the GitHub API. */
 			return new WP_Error( 'living_handbook_import', sprintf( __( 'GitHub API HTTP %d', 'living-handbook' ), $code ), array( 'status' => 502 ) );
 		}
-		$items = json_decode( (string) wp_remote_retrieve_body( $response ), true );
-		if ( ! is_array( $items ) ) {
+
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $body ) || ! isset( $body['tree'] ) || ! is_array( $body['tree'] ) ) {
 			return new WP_Error( 'living_handbook_import', __( 'Unexpected GitHub API response.', 'living-handbook' ), array( 'status' => 502 ) );
 		}
 
-		$pages = array();
-		$ids   = array();
-		foreach ( $items as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
+		return array(
+			'entries'   => $body['tree'],
+			'truncated' => ! empty( $body['truncated'] ),
+		);
+	}
+
+	/**
+	 * Work out which page each repository path becomes, and what hangs under what.
+	 *
+	 * Separated from the import because this is the part that is easy to get
+	 * wrong and impossible to check by looking at it: it decides whether a folder
+	 * gets its own page or an invented one, which file is consumed as that page,
+	 * and which folder every remaining file belongs to. It touches nothing and
+	 * fetches nothing, so a test can hand it a tree and read the answer.
+	 *
+	 * @param array<int, string> $files Markdown paths, shallow first.
+	 * @param string             $base  The folder the import points at.
+	 * @return array{folders: array<int, array{path: string, index: string}>, files: array<int, array{path: string, folder: string}>}
+	 */
+	public static function plan_folder_import( array $files, string $base ): array {
+		$base     = rtrim( $base, '/' );
+		$folders  = array();
+		$consumed = array();
+
+		foreach ( self::folders_of( $files, $base ) as $folder ) {
+			$index = self::index_file_of( $files, $folder );
+			if ( '' !== $index ) {
+				$consumed[ $index ] = true;
 			}
-			$type     = isset( $item['type'] ) ? (string) $item['type'] : '';
-			$name     = isset( $item['name'] ) ? (string) $item['name'] : '';
-			$download = isset( $item['download_url'] ) ? (string) $item['download_url'] : '';
-			if ( 'file' !== $type || '' === $download ) {
-				continue;
-			}
-			if ( 'md' !== strtolower( pathinfo( $name, PATHINFO_EXTENSION ) ) ) {
-				continue;
-			}
-			$post_id = $this->create_github_page( $download, $handbook_id );
-			if ( 0 < $post_id ) {
-				$ids[]   = $post_id;
-				$pages[] = array(
-					'id'      => $post_id,
-					'title'   => get_the_title( $post_id ),
-					'editUrl' => add_query_arg(
-						array(
-							'post'   => $post_id,
-							'action' => 'edit',
-						),
-						admin_url( 'post.php' )
-					),
-				);
-			}
+			$folders[] = array(
+				'path'  => $folder,
+				'index' => $index,
+			);
 		}
 
-		// Resolve parents and internal links once every page in the folder exists.
-		Postprocessor::finalize( $ids );
+		$rest = array();
+		foreach ( $files as $file ) {
+			// Only index files that actually became a folder's page are dropped
+			// here. The README of the folder the import points at has no folder
+			// page above it, so it stays an ordinary top-level page instead of
+			// vanishing.
+			if ( isset( $consumed[ $file ] ) ) {
+				continue;
+			}
+			$rest[] = array(
+				'path'   => $file,
+				'folder' => self::dirname_of( $file ),
+			);
+		}
 
-		return array( 'pages' => $pages );
+		return array(
+			'folders' => $folders,
+			'files'   => $rest,
+		);
+	}
+
+	/**
+	 * The Markdown files under a base path, shallow first and alphabetical.
+	 *
+	 * @param array<int, array<string, mixed>> $entries Tree entries from the API.
+	 * @param string                           $base    Base path.
+	 * @return array<int, string> Repository paths.
+	 */
+	public static function markdown_under( array $entries, string $base ): array {
+		$base   = rtrim( $base, '/' );
+		$prefix = '' === $base ? '' : $base . '/';
+		$files  = array();
+
+		foreach ( $entries as $entry ) {
+			if ( ! is_array( $entry ) || 'blob' !== ( isset( $entry['type'] ) ? $entry['type'] : '' ) ) {
+				continue;
+			}
+			$path = isset( $entry['path'] ) ? (string) $entry['path'] : '';
+			if ( '' === $path || 'md' !== strtolower( (string) pathinfo( $path, PATHINFO_EXTENSION ) ) ) {
+				continue;
+			}
+			if ( '' !== $prefix && 0 !== strpos( $path, $prefix ) ) {
+				continue;
+			}
+			$files[] = $path;
+		}
+
+		usort(
+			$files,
+			static function ( string $a, string $b ): int {
+				$depth = substr_count( $a, '/' ) <=> substr_count( $b, '/' );
+				return 0 !== $depth ? $depth : strcmp( $a, $b );
+			}
+		);
+
+		return $files;
+	}
+
+	/**
+	 * Every folder that holds at least one of the files, shallow first, base
+	 * folder excluded (its page is the handbook, not a page).
+	 *
+	 * @param array<int, string> $files Repository paths.
+	 * @param string             $base  Base path.
+	 * @return array<int, string>
+	 */
+	private static function folders_of( array $files, string $base ): array {
+		$folders = array();
+		foreach ( $files as $file ) {
+			$folder = self::dirname_of( $file );
+			while ( '' !== $folder && $folder !== $base && ! isset( $folders[ $folder ] ) ) {
+				$folders[ $folder ] = substr_count( $folder, '/' );
+				$folder             = self::dirname_of( $folder );
+			}
+		}
+		asort( $folders );
+		return array_keys( $folders );
+	}
+
+	/**
+	 * The folder's own file, if it has one: index.md wins over README.md.
+	 *
+	 * @param array<int, string> $files  Repository paths.
+	 * @param string             $folder Folder path.
+	 * @return string Path, or '' when the folder has neither.
+	 */
+	private static function index_file_of( array $files, string $folder ): string {
+		$found = '';
+		foreach ( $files as $file ) {
+			if ( self::dirname_of( $file ) !== $folder || ! self::is_index_file( $file ) ) {
+				continue;
+			}
+			if ( 'index.md' === strtolower( basename( $file ) ) ) {
+				return $file;
+			}
+			$found = $file;
+		}
+		return $found;
+	}
+
+	/**
+	 * Whether a file is a folder's own page.
+	 *
+	 * @param string $file Repository path.
+	 * @return bool
+	 */
+	private static function is_index_file( string $file ): bool {
+		return in_array( strtolower( basename( $file ) ), array( 'index.md', 'readme.md' ), true );
+	}
+
+	/**
+	 * The folder part of a repository path.
+	 *
+	 * @param string $path Repository path.
+	 * @return string
+	 */
+	private static function dirname_of( string $path ): string {
+		$cut = strrpos( $path, '/' );
+		return false === $cut ? '' : substr( $path, 0, $cut );
+	}
+
+	/**
+	 * The raw URL of a file in the imported repository.
+	 *
+	 * @param array{owner:string, repo:string, branch:string, path:string} $parsed Parsed tree URL.
+	 * @param string                                                       $file   Repository path.
+	 * @return string
+	 */
+	private static function raw_url( array $parsed, string $file ): string {
+		$segments = array_map( 'rawurlencode', explode( '/', $file ) );
+		return 'https://raw.githubusercontent.com/' . rawurlencode( $parsed['owner'] ) . '/'
+			. rawurlencode( $parsed['repo'] ) . '/' . rawurlencode( $parsed['branch'] ) . '/'
+			. implode( '/', $segments );
+	}
+
+	/**
+	 * The page a folder's contents hang under, falling back to the nearest
+	 * ancestor that has one.
+	 *
+	 * @param array<string, int> $folder_id Folder path to post ID.
+	 * @param string             $folder    Folder path.
+	 * @return int Post ID, or 0 for a top-level page.
+	 */
+	private static function parent_id_for( array $folder_id, string $folder ): int {
+		while ( '' !== $folder ) {
+			if ( isset( $folder_id[ $folder ] ) ) {
+				return $folder_id[ $folder ];
+			}
+			$folder = self::dirname_of( $folder );
+		}
+		return isset( $folder_id[''] ) ? $folder_id[''] : 0;
+	}
+
+	/**
+	 * Create, or find again, the page that stands for a folder without its own
+	 * Markdown file.
+	 *
+	 * It is not synced, because there is no file behind it, and it carries the
+	 * area entries block so it lists what is inside it instead of being blank.
+	 *
+	 * @param array{owner:string, repo:string, branch:string, path:string} $parsed      Parsed tree URL.
+	 * @param string                                                       $folder      Folder path.
+	 * @param int                                                          $handbook_id Optional handbook term id.
+	 * @return int Post ID, or 0.
+	 */
+	private function create_folder_page( array $parsed, string $folder, int $handbook_id = 0 ): int {
+		$marker = $parsed['owner'] . '/' . $parsed['repo'] . '@' . $parsed['branch'] . ':' . $folder;
+
+		$existing = get_posts(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			)
+		);
+		if ( ! empty( $existing ) ) {
+			return (int) $existing[0];
+		}
+
+		$name  = basename( $folder );
+		$title = ucfirst( trim( (string) preg_replace( '/[-_]+/', ' ', $name ) ) );
+
+		$inserted = wp_insert_post(
+			array(
+				'post_type'    => Handbook::POST_TYPE,
+				'post_status'  => 'draft',
+				'post_title'   => '' !== $title ? $title : $name,
+				'post_name'    => sanitize_title( $name ),
+				'post_content' => '<!-- wp:living-handbook/entry {"display":"cards"} /-->',
+			),
+			true
+		);
+		if ( is_wp_error( $inserted ) ) {
+			return 0;
+		}
+
+		$post_id = (int) $inserted;
+		update_post_meta( $post_id, self::META_FOLDER, $marker );
+		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
+		if ( 0 < $handbook_id ) {
+			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
+		}
+		return $post_id;
+	}
+
+	/**
+	 * Put a page under its parent.
+	 *
+	 * On a re-import this overwrites a parent set by hand, deliberately: for a
+	 * folder import the repository is the source of truth for the structure, the
+	 * same way it is for the content of a synced page.
+	 *
+	 * @param int $post_id   Page ID.
+	 * @param int $parent_id Parent page ID, or 0.
+	 * @param int $order     Menu order, or 0 to leave it alone.
+	 * @return void
+	 */
+	private function set_parent( int $post_id, int $parent_id, int $order = 0 ): void {
+		if ( $post_id === $parent_id ) {
+			return;
+		}
+		$data = array(
+			'ID'          => $post_id,
+			'post_parent' => $parent_id,
+		);
+		if ( $order > 0 ) {
+			$data['menu_order'] = $order;
+		}
+		wp_update_post( $data );
+	}
+
+	/**
+	 * One entry of the import result.
+	 *
+	 * @param int $post_id Page ID.
+	 * @return array<string, mixed>
+	 */
+	private static function page_result( int $post_id ): array {
+		return array(
+			'id'      => $post_id,
+			'title'   => get_the_title( $post_id ),
+			'editUrl' => add_query_arg(
+				array(
+					'post'   => $post_id,
+					'action' => 'edit',
+				),
+				admin_url( 'post.php' )
+			),
+		);
 	}
 
 	/**

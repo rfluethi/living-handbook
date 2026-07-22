@@ -4,10 +4,10 @@
  * Development seed: create many handbook pages for a rough performance test.
  *
  * Run it in the Local site shell (which ships wp-cli):
- *   wp eval-file wp-content/plugins/living-handbook/bin/seed-demo.php
+ *   wp eval-file wp-content/plugins/living-handbook/bin/seed-performance.php
  *
  * Optional page count:
- *   LH_SEED_PAGES=500 wp eval-file wp-content/plugins/living-handbook/bin/seed-demo.php
+ *   LH_SEED_PAGES=500 wp eval-file wp-content/plugins/living-handbook/bin/seed-performance.php
  *
  * It creates one handbook "Performance-Test" (public, so it renders without a
  * login) with top-level "Bereich" pages, each holding child pages, and assigns

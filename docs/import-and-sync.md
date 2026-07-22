@@ -12,11 +12,29 @@ The sources are:
 2. **ZIP file**: upload a ZIP of `.md` files, then **Import ZIP**. The ZIP may be a flat set of files or a structured MkDocs project (see below).
 3. **GitHub**: enter a GitHub URL, then **Import from GitHub**. Both a single file and a whole folder work:
    - a file, either a `raw.githubusercontent.com` URL or a `github.com/.../blob/...` URL (the blob URL is normalised to raw automatically);
-   - a folder, a `github.com/.../tree/...` URL. Every `.md` file in that folder (including `README.md`) is imported through the GitHub contents API. Subfolders are not descended into.
+   - a folder, a `github.com/.../tree/...` URL. Every `.md` file under that folder is imported, subfolders included, and the folder structure becomes the page hierarchy (see below).
+
+4. **Bundle**: upload a bundle exported from another site running the plugin (see below). Needs the content-manager role.
+5. **App handbook**: load the handbook the plugin brings along. Needs the content-manager role.
 
 Pages that land without a handbook are invisible on the front end, because access is fail-closed.
 
 **How the conversion works:** league/commonmark renders the Markdown to HTML, and WordPress's own paste conversion turns that HTML into editable blocks. A ```` ```mermaid ```` code fence becomes a live-rendered Mermaid block, collapsible `<details>` sections become details blocks, and images referenced from an `assets` folder are sideloaded into the media library. Once all pages exist, a shared post-processor applies the transport metadata and resolves parents and internal `.md` links, both the link target and the visible link text.
+
+### Importing a folder with its subfolders
+
+A folder import reads the whole repository tree in **one** request to the Git trees API, not one request per folder. Unauthenticated GitHub allows 60 requests an hour, and a walk that spends one on every folder runs out on a documentation repository of any size.
+
+The folder structure becomes the page hierarchy, and a folder becomes a page:
+
+- A folder holding an **`index.md`** (or, failing that, a **`README.md`**) is represented by that file: it becomes the folder's page, and everything else in the folder hangs under it.
+- A folder holding **neither** gets a page made from its name, carrying the area entries block, so it lists what is inside it. A level that exists in the repository but not in the handbook would leave a hole in the navigation.
+- The **`README.md` of the folder you point at** stays an ordinary page. There is no folder page above it to be consumed by.
+- Levels that exist only as path segments are filled in, so `docs/one/two/three/page.md` produces three levels and not one.
+
+At most **200 files** are imported in one go. If that limit is reached, or if the repository is too large for GitHub to return its tree in one piece, the result list says so; import the remaining subfolders separately.
+
+On a re-import the repository decides the structure again, so a parent set by hand is reset. That is the same bargain as the content of a synced page: for a folder import the repository is the original.
 
 ## Importing the same source twice
 
@@ -53,6 +71,19 @@ If the handbook does not exist yet it is created with visibility **members**, ev
 A short report at the top of the screen says how many pages were created, updated, skipped or protected, and lists anything that could not be mapped.
 
 Importing needs the content-manager role. A bundle is a file from another site, so its content is treated as external and cleaned on the way in, the same way the Markdown import and the GitHub sync are: scripts, event handlers and unsafe URLs are stripped. The cleaning runs block by block, so the block structure survives untouched. Media is cleaned as well, including SVG. That said, a bundle still brings in content someone else wrote, so it is worth reading before you publish it.
+
+## The app handbook
+
+The plugin ships its own handbook: nine pages in three areas that document how a Living Handbook is built. It is written as a working handbook, so it is at the same time an example, with several page types, filled vocabularies and pages in every review state. It is meant to be taken apart.
+
+It is an ordinary bundle without the ZIP wrapper, so it goes through the same import path as any other bundle. Images ship alongside it and are sideloaded into the media library on load, recognised again by a content hash so a second load does not duplicate them; they do stay in the media library when the handbook is deleted. Two things are handled by the loader rather than by the file:
+
+- **Vocabulary terms are referenced by token, not by slug.** The seeded terms are translated when they are created, so their slugs depend on the site language. A file with fixed English slugs would create a second set of terms on a German site; a token is resolved against the term that is actually there.
+- **Review dates are stored as an age in days, not as a date.** A fixed date would make every page overdue a year after release, which is the wrong first impression of a feature whose whole point is staying current.
+
+It is loaded only on request, never on activation, and always with the rule "skip existing pages", so a second load never overwrites an edit. How its content is written and where its parts live is in [writing the app handbook](app-handbook.md).
+
+**Load into** decides where the pages land. By default they go into a handbook of their own with visibility **members**, which keeps them apart from your content and makes them easy to delete again. Pick an existing handbook to put them there instead; that handbook keeps its own access configuration, so if it is public, the pages are public. Delete the pages and then the handbook to remove the whole thing.
 
 ## Transport metadata
 

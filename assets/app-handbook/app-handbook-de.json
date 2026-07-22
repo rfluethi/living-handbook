@@ -1,0 +1,242 @@
+{
+ "format": "living-handbook-bundle",
+ "version": 1,
+ "app_handbook": true,
+ "language": "de",
+ "scope": "handbook",
+ "handbook": {
+  "slug": "app-handbuch",
+  "name": "App-Handbuch",
+  "visibility": "members",
+  "roles": []
+ },
+ "pages": [
+  {
+   "key": "getting-started",
+   "origin_id": "app-handbook:getting-started",
+   "parent_key": "",
+   "order": 10,
+   "title": "Erste Schritte",
+   "slug": "getting-started",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:paragraph -->\n<p>Willkommen. Das ist das Handbuch des Plugins selbst: es erklärt, wie ein Living Handbook aufgebaut ist, und ist zugleich ein Beispiel für eines. Alles hier ist gewöhnlicher Inhalt: lies ihn, ändere ihn, oder lösche das ganze Handbuch, wenn du es nicht mehr brauchst.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Ein Handbuch besteht aus <strong>Bereichen</strong>, und jeder Bereich enthält <strong>Seiten</strong>. Diese Seite ist eine Bereichs-Übersicht: sie sagt, wofür der Bereich da ist, und listet dann auf, was darin liegt.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/entry {\"display\": \"cards\"} /-->",
+   "terms": {
+    "handbook_type": [
+     "area-overview"
+    ],
+    "handbook_audience": [
+     "all-members"
+    ],
+    "handbook_topic": [],
+    "handbook_role": []
+   },
+   "meta": {}
+  },
+  {
+   "key": "getting-started/how-this-handbook-is-organised",
+   "origin_id": "app-handbook:getting-started/how-this-handbook-is-organised",
+   "parent_key": "getting-started",
+   "order": 10,
+   "title": "Wie dieses Handbuch aufgebaut ist",
+   "slug": "how-this-handbook-is-organised",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:living-handbook/toc {\"variant\": \"desktop\"} /-->\n\n<!-- wp:paragraph -->\n<p>Drei Dinge geben einem Handbuch seine Form: die Hierarchie, der Seitentyp und die Vokabulare. Sie haben verschiedene Aufgaben, und es hilft, sie auseinanderzuhalten.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Hierarchie</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Seiten liegen in Bereichen, Bereiche in einem Handbuch. Das ist der Weg, den eine lesende Person geht. Halte ihn flach: zwei Ebenen genügen fast jedem Team, und eine dritte Ebene heisst meistens, dass ein Bereich eigentlich zwei Bereiche sind.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Seitentyp</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Der Seitentyp sagt, um welche Art Text es sich handelt: eine Anleitung, eine Prozessbeschreibung, eine Tool-Übersicht, eine Rollenbeschreibung, Hintergrund oder eine FAQ. Wer den Typ vor dem Lesen kennt, weiss, was ihn erwartet. Eine Seite, ein Typ. Braucht eine Seite zwei, sind es zwei Seiten.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Vokabulare</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Thema, Rolle und Zielgruppe laufen quer zur Hierarchie. Eine Seite über Onboarding liegt in einem Bereich, kann aber für mehrere Rollen wichtig sein. Dafür sind die Vokabulare da, und darum finden die Filter in der Übersicht Seiten, zu denen dich das Menü nicht führen würde.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Wer eine Seite betreut</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Jede Seite kann eine prüfende Person und ein Prüfintervall benennen. Das ist der ganze Mechanismus hinter den Aktualitäts-Abzeichen, und der Grund, warum ein Handbuch nicht still vergammelt.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/pagemeta /-->",
+   "terms": {
+    "handbook_type": [
+     "background-concept"
+    ],
+    "handbook_audience": [
+     "all-members"
+    ],
+    "handbook_topic": [
+     "documentation"
+    ],
+    "handbook_role": []
+   },
+   "meta": {
+    "review_days_ago": 10,
+    "review_interval": 180
+   }
+  },
+  {
+   "key": "getting-started/writing-a-good-page",
+   "origin_id": "app-handbook:getting-started/writing-a-good-page",
+   "parent_key": "getting-started",
+   "order": 20,
+   "title": "Eine gute Seite schreiben",
+   "slug": "writing-a-good-page",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:living-handbook/toc {\"variant\": \"desktop\"} /-->\n\n<!-- wp:paragraph -->\n<p>Eine Handbuchseite ist kein Aufsatz. Jemand öffnet sie mitten in einer anderen Tätigkeit, liest so wenig wie möglich und geht wieder. Schreib für diese Person.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Beginne mit der Antwort</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Die Schlussfolgerung gehört in den ersten Satz, die Begründung danach. Wer der Antwort ohnehin traut, hört dort auf; wer sie verstehen muss, liest weiter. Die umgekehrte Reihenfolge zwingt alle, alles zu lesen.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Eine Seite, eine Aufgabe</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Wenn du nicht in einem Satz sagen kannst, wofür eine Seite da ist, macht sie mehr als eine Sache und sollte geteilt werden.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Nenne die zuständige Person, nicht nur den Inhalt</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Eine Seite ohne Zuständigkeit ist eine Seite, die niemand korrigiert. Das Feld für die prüfende Person ist keine Bürokratie: es ist der Name der Person, die gefragt wird, wenn sich die Seite als falsch herausstellt.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Eine kurze Checkliste</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li>Der Titel sagt, was die lesende Person bekommt, nicht wie das Thema heisst.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li>Der erste Absatz beantwortet die Frage für sich allein.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li>Die Überschriften sind überfliegbar: wer nur sie liest, erkennt die Form.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li>Es gibt einen Seitentyp, eine prüfende Person und ein Prüfintervall.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li>Links zeigen auf Seiten, nicht auf das Gedächtnis von Leuten.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:quote -->\n<blockquote class=\"wp-block-quote\"><!-- wp:paragraph -->\n<p>Wenn eine Seite zwei Jahre lang richtig war, ohne dass jemand nachgesehen hat, hattest du Glück, nicht Ordnung.</p>\n<!-- /wp:paragraph --><cite>Wozu das Prüfintervall da ist</cite></blockquote>\n<!-- /wp:quote -->\n\n<!-- wp:paragraph -->\n<p>Unten steht der Feedback-Block. Lesende sagen damit, ob eine Seite geholfen hat, und die Handbuch-Übersicht kann nach der Differenz zwischen Ja und Nein sortieren. Das ist ein schneller Weg zu den Seiten, die Arbeit brauchen.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/feedback /-->",
+   "terms": {
+    "handbook_type": [
+     "guide"
+    ],
+    "handbook_audience": [
+     "content-creators"
+    ],
+    "handbook_topic": [
+     "documentation",
+     "quality"
+    ],
+    "handbook_role": [
+     "handbook-editors"
+    ]
+   },
+   "meta": {
+    "review_days_ago": 200,
+    "review_interval": 180
+   }
+  },
+  {
+   "key": "keeping-content-current",
+   "origin_id": "app-handbook:keeping-content-current",
+   "parent_key": "",
+   "order": 20,
+   "title": "Inhalte am Leben halten",
+   "slug": "keeping-content-current",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:paragraph -->\n<p>Ein Handbuch ist leicht begonnen und schwer wahr gehalten. In diesem Bereich geht es um den zweiten Teil: woher Inhalt kommt, und wie er aktuell bleibt.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/entry {\"display\": \"cards\"} /-->",
+   "terms": {
+    "handbook_type": [
+     "area-overview"
+    ],
+    "handbook_audience": [
+     "all-members"
+    ],
+    "handbook_topic": [],
+    "handbook_role": []
+   },
+   "meta": {}
+  },
+  {
+   "key": "keeping-content-current/getting-content-in",
+   "origin_id": "app-handbook:keeping-content-current/getting-content-in",
+   "parent_key": "keeping-content-current",
+   "order": 10,
+   "title": "Inhalte hereinholen",
+   "slug": "getting-content-in",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:paragraph -->\n<p>Inhalt kommt auf vier Wegen ins Handbuch. Sie unterscheiden sich in einem Punkt, der wichtiger ist als die Bequemlichkeit: wo der Inhalt danach gepflegt wird.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Text einfügen</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Ein Markdown-Entwurf, den du in die Import-Seite einfügst, wird zu einer bearbeitbaren Seite. Ab dann lebt er in WordPress und wird dort bearbeitet. Gut für ein einzelnes Dokument, das du herumliegen hast.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">ZIP-Datei</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Ein ZIP mit Markdown-Dateien wird zu einer Seite pro Datei. Enthält das ZIP eine <code>mkdocs.yml</code>, bestimmt deren Navigation Titel, Reihenfolge und Verschachtelung, eine Doku-Site behält also ihre Form. Wird danach ebenfalls in WordPress gepflegt.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">GitHub</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Eine Seite kann an eine Markdown-Datei in einem Repository gebunden sein. Das ist der einzige Fall, in dem der Inhalt <em>nicht</em> hier gepflegt wird: das Repository ist das Original, die Seite eine Kopie, die abgeglichen wird, und der Editor ist gesperrt, damit niemand aus Versehen eine Kopie bearbeitet. Nimm das, wenn ein Text schon ein Zuhause in einem Repository hat und es behalten soll.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Bündel</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Ein ganzes Handbuch, oder ein Bereich davon, exportiert von einer anderen Seite mit diesem Plugin: Seiten, Hierarchie, Vokabulare, Prüfdaten und Medien in einer Datei. So wandert ein Handbuch zwischen Seiten. Beim Import entscheidest du, was mit bereits vorhandenen Seiten geschieht, und gelöscht wird grundsätzlich nichts.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Die Wahl</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Frag dich, wo der Text in einem Jahr korrigiert werden soll. Lautet die Antwort \"im Repository\", nimm GitHub. In jedem anderen Fall gehört der Inhalt nach WordPress, und die anderen drei Wege unterscheiden sich nur darin, wie viel davon auf einmal ankommt.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/pagemeta /-->",
+   "terms": {
+    "handbook_type": [
+     "process-description"
+    ],
+    "handbook_audience": [
+     "coordination"
+    ],
+    "handbook_topic": [
+     "import"
+    ],
+    "handbook_role": []
+   },
+   "meta": {
+    "review_days_ago": 400,
+    "review_interval": 180
+   }
+  },
+  {
+   "key": "keeping-content-current/the-review-cycle",
+   "origin_id": "app-handbook:keeping-content-current/the-review-cycle",
+   "parent_key": "keeping-content-current",
+   "order": 20,
+   "title": "Der Prüfzyklus",
+   "slug": "the-review-cycle",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:paragraph -->\n<p>Jede Seite trägt ein Prüfintervall. Läuft es ab, zeigt die Seite ein Abzeichen und erscheint im Dashboard-Widget. Nichts wird gelöscht und nichts versteckt: das Handbuch hört bloss auf, so zu tun, als sei die Seite aktuell.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/mermaid {\"code\": \"graph TD;\\n  A[Seite geprüft] --> B[Intervall läuft];\\n  B --> C{Intervall vorbei?};\\n  C -->|Nein| B;\\n  C -->|Ja| D[Abzeichen: Prüfung fällig];\\n  D --> E{Doppeltes Intervall?};\\n  E -->|Ja| F[Abzeichen: Prüfung überfällig];\\n  D --> G[Prüfende Person sieht nach];\\n  F --> G;\\n  G --> A;\", \"title\": \"Von einer Prüfung zur nächsten\", \"description\": \"Eine geprüfte Seite durchläuft ihr Intervall. Ist das Intervall vorbei, gilt die Seite als fällig, nach dem doppelten Intervall als überfällig. Eine Prüfung setzt das Datum neu, und der Zyklus beginnt von vorn.\"} /-->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Ein Intervall wählen</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Kurze Intervalle auf Seiten, die sich nie ändern, erzeugen Rauschen, und Rauschen bringt Leuten bei, Abzeichen zu übersehen. Zwölf Monate sind ein vernünftiger Normalfall. Drei Monate nur dort, wo Veralten wirklich Schaden anrichtet, etwa bei Zugriffsregeln oder allem mit rechtlicher Kante.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Was eine Prüfung wirklich ist</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Die Seite lesen und eine Frage stellen: würde ich das heute noch genauso schreiben? Wenn ja, Datum bestätigen und fertig. Eine Prüfung, die immer zur Überarbeitung wird, ist ein Zeichen für ein zu langes Intervall, nicht für Gründlichkeit.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/badges /-->",
+   "terms": {
+    "handbook_type": [
+     "process-description"
+    ],
+    "handbook_audience": [
+     "content-creators"
+    ],
+    "handbook_topic": [
+     "quality"
+    ],
+    "handbook_role": [
+     "handbook-editors"
+    ]
+   },
+   "meta": {
+    "review_days_ago": 30,
+    "review_interval": 90
+   }
+  },
+  {
+   "key": "reference",
+   "origin_id": "app-handbook:reference",
+   "parent_key": "",
+   "order": 30,
+   "title": "Nachschlagen",
+   "slug": "reference",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:paragraph -->\n<p>Dinge, die man nachschlägt statt liest: Antworten auf wiederkehrende Fragen, und die Werkzeuge des Teams.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:living-handbook/entry {\"display\": \"list\"} /-->",
+   "terms": {
+    "handbook_type": [
+     "area-overview"
+    ],
+    "handbook_audience": [
+     "all-members"
+    ],
+    "handbook_topic": [],
+    "handbook_role": []
+   },
+   "meta": {}
+  },
+  {
+   "key": "reference/frequently-asked-questions",
+   "origin_id": "app-handbook:reference/frequently-asked-questions",
+   "parent_key": "reference",
+   "order": 10,
+   "title": "Häufige Fragen",
+   "slug": "frequently-asked-questions",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Kann ich dieses Handbuch löschen?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Ja. Lösche seine Seiten und danach unter Handbücher das Handbuch selbst. Nichts anderes im Plugin hängt daran.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Wer sieht ein Handbuch?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Jedes Handbuch hat seine eigene Sichtbarkeit: öffentlich, Mitglieder, oder beschränkt auf gewählte Rollen und Personen. Ein Handbuch, das durch einen Import entsteht, startet immer bei Mitglieder, auch wenn das Bündel öffentlich sagte. So wird nichts versehentlich veröffentlicht.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Was ist der Unterschied zwischen einer Seite und einem Bereich?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Technisch keiner: ein Bereich ist eine Seite ohne Elternseite. Praktisch sollte ein Bereich eine Übersicht sein, die beim Wählen hilft, und nicht ein Ort für Inhalt, der sonst nirgends passte.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Kann Inhalt von GitHub kommen?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Ja. Eine Seite kann an eine Markdown-Datei in einem Repository gebunden sein und wird von dort abgeglichen. Eine solche Seite wird im Repository gepflegt, nicht in WordPress, und ist entsprechend gekennzeichnet.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Was passiert, wenn ich etwas importiere, das es schon gibt?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Du wählst: überspringen, aktualisieren, oder immer neu anlegen. Eine Seite lässt sich zusätzlich als geschützt markieren, dann fasst ein Import sie nie an. Ein Import löscht grundsätzlich nichts.</p>\n<!-- /wp:paragraph -->",
+   "terms": {
+    "handbook_type": [
+     "faq"
+    ],
+    "handbook_audience": [
+     "all-members"
+    ],
+    "handbook_topic": [],
+    "handbook_role": []
+   },
+   "meta": {
+    "review_days_ago": 45,
+    "review_interval": 365
+   }
+  },
+  {
+   "key": "reference/the-blocks",
+   "origin_id": "app-handbook:reference/the-blocks",
+   "parent_key": "reference",
+   "order": 20,
+   "title": "Die Blöcke, die du nutzen kannst",
+   "slug": "the-blocks",
+   "status": "publish",
+   "source": "wordpress",
+   "content": "<!-- wp:paragraph -->\n<p>Das Plugin bringt eigene Blöcke in den Editor mit. Die meisten bauen sich aus der Seite auf, auf der sie stehen, brauchen also keine Einstellungen und bleiben richtig, wenn sich das Handbuch um sie herum ändert.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Auf einer Bereichsseite</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li><strong>Bereichs-Einträge</strong> listet die Seiten des Bereichs, als Karten oder als Liste. Zwei Bereichsseiten in diesem Handbuch nutzen ihn.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li><strong>Handbuch-Übersicht</strong> listet alle Handbücher. Er steht auf der Seite, die das Plugin bei der Aktivierung für dich angelegt hat.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Auf einer Inhaltsseite</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li><strong>Auf dieser Seite</strong> baut ein Inhaltsverzeichnis aus den Überschriften, bis zu einer Tiefe, die du wählst.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li><strong>Aktualitäts-Abzeichen</strong> zeigt den Prüfzustand.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li><strong>Seiten-Metadaten</strong> zeigt Seitentyp, prüfende Person und Prüfdatum.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li><strong>War das hilfreich?</strong> sammelt Ja und Nein, wonach die Seitenliste sortieren kann.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li><strong>Mermaid</strong> rendert ein Diagramm aus Text, mit einer geschriebenen Beschreibung darunter, damit es am Screenreader nicht verloren geht.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:heading {\"level\":2} -->\n<h2 class=\"wp-block-heading\">Navigation und Suche</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul class=\"wp-block-list\">\n<!-- wp:list-item -->\n<li><strong>Handbuch-Navigation</strong> ist der Seitenbaum eines Handbuchs.</li>\n<!-- /wp:list-item -->\n<!-- wp:list-item -->\n<li><strong>Handbuch-Menü</strong> und <strong>Suche</strong> bringen dasselbe in das Layout eines Themes.</li>\n<!-- /wp:list-item -->\n</ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>Diese Seite hat bewusst keine prüfende Person und kein Prüfintervall, damit du siehst, wie eine solche Seite in der Handbuch-Übersicht dargestellt wird.</p>\n<!-- /wp:paragraph -->",
+   "terms": {
+    "handbook_type": [
+     "tool-overview"
+    ],
+    "handbook_audience": [
+     "all-members"
+    ],
+    "handbook_topic": [],
+    "handbook_role": []
+   },
+   "meta": {}
+  }
+ ],
+ "media": []
+}

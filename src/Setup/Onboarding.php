@@ -10,6 +10,8 @@ declare( strict_types=1 );
 namespace LivingHandbook\Setup;
 
 use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\Import\AppHandbook;
+use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\PostType\Handbook;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,8 +29,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * what to do next, and the page list warns about pages that are invisible
  * because they have no handbook.
  *
- * No content is shipped or created beyond that one structural page. A handbook
- * with real pages is imported from Markdown or GitHub on the import screen.
+ * No content is created beyond that one structural page. The plugin does ship an
+ * app handbook, but it is only loaded when someone asks for it on the import
+ * screen; content that appears by itself is content the site owner did not ask
+ * for. A handbook with real pages is imported from Markdown, GitHub or a bundle.
  */
 final class Onboarding {
 
@@ -192,6 +196,27 @@ final class Onboarding {
 			esc_html__( 'Living Handbook is ready.', 'living-handbook' )
 		);
 
+		// The app handbook comes first on purpose. An empty install cannot show
+		// what a page type, a filter or a freshness badge is for, so the fastest
+		// honest answer to "what does this plugin do" is a filled handbook.
+		if ( AppHandbook::can_load() && '' !== AppHandbook::file() ) {
+			printf(
+				'<p><strong>%1$s</strong> %2$s</p><p><a href="%3$s" class="button button-primary">%4$s</a></p>',
+				esc_html__( 'Start here:', 'living-handbook' ),
+				esc_html__( 'the plugin brings its own handbook along. It explains how a Living Handbook is built and is itself an example of one, with nine pages, several page types, filled filters and pages in every review state. Load it, take it apart, delete it when you have seen enough.', 'living-handbook' ),
+				esc_url(
+					add_query_arg(
+						array(
+							'post_type' => Handbook::POST_TYPE,
+							'page'      => MarkdownImportPage::MENU_SLUG,
+						),
+						admin_url( 'edit.php' )
+					)
+				),
+				esc_html__( 'Load the app handbook', 'living-handbook' )
+			);
+		}
+
 		if ( is_string( $link ) && '' !== $link ) {
 			printf(
 				'<p>%1$s <a href="%2$s">%3$s</a></p>',
@@ -203,15 +228,17 @@ final class Onboarding {
 
 		printf(
 			'<p>%1$s</p><p>%2$s</p>',
-			esc_html__( 'Next: create a handbook under Handbook, Handbook types, and set who may read it. Then assign your pages to that handbook.', 'living-handbook' ),
+			esc_html__( 'For your own content: create a handbook under Handbook, Handbook types, and set who may read it. Then assign your pages to that handbook.', 'living-handbook' ),
 			esc_html__( 'A page without a handbook stays invisible on the front end. That is on purpose: access is granted per handbook, so a page that belongs to none belongs to nobody.', 'living-handbook' )
 		);
 
 		printf(
-			'<p><a href="%1$s">%2$s</a></p></div>',
+			'<p><a href="%1$s">%2$s</a></p>',
 			esc_url( admin_url( 'edit-tags.php?taxonomy=' . Handbooks::TAXONOMY . '&post_type=' . Handbook::POST_TYPE ) ),
 			esc_html__( 'Create a handbook', 'living-handbook' )
 		);
+
+		echo '</div>';
 	}
 
 	/**

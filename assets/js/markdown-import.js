@@ -132,7 +132,8 @@
 
 		ensureCoreBlocks();
 
-		// ARIA tabs for the import source (Paste / ZIP / GitHub).
+		// ARIA tabs for the import source. Which tabs exist depends on the user's
+		// capabilities, so the handling stays generic over whatever is rendered.
 		( function setupSourceTabs() {
 			var tablist = document.querySelector( '.living-handbook-import__tablist' );
 			if ( ! tablist ) {
@@ -419,6 +420,16 @@
 				}
 				pages.forEach( function ( p ) {
 					addResult( p, p.title );
+				} );
+				// A folder import can succeed and still be incomplete, when the
+				// repository is too large for one tree response or the file limit
+				// was reached. Saying so is the whole point of the note.
+				( ( res && res.notes ) ? res.notes : [] ).forEach( function ( note ) {
+					var item = document.createElement( 'li' );
+					item.textContent = note;
+					if ( results ) {
+						results.appendChild( item );
+					}
 				} );
 				// translators: %d is the number of pages created from GitHub.
 				setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', pages.length, 'living-handbook' ), pages.length ) );

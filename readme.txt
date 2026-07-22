@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.38.1
+Stable tag: 0.40.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,8 +25,9 @@ Core features:
 * A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
 * Per-handbook navigation built from the page hierarchy: a self-contained, collapsible page tree with a Menu or Accordion display, styled by the plugin. No other plugin is required.
 * A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
-* Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
+* Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder; a folder is read with its subfolders and the folder structure becomes the page hierarchy. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
+* The plugin brings its own handbook along: nine pages documenting how a Living Handbook is built, written as a working handbook, so it doubles as a worked example. Loaded on request from the import screen, in English or German, never automatically.
 * Fully translatable (English source), with a German translation included.
 * No external WordPress plugin is required; a block theme is. The import and sync use three bundled Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
 
@@ -81,6 +82,18 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.40.0 =
+* The GitHub folder import now descends into subfolders, and the folder structure becomes the page hierarchy. Previously only the files directly in the chosen folder were imported and everything landed side by side.
+* A folder becomes a page: an index.md or README.md inside it becomes that folder's own page and its siblings hang under it; a folder with neither gets a page made from its name, carrying the area entries block, so a level that exists in the repository does not go missing from the navigation.
+* The whole repository tree is now read in a single request to the Git trees API instead of one request per folder. Unauthenticated GitHub allows 60 requests an hour, so the old approach would have run out on any real documentation repository. At most 200 files are imported at once, and the result says so when the limit or GitHub's own tree limit was hit.
+* On a re-import the repository decides the structure again, the same way it already decides the content of a synced page.
+
+= 0.39.0 =
+* New: the plugin brings its own handbook along. Nine pages in three areas that document how a Living Handbook is built, written as a working handbook so it is at the same time an example: several page types, filled vocabularies and pages in every review state, so the page type, the filters and the freshness badges can be seen doing their job instead of being described. It is meant to be taken apart: read it, change it, delete it.
+* It is loaded on request, on the import screen under the new tab "App handbook", and never on activation. Content that appears by itself is content nobody asked for. By default it goes into a handbook of its own with visibility "members", so nothing becomes public, and loading it twice never overwrites an edit. You can also load it into an existing handbook. The notice after activation points at it, because an empty install cannot show what a page type or a freshness badge is for.
+* It can carry images: they ship in the plugin, are sideloaded into the media library on load, and are recognised again by a content hash so a second load does not duplicate them.
+* It exists in English and German and follows the admin language. Its vocabulary terms attach to the seeded ones instead of creating a second set next to them, and its review dates are relative to the moment it is loaded, so it does not turn entirely overdue as the release ages.
 
 = 0.38.1 =
 * Test quality: the new REST access tests got a counter-check. A test that only asserts "the answer does not contain this" passes just as happily when the answer is empty for everyone, which would prove nothing. The counter-check confirms that a content manager does get the content over the same four routes, so the negative tests fail if the routes ever stop returning anything.
@@ -274,6 +287,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.40.0 =
+The GitHub folder import now includes subfolders and turns the folder structure into the page hierarchy. Pre-release: best on a fresh database.
+
+= 0.39.0 =
+Adds the app's own handbook, loadable from the import screen in English or German. Nothing is created automatically. Pre-release: best on a fresh database.
 
 = 0.38.1 =
 Adds a counter-check to the new REST access tests, so they cannot pass for the wrong reason. No functional change. Pre-release: best on a fresh database.
