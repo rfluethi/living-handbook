@@ -72,4 +72,59 @@ final class HtmlSanitizer {
 	public static function clean( string $html ): string {
 		return wp_kses( $html, self::allowed() );
 	}
+
+	/**
+	 * Strip anything not on the allowlist from block markup, keeping the blocks.
+	 *
+	 * Running kses over serialized block markup in one go would destroy the block
+	 * delimiters, because those are HTML comments. So the markup is parsed into
+	 * blocks first, only the HTML inside each block is cleaned, and the blocks are
+	 * serialized again. The delimiters and the block attributes survive untouched,
+	 * the markup between them does not.
+	 *
+	 * This is the sanitizer for content that arrives already converted to blocks:
+	 * a bundle from another site, or the content the import screen posts back after
+	 * the browser turned HTML into blocks. Block attributes are not filtered here;
+	 * they are consumed by render callbacks, which escape their output, and static
+	 * blocks carry their visible markup in the inner content this method cleans.
+	 *
+	 * @param string $content Block markup from an external source.
+	 * @return string
+	 */
+	public static function clean_blocks( string $content ): string {
+		if ( '' === trim( $content ) ) {
+			return $content;
+		}
+		return serialize_blocks( self::clean_block_list( parse_blocks( $content ) ) );
+	}
+
+	/**
+	 * Clean the HTML of a parsed block list, including nested blocks.
+	 *
+	 * @param array<int, array<string, mixed>> $blocks Parsed blocks.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function clean_block_list( array $blocks ): array {
+		foreach ( $blocks as $index => $block ) {
+			if ( ! is_array( $block ) ) {
+				continue;
+			}
+			if ( isset( $block['innerHTML'] ) && is_string( $block['innerHTML'] ) ) {
+				$blocks[ $index ]['innerHTML'] = self::clean( $block['innerHTML'] );
+			}
+			// innerContent is what serialize_blocks writes out; the null entries are
+			// the placeholders for nested blocks and must stay as they are.
+			if ( isset( $block['innerContent'] ) && is_array( $block['innerContent'] ) ) {
+				foreach ( $block['innerContent'] as $position => $chunk ) {
+					if ( is_string( $chunk ) ) {
+						$blocks[ $index ]['innerContent'][ $position ] = self::clean( $chunk );
+					}
+				}
+			}
+			if ( ! empty( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ) {
+				$blocks[ $index ]['innerBlocks'] = self::clean_block_list( $block['innerBlocks'] );
+			}
+		}
+		return $blocks;
+	}
 }

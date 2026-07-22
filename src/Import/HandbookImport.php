@@ -35,11 +35,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * structure and terms are refreshed. On a first import those review fields do
  * come from the bundle.
  *
- * Trust model: like WordPress's own importer, the page content is inserted as it
- * comes. Block markup cannot be passed through kses without destroying the block
- * delimiters, so the safeguard is the capability instead: only a content manager
- * may import, and a bundle is a file they deliberately chose. Media is the one
- * part that is sanitised, through the existing sideload (which cleans SVG).
+ * Trust model: a bundle is a file from another site, so its content is treated as
+ * external and sanitised, exactly like the Markdown import and the GitHub sync.
+ * The content cannot be pushed through kses in one piece, because that would
+ * destroy the block delimiters; HtmlSanitizer::clean_blocks() parses the blocks
+ * first and cleans only the HTML inside them. Relying on the capability alone
+ * would not do: on a single site, editors and administrators hold unfiltered_html,
+ * so the core filter does not run for exactly the people who may import. Media is
+ * sanitised on its own way in, through the existing sideload (which cleans SVG).
  */
 final class HandbookImport {
 
@@ -390,6 +393,9 @@ final class HandbookImport {
 		foreach ( $media_map as $from => $to ) {
 			$content = str_replace( $from, $to, $content );
 		}
+		// A bundle is a file from another site, so its content is treated like any
+		// other external source: cleaned block by block, which keeps the delimiters.
+		$content = HtmlSanitizer::clean_blocks( $content );
 
 		$parent_key = isset( $page['parent_key'] ) ? (string) $page['parent_key'] : '';
 		$parent_id  = ( '' !== $parent_key && isset( $key_to_id[ $parent_key ] ) ) ? $key_to_id[ $parent_key ] : 0;

@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.36.0
+Stable tag: 0.37.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.37.0 =
+* Security: content that arrives already converted to blocks is now cleaned before it is stored. This closes a hole in the bundle import, where a prepared bundle could have carried active markup into the handbook and run it in the browser of every logged-in reader. Cleaning runs block by block, so the block structure is untouched; scripts, event handlers and unsafe URLs are removed. The same cleaning now also runs on the import screen's create endpoint, so it is a property of writing rather than of converting.
+* This corrects an earlier decision. The bundle import used to insert content as it came, on the argument that block markup cannot pass through the HTML filter and that the required role was safeguard enough. Both were wrong: parsing the blocks first solves the first, and on a single site editors and administrators hold unfiltered_html, so the core filter does not run for exactly the people who may import. Found by a security review of 0.36.0.
 
 = 0.36.0 =
 * Export moved to its own screen under Handbook, Export, the way WordPress keeps its own import and export tools apart.
@@ -263,6 +267,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.37.0 =
+Security fix: imported block content is now cleaned before it is stored, closing a hole where a prepared bundle could carry active markup into the handbook. Recommended for anyone using the bundle import. Pre-release: best on a fresh database.
 
 = 0.36.0 =
 Export gets its own screen, each import source now carries its own options and button inside its tab, and the German translation of both screens is complete. Pre-release: best on a fresh database.

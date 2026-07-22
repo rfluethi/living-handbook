@@ -308,6 +308,39 @@ final class BundleTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A bundle is a file from another site, so its content is sanitised on the way
+	 * in: active markup is removed, while the block delimiters survive, which is the
+	 * whole point of cleaning block by block instead of running kses over the lot.
+	 *
+	 * @return void
+	 */
+	public function test_bundle_content_is_sanitised_on_import(): void {
+		$handbook = $this->make_handbook( 'Source' );
+		$this->make_page( $handbook, 'Harmless page' );
+
+		$manifest = $this->export( $handbook );
+		$this->assertCount( 1, $manifest['pages'] );
+
+		// Stand in for a prepared bundle: active markup inside a normal block.
+		$manifest['pages'][0]['content'] = '<!-- wp:paragraph --><p>Kept text'
+			. '<script>alert(1)</script>'
+			. '<img src="x" onerror="alert(2)">'
+			. '</p><!-- /wp:paragraph -->';
+
+		$target = $this->make_handbook( 'Target' );
+		$this->import( $manifest, HandbookImport::RULE_SKIP, $target );
+
+		$ids = $this->pages_in( $target );
+		$this->assertCount( 1, $ids );
+
+		$content = (string) get_post_field( 'post_content', $ids[0] );
+		$this->assertStringNotContainsString( '<script', $content );
+		$this->assertStringNotContainsString( 'onerror', $content );
+		$this->assertStringContainsString( 'Kept text', $content );
+		$this->assertStringContainsString( 'wp:paragraph', $content );
+	}
+
+	/**
 	 * An area export carries only the chosen page and its descendants, and the
 	 * area root has no parent inside the bundle.
 	 *

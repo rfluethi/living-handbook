@@ -58,6 +58,7 @@ The entry page and the single page come with block templates that already place 
 ## Where to go next
 
 - **Fill it with content fast:** paste Markdown, upload a ZIP, or sync from GitHub. See [import and sync](import-and-sync.md).
+- **Move a handbook to another site:** export it as a bundle under **Handbook → Export** and import that file there. See [import and sync](import-and-sync.md).
 - **Keep it from going stale:** review dates, intervals and the overdue dashboard. See [maintenance](maintenance.md).
 - **Change how it looks:** the blocks and their CSS variables. See [blocks](blocks.md) and [customization](customization.md).
 - **Understand the code:** the plain-language [code overview](code-overview.md).

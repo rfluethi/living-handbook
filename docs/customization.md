@@ -80,6 +80,12 @@ Every handbook block also offers, under its **Advanced** panel in the editor, an
 - `.living-handbook-main`: the result column that is swapped in when a facet or search filters the list. While loading it carries `aria-busy="true"`, which the default styles use to dim it.
 - `.living-handbook-entry__h`, `.living-handbook-count`, `.living-handbook-empty`: section headings, result count and the empty state.
 
+### Search on a single page
+
+- `.living-handbook-page-search`: the wrapper of the search block on a single page.
+- `.living-handbook-page-search__input`: the search field (full column width).
+- `.living-handbook-page-search__results`: the list of matches that appears right under the field as you type; `.living-handbook-page-search__empty` is the empty state.
+
 ### Card grids
 
 - `.living-handbook-cards`, with `--areas` or `--books`: the responsive grid.
@@ -114,7 +120,7 @@ The navigation is a native `<details>` element, styled entirely by the plugin th
 ### Badges, metadata footer and feedback
 
 - `.living-handbook-badges`, `.living-handbook-badge`, with `--type`, `--audience`, `--ok`, `--due` or `--overdue`.
-- `.living-handbook-meta`, `.living-handbook-metagrid`, `.living-handbook-metagrid__item`, `__label`, `__date`.
+- `.living-handbook-meta`, `.living-handbook-metagrid`, `.living-handbook-metagrid__item`, `__label`, `__date`. The footer is a description list (`dl`); label and value are `dt` and `dd`.
 - `.living-handbook-person`, `__avatar`, `__name`: the responsible person in the footer.
 - `.living-handbook-feedback`: the "Was this helpful?" row and its buttons.
 - `.living-handbook-visually-hidden`: text shown only to screen readers (for example the freshness label on a card). Keep it visually hidden but readable by assistive technology.

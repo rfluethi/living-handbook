@@ -52,7 +52,7 @@ add_filter(
 );
 ```
 
-Only add hosts you control or trust. Every host you add is a host your server can be told to fetch from.
+Only add hosts you control or trust. Every host you add is a host your server can be told to fetch from, and it counts as a trusted fetch source from then on: the plugin will pull Markdown from it and store the result as page content. The second safety net stays in place either way, because `wp_safe_remote_get` still refuses internal and private addresses, but a public host under someone else's control is reachable once you list it.
 
 ### `living_handbook_nav_label`
 

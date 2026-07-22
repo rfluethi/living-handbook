@@ -43,7 +43,7 @@ The modules under `src/`:
 - **`Blocks/`** registers the plugin's blocks. `Blocks.php` registers most of them and renders them on the server; `MermaidBlock.php` and `SourceNoteBlock.php` are two special ones (a live diagram, and a note shown only on GitHub-synced pages). The blocks call into `Frontend/` to produce their HTML.
 - **`Feedback/`** handles the "was this helpful?" votes and their counters (`Feedback.php`).
 - **`Admin/`** is the backend maintenance surface. `Maintenance.php` is the dashboard widget that lists pages whose review is overdue, and the review and feedback columns in the page list.
-- **`Import/`** brings Markdown in. `MarkdownImportPage.php` is the import screen and its endpoints; `MarkdownConverter.php` turns Markdown into HTML; `TransportBlock.php` reads the small metadata block a draft carries; `MkDocsImport.php` reads a `mkdocs.yml` to keep a project's structure; `Postprocessor.php` applies that metadata and rewrites internal links after the pages exist; `HtmlSanitizer.php` is the shared allow-list that strips anything unsafe from imported HTML.
+- **`Import/`** brings Markdown in. `MarkdownImportPage.php` is the import screen and its endpoints; `MarkdownConverter.php` turns Markdown into HTML; `TransportBlock.php` reads the small metadata block a draft carries; `MkDocsImport.php` reads a `mkdocs.yml` to keep a project's structure; `Postprocessor.php` applies that metadata and rewrites internal links after the pages exist; `HtmlSanitizer.php` is the shared allow-list that strips anything unsafe from imported HTML. Two files in the same folder work on whole handbooks rather than single documents: `HandbookExport.php` writes a handbook, or one area of it, into a self-contained bundle, and `HandbookImport.php` reads such a bundle back in on another site.
 - **`Git/`** is the GitHub sync. `GitSync.php` lets a page be sourced from a Markdown URL, pulls it on save, on demand and on a schedule, stores the result safely, and locks the editor for such pages.
 - **`Setup/`** is the first-run and settings code. `Seeder.php` fills in the default vocabularies on activation; `Onboarding.php` creates the overview page and the welcome notice; `Settings.php` is the settings screen (sync frequency, uninstall behaviour).
 
@@ -66,6 +66,8 @@ An entry page (a handbook's start page) is the same idea with a different templa
 
 The import screen (`MarkdownImportPage`) accepts a pasted draft, a ZIP of Markdown files, or a GitHub URL. Text is turned into HTML by `MarkdownConverter`, the browser turns that HTML into editable blocks, and the small metadata block on each draft is read by `TransportBlock`. Once the pages exist, `Postprocessor` runs a second pass: it sets each page's handbook, taxonomies, review data and parent, and rewrites links that point at other imported files so they lead to the right pages. GitHub-sourced pages take a shorter path through `GitSync`, which stores rendered HTML rather than editable blocks, because a scheduled job has no browser to do the conversion.
 
+Moving a whole handbook to another site works differently, because there is nothing to convert. `HandbookExport` walks the handbook's pages and writes them, their structure, their vocabularies, their review data and their media into one ZIP with a `manifest.json`. `HandbookImport` reads that file on the other site and puts the pages back, giving every one of them a new id and rewiring parents and internal links to match. What happens when a page is already there is a choice the person importing makes; the default never overwrites anything.
+
 ## The one rule that matters
 
 There is a single, non-negotiable rule in the code: **every read of handbook content goes through `AccessController::can_view_post()`**. Never read a page's handbook and decide access yourself, and never query the database around the check. If you add a new way to read or list handbook pages (a widget, a REST field, an AI integration), route it through that method. It is the one place that decides visibility, it is filterable, and it fails closed, so forgetting it is the one mistake that can leak content.
@@ -81,6 +83,7 @@ There is a single, non-negotiable rule in the code: **every read of handbook con
 | The overdue dashboard | `Admin/Maintenance.php` |
 | A block's markup | `Blocks/Blocks.php` (server), `assets/blocks.js` (editor) |
 | The Markdown import | `Import/` (start at `MarkdownImportPage.php`) |
+| Moving a handbook between sites | `Import/HandbookExport.php`, `Import/HandbookImport.php` |
 | The GitHub sync and settings | `Git/GitSync.php`, `Setup/Settings.php` |
 | What runs on activation | `Plugin.php` (`activate`), `Setup/Seeder.php`, `Setup/Onboarding.php` |
 

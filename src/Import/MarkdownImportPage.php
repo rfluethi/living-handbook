@@ -405,8 +405,11 @@ final class MarkdownImportPage {
 	 * @return array<string, mixed>
 	 */
 	public function create_callback( WP_REST_Request $request ): array {
-		$title         = sanitize_text_field( (string) $request->get_param( 'title' ) );
-		$content       = (string) $request->get_param( 'content' );
+		$title = sanitize_text_field( (string) $request->get_param( 'title' ) );
+		// The browser converted the HTML to blocks and posts it back here, so this
+		// is the write path and it sanitizes for itself: a caller can skip /convert
+		// and post arbitrary markup straight to this endpoint.
+		$content       = HtmlSanitizer::clean_blocks( (string) $request->get_param( 'content' ) );
 		$handbook_id   = absint( $request->get_param( 'handbook' ) );
 		$transport     = (array) $request->get_param( 'transport' );
 		$parent        = absint( $request->get_param( 'parent' ) );

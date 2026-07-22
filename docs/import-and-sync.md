@@ -52,7 +52,7 @@ If the handbook does not exist yet it is created with visibility **members**, ev
 
 A short report at the top of the screen says how many pages were created, updated, skipped or protected, and lists anything that could not be mapped.
 
-Importing needs the content-manager role. As with WordPress's own importer, the page content is inserted as it comes: block markup cannot be passed through the HTML filter without destroying the block delimiters, so treat a bundle like any file you choose to import and only take bundles from a source you trust. Media is the exception and is cleaned on the way in, including SVG.
+Importing needs the content-manager role. A bundle is a file from another site, so its content is treated as external and cleaned on the way in, the same way the Markdown import and the GitHub sync are: scripts, event handlers and unsafe URLs are stripped. The cleaning runs block by block, so the block structure survives untouched. Media is cleaned as well, including SVG. That said, a bundle still brings in content someone else wrote, so it is worth reading before you publish it.
 
 ## Transport metadata
 
