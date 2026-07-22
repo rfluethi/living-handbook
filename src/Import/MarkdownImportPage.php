@@ -986,6 +986,20 @@ JS;
 							<td><input type="file" id="lh-bundle-file" name="bundle" accept=".zip"></td>
 						</tr>
 						<tr>
+							<th scope="row"><label for="lh-bundle-handbook"><?php esc_html_e( 'Import into', 'living-handbook' ); ?></label></th>
+							<td>
+								<select id="lh-bundle-handbook" name="handbook">
+									<option value="0"><?php esc_html_e( '— the handbook named in the bundle —', 'living-handbook' ); ?></option>
+									<?php foreach ( $handbooks as $term ) : ?>
+										<?php if ( $term instanceof WP_Term ) : ?>
+											<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
+										<?php endif; ?>
+									<?php endforeach; ?>
+								</select>
+								<p class="description"><?php esc_html_e( 'By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is.', 'living-handbook' ); ?></p>
+							</td>
+						</tr>
+						<tr>
 							<th scope="row"><?php esc_html_e( 'If a page already exists', 'living-handbook' ); ?></th>
 							<td>
 								<fieldset>

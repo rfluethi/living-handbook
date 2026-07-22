@@ -46,6 +46,8 @@ A page is recognised by the origin id it was exported with, then by its bundle k
 
 On update the site's own upkeep is preserved: the feedback counts and the review date, interval and reviewer stay as they are here, because they are local maintenance. A page created by the import does take those values from the bundle.
 
+**Import into** decides where the pages land. By default the bundle goes into its own handbook, the one it was exported from, which is created here if it does not exist yet. Pick an existing handbook instead to put the pages there; that handbook keeps its own access configuration.
+
 If the handbook does not exist yet it is created with visibility **members**, even when the bundle says public, so an import can never silently publish content; raise it by hand afterwards. An existing handbook keeps its own access configuration. Users are matched by e-mail, then login; an allowed user with no account here is dropped and reported. After the pages are in, internal links between them are pointed at the new pages, and GitHub-sourced pages resume syncing from their repository.
 
 A short report at the top of the screen says how many pages were created, updated, skipped or protected, and lists anything that could not be mapped.

@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.33.0
+Stable tag: 0.34.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.34.0 =
+* The bundle import can now be pointed at an existing handbook instead of the one named in the bundle. The chosen handbook keeps its own access configuration.
 
 = 0.33.0 =
 * New: import a bundle. Upload a bundle exported from another site and choose what happens when a page already exists: skip it (the default, never overwrite), update it, or always create a new one. A page marked as protected is never overwritten either way, and nothing is ever deleted.
@@ -250,6 +253,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.34.0 =
+The bundle import can now be pointed at an existing handbook instead of the one named in the bundle. Pre-release: best on a fresh database.
 
 = 0.33.0 =
 Adds bundle import: upload a bundle from another site and choose whether existing pages are skipped, updated, or duplicated. Nothing is ever deleted. Pre-release: best on a fresh database.

@@ -125,6 +125,11 @@ final class HandbookImport {
 			$rule = self::RULE_SKIP;
 		}
 
+		// An explicitly chosen target handbook overrides the one named in the
+		// bundle, so a bundle can be imported into an existing handbook.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
+		$chosen = isset( $_POST['handbook'] ) ? absint( wp_unslash( $_POST['handbook'] ) ) : 0;
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a file upload, validated below.
 		$tmp = isset( $_FILES['bundle']['tmp_name'] ) ? sanitize_text_field( wp_unslash( $_FILES['bundle']['tmp_name'] ) ) : '';
 		if ( '' === $tmp || ! is_uploaded_file( $tmp ) ) {
@@ -148,7 +153,7 @@ final class HandbookImport {
 			$this->finish( array( 'error' => __( 'This file is not a Living Handbook bundle.', 'living-handbook' ) ) );
 		}
 
-		$report = $this->import_bundle( $manifest, $zip, $rule );
+		$report = $this->import_bundle( $manifest, $zip, $rule, $chosen );
 		$zip->close();
 		$this->finish( $report );
 	}
@@ -179,9 +184,10 @@ final class HandbookImport {
 	 * @param array<string, mixed> $manifest Decoded manifest.
 	 * @param ZipArchive           $zip      The open bundle.
 	 * @param string               $rule     Run rule.
+	 * @param int                  $chosen   Chosen target handbook term ID, or 0 for the bundle's own.
 	 * @return array<string, mixed>
 	 */
-	private function import_bundle( array $manifest, ZipArchive $zip, string $rule ): array {
+	private function import_bundle( array $manifest, ZipArchive $zip, string $rule, int $chosen = 0 ): array {
 		$report = array(
 			'created'   => 0,
 			'updated'   => 0,
@@ -190,7 +196,7 @@ final class HandbookImport {
 			'notes'     => array(),
 		);
 
-		$term_id = $this->resolve_handbook( $manifest, $report );
+		$term_id = $this->resolve_handbook( $manifest, $report, $chosen );
 		if ( 0 === $term_id ) {
 			return array( 'error' => __( 'The bundle names no handbook.', 'living-handbook' ) );
 		}
@@ -232,9 +238,18 @@ final class HandbookImport {
 	 *
 	 * @param array<string, mixed> $manifest Decoded manifest.
 	 * @param array<string, mixed> $report   Report (out).
+	 * @param int                  $chosen   Chosen target handbook term ID, or 0 for the bundle's own.
 	 * @return int Term ID, or 0.
 	 */
-	private function resolve_handbook( array $manifest, array &$report ): int {
+	private function resolve_handbook( array $manifest, array &$report, int $chosen = 0 ): int {
+		if ( $chosen > 0 ) {
+			$target = get_term( $chosen, Handbooks::TAXONOMY );
+			if ( $target instanceof WP_Term ) {
+				$report['notes'][] = __( 'The pages went into the handbook you chose; its access configuration was left unchanged.', 'living-handbook' );
+				return (int) $target->term_id;
+			}
+		}
+
 		$data = isset( $manifest['handbook'] ) && is_array( $manifest['handbook'] ) ? $manifest['handbook'] : array();
 		$slug = isset( $data['slug'] ) ? sanitize_title( (string) $data['slug'] ) : '';
 		$name = isset( $data['name'] ) ? sanitize_text_field( (string) $data['name'] ) : $slug;
