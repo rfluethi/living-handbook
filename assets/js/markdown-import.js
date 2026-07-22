@@ -118,8 +118,6 @@
 	ready( function () {
 		var mdField = document.getElementById( 'lh-import-md' );
 		var zipField = document.getElementById( 'lh-import-zip' );
-		var titleField = document.getElementById( 'lh-import-title' );
-		var handbookField = document.getElementById( 'lh-import-handbook' );
 		var githubField = document.getElementById( 'lh-import-github' );
 		var statusEl = document.getElementById( 'lh-import-status' );
 		var results = document.getElementById( 'lh-import-results' );
@@ -142,16 +140,6 @@
 			}
 			var tabs = Array.prototype.slice.call( tablist.querySelectorAll( '[role="tab"]' ) );
 
-			// Show only the elements marked for the given value. The options block
-			// and the run button follow the chosen source, so the page never shows
-			// a field or a button that does not belong to it.
-			function only( attribute, value ) {
-				var nodes = document.querySelectorAll( '[' + attribute + ']' );
-				Array.prototype.forEach.call( nodes, function ( node ) {
-					node.hidden = ( node.getAttribute( attribute ) !== value );
-				} );
-			}
-
 			function select( tab ) {
 				tabs.forEach( function ( t ) {
 					var on = t === tab;
@@ -162,8 +150,6 @@
 						panel.hidden = ! on;
 					}
 				} );
-				only( 'data-options-for', tab.getAttribute( 'data-options' ) || 'markdown' );
-				only( 'data-run-for', tab.getAttribute( 'data-source' ) || '' );
 			}
 			tabs.forEach( function ( tab, idx ) {
 				tab.addEventListener( 'click', function () {
@@ -220,8 +206,24 @@
 			return field ? field.value.replace( /^\s+|\s+$/g, '' ) : '';
 		}
 
+		// Each source tab carries its own copy of the shared options, so the values
+		// are read from the panel that is currently open.
+		function openPanel() {
+			return document.querySelector( '.living-handbook-import__panel:not([hidden])' );
+		}
+
+		function panelField( selector ) {
+			var panel = openPanel();
+			return panel ? panel.querySelector( selector ) : null;
+		}
+
 		function handbookId() {
-			return handbookField ? ( parseInt( handbookField.value, 10 ) || 0 ) : 0;
+			var field = panelField( '.lh-import-handbook' );
+			return field ? ( parseInt( field.value, 10 ) || 0 ) : 0;
+		}
+
+		function titleValue() {
+			return trimVal( panelField( '.lh-import-title' ) );
 		}
 
 		function addResult( created, title ) {
@@ -280,7 +282,7 @@
 			setStatus( __( 'Converting…', 'living-handbook' ) );
 			return wp.apiFetch( { path: lhImport.convertPath, method: 'POST', data: { markdown: md } } ).then( function ( res ) {
 				var markup = libraryHtmlToMarkup( res.html || '' );
-				var userTitle = trimVal( titleField );
+				var userTitle = titleValue();
 				var title = userTitle || res.title || __( 'Imported page', 'living-handbook' );
 				setStatus( __( 'Creating draft…', 'living-handbook' ) );
 				return createPage( title, markup, res.transport, '' ).then( function ( created ) {
@@ -408,7 +410,7 @@
 			return wp.apiFetch( {
 				path: lhImport.githubPath,
 				method: 'POST',
-				data: { url: url, title: trimVal( titleField ), handbook: handbookId() }
+				data: { url: url, title: titleValue(), handbook: handbookId() }
 			} ).then( function ( res ) {
 				var pages = ( res && res.pages ) ? res.pages : [];
 				if ( ! pages.length ) {

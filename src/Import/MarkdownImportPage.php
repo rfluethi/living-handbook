@@ -764,6 +764,52 @@ final class MarkdownImportPage {
 	}
 
 	/**
+	 * Render the options the three Markdown sources share, inside the panel of one
+	 * of them. Each panel carries its own copy with its own ids; the script reads
+	 * them from the panel that is open, so a source always shows the options that
+	 * belong to it and nothing else.
+	 *
+	 * @param array<int, mixed> $handbooks  The handbook terms.
+	 * @param string            $suffix     Panel suffix, to keep the ids unique.
+	 * @param bool              $with_title Whether the page title field applies.
+	 * @return void
+	 */
+	private function render_markdown_options( array $handbooks, string $suffix, bool $with_title ): void {
+		$handbook_id = 'lh-import-handbook-' . $suffix;
+		$title_id    = 'lh-import-title-' . $suffix;
+		?>
+		<table class="form-table" role="presentation">
+			<tr>
+				<th scope="row"><label for="<?php echo esc_attr( $handbook_id ); ?>"><?php esc_html_e( 'Target handbook', 'living-handbook' ); ?></label></th>
+				<td>
+					<select id="<?php echo esc_attr( $handbook_id ); ?>" class="lh-import-handbook">
+						<option value="0"><?php esc_html_e( '— select a handbook —', 'living-handbook' ); ?></option>
+						<?php foreach ( $handbooks as $term ) : ?>
+							<?php if ( $term instanceof WP_Term ) : ?>
+								<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</select>
+					<p class="description"><?php esc_html_e( 'Applied to the imported page(s). A "Handbuch" line in the transport block overrides it.', 'living-handbook' ); ?></p>
+					<?php if ( empty( $handbooks ) ) : ?>
+						<p class="description"><?php esc_html_e( 'No handbooks yet. Create one first under Handbook, Handbooks.', 'living-handbook' ); ?></p>
+					<?php endif; ?>
+				</td>
+			</tr>
+			<?php if ( $with_title ) : ?>
+				<tr>
+					<th scope="row"><label for="<?php echo esc_attr( $title_id ); ?>"><?php esc_html_e( 'Page title (optional)', 'living-handbook' ); ?></label></th>
+					<td>
+						<input type="text" id="<?php echo esc_attr( $title_id ); ?>" class="regular-text lh-import-title">
+						<p class="description"><?php esc_html_e( 'If empty, the first heading of the document is used.', 'living-handbook' ); ?></p>
+					</td>
+				</tr>
+			<?php endif; ?>
+		</table>
+		<?php
+	}
+
+	/**
 	 * Render the import page.
 	 *
 	 * @return void
@@ -794,129 +840,85 @@ final class MarkdownImportPage {
 				.living-handbook-import__tab:focus-visible{outline:2px solid #2271b1;outline-offset:-2px}
 				.living-handbook-import__panel{max-width:820px;border:1px solid #c3c4c7;border-top:none;padding:1rem;background:#fff}
 			</style>
-			<h2 class="living-handbook-import__step"><?php esc_html_e( '1. What to import', 'living-handbook' ); ?></h2>
-			<p class="description"><?php esc_html_e( 'Pick a source. The options below change with it.', 'living-handbook' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Pick a source. Everything that source needs sits in its own tab.', 'living-handbook' ); ?></p>
 			<div class="living-handbook-import__tabs">
 				<div class="living-handbook-import__tablist" role="tablist" aria-label="<?php esc_attr_e( 'Import source', 'living-handbook' ); ?>">
-					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-paste" aria-controls="lh-panel-paste" aria-selected="true" data-source="paste" data-options="markdown"><span class="dashicons dashicons-edit" aria-hidden="true"></span><?php esc_html_e( 'Paste text', 'living-handbook' ); ?></button>
-					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-zip" aria-controls="lh-panel-zip" aria-selected="false" tabindex="-1" data-source="zip" data-options="markdown"><span class="dashicons dashicons-media-archive" aria-hidden="true"></span><?php esc_html_e( 'ZIP file', 'living-handbook' ); ?></button>
-					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-github" aria-controls="lh-panel-github" aria-selected="false" tabindex="-1" data-source="github" data-options="markdown"><span class="dashicons dashicons-editor-code" aria-hidden="true"></span><?php esc_html_e( 'GitHub', 'living-handbook' ); ?></button>
+					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-paste" aria-controls="lh-panel-paste" aria-selected="true"><span class="dashicons dashicons-edit" aria-hidden="true"></span><?php esc_html_e( 'Paste text', 'living-handbook' ); ?></button>
+					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-zip" aria-controls="lh-panel-zip" aria-selected="false" tabindex="-1"><span class="dashicons dashicons-media-archive" aria-hidden="true"></span><?php esc_html_e( 'ZIP file', 'living-handbook' ); ?></button>
+					<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-github" aria-controls="lh-panel-github" aria-selected="false" tabindex="-1"><span class="dashicons dashicons-editor-code" aria-hidden="true"></span><?php esc_html_e( 'GitHub', 'living-handbook' ); ?></button>
 					<?php if ( $bundle ) : ?>
-						<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-bundle" aria-controls="lh-panel-bundle" aria-selected="false" tabindex="-1" data-source="bundle" data-options="bundle"><span class="dashicons dashicons-database-import" aria-hidden="true"></span><?php esc_html_e( 'Bundle', 'living-handbook' ); ?></button>
+						<button type="button" class="living-handbook-import__tab" role="tab" id="lh-tab-bundle" aria-controls="lh-panel-bundle" aria-selected="false" tabindex="-1"><span class="dashicons dashicons-database-import" aria-hidden="true"></span><?php esc_html_e( 'Bundle', 'living-handbook' ); ?></button>
 					<?php endif; ?>
 				</div>
 
 				<div class="living-handbook-import__panel" id="lh-panel-paste" role="tabpanel" aria-labelledby="lh-tab-paste">
 					<label class="screen-reader-text" for="lh-import-md"><?php esc_html_e( 'Paste Markdown', 'living-handbook' ); ?></label>
 					<textarea id="lh-import-md" rows="14" class="large-text code" placeholder="<?php esc_attr_e( 'Paste a Markdown draft here', 'living-handbook' ); ?>"></textarea>
+					<?php $this->render_markdown_options( $handbooks, 'paste', true ); ?>
+					<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-paste"><?php esc_html_e( 'Import Markdown', 'living-handbook' ); ?></button></p>
 				</div>
 
 				<div class="living-handbook-import__panel" id="lh-panel-zip" role="tabpanel" aria-labelledby="lh-tab-zip" hidden>
 					<label class="screen-reader-text" for="lh-import-zip"><?php esc_html_e( 'ZIP file', 'living-handbook' ); ?></label>
 					<input type="file" id="lh-import-zip" accept=".zip">
 					<p class="description"><?php esc_html_e( 'Flat set of .md files, or a repository export with a mkdocs.yml for a structured import.', 'living-handbook' ); ?></p>
+					<?php $this->render_markdown_options( $handbooks, 'zip', false ); ?>
+					<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-zip"><?php esc_html_e( 'Import ZIP', 'living-handbook' ); ?></button></p>
 				</div>
 
 				<div class="living-handbook-import__panel" id="lh-panel-github" role="tabpanel" aria-labelledby="lh-tab-github" hidden>
 					<label class="screen-reader-text" for="lh-import-github"><?php esc_html_e( 'GitHub URL', 'living-handbook' ); ?></label>
 					<input type="url" id="lh-import-github" class="large-text code" placeholder="https://github.com/.../file.md or .../tree/main/folder">
 					<p class="description"><?php esc_html_e( 'Creates locked pages pulled from a public GitHub repository.', 'living-handbook' ); ?></p>
+					<?php $this->render_markdown_options( $handbooks, 'github', true ); ?>
+					<p><button type="button" class="button button-primary lh-import-run" id="lh-import-run-github"><?php esc_html_e( 'Import from GitHub', 'living-handbook' ); ?></button></p>
 				</div>
 
 				<?php if ( $bundle ) : ?>
 					<div class="living-handbook-import__panel" id="lh-panel-bundle" role="tabpanel" aria-labelledby="lh-tab-bundle" hidden>
-						<label class="screen-reader-text" for="lh-bundle-file"><?php esc_html_e( 'Bundle file', 'living-handbook' ); ?></label>
-						<input type="file" id="lh-bundle-file" name="bundle" accept=".zip" form="lh-bundle-form">
-						<p class="description"><?php esc_html_e( 'A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten.', 'living-handbook' ); ?></p>
+						<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+							<input type="hidden" name="action" value="living_handbook_import_bundle">
+							<?php wp_nonce_field( 'living_handbook_import_bundle' ); ?>
+							<label class="screen-reader-text" for="lh-bundle-file"><?php esc_html_e( 'Bundle file', 'living-handbook' ); ?></label>
+							<input type="file" id="lh-bundle-file" name="bundle" accept=".zip">
+							<p class="description"><?php esc_html_e( 'A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten.', 'living-handbook' ); ?></p>
+							<table class="form-table" role="presentation">
+								<tr>
+									<th scope="row"><label for="lh-bundle-handbook"><?php esc_html_e( 'Import into', 'living-handbook' ); ?></label></th>
+									<td>
+										<select id="lh-bundle-handbook" name="handbook">
+											<option value="0"><?php esc_html_e( '— the handbook named in the bundle —', 'living-handbook' ); ?></option>
+											<?php foreach ( $handbooks as $term ) : ?>
+												<?php if ( $term instanceof WP_Term ) : ?>
+													<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
+												<?php endif; ?>
+											<?php endforeach; ?>
+										</select>
+										<p class="description"><?php esc_html_e( 'By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is.', 'living-handbook' ); ?></p>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row"><?php esc_html_e( 'If a page already exists', 'living-handbook' ); ?></th>
+									<td>
+										<fieldset>
+											<legend class="screen-reader-text"><?php esc_html_e( 'If a page already exists', 'living-handbook' ); ?></legend>
+											<?php $first = true; ?>
+											<?php foreach ( HandbookImport::rules() as $value => $label ) : ?>
+												<label style="display:block;margin-bottom:.25rem">
+													<input type="radio" name="rule" value="<?php echo esc_attr( $value ); ?>" <?php checked( $first ); ?>>
+													<?php echo esc_html( $label ); ?>
+												</label>
+												<?php $first = false; ?>
+											<?php endforeach; ?>
+										</fieldset>
+									</td>
+								</tr>
+							</table>
+							<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Import bundle', 'living-handbook' ); ?></button></p>
+						</form>
 					</div>
 				<?php endif; ?>
 			</div>
-
-			<h2 class="living-handbook-import__step"><?php esc_html_e( '2. Options', 'living-handbook' ); ?></h2>
-
-			<div data-options-for="markdown">
-				<table class="form-table" role="presentation">
-					<tr>
-						<th scope="row"><label for="lh-import-handbook"><?php esc_html_e( 'Target handbook', 'living-handbook' ); ?></label></th>
-						<td>
-							<select id="lh-import-handbook">
-								<option value="0"><?php esc_html_e( '— select a handbook —', 'living-handbook' ); ?></option>
-								<?php foreach ( $handbooks as $term ) : ?>
-									<?php if ( $term instanceof WP_Term ) : ?>
-										<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
-									<?php endif; ?>
-								<?php endforeach; ?>
-							</select>
-							<p class="description"><?php esc_html_e( 'Applied to the imported page(s). A "Handbuch" line in the transport block overrides it.', 'living-handbook' ); ?></p>
-							<?php if ( empty( $handbooks ) ) : ?>
-								<p class="description"><?php esc_html_e( 'No handbooks yet. Create one first under Handbook, Handbooks.', 'living-handbook' ); ?></p>
-							<?php endif; ?>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row"><label for="lh-import-title"><?php esc_html_e( 'Page title (optional)', 'living-handbook' ); ?></label></th>
-						<td>
-							<input type="text" id="lh-import-title" class="regular-text">
-							<p class="description"><?php esc_html_e( 'For a pasted draft or a single GitHub file. If empty, the first heading is used. For a ZIP, a GitHub folder, or a mkdocs.yml, each file keeps its own title.', 'living-handbook' ); ?></p>
-						</td>
-					</tr>
-				</table>
-			</div>
-
-			<?php if ( $bundle ) : ?>
-				<div data-options-for="bundle" hidden>
-					<table class="form-table" role="presentation">
-						<tr>
-							<th scope="row"><label for="lh-bundle-handbook"><?php esc_html_e( 'Import into', 'living-handbook' ); ?></label></th>
-							<td>
-								<select id="lh-bundle-handbook" name="handbook" form="lh-bundle-form">
-									<option value="0"><?php esc_html_e( '— the handbook named in the bundle —', 'living-handbook' ); ?></option>
-									<?php foreach ( $handbooks as $term ) : ?>
-										<?php if ( $term instanceof WP_Term ) : ?>
-											<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
-										<?php endif; ?>
-									<?php endforeach; ?>
-								</select>
-								<p class="description"><?php esc_html_e( 'By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is.', 'living-handbook' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'If a page already exists', 'living-handbook' ); ?></th>
-							<td>
-								<fieldset>
-									<legend class="screen-reader-text"><?php esc_html_e( 'If a page already exists', 'living-handbook' ); ?></legend>
-									<?php $first = true; ?>
-									<?php foreach ( HandbookImport::rules() as $value => $label ) : ?>
-										<label style="display:block;margin-bottom:.25rem">
-											<input type="radio" name="rule" value="<?php echo esc_attr( $value ); ?>" form="lh-bundle-form" <?php checked( $first ); ?>>
-											<?php echo esc_html( $label ); ?>
-										</label>
-										<?php $first = false; ?>
-									<?php endforeach; ?>
-								</fieldset>
-							</td>
-						</tr>
-					</table>
-				</div>
-			<?php endif; ?>
-
-			<h2 class="living-handbook-import__step"><?php esc_html_e( '3. Import', 'living-handbook' ); ?></h2>
-			<p>
-				<button type="button" class="button button-primary lh-import-run" id="lh-import-run-paste" data-run-for="paste"><?php esc_html_e( 'Import Markdown', 'living-handbook' ); ?></button>
-				<button type="button" class="button button-primary lh-import-run" id="lh-import-run-zip" data-run-for="zip" hidden><?php esc_html_e( 'Import ZIP', 'living-handbook' ); ?></button>
-				<button type="button" class="button button-primary lh-import-run" id="lh-import-run-github" data-run-for="github" hidden><?php esc_html_e( 'Import from GitHub', 'living-handbook' ); ?></button>
-				<?php if ( $bundle ) : ?>
-					<button type="submit" class="button button-primary" form="lh-bundle-form" data-run-for="bundle" hidden><?php esc_html_e( 'Import bundle', 'living-handbook' ); ?></button>
-				<?php endif; ?>
-			</p>
-
-			<?php if ( $bundle ) : ?>
-				<form id="lh-bundle-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-					<input type="hidden" name="action" value="living_handbook_import_bundle">
-					<?php wp_nonce_field( 'living_handbook_import_bundle' ); ?>
-				</form>
-			<?php endif; ?>
-
 			<p><span id="lh-import-status" aria-live="polite"></span></p>
 			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
 

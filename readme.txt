@@ -84,8 +84,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 = 0.36.0 =
 * Export moved to its own screen under Handbook, Export, the way WordPress keeps its own import and export tools apart.
-* The import screen is reorganised into three honest steps: pick what to import, set the options for it, then import. The options change with the source, so nothing irrelevant is on screen.
-* Importing a bundle is now one of the sources on that screen, next to pasted text, a ZIP and GitHub, instead of a separate block at the bottom of the page.
+* The import screen now holds everything a source needs inside that source's own tab: its field, its options and its import button. Nothing from another source is on screen, and there is only ever one button.
+* Importing a bundle is now one of those tabs, next to pasted text, a ZIP and GitHub, instead of a separate block at the bottom of the page.
+* The German translation of the export and import screens is complete again; the new strings had been left untranslated while the layout was still moving.
 
 = 0.35.0 =
 * Tests for the bundle export and import: a round trip into another handbook, each of the three conflict rules, the protected flag, the vocabularies travelling with a page, and an area export carrying only its own subtree.
@@ -264,7 +265,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Upgrade Notice ==
 
 = 0.36.0 =
-Export gets its own screen, and the import screen is reorganised into three steps with the bundle as one of the sources. Pre-release: best on a fresh database.
+Export gets its own screen, each import source now carries its own options and button inside its tab, and the German translation of both screens is complete. Pre-release: best on a fresh database.
 
 = 0.35.0 =
 Adds tests for the bundle export and import, and fixes a matching bug they found: an import could match a page of the same slug in a different handbook. Pre-release: best on a fresh database.

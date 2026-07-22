@@ -4,9 +4,9 @@ How to get Markdown into the handbook, and how a page can stay synced from a Git
 
 ## The import screen
 
-Under **Handbook → Import**, the screen works in two steps. First pick a **target handbook** (and, optionally, a page title). Then choose one **source** in the tab switcher and import it. Only the chosen source is shown, so a pasted draft is never ignored because a URL is still in another field. A short "How the import works" section at the top explains the details on demand.
+Under **Handbook → Import**, each source has its own tab, and everything that source needs sits inside it: the field, its options and its import button. Only the chosen source is on screen, so a pasted draft is never ignored because a URL is still in another field, and there is only ever one button to press. A short "How the import works" section at the top explains the details on demand.
 
-The three sources are:
+The sources are:
 
 1. **Paste text**: paste a Markdown draft, then **Import Markdown**.
 2. **ZIP file**: upload a ZIP of `.md` files, then **Import ZIP**. The ZIP may be a flat set of files or a structured MkDocs project (see below).
@@ -30,13 +30,13 @@ When a page is updated this way it keeps its **slug and its publication status**
 
 ## Exporting a handbook
 
-At the bottom of the import screen, a content manager can **export a handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick the **handbook** first; the second field then lists that handbook's **areas** (an area is a top-level page, and it exports together with its subpages). Leave it on *the whole handbook* to export everything. Then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. An area bundle still carries the handbook's configuration, so the target knows where the pages belong.
+Under **Handbook → Export**, a content manager can **export a handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick the **handbook** first; the second field then lists that handbook's **areas** (an area is a top-level page, and it exports together with its subpages). Leave it on *the whole handbook* to export everything. Then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. An area bundle still carries the handbook's configuration, so the target knows where the pages belong.
 
 The bundle carries the handbook's configuration (visibility, roles, allowed users by e-mail or login), every page as a block-markup snapshot with its place in the hierarchy, the four vocabularies, the freshness metadata, and the referenced media. A GitHub-sourced page keeps its source URL, so on the target site it resumes syncing from the same repository. Local, site-specific data is deliberately left out: the feedback counts and the sync status belong to each site.
 
 ## Importing a bundle
 
-Below the export, **Import a bundle** takes a bundle exported from another site. Upload the ZIP and choose what should happen when a page already exists:
+On the import screen, the **Bundle** tab takes a bundle exported from another site. Upload the ZIP and choose what should happen when a page already exists:
 
 - **Skip** (the default): existing pages are left completely alone, only new ones are created.
 - **Update**: title, content, structure and terms of a matching page are refreshed from the bundle.
