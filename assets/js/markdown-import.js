@@ -141,6 +141,17 @@
 				return;
 			}
 			var tabs = Array.prototype.slice.call( tablist.querySelectorAll( '[role="tab"]' ) );
+
+			// Show only the elements marked for the given value. The options block
+			// and the run button follow the chosen source, so the page never shows
+			// a field or a button that does not belong to it.
+			function only( attribute, value ) {
+				var nodes = document.querySelectorAll( '[' + attribute + ']' );
+				Array.prototype.forEach.call( nodes, function ( node ) {
+					node.hidden = ( node.getAttribute( attribute ) !== value );
+				} );
+			}
+
 			function select( tab ) {
 				tabs.forEach( function ( t ) {
 					var on = t === tab;
@@ -151,6 +162,8 @@
 						panel.hidden = ! on;
 					}
 				} );
+				only( 'data-options-for', tab.getAttribute( 'data-options' ) || 'markdown' );
+				only( 'data-run-for', tab.getAttribute( 'data-source' ) || '' );
 			}
 			tabs.forEach( function ( tab, idx ) {
 				tab.addEventListener( 'click', function () {
@@ -175,6 +188,13 @@
 					tabs[ i ].focus();
 				} );
 			} );
+
+			// Bring options and button in step with the tab the markup marks as
+			// selected, so the first paint is consistent.
+			var current = tablist.querySelector( '[aria-selected="true"]' );
+			if ( current ) {
+				select( current );
+			}
 		}() );
 
 		function setStatus( msg ) {

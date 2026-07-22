@@ -130,6 +130,7 @@ final class Handbook {
 			'edit.php?post_type=' . self::POST_TYPE,
 			'post-new.php?post_type=' . self::POST_TYPE,
 			'living-handbook-import',
+			'living-handbook-export',
 			'taxonomy=handbook_set',
 			'taxonomy=handbook_type',
 			'taxonomy=handbook_topic',

@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.35.0\n"
+"Project-Id-Version: Living Handbook 0.36.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-22T12:02:28+00:00\n"
+"POT-Creation-Date: 2026-07-22T12:30:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -412,8 +412,8 @@ msgstr ""
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
 #: src/Git/GitSync.php:791
-#: assets/js/markdown-import.js:196
-#: assets/js/markdown-import.js:270
+#: assets/js/markdown-import.js:216
+#: assets/js/markdown-import.js:290
 #, php-format,js-format
 msgid "Error: %s"
 msgstr ""
@@ -432,7 +432,7 @@ msgstr ""
 
 #: src/Git/GitSync.php:917
 #: src/Git/GitSync.php:940
-#: src/Import/MarkdownImportPage.php:921
+#: src/Import/MarkdownImportPage.php:803
 msgid "GitHub"
 msgstr ""
 
@@ -507,32 +507,71 @@ msgid "Restricted (roles and/or users)"
 msgstr ""
 
 #: src/Handbook/Handbooks.php:75
-#: src/Import/MarkdownImportPage.php:956
+#: src/Import/HandbookExport.php:114
 #: src/PostType/Handbook.php:73
 #: src/PostType/Handbook.php:75
 #: src/Setup/Onboarding.php:95
 msgid "Handbook"
 msgstr ""
 
-#: src/Import/HandbookExport.php:81
+#: src/Import/HandbookExport.php:77
+msgid "Export handbooks"
+msgstr ""
+
+#: src/Import/HandbookExport.php:78
+#: src/Import/HandbookExport.php:103
+msgid "Export"
+msgstr ""
+
+#: src/Import/HandbookExport.php:104
+msgid "Download a handbook, or a single area within it, as a bundle: one ZIP with its pages, configuration and media. Import it on another site running the plugin."
+msgstr ""
+
+#: src/Import/HandbookExport.php:107
+msgid "There are no handbooks yet, so there is nothing to export."
+msgstr ""
+
+#: src/Import/HandbookExport.php:117
+#: src/Import/MarkdownImportPage.php:843
+msgid "— select a handbook —"
+msgstr ""
+
+#: src/Import/HandbookExport.php:127
+msgid "What to export"
+msgstr ""
+
+#: src/Import/HandbookExport.php:129
+#: src/Import/HandbookExport.php:130
+msgid "— the whole handbook —"
+msgstr ""
+
+#: src/Import/HandbookExport.php:132
+msgid "Lists the areas of the handbook chosen above. An area is a top-level page; it exports with its subpages."
+msgstr ""
+
+#: src/Import/HandbookExport.php:136
+msgid "Export bundle"
+msgstr ""
+
+#: src/Import/HandbookExport.php:246
 msgid "You are not allowed to export handbooks."
 msgstr ""
 
-#: src/Import/HandbookExport.php:103
+#: src/Import/HandbookExport.php:268
 msgid "That page is not in a handbook."
 msgstr ""
 
-#: src/Import/HandbookExport.php:115
+#: src/Import/HandbookExport.php:280
 msgid "Choose what to export."
 msgstr ""
 
-#: src/Import/HandbookExport.php:119
+#: src/Import/HandbookExport.php:284
 #: src/Import/HandbookImport.php:119
 #: src/Import/MarkdownImportPage.php:237
 msgid "ZipArchive is not available on the server."
 msgstr ""
 
-#: src/Import/HandbookExport.php:124
+#: src/Import/HandbookExport.php:289
 msgid "The export bundle could not be created."
 msgstr ""
 
@@ -599,8 +638,8 @@ msgid "Markdown import"
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:89
-#: src/Import/MarkdownImportPage.php:863
-#: src/Import/MarkdownImportPage.php:876
+#: src/Import/MarkdownImportPage.php:773
+#: src/Import/MarkdownImportPage.php:787
 msgid "Import"
 msgstr ""
 
@@ -617,7 +656,7 @@ msgid "CommonMark is not installed. Run: composer require league/commonmark"
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:243
-#: assets/js/markdown-import.js:445
+#: assets/js/markdown-import.js:465
 msgid "No ZIP file received."
 msgstr ""
 
@@ -640,7 +679,7 @@ msgid "No .md files found in the ZIP."
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:368
-#: assets/js/markdown-import.js:458
+#: assets/js/markdown-import.js:478
 msgid "No GitHub URL given."
 msgstr ""
 
@@ -649,152 +688,126 @@ msgid "Could not create the page. Check the URL."
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:431
-#: assets/js/markdown-import.js:229
-#: assets/js/markdown-import.js:264
+#: assets/js/markdown-import.js:249
+#: assets/js/markdown-import.js:284
 msgid "Imported page"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:864
+#: src/Import/MarkdownImportPage.php:774
 msgid "The Markdown library is missing. Run in the plugin folder: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:886
-msgid "1. Target"
+#: src/Import/MarkdownImportPage.php:797
+msgid "1. What to import"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:890
-msgid "Target handbook"
+#: src/Import/MarkdownImportPage.php:798
+msgid "Pick a source. The options below change with it."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:893
-#: src/Import/MarkdownImportPage.php:959
-msgid "— select a handbook —"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:900
-msgid "Applied to the imported page(s). A \"Handbuch\" line in the transport block overrides it."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:902
-msgid "No handbooks yet. Create one first under Handbook, Handbooks."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:907
-msgid "Page title (optional)"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:910
-msgid "For a pasted draft or a single GitHub file. If empty, the first heading is used. For a ZIP, a GitHub folder, or a mkdocs.yml, each file keeps its own title."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:915
-msgid "2. Source"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:916
-msgid "Choose one source, then import."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:918
+#: src/Import/MarkdownImportPage.php:800
 msgid "Import source"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:919
+#: src/Import/MarkdownImportPage.php:801
 msgid "Paste text"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:920
-#: src/Import/MarkdownImportPage.php:931
+#: src/Import/MarkdownImportPage.php:802
+#: src/Import/MarkdownImportPage.php:815
 msgid "ZIP file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:925
+#: src/Import/MarkdownImportPage.php:805
+msgid "Bundle"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:810
 msgid "Paste Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:926
+#: src/Import/MarkdownImportPage.php:811
 msgid "Paste a Markdown draft here"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:927
-msgid "Import Markdown"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:933
+#: src/Import/MarkdownImportPage.php:817
 msgid "Flat set of .md files, or a repository export with a mkdocs.yml for a structured import."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:934
-msgid "Import ZIP"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:938
+#: src/Import/MarkdownImportPage.php:821
 msgid "GitHub URL"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:940
+#: src/Import/MarkdownImportPage.php:823
 msgid "Creates locked pages pulled from a public GitHub repository."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:941
-msgid "Import from GitHub"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:949
-msgid "Export"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:950
-msgid "Download a handbook, or a single area within it, as a bundle (a ZIP with its pages, configuration and media) to import it on another site running the plugin."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:969
-msgid "What to export"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:971
-#: src/Import/MarkdownImportPage.php:972
-msgid "— the whole handbook —"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:974
-msgid "Lists the areas of the handbook chosen above. An area is a top-level page; it exports with its subpages."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:978
-msgid "Export bundle"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:981
-msgid "Import a bundle"
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:982
-msgid "Upload a bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:988
+#: src/Import/MarkdownImportPage.php:828
 msgid "Bundle file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:992
+#: src/Import/MarkdownImportPage.php:830
+msgid "A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:835
+msgid "2. Options"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:840
+msgid "Target handbook"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:850
+msgid "Applied to the imported page(s). A \"Handbuch\" line in the transport block overrides it."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:852
+msgid "No handbooks yet. Create one first under Handbook, Handbooks."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:857
+msgid "Page title (optional)"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:860
+msgid "For a pasted draft or a single GitHub file. If empty, the first heading is used. For a ZIP, a GitHub folder, or a mkdocs.yml, each file keeps its own title."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:870
 msgid "Import into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:995
+#: src/Import/MarkdownImportPage.php:873
 msgid "— the handbook named in the bundle —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1002
+#: src/Import/MarkdownImportPage.php:880
 msgid "By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1006
-#: src/Import/MarkdownImportPage.php:1009
+#: src/Import/MarkdownImportPage.php:884
+#: src/Import/MarkdownImportPage.php:887
 msgid "If a page already exists"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1022
+#: src/Import/MarkdownImportPage.php:903
+msgid "3. Import"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:905
+msgid "Import Markdown"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:906
+msgid "Import ZIP"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:907
+msgid "Import from GitHub"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:909
 msgid "Import bundle"
 msgstr ""
 
@@ -1185,43 +1198,43 @@ msgstr[1] ""
 msgid "Done: %1$s, %2$s, %3$s."
 msgstr ""
 
-#: assets/js/markdown-import.js:196
-#: assets/js/markdown-import.js:229
+#: assets/js/markdown-import.js:216
+#: assets/js/markdown-import.js:249
 msgid "unknown"
 msgstr ""
 
 #. translators: %d is the new page's numeric ID, used as a fallback title.
-#: assets/js/markdown-import.js:215
+#: assets/js/markdown-import.js:235
 #, js-format
 msgid "Page %d"
 msgstr ""
 
-#: assets/js/markdown-import.js:257
+#: assets/js/markdown-import.js:277
 msgid "Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL."
 msgstr ""
 
-#: assets/js/markdown-import.js:260
+#: assets/js/markdown-import.js:280
 msgid "Converting…"
 msgstr ""
 
-#: assets/js/markdown-import.js:265
+#: assets/js/markdown-import.js:285
 msgid "Creating draft…"
 msgstr ""
 
 #. translators: %d is the number of internal links that were converted.
-#: assets/js/markdown-import.js:277
+#: assets/js/markdown-import.js:297
 #, js-format
 msgid "Done: 1 page, %d link converted."
 msgid_plural "Done: 1 page, %d links converted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:287
+#: assets/js/markdown-import.js:307
 msgid "No pages found in the mkdocs.yml."
 msgstr ""
 
 #. translators: %d is the number of pages being created.
-#: assets/js/markdown-import.js:291
+#: assets/js/markdown-import.js:311
 #, js-format
 msgid "Creating %d page…"
 msgid_plural "Creating %d pages…"
@@ -1229,54 +1242,54 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %1$d is the current page number, %2$d the total number of pages.
-#: assets/js/markdown-import.js:317
-#: assets/js/markdown-import.js:363
+#: assets/js/markdown-import.js:337
+#: assets/js/markdown-import.js:383
 #, js-format
 msgid "Importing page %1$d of %2$d …"
 msgstr ""
 
-#: assets/js/markdown-import.js:331
-#: assets/js/markdown-import.js:376
+#: assets/js/markdown-import.js:351
+#: assets/js/markdown-import.js:396
 msgid "Linking…"
 msgstr ""
 
-#: assets/js/markdown-import.js:339
+#: assets/js/markdown-import.js:359
 msgid "Uploading ZIP…"
 msgstr ""
 
-#: assets/js/markdown-import.js:348
+#: assets/js/markdown-import.js:368
 msgid "No pages in the ZIP."
 msgstr ""
 
 #. translators: %d is the number of draft pages being created.
-#: assets/js/markdown-import.js:352
+#: assets/js/markdown-import.js:372
 #, js-format
 msgid "Creating %d draft…"
 msgid_plural "Creating %d drafts…"
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:387
+#: assets/js/markdown-import.js:407
 msgid "Fetching pages from GitHub…"
 msgstr ""
 
-#: assets/js/markdown-import.js:395
+#: assets/js/markdown-import.js:415
 msgid "No Markdown pages found."
 msgstr ""
 
 #. translators: %d is the number of pages created from GitHub.
-#: assets/js/markdown-import.js:402
+#: assets/js/markdown-import.js:422
 #, js-format
 msgid "Done: created %d GitHub page."
 msgid_plural "Done: created %d GitHub pages."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:413
+#: assets/js/markdown-import.js:433
 msgid "wp.blocks is not loaded."
 msgstr ""
 
-#: assets/js/markdown-import.js:416
+#: assets/js/markdown-import.js:436
 msgid "No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?"
 msgstr ""
 

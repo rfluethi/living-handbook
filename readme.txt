@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.35.0
+Stable tag: 0.36.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,11 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.36.0 =
+* Export moved to its own screen under Handbook, Export, the way WordPress keeps its own import and export tools apart.
+* The import screen is reorganised into three honest steps: pick what to import, set the options for it, then import. The options change with the source, so nothing irrelevant is on screen.
+* Importing a bundle is now one of the sources on that screen, next to pasted text, a ZIP and GitHub, instead of a separate block at the bottom of the page.
 
 = 0.35.0 =
 * Tests for the bundle export and import: a round trip into another handbook, each of the three conflict rules, the protected flag, the vocabularies travelling with a page, and an area export carrying only its own subtree.
@@ -257,6 +262,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.36.0 =
+Export gets its own screen, and the import screen is reorganised into three steps with the bundle as one of the sources. Pre-release: best on a fresh database.
 
 = 0.35.0 =
 Adds tests for the bundle export and import, and fixes a matching bug they found: an import could match a page of the same slug in a different handbook. Pre-release: best on a fresh database.

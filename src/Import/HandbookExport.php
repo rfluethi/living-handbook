@@ -42,6 +42,8 @@ final class HandbookExport {
 
 	private const ACTION = 'living_handbook_export';
 
+	private const MENU_SLUG = 'living-handbook-export';
+
 	/**
 	 * The four vocabulary taxonomies carried per page.
 	 */
@@ -58,7 +60,170 @@ final class HandbookExport {
 	 * @return void
 	 */
 	public function register(): void {
+		add_action( 'admin_menu', array( $this, 'add_page' ) );
 		add_action( 'admin_post_' . self::ACTION, array( $this, 'download' ) );
+	}
+
+	/**
+	 * Add the export screen under the handbook menu. Export is the opposite
+	 * direction of import, so it gets its own page, the way WordPress separates
+	 * its own import and export tools.
+	 *
+	 * @return void
+	 */
+	public function add_page(): void {
+		add_submenu_page(
+			'edit.php?post_type=' . Handbook::POST_TYPE,
+			__( 'Export handbooks', 'living-handbook' ),
+			__( 'Export', 'living-handbook' ),
+			'edit_others_posts',
+			self::MENU_SLUG,
+			array( $this, 'render' )
+		);
+	}
+
+	/**
+	 * Render the export screen: pick a handbook, optionally one of its areas.
+	 *
+	 * @return void
+	 */
+	public function render(): void {
+		if ( ! self::can_export() ) {
+			return;
+		}
+		$handbooks = get_terms(
+			array(
+				'taxonomy'   => Handbooks::TAXONOMY,
+				'hide_empty' => false,
+			)
+		);
+		$handbooks = is_array( $handbooks ) ? $handbooks : array();
+		?>
+		<div class="wrap">
+			<h1><?php esc_html_e( 'Export', 'living-handbook' ); ?></h1>
+			<p class="description" style="max-width:820px"><?php esc_html_e( 'Download a handbook, or a single area within it, as a bundle: one ZIP with its pages, configuration and media. Import it on another site running the plugin.', 'living-handbook' ); ?></p>
+
+			<?php if ( empty( $handbooks ) ) : ?>
+				<div class="notice notice-warning inline"><p><?php esc_html_e( 'There are no handbooks yet, so there is nothing to export.', 'living-handbook' ); ?></p></div>
+			<?php else : ?>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="living_handbook_export">
+					<?php wp_nonce_field( 'living_handbook_export' ); ?>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="lh-export-handbook"><?php esc_html_e( 'Handbook', 'living-handbook' ); ?></label></th>
+							<td>
+								<select id="lh-export-handbook" name="handbook">
+									<option value="0"><?php esc_html_e( '— select a handbook —', 'living-handbook' ); ?></option>
+									<?php foreach ( $handbooks as $term ) : ?>
+										<?php if ( $term instanceof WP_Term ) : ?>
+											<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
+										<?php endif; ?>
+									<?php endforeach; ?>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="lh-export-area"><?php esc_html_e( 'What to export', 'living-handbook' ); ?></label></th>
+							<td>
+								<select id="lh-export-area" name="area" data-whole="<?php esc_attr_e( '— the whole handbook —', 'living-handbook' ); ?>">
+									<option value="0"><?php esc_html_e( '— the whole handbook —', 'living-handbook' ); ?></option>
+								</select>
+								<p class="description"><?php esc_html_e( 'Lists the areas of the handbook chosen above. An area is a top-level page; it exports with its subpages.', 'living-handbook' ); ?></p>
+							</td>
+						</tr>
+					</table>
+					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Export bundle', 'living-handbook' ); ?></button></p>
+				</form>
+			<?php endif; ?>
+		</div>
+		<?php
+		if ( ! empty( $handbooks ) ) {
+			$areas = wp_json_encode( $this->export_areas() );
+			wp_print_inline_script_tag( 'var lhExportAreas = ' . ( is_string( $areas ) ? $areas : '{}' ) . ';' . self::area_script() );
+		}
+	}
+
+	/**
+	 * The top-level handbook pages offered as an export area, keyed by handbook
+	 * term ID. An area is a top-level page (no parent) that belongs to a handbook;
+	 * its subpages travel with it on export.
+	 *
+	 * @return array<int, array<int, array<string, mixed>>>
+	 */
+	private function export_areas(): array {
+		$posts = get_posts(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_parent'    => 0,
+				'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+				'no_found_rows'  => true,
+			)
+		);
+
+		$groups = array();
+		foreach ( $posts as $post ) {
+			if ( ! $post instanceof WP_Post ) {
+				continue;
+			}
+			$terms = wp_get_object_terms( $post->ID, Handbooks::TAXONOMY );
+			if ( is_wp_error( $terms ) ) {
+				continue;
+			}
+			foreach ( $terms as $term ) {
+				if ( ! $term instanceof WP_Term ) {
+					continue;
+				}
+				if ( ! isset( $groups[ $term->term_id ] ) ) {
+					$groups[ $term->term_id ] = array();
+				}
+				$groups[ $term->term_id ][] = array(
+					'id'    => $post->ID,
+					'title' => $post->post_title,
+				);
+			}
+		}
+		return $groups;
+	}
+
+	/**
+	 * The small script that refills the area field whenever the handbook selection
+	 * changes. Without JavaScript the field keeps its single "whole handbook"
+	 * entry, so a whole-handbook export still works.
+	 *
+	 * @return string
+	 */
+	private static function area_script(): string {
+		return <<<'JS'
+( function () {
+	var handbook = document.getElementById( 'lh-export-handbook' );
+	var area = document.getElementById( 'lh-export-area' );
+	if ( ! handbook || ! area || typeof lhExportAreas === 'undefined' ) {
+		return;
+	}
+	var whole = area.getAttribute( 'data-whole' ) || '';
+	function fill() {
+		var list = lhExportAreas[ handbook.value ] || [];
+		area.innerHTML = '';
+		var first = document.createElement( 'option' );
+		first.value = '0';
+		first.textContent = whole;
+		area.appendChild( first );
+		for ( var i = 0; i < list.length; i++ ) {
+			var option = document.createElement( 'option' );
+			option.value = String( list[ i ].id );
+			option.textContent = list[ i ].title;
+			area.appendChild( option );
+		}
+		area.disabled = ( '0' === handbook.value );
+	}
+	handbook.addEventListener( 'change', fill );
+	fill();
+}() );
+JS;
 	}
 
 	/**
