@@ -34,7 +34,23 @@ At the bottom of the import screen, a content manager can **export a handbook as
 
 The bundle carries the handbook's configuration (visibility, roles, allowed users by e-mail or login), every page as a block-markup snapshot with its place in the hierarchy, the four vocabularies, the freshness metadata, and the referenced media. A GitHub-sourced page keeps its source URL, so on the target site it resumes syncing from the same repository. Local, site-specific data is deliberately left out: the feedback counts and the sync status belong to each site.
 
-The matching import, which reads a bundle back in with a choice of what to do when a page already exists, follows in a later release.
+## Importing a bundle
+
+Below the export, **Import a bundle** takes a bundle exported from another site. Upload the ZIP and choose what should happen when a page already exists:
+
+- **Skip** (the default): existing pages are left completely alone, only new ones are created.
+- **Update**: title, content, structure and terms of a matching page are refreshed from the bundle.
+- **Always create**: every page in the bundle becomes a new page, useful for cloning into a second handbook.
+
+A page is recognised by the origin id it was exported with, then by its bundle key, then by slug within the target handbook. Two rules hold whatever you choose: a page carrying the **protected** flag (`_lh_import_protected`) is never overwritten, and **nothing is ever deleted** — a page that exists here but is missing from the bundle simply stays.
+
+On update the site's own upkeep is preserved: the feedback counts and the review date, interval and reviewer stay as they are here, because they are local maintenance. A page created by the import does take those values from the bundle.
+
+If the handbook does not exist yet it is created with visibility **members**, even when the bundle says public, so an import can never silently publish content; raise it by hand afterwards. An existing handbook keeps its own access configuration. Users are matched by e-mail, then login; an allowed user with no account here is dropped and reported. After the pages are in, internal links between them are pointed at the new pages, and GitHub-sourced pages resume syncing from their repository.
+
+A short report at the top of the screen says how many pages were created, updated, skipped or protected, and lists anything that could not be mapped.
+
+Importing needs the content-manager role. As with WordPress's own importer, the page content is inserted as it comes: block markup cannot be passed through the HTML filter without destroying the block delimiters, so treat a bundle like any file you choose to import and only take bundles from a source you trust. Media is the exception and is cleaned on the way in, including SVG.
 
 ## Transport metadata
 

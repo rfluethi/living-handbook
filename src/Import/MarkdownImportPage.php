@@ -50,7 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class MarkdownImportPage {
 
-	private const MENU_SLUG = 'living-handbook-import';
+	public const MENU_SLUG = 'living-handbook-import';
 
 	private const IMAGE_EXTENSIONS = array( 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg' );
 
@@ -312,7 +312,7 @@ final class MarkdownImportPage {
 
 		$image_map = array();
 		foreach ( $image_files as $file_name => $data ) {
-			$url = $this->sideload_image( $file_name, $data );
+			$url = self::sideload_image( $file_name, $data );
 			if ( '' !== $url ) {
 				$image_map[ $file_name ] = $url;
 			}
@@ -635,7 +635,7 @@ final class MarkdownImportPage {
 	 * @param string $data      Binary data.
 	 * @return string Media URL, or an empty string on failure.
 	 */
-	private function sideload_image( string $file_name, string $data ): string {
+	public static function sideload_image( string $file_name, string $data ): string {
 		$hash     = md5( $data );
 		$existing = get_posts(
 			array(
@@ -973,6 +973,36 @@ JS;
 						</tr>
 					</table>
 					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Export bundle', 'living-handbook' ); ?></button></p>
+				</form>
+
+				<h2 class="living-handbook-import__step"><?php esc_html_e( 'Import a bundle', 'living-handbook' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Upload a bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten.', 'living-handbook' ); ?></p>
+				<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="living_handbook_import_bundle">
+					<?php wp_nonce_field( 'living_handbook_import_bundle' ); ?>
+					<table class="form-table" role="presentation">
+						<tr>
+							<th scope="row"><label for="lh-bundle-file"><?php esc_html_e( 'Bundle file', 'living-handbook' ); ?></label></th>
+							<td><input type="file" id="lh-bundle-file" name="bundle" accept=".zip"></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'If a page already exists', 'living-handbook' ); ?></th>
+							<td>
+								<fieldset>
+									<legend class="screen-reader-text"><?php esc_html_e( 'If a page already exists', 'living-handbook' ); ?></legend>
+									<?php $first = true; ?>
+									<?php foreach ( HandbookImport::rules() as $value => $label ) : ?>
+										<label style="display:block;margin-bottom:.25rem">
+											<input type="radio" name="rule" value="<?php echo esc_attr( $value ); ?>" <?php checked( $first ); ?>>
+											<?php echo esc_html( $label ); ?>
+										</label>
+										<?php $first = false; ?>
+									<?php endforeach; ?>
+								</fieldset>
+							</td>
+						</tr>
+					</table>
+					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Import bundle', 'living-handbook' ); ?></button></p>
 				</form>
 			<?php endif; ?>
 		</div>

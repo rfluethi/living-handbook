@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.32.0
+Stable tag: 0.33.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.33.0 =
+* New: import a bundle. Upload a bundle exported from another site and choose what happens when a page already exists: skip it (the default, never overwrite), update it, or always create a new one. A page marked as protected is never overwritten either way, and nothing is ever deleted.
+* On update the local upkeep stays put: the feedback counts and the review date, interval and reviewer belong to this site. A page created by the import does take those from the bundle.
+* An imported handbook that did not exist here is created with visibility "members", even when the bundle says public, so an import can never silently publish content. An existing handbook keeps its own access configuration.
+* Internal links between the imported pages are rewired to the new pages, GitHub-sourced pages resume syncing from their repository, and media travels with the bundle. Importing requires the content-manager role.
 
 = 0.32.0 =
 * The export picker now works in two dependent steps: choose the handbook, and the second field lists only that handbook's areas. Previously it offered every handbook's areas at once, which is unusable once a site has more than a few.
@@ -244,6 +250,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.33.0 =
+Adds bundle import: upload a bundle from another site and choose whether existing pages are skipped, updated, or duplicated. Nothing is ever deleted. Pre-release: best on a fresh database.
 
 = 0.32.0 =
 The export picker now has two dependent fields: pick the handbook, and the second field lists only that handbook's areas. Pre-release: best on a fresh database.
