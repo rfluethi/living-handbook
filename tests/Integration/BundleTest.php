@@ -166,14 +166,16 @@ final class BundleTest extends WP_UnitTestCase {
 		$this->make_page( $source, 'Child page', $parent );
 
 		$manifest = $this->export( $source );
-		$target   = $this->make_handbook( 'Target' );
+		$this->assertCount( 2, $manifest['pages'], 'the export should carry both pages' );
+
+		$target = $this->make_handbook( 'Target' );
 
 		$report = $this->import( $manifest, HandbookImport::RULE_SKIP, $target );
 
-		$this->assertSame( 2, $report['created'] );
+		$this->assertSame( 2, $report['created'], 'report: ' . (string) wp_json_encode( $report ) );
 
 		$ids = $this->pages_in( $target );
-		$this->assertCount( 2, $ids );
+		$this->assertCount( 2, $ids, 'report: ' . (string) wp_json_encode( $report ) );
 
 		$new_parent = $this->find_by_title( $ids, 'Parent page' );
 		$new_child  = $this->find_by_title( $ids, 'Child page' );
@@ -295,10 +297,10 @@ final class BundleTest extends WP_UnitTestCase {
 
 		$manifest = $this->export( $handbook );
 		$target   = $this->make_handbook( 'Target' );
-		$this->import( $manifest, HandbookImport::RULE_SKIP, $target );
+		$report   = $this->import( $manifest, HandbookImport::RULE_SKIP, $target );
 
 		$ids = $this->pages_in( $target );
-		$this->assertCount( 1, $ids );
+		$this->assertCount( 1, $ids, 'report: ' . (string) wp_json_encode( $report ) );
 
 		$terms = wp_get_object_terms( $ids[0], 'handbook_type', array( 'fields' => 'slugs' ) );
 		$this->assertIsArray( $terms );
