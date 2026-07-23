@@ -9,3 +9,8 @@ In der Seitenliste im Backend gibt es eine Feedback-Spalte. Sie lässt sich nach
 ## Was du damit tust
 
 Eine Seite mit schlechtem Verhältnis ist kein Grund für Scham, sondern ein Hinweis. Lies sie mit der Frage, woran die Ratlosigkeit liegt, und schreib den Teil neu, der sie auslöst.
+
+## Transport-Metadaten
+* Reihenfolge: 2
+* Letzte Prüfung: 2025-06-01
+* Prüfintervall: 90 Tage

@@ -14,3 +14,6 @@ This handbook comes from Markdown files on GitHub. On import, Markdown becomes H
 The plugin's own blocks (the area list, feedback, badges, page metadata) cannot be expressed in Markdown. They are technically HTML comments, and the cleaning removes comments. If you write such a block into a Markdown file, it vanishes on import.
 
 You do not need to place two of them yourself: the navigation tree on the left is built from the folder structure, and an area page without its own file gets its card list automatically.
+
+## Transport-Metadaten
+* Reihenfolge: 3

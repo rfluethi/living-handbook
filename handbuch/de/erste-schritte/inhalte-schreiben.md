@@ -14,3 +14,6 @@ Dieses Handbuch kommt aus Markdown-Dateien auf GitHub. Beim Import wird Markdown
 Die plugin-eigenen Blöcke (Bereichsliste, Feedback, Abzeichen, Seitenmetadaten) lassen sich in Markdown nicht ausdrücken. Sie sind technisch HTML-Kommentare, und die Bereinigung entfernt Kommentare. Schreibst du einen solchen Block in eine Markdown-Datei, verschwindet er beim Import spurlos.
 
 Zwei davon brauchst du gar nicht selbst zu setzen: Der Navigationsbaum links entsteht aus der Ordnerstruktur, und eine Bereichsseite ohne eigene Datei bekommt ihre Kartenliste automatisch.
+
+## Transport-Metadaten
+* Reihenfolge: 3

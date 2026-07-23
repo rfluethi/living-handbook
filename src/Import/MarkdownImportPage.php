@@ -371,11 +371,17 @@ final class MarkdownImportPage {
 		$handbook_id = absint( $request->get_param( 'handbook' ) );
 		$git         = new GitSync();
 
+		// The app handbook is curated, editor-locked content from a repository the
+		// site owner chose, so it is published straight away; its visibility is
+		// governed by the handbook it lands in. Any other GitHub import stays a
+		// draft for review.
+		$publish = AppHandbook::is_source( $url );
+
 		if ( false !== strpos( $url, '/tree/' ) ) {
-			return $git->import_folder( $url, $handbook_id );
+			return $git->import_folder( $url, $handbook_id, $publish );
 		}
 
-		$post_id = $git->create_github_page( $url, $handbook_id, $title );
+		$post_id = $git->create_github_page( $url, $handbook_id, $title, $publish );
 		if ( 0 === $post_id ) {
 			return self::import_error( __( 'Could not create the page. Check the URL.', 'living-handbook' ) );
 		}
@@ -929,7 +935,7 @@ final class MarkdownImportPage {
 				<?php if ( $app ) : ?>
 					<div class="living-handbook-import__panel" id="lh-panel-app" role="tabpanel" aria-labelledby="lh-tab-app" hidden>
 						<p><?php esc_html_e( 'The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It is maintained on GitHub, so this loads the current state straight from there, with its pages, structure and images.', 'living-handbook' ); ?></p>
-						<p class="description"><?php esc_html_e( 'It is a normal GitHub folder import: the pages are pulled from the repository and kept in sync with it, so later changes on GitHub reach your site on the next load. Nothing is deleted.', 'living-handbook' ); ?></p>
+						<p class="description"><?php esc_html_e( 'The pages are pulled from the repository, published into the handbook you pick, and kept in sync, so later changes on GitHub reach your site on the next load. Whether they are visible on the front end depends on that handbook: set it to "members" and only logged-in people see them. Nothing is deleted.', 'living-handbook' ); ?></p>
 						<table class="form-table" role="presentation">
 							<tr>
 								<th scope="row"><label for="lh-app-handbook"><?php esc_html_e( 'Load into', 'living-handbook' ); ?></label></th>

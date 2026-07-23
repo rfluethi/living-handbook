@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.41.0\n"
+"Project-Id-Version: Living Handbook 0.42.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-23T09:17:42+00:00\n"
+"POT-Creation-Date: 2026-07-23T10:46:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -321,111 +321,111 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: src/Git/GitSync.php:290
+#: src/Git/GitSync.php:296
 msgid "GitHub page"
 msgstr ""
 
-#: src/Git/GitSync.php:374
+#: src/Git/GitSync.php:381
 msgid "Not a GitHub folder URL."
 msgstr ""
 
-#: src/Git/GitSync.php:384
+#: src/Git/GitSync.php:391
 msgid "No Markdown files found in that folder."
 msgstr ""
 
-#: src/Git/GitSync.php:389
+#: src/Git/GitSync.php:396
 msgid "The repository is too large for GitHub to return its tree in one piece, so this import may be incomplete."
 msgstr ""
 
 #. translators: %d: maximum number of files imported from one folder.
-#: src/Git/GitSync.php:395
+#: src/Git/GitSync.php:402
 #, php-format
 msgid "Only the first %d files were imported. Import the remaining subfolders separately."
 msgstr ""
 
-#: src/Git/GitSync.php:477
+#: src/Git/GitSync.php:490
 msgid "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later."
 msgstr ""
 
 #. translators: %d: HTTP status code returned by the GitHub API.
-#: src/Git/GitSync.php:480
+#: src/Git/GitSync.php:493
 #, php-format
 msgid "GitHub API HTTP %d"
 msgstr ""
 
-#: src/Git/GitSync.php:485
+#: src/Git/GitSync.php:498
 msgid "Unexpected GitHub API response."
 msgstr ""
 
-#: src/Git/GitSync.php:839
-#: src/Git/GitSync.php:1254
+#: src/Git/GitSync.php:872
+#: src/Git/GitSync.php:1287
 msgid "Source"
 msgstr ""
 
-#: src/Git/GitSync.php:861
+#: src/Git/GitSync.php:894
 msgid "Maintained in WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:862
+#: src/Git/GitSync.php:895
 msgid "Synced from GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:864
+#: src/Git/GitSync.php:897
 msgid "Markdown source (raw or blob URL)"
 msgstr ""
 
-#: src/Git/GitSync.php:869
+#: src/Git/GitSync.php:902
 msgid "Sync now"
 msgstr ""
 
-#: src/Git/GitSync.php:873
+#: src/Git/GitSync.php:906
 msgid "Last sync:"
 msgstr ""
 
-#: src/Git/GitSync.php:875
+#: src/Git/GitSync.php:908
 msgid "A GitHub page is pulled when you save it, and its content editor is locked. Change the source here."
 msgstr ""
 
-#: src/Git/GitSync.php:952
+#: src/Git/GitSync.php:985
 msgid "This page is synced from GitHub. Its content is managed in the repository and cannot be edited here."
 msgstr ""
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:991
+#: src/Git/GitSync.php:1024
 #, php-format
 msgid "Living Handbook: %d GitHub page could not be synced. Open it to see the error."
 msgid_plural "Living Handbook: %d GitHub pages could not be synced. Open them to see the error."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Git/GitSync.php:1012
+#: src/Git/GitSync.php:1045
 #: src/Setup/Onboarding.php:321
 msgid "(no title)"
 msgstr ""
 
 #. translators: %d: number of further failed pages not listed.
 #. translators: %d: number of further affected pages not listed.
-#: src/Git/GitSync.php:1022
+#: src/Git/GitSync.php:1055
 #: src/Setup/Onboarding.php:334
 #, php-format
 msgid "… and %d more."
 msgstr ""
 
-#: src/Git/GitSync.php:1048
+#: src/Git/GitSync.php:1081
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Git/GitSync.php:1123
+#: src/Git/GitSync.php:1156
 msgid "Error: CommonMark is not installed."
 msgstr ""
 
-#: src/Git/GitSync.php:1131
+#: src/Git/GitSync.php:1164
 msgid "Error: source host not allowed."
 msgstr ""
 
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
-#: src/Git/GitSync.php:1144
+#: src/Git/GitSync.php:1177
 #: assets/js/markdown-import.js:203
 #: assets/js/markdown-import.js:293
 #, php-format,js-format
@@ -433,33 +433,33 @@ msgid "Error: %s"
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:1150
+#: src/Git/GitSync.php:1183
 #, php-format
 msgid "Error: HTTP %d"
 msgstr ""
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:1180
+#: src/Git/GitSync.php:1213
 #, php-format
 msgid "OK %s"
 msgstr ""
 
-#: src/Git/GitSync.php:1270
-#: src/Git/GitSync.php:1293
-#: src/Import/MarkdownImportPage.php:853
+#: src/Git/GitSync.php:1303
+#: src/Git/GitSync.php:1326
+#: src/Import/MarkdownImportPage.php:859
 msgid "GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:1270
-#: src/Git/GitSync.php:1294
+#: src/Git/GitSync.php:1303
+#: src/Git/GitSync.php:1327
 msgid "WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:1274
+#: src/Git/GitSync.php:1307
 msgid "(sync failed)"
 msgstr ""
 
-#: src/Git/GitSync.php:1292
+#: src/Git/GitSync.php:1325
 msgid "All sources"
 msgstr ""
 
@@ -546,7 +546,7 @@ msgid "There are no handbooks yet, so there is nothing to export."
 msgstr ""
 
 #: src/Import/HandbookExport.php:117
-#: src/Import/MarkdownImportPage.php:790
+#: src/Import/MarkdownImportPage.php:796
 msgid "— select a handbook —"
 msgstr ""
 
@@ -652,8 +652,8 @@ msgid "Markdown import"
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:89
-#: src/Import/MarkdownImportPage.php:823
-#: src/Import/MarkdownImportPage.php:838
+#: src/Import/MarkdownImportPage.php:829
+#: src/Import/MarkdownImportPage.php:844
 msgid "Import"
 msgstr ""
 
@@ -697,147 +697,147 @@ msgstr ""
 msgid "No GitHub URL given."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:380
+#: src/Import/MarkdownImportPage.php:386
 msgid "Could not create the page. Check the URL."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:434
+#: src/Import/MarkdownImportPage.php:440
 #: assets/js/markdown-import.js:252
 #: assets/js/markdown-import.js:287
 msgid "Imported page"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:787
+#: src/Import/MarkdownImportPage.php:793
 msgid "Target handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:797
+#: src/Import/MarkdownImportPage.php:803
 msgid "Applied to the imported page(s). A \"Handbuch\" line in the transport block overrides it."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:799
+#: src/Import/MarkdownImportPage.php:805
 msgid "No handbooks yet. Create one first under Handbook, Handbooks."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:805
+#: src/Import/MarkdownImportPage.php:811
 msgid "Page title (optional)"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:808
+#: src/Import/MarkdownImportPage.php:814
 msgid "If empty, the first heading of the document is used."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:824
+#: src/Import/MarkdownImportPage.php:830
 msgid "The Markdown library is missing. Run in the plugin folder: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:848
+#: src/Import/MarkdownImportPage.php:854
 msgid "Pick a source. Everything that source needs sits in its own tab."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:850
+#: src/Import/MarkdownImportPage.php:856
 msgid "Import source"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:851
+#: src/Import/MarkdownImportPage.php:857
 msgid "Paste text"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:852
-#: src/Import/MarkdownImportPage.php:870
+#: src/Import/MarkdownImportPage.php:858
+#: src/Import/MarkdownImportPage.php:876
 msgid "ZIP file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:855
+#: src/Import/MarkdownImportPage.php:861
 msgid "Bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:858
+#: src/Import/MarkdownImportPage.php:864
 msgid "App handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:863
+#: src/Import/MarkdownImportPage.php:869
 msgid "Paste Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:864
+#: src/Import/MarkdownImportPage.php:870
 msgid "Paste a Markdown draft here"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:866
+#: src/Import/MarkdownImportPage.php:872
 msgid "Import Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:872
+#: src/Import/MarkdownImportPage.php:878
 msgid "Flat set of .md files, or a repository export with a mkdocs.yml for a structured import."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:874
+#: src/Import/MarkdownImportPage.php:880
 msgid "Import ZIP"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:878
+#: src/Import/MarkdownImportPage.php:884
 msgid "GitHub URL"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:880
+#: src/Import/MarkdownImportPage.php:886
 msgid "Creates locked pages pulled from a public GitHub repository."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:882
+#: src/Import/MarkdownImportPage.php:888
 msgid "Import from GitHub"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:890
+#: src/Import/MarkdownImportPage.php:896
 msgid "Bundle file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:892
+#: src/Import/MarkdownImportPage.php:898
 msgid "A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:895
+#: src/Import/MarkdownImportPage.php:901
 msgid "Import into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:898
+#: src/Import/MarkdownImportPage.php:904
 msgid "— the handbook named in the bundle —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:905
+#: src/Import/MarkdownImportPage.php:911
 msgid "By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:909
-#: src/Import/MarkdownImportPage.php:912
+#: src/Import/MarkdownImportPage.php:915
+#: src/Import/MarkdownImportPage.php:918
 msgid "If a page already exists"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:925
+#: src/Import/MarkdownImportPage.php:931
 msgid "Import bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:931
+#: src/Import/MarkdownImportPage.php:937
 msgid "The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It is maintained on GitHub, so this loads the current state straight from there, with its pages, structure and images."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:932
-msgid "It is a normal GitHub folder import: the pages are pulled from the repository and kept in sync with it, so later changes on GitHub reach your site on the next load. Nothing is deleted."
+#: src/Import/MarkdownImportPage.php:938
+msgid "The pages are pulled from the repository, published into the handbook you pick, and kept in sync, so later changes on GitHub reach your site on the next load. Whether they are visible on the front end depends on that handbook: set it to \"members\" and only logged-in people see them. Nothing is deleted."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:935
+#: src/Import/MarkdownImportPage.php:941
 msgid "Load into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:938
+#: src/Import/MarkdownImportPage.php:944
 msgid "— no handbook (assign later) —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:945
+#: src/Import/MarkdownImportPage.php:951
 msgid "Pick the handbook the pages should belong to. Create one first (for example \"App handbook\") if you want them in their own, and set who may read it there."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:949
+#: src/Import/MarkdownImportPage.php:955
 msgid "Load app handbook"
 msgstr ""
 

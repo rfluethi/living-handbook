@@ -76,4 +76,21 @@ final class AppHandbook {
 
 		return trim( $url );
 	}
+
+	/**
+	 * Whether a URL is the app handbook's own source.
+	 *
+	 * The import uses this to publish the app handbook straight away: it is
+	 * curated, editor-locked content from a repository the site owner chose, and
+	 * its front-end visibility is governed by the handbook it lands in, not by the
+	 * draft status. An ordinary GitHub import of some other repository stays a
+	 * draft, so this deliberately matches only the configured URL.
+	 *
+	 * @param string $url The URL being imported.
+	 * @return bool
+	 */
+	public static function is_source( string $url ): bool {
+		$url = trim( $url );
+		return '' !== $url && self::url() === $url;
+	}
 }

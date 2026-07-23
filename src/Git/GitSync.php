@@ -258,20 +258,26 @@ final class GitSync {
 	 * the existing page for that URL on a re-import.
 	 *
 	 * The slug is taken from the source file name so that internal .md links,
-	 * which reference other pages by file name, resolve to these pages.
+	 * which reference other pages by file name, resolve to these pages. A folder
+	 * import overrides it for an index or README file, where the file name is not
+	 * a useful slug, with the folder name.
 	 *
-	 * @param string $url         Markdown source URL (raw or blob).
-	 * @param int    $handbook_id Optional handbook term id.
-	 * @param string $title       Optional fallback title (used until a heading is found).
+	 * @param string $url           Markdown source URL (raw or blob).
+	 * @param int    $handbook_id   Optional handbook term id.
+	 * @param string $title         Optional fallback title (used until a heading is found).
+	 * @param bool   $publish       Whether a newly created page is published rather than drafted.
+	 * @param string $slug_override Slug to use instead of the one from the file name.
 	 * @return int Post id, or 0 on failure.
 	 */
-	public function create_github_page( string $url, int $handbook_id = 0, string $title = '' ): int {
+	public function create_github_page( string $url, int $handbook_id = 0, string $title = '', bool $publish = false, string $slug_override = '' ): int {
 		$url = self::normalize_url( $url );
 		if ( '' === $url || ! self::is_allowed_source( $url ) ) {
 			return 0;
 		}
 		$path = wp_parse_url( $url, PHP_URL_PATH );
-		$slug = sanitize_title( pathinfo( is_string( $path ) ? $path : $url, PATHINFO_FILENAME ) );
+		$slug = '' !== $slug_override
+			? sanitize_title( $slug_override )
+			: sanitize_title( pathinfo( is_string( $path ) ? $path : $url, PATHINFO_FILENAME ) );
 
 		// Re-import protection: if a page already tracks this source URL, refresh
 		// it instead of creating a duplicate. But never refresh a page the
@@ -286,7 +292,7 @@ final class GitSync {
 			$inserted = wp_insert_post(
 				array(
 					'post_type'   => Handbook::POST_TYPE,
-					'post_status' => 'draft',
+					'post_status' => $publish ? 'publish' : 'draft',
 					'post_title'  => '' !== $title ? $title : __( 'GitHub page', 'living-handbook' ),
 					'post_name'   => $slug,
 				),
@@ -366,9 +372,10 @@ final class GitSync {
 	 *
 	 * @param string $tree_url    A github.com tree URL to a folder.
 	 * @param int    $handbook_id Optional handbook term id.
+	 * @param bool   $publish     Whether newly created pages are published rather than drafted.
 	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
 	 */
-	public function import_folder( string $tree_url, int $handbook_id = 0 ) {
+	public function import_folder( string $tree_url, int $handbook_id = 0, bool $publish = false ) {
 		$parsed = self::parse_tree_url( $tree_url );
 		if ( null === $parsed ) {
 			return new WP_Error( 'living_handbook_import', __( 'Not a GitHub folder URL.', 'living-handbook' ), array( 'status' => 400 ) );
@@ -406,29 +413,35 @@ final class GitSync {
 		$ids       = array();
 		$folder_id = array( $base => 0 );
 
+		// One rising counter for the whole import. It is only the fallback order:
+		// a page that carries a transport "Reihenfolge" keeps that, see place().
+		$auto = 0;
+
 		foreach ( $plan['folders'] as $folder ) {
 			if ( '' !== $folder['index'] ) {
-				$post_id = $this->create_github_page( self::raw_url( $parsed, $folder['index'] ), $handbook_id );
+				// The index file's own name (index/README) is a poor slug, so the
+				// folder name is used instead.
+				$post_id = $this->create_github_page( self::raw_url( $parsed, $folder['index'] ), $handbook_id, '', $publish, basename( $folder['path'] ) );
 			} else {
-				$post_id = $this->create_folder_page( $parsed, $folder['path'], $handbook_id );
+				$post_id = $this->create_folder_page( $parsed, $folder['path'], $handbook_id, $publish );
 			}
 			if ( 0 === $post_id ) {
 				continue;
 			}
 			$folder_id[ $folder['path'] ] = $post_id;
-			$this->set_parent( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ) );
+			$auto                        += 10;
+			$this->place( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ), $auto );
 			$ids[]   = $post_id;
 			$pages[] = self::page_result( $post_id );
 		}
 
-		$order = 0;
 		foreach ( $plan['files'] as $file ) {
-			$post_id = $this->create_github_page( self::raw_url( $parsed, $file['path'] ), $handbook_id );
+			$post_id = $this->create_github_page( self::raw_url( $parsed, $file['path'] ), $handbook_id, '', $publish );
 			if ( 0 === $post_id ) {
 				continue;
 			}
-			$order += 10;
-			$this->set_parent( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $order );
+			$auto += 10;
+			$this->place( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $auto );
 			$ids[]   = $post_id;
 			$pages[] = self::page_result( $post_id );
 		}
@@ -683,9 +696,10 @@ final class GitSync {
 	 * @param array{owner:string, repo:string, branch:string, path:string} $parsed      Parsed tree URL.
 	 * @param string                                                       $folder      Folder path.
 	 * @param int                                                          $handbook_id Optional handbook term id.
+	 * @param bool                                                         $publish     Whether the page is published rather than drafted.
 	 * @return int Post ID, or 0.
 	 */
-	private function create_folder_page( array $parsed, string $folder, int $handbook_id = 0 ): int {
+	private function create_folder_page( array $parsed, string $folder, int $handbook_id = 0, bool $publish = false ): int {
 		$marker = $parsed['owner'] . '/' . $parsed['repo'] . '@' . $parsed['branch'] . ':' . $folder;
 
 		$existing = get_posts(
@@ -709,7 +723,7 @@ final class GitSync {
 		$inserted = wp_insert_post(
 			array(
 				'post_type'    => Handbook::POST_TYPE,
-				'post_status'  => 'draft',
+				'post_status'  => $publish ? 'publish' : 'draft',
 				'post_title'   => '' !== $title ? $title : $name,
 				'post_name'    => sanitize_title( $name ),
 				'post_content' => '<!-- wp:living-handbook/entry {"display":"cards"} /-->',
@@ -727,6 +741,25 @@ final class GitSync {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}
 		return $post_id;
+	}
+
+	/**
+	 * Place a page under its parent, and give it a menu order only when its own
+	 * content did not already carry one.
+	 *
+	 * A page with a transport "Reihenfolge" block has had its menu order set by
+	 * the sync, and that wins: the repository states the order explicitly.
+	 * Everything else falls back to the import position, so a folder without
+	 * transport metadata is still ordered sensibly rather than all at zero.
+	 *
+	 * @param int $post_id   Page ID.
+	 * @param int $parent_id Parent page ID, or 0.
+	 * @param int $fallback  Menu order to use when the page carries none.
+	 * @return void
+	 */
+	private function place( int $post_id, int $parent_id, int $fallback ): void {
+		$current = (int) get_post_field( 'menu_order', $post_id );
+		$this->set_parent( $post_id, $parent_id, $current > 0 ? 0 : $fallback );
 	}
 
 	/**

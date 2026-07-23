@@ -22,3 +22,8 @@ Short intervals on pages that never change produce noise, and noise teaches peop
 ## What a review is
 
 Read the page and ask one question: would I write this the same way today? If yes, confirm the date and stop.
+
+## Transport-Metadaten
+* Reihenfolge: 1
+* Letzte Prüfung: 2026-06-01
+* Prüfintervall: 180 Tage

@@ -9,3 +9,8 @@ The page list in the admin has a feedback column. It can be sorted by the differ
 ## What you do with it
 
 A page with a poor ratio is not a reason for shame, it is a signal. Read it asking where the confusion comes from, and rewrite the part that causes it.
+
+## Transport-Metadaten
+* Reihenfolge: 2
+* Letzte Prüfung: 2025-06-01
+* Prüfintervall: 90 Tage

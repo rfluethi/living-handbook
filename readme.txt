@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.41.0
+Stable tag: 0.42.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,11 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.42.0 =
+* The GitHub folder import now respects the transport "Reihenfolge" of a page for its order, instead of overwriting it with an automatic value. Number only the pages whose order matters, keep the numbers small; everything else falls back to its import position and sorts after them. An area's order lives in its README.
+* An index or README file that stands for a folder now takes its slug from the folder name, so an area page gets a clean URL instead of "readme".
+* The app handbook is published on load rather than left as drafts. It is curated, editor-locked content, and its visibility is governed by the handbook it lands in, so a "members" handbook keeps it behind the login. Any other GitHub import still stays a draft for review.
 
 = 0.41.0 =
 * The app handbook now comes from GitHub instead of being shipped inside the plugin. The documentation of the app lives in a public repository, so it has one source, can be read and edited where it is written, and every install pulls the current state instead of a snapshot frozen at release time. The import screen keeps its "App handbook" tab and one-click button; behind it is an ordinary GitHub folder import against a fixed URL, chosen by the admin language.
@@ -291,6 +296,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.42.0 =
+The GitHub folder import now orders pages by their transport "Reihenfolge", and the app handbook is published on load. Pre-release: best on a fresh database.
 
 = 0.41.0 =
 The app handbook now loads from GitHub rather than shipping in the plugin, one click on the import screen. Pre-release: best on a fresh database.

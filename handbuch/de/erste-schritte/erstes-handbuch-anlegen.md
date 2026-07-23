@@ -18,3 +18,6 @@ Gehe zu **Handbuch, Erstellen** und schreibe die Seite wie jede Block-Editor-Sei
 ## Aktuell halten
 
 Wie eine Seite nicht veraltet, steht im Bereich Pflege: [Der Prüfzyklus](../pflege/der-pruefzyklus.md).
+
+## Transport-Metadaten
+* Reihenfolge: 2

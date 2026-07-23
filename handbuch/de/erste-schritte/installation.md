@@ -17,3 +17,6 @@ So wird das Plugin einsatzbereit.
 ## Danach
 
 Lege dein erstes Handbuch an: [Erstes Handbuch anlegen](erstes-handbuch-anlegen.md).
+
+## Transport-Metadaten
+* Reihenfolge: 1

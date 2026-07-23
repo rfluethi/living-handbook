@@ -22,3 +22,8 @@ Kurze Intervalle auf Seiten, die sich nie ändern, erzeugen Rauschen, und Rausch
 ## Was eine Prüfung ist
 
 Die Seite lesen und eine Frage stellen: Würde ich das heute noch genauso schreiben? Wenn ja, Datum bestätigen und fertig.
+
+## Transport-Metadaten
+* Reihenfolge: 1
+* Letzte Prüfung: 2026-06-01
+* Prüfintervall: 180 Tage

@@ -13,3 +13,6 @@ Zwei Bereiche folgen als Beispiel: „Erste Schritte" und „Pflege".
 ## Was in Markdown funktioniert
 
 Nicht jede Auszeichnung übersteht den Import. Was hierher gehört und was nicht, steht in [Erste Schritte, Inhalte schreiben](erste-schritte/inhalte-schreiben.md).
+
+## Transport-Metadaten
+* Reihenfolge: 1

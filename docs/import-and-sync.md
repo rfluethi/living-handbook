@@ -36,6 +36,10 @@ At most **200 files** are imported in one go. If that limit is reached, or if th
 
 On a re-import the repository decides the structure again, so a parent set by hand is reset. That is the same bargain as the content of a synced page: for a folder import the repository is the original.
 
+**Ordering.** The order of pages and areas comes from the transport metadata: a page with a `Reihenfolge` line in its transport block (see below) is placed by that number. A page without one falls back to its position in the import, which is deep-last and alphabetical, and always sorts after the numbered pages. So you only number the pages whose order matters, keep the numbers small (1, 2, 3), and leave the rest. An area's own order lives in its `README.md`; an area folder without one is ordered by the fallback.
+
+An `index.md` or `README.md` that stands for a folder takes its slug from the **folder** name, not from the file name, so the area page gets a clean URL instead of `readme`.
+
 ## Importing the same source twice
 
 Re-importing the same source **updates the existing pages instead of creating duplicates**. How a page is recognised depends on the import:
@@ -79,6 +83,8 @@ The plugin comes with a handbook of its own: the documentation of the app, writt
 Behind the tab is nothing new: it is the ordinary GitHub folder import (see above) against a fixed URL, and the folder is chosen by the admin language. So the handbook has one source, is visible and editable where it is written, and every load pulls the current state rather than a copy frozen at some release. Its pages are GitHub-sourced, so a later change in the repository reaches the site on the next load, and images in the repository come along.
 
 Because it is a GitHub import, the same thing applies as to any GitHub-sourced page: the content is stored as sanitised HTML, so the plugin's own blocks (the entry list, the feedback prompt, the badges) cannot travel this way; they are described in the text, not embedded. Mermaid diagrams do travel.
+
+Unlike an ordinary GitHub import, the app handbook is **published straight away** rather than left as a draft: it is curated, editor-locked content from a repository the site owner chose, and its front-end visibility is governed by the handbook it lands in. Put it in a handbook set to "members" and only logged-in people see it; it becomes public only if you set that handbook to public. Any other GitHub import stays a draft, so you can review the pages before publishing.
 
 **Load into** picks the handbook the pages belong to. Create one first, for example "App handbook", and set who may read it there.
 
