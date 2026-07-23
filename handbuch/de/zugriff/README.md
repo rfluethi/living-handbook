@@ -1,0 +1,15 @@
+# Zugriff
+
+Dieser Bereich regelt die wichtigste Frage eines internen Handbuchs: Wer darf was lesen? Die erste Seite zeigt, wie du die Sichtbarkeit einstellst; die zweite erklärt das Prinzip dahinter, damit dich das Verhalten des Plugins nie überrascht.
+
+| Seite | Was du danach weißt |
+|---|---|
+| [Sichtbarkeit einstellen](sichtbarkeit-einstellen.md) | Wie du ein Handbuch öffentlich machst, auf Mitglieder beschränkst oder gezielt freigibst. |
+| [Zugriff verstehen](zugriff-verstehen.md) | Warum das Plugin im Zweifel versteckt statt zeigt, und was das für dich bedeutet. |
+
+## Transport-Metadaten
+* Seitentyp: Bereichs-Übersicht
+* Reihenfolge: 5
+* Textauszug: Dieser Bereich regelt, wer welche Handbücher lesen darf: die Einstellung der Sichtbarkeit und das Prinzip dahinter.
+* Letzte Prüfung: 2026-07-23
+* Prüfintervall: 180 Tage

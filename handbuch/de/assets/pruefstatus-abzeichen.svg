@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 150" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" role="img" aria-label="Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig">
+  <title>Die drei Prüfstatus-Abzeichen</title>
+  <desc>Drei Abzeichen nebeneinander. Geprüft: grüner Kreis, die Prüfung liegt innerhalb des Intervalls. Prüfung fällig: gelbbraunes abgerundetes Quadrat, das Intervall ist abgelaufen. Prüfung überfällig: rote Raute, das doppelte Intervall ist abgelaufen. Jeder Status hat eine eigene Form, damit er ohne Farbensehen erkennbar bleibt.</desc>
+  <rect width="720" height="150" fill="#ffffff"/>
+
+  <!-- Geprüft -->
+  <rect x="20" y="30" width="212" height="44" rx="22" fill="#e8f3ec" stroke="#176e3c" stroke-width="1.5"/>
+  <circle cx="46" cy="52" r="9" fill="#176e3c"/>
+  <text x="64" y="58" font-size="18" fill="#176e3c" font-weight="600">Geprüft</text>
+  <text x="20" y="104" font-size="13" fill="#444444">Prüfung liegt innerhalb</text>
+  <text x="20" y="122" font-size="13" fill="#444444">des Intervalls</text>
+
+  <!-- Prüfung fällig -->
+  <rect x="254" y="30" width="212" height="44" rx="22" fill="#f7efe2" stroke="#8a5200" stroke-width="1.5"/>
+  <rect x="272" y="44" width="16" height="16" rx="4" fill="#8a5200"/>
+  <text x="298" y="58" font-size="18" fill="#8a5200" font-weight="600">Prüfung fällig</text>
+  <text x="254" y="104" font-size="13" fill="#444444">Das Intervall ist</text>
+  <text x="254" y="122" font-size="13" fill="#444444">abgelaufen</text>
+
+  <!-- Prüfung überfällig -->
+  <rect x="488" y="30" width="212" height="44" rx="22" fill="#f9e9e6" stroke="#c0392b" stroke-width="1.5"/>
+  <rect x="507" y="45" width="14" height="14" fill="#c0392b" transform="rotate(45 514 52)"/>
+  <text x="532" y="58" font-size="17" fill="#c0392b" font-weight="600">Prüfung überfällig</text>
+  <text x="488" y="104" font-size="13" fill="#444444">Das doppelte Intervall ist</text>
+  <text x="488" y="122" font-size="13" fill="#444444">abgelaufen (Eskalation)</text>
+</svg>
