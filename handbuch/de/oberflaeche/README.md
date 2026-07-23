@@ -1,6 +1,6 @@
 # Oberfläche
 
-Dieser Bereich erklärt, was deine Leserinnen und Leser sehen. Er zeigt die drei Seiten-Arten eines Handbuchs im Frontend. Er zeigt auch, wie die Handbücher in die Navigation deines Themes kommen und wie du die Farben anpasst.
+Dieser Bereich erklärt, was deine Leserinnen und Leser sehen. Er zeigt die drei Arten von Handbuch-Seiten auf der Website. Er zeigt auch, wie die Handbücher ins Menü deiner Website kommen und wie du die Farben anpasst.
 
 | Seite | Was du danach kannst |
 |---|---|
@@ -10,7 +10,7 @@ Dieser Bereich erklärt, was deine Leserinnen und Leser sehen. Er zeigt die drei
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
-* Reihenfolge: 4
-* Textauszug: Dieser Bereich erklärt die drei Seiten-Arten eines Handbuchs im Frontend, die Einbindung ins Theme-Menü und die Anpassung der Gestaltung.
+* Reihenfolge: 5
+* Textauszug: Dieser Bereich erklärt die drei Arten von Handbuch-Seiten auf der Website, die Einbindung ins Theme-Menü und die Anpassung der Gestaltung.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

@@ -1,6 +1,6 @@
 # Die drei Oberflächen
 
-Ein Handbuch besteht im Frontend aus drei Seiten-Arten: der Übersicht, der Einstiegsseite und der Einzelseite. Diese Seite erklärt alle drei. Wer sie auseinanderhält, weiß immer, wo eine Anpassung hingehört.
+Auf deiner Website besteht ein Handbuch aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite. Diese Seite erklärt alle drei. Wer sie auseinanderhält, weiß immer, wo eine Anpassung hingehört.
 
 ## Worum es geht
 
@@ -31,7 +31,7 @@ Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Be
 
 ## Woher die Layouts kommen
 
-Einstiegsseite und Einzelseite bringen fertige Block-Templates mit. Alle Blöcke stehen darin schon an der richtigen Stelle. Du kannst die Templates im Website-Editor umbauen, unter **Design → Editor → Templates**. Beispiele: Navigation nach rechts, Inhaltsverzeichnis weg, Inhalt breiter. Die Übersicht ist dagegen eine ganz normale Seite mit dem Übersichts-Block. Verschiebe oder ersetze sie nach Belieben.
+Für die Einstiegsseite und die Einzelseite bringt das Plugin fertige Seitenlayouts mit, sogenannte Templates. Alle Bausteine stehen darin schon an der richtigen Stelle. Du kannst die Templates im Website-Editor umbauen, unter **Design → Editor → Templates**. Beispiele: Navigation nach rechts, Inhaltsverzeichnis weg, Inhalt breiter. Die Übersicht ist dagegen eine ganz normale WordPress-Seite. Verschiebe oder ersetze sie nach Belieben.
 
 <details>
 <summary>Hinweis: Templates nach einem Plugin-Update</summary>
@@ -55,6 +55,6 @@ Das Plugin bringt elf eigene Blöcke mit, von der Handbuch-Übersicht bis zum Me
 ## Transport-Metadaten
 * Seitentyp: Hintergrund/Konzept
 * Reihenfolge: 1
-* Textauszug: Ein Handbuch besteht im Frontend aus drei Seiten-Arten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
+* Textauszug: Ein Handbuch besteht auf der Website aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

@@ -1,36 +1,37 @@
 # Über dieses Handbuch
 
-Dies ist das Benutzerhandbuch von Living Handbook. Es ist selbst als Living Handbook geschrieben. Es erklärt Schritt für Schritt, wie du mit dem Plugin arbeitest. Zugleich ist es ein echtes Beispiel: Navigation, Abzeichen, Prüfdaten und Feedback auf diesen Seiten erzeugt das Plugin selbst.
+Dies ist das Benutzerhandbuch von Living Handbook. Es erklärt Schritt für Schritt, wie du mit dem Plugin arbeitest. Das Handbuch ist selbst mit Living Handbook gebaut. Alles, was du hier siehst, erzeugt also das Plugin: die Navigation links, die Abzeichen, die Prüfdaten und die Feedback-Frage unten.
 
 ## Für wen es ist
 
-Dieses Handbuch richtet sich an alle, die Living Handbook benutzen. Du brauchst keine Programmierkenntnisse. Es reicht, wenn du schon einmal eine Seite im Block-Editor geschrieben hast.
+Dieses Handbuch richtet sich an alle, die Living Handbook benutzen. Du brauchst keine Programmierkenntnisse. Es reicht, wenn du schon einmal eine Seite in WordPress geschrieben hast.
 
-Für Entwicklerinnen und Entwickler gibt es die englische [Entwickler-Dokumentation auf GitHub](https://github.com/rfluethi/living-handbook/tree/main/docs). Sie beschreibt Architektur, Blöcke, Templates, Hooks und den Code. Dieses Handbuch verlinkt an den passenden Stellen dorthin.
+Du entwickelst selbst am Plugin mit? Dann gibt es für dich zusätzlich die englische [Entwickler-Dokumentation auf GitHub](https://github.com/rfluethi/living-handbook/tree/main/docs). Sie beschreibt den technischen Aufbau und den Code. Dieses Handbuch verlinkt an den passenden Stellen dorthin.
 
 ## Wie es aufgebaut ist
 
-Ein Handbuch besteht aus **Bereichen**. Jeder Bereich enthält **Seiten**. In diesem Repository ist ein Bereich ein Ordner. Eine Seite ist eine Markdown-Datei. Beim Import wird die Ordnerstruktur zur Seitenhierarchie. Du siehst sie links im Navigationsbaum.
+Ein Handbuch besteht aus **Bereichen**. Jeder Bereich enthält **Seiten**. Die Bereiche siehst du als Kacheln auf der Einstiegsseite des Handbuchs und als Hauptpunkte in der Navigation links.
 
-Die Bereiche in Leserichtung:
+Die Bereiche dieses Handbuchs, in Leserichtung:
 
-1. **[Erste Schritte](erste-schritte/README.md):** von der Installation bis zur ersten sichtbaren Seite.
-2. **[Inhalte](inhalte/README.md):** Seiten schreiben, Markdown importieren, mit GitHub synchronisieren, ein Handbuch umziehen.
-3. **[Oberfläche](oberflaeche/README.md):** die drei Seiten-Arten im Frontend, die Navigation im Theme-Menü, die Farben.
-4. **[Zugriff](zugriff/README.md):** wer welche Handbücher sehen darf und warum das Plugin im Zweifel versteckt.
-5. **[Pflege](pflege/README.md):** Prüfzyklus, Wartungs-Dashboard und Leser-Feedback. Das ist der Kern des Plugins.
-6. **[Häufige Fragen](haeufige-fragen.md):** kurze Antworten mit Wegweisern, allen voran „Warum wird nichts angezeigt?“.
+1. **[Schnellstart](schnellstart.md):** der ganze Weg auf einer Seite, für Erfahrene.
+2. **[Erste Schritte](erste-schritte/README.md):** von der Installation bis zur ersten sichtbaren Seite.
+3. **[Inhalte](inhalte/README.md):** Seiten schreiben und fertige Texte aus Dateien übernehmen.
+4. **[Oberfläche](oberflaeche/README.md):** was deine Leserinnen und Leser sehen, und wie du es anpasst.
+5. **[Zugriff](zugriff/README.md):** wer welche Handbücher sehen darf.
+6. **[Pflege](pflege/README.md):** wie Seiten aktuell bleiben. Das ist der Kern des Plugins.
+7. **[Häufige Fragen](haeufige-fragen.md):** kurze Antworten, allen voran auf „Warum wird nichts angezeigt?“.
 
 ## Wie du es liest
 
-Du musst nicht alles lesen. Für den Start reichen die [Ersten Schritte](erste-schritte/README.md). Alles andere schlägst du bei Bedarf nach. Die Suche auf der Einstiegsseite findet jede Seite dieses Handbuchs.
+Du musst nicht alles lesen. Kennst du WordPress gut, reicht dir vielleicht schon der [Schnellstart](schnellstart.md) auf einer Seite. Für alle anderen sind die [Ersten Schritte](erste-schritte/README.md) der richtige Einstieg. Alles Weitere schlägst du bei Bedarf nach. Die Suche auf der Einstiegsseite des Handbuchs findet jede Seite.
 
-Du kannst dieses Handbuch auch direkt in deine Installation holen. Ein Klick lädt es von GitHub. Danach bleibt es automatisch aktuell. Die Anleitung dazu: [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
+Du kannst dieses Handbuch auch in deine eigene WordPress-Installation holen. Ein Klick lädt es, danach bleibt es automatisch aktuell. Die Anleitung dazu: [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
 
 <details>
 <summary>Hintergrund: Woher diese Seiten kommen</summary>
 
-Dieses Handbuch liegt als Markdown-Dateien in einem [öffentlichen GitHub-Repository](https://github.com/rfluethi/living-handbook/tree/main/handbuch/de). Der Reiter **App-Handbuch** auf der Import-Seite lädt es in eine Installation. Danach bleiben die Seiten mit dem Repository abgeglichen. Eine Änderung auf GitHub erreicht deine Website beim nächsten Laden. Wie du es lädst, steht unter [App-Handbuch laden](erste-schritte/app-handbuch-laden.md). Die technischen Details stehen unter [Markdown importieren](inhalte/markdown-importieren.md).
+Die Texte dieses Handbuchs werden auf GitHub gepflegt. GitHub ist eine Website, auf der Projekte ihre Dateien öffentlich ablegen können. Die [Dateien dieses Handbuchs](https://github.com/rfluethi/living-handbook/tree/main/handbuch/de) kann dort jede und jeder einsehen. Lädst du das Handbuch in deine Installation, bleibt es mit diesen Dateien verbunden. Wird dort etwas verbessert, erreicht dich die Verbesserung beim nächsten Laden. Wie das funktioniert, steht unter [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
 
 </details>
 

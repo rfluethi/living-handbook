@@ -3,7 +3,7 @@
 Kurze Antworten auf die häufigsten Fragen zu Living Handbook. Jede Antwort verweist auf die Seite, auf der die Information ausführlich lebt.
 
 <details>
-<summary>Warum wird meine Seite im Frontend nicht angezeigt?</summary>
+<summary>Warum wird meine Seite auf der Website nicht angezeigt?</summary>
 
 Fast immer ist es eine von drei Ursachen. Prüfe sie in dieser Reihenfolge: Die Seite hat kein Handbuch zugewiesen. Das Handbuch ist für dich oder deine Testperson nicht sichtbar. Die Seite ist noch ein Entwurf. Details: [Zugriff verstehen](zugriff/zugriff-verstehen.md) und [Erste Seite anlegen](erste-schritte/erste-seite-anlegen.md).
 
@@ -19,7 +19,7 @@ Ein neues Handbuch startet mit der Sichtbarkeit „Alle Mitglieder (angemeldet)�
 <details>
 <summary>Warum sehen die Handbuch-Seiten in meinem Theme kaputt aus?</summary>
 
-Das Plugin braucht ein Block-Theme und WordPress 6.7 oder neuer. Ein klassisches Theme kann die Handbuch-Templates nicht darstellen. Details: [Installation](erste-schritte/installation.md).
+Das Plugin braucht ein Block-Theme und WordPress 6.7 oder neuer. Ein älteres, klassisches Theme kann die Handbuch-Seiten nicht richtig darstellen. Details: [Installation](erste-schritte/installation.md).
 
 </details>
 
@@ -40,7 +40,7 @@ Das Plugin braucht ein Block-Theme und WordPress 6.7 oder neuer. Ein klassisches
 <details>
 <summary>Kann ich eine von GitHub synchronisierte Seite in WordPress bearbeiten?</summary>
 
-Nein, ihr Editor ist gesperrt. Sonst würde der nächste Abgleich deine Änderungen überschreiben. Bearbeite die Markdown-Datei im Repository. Oder stelle die Quelle der Seite auf „In WordPress gepflegt“ um. Details: [GitHub-Synchronisation](inhalte/github-synchronisation.md).
+Nein, ihr Editor ist gesperrt. Sonst würde der nächste Abgleich deine Änderungen überschreiben. Bearbeite die Markdown-Datei auf GitHub. Oder stelle die Quelle der Seite auf „In WordPress gepflegt“ um. Details: [GitHub-Synchronisation](inhalte/github-synchronisation.md).
 
 </details>
 
@@ -86,7 +86,7 @@ Nein. Es liest nur die Adressen, die du selbst einträgst, beim Import oder in d
 
 ## Transport-Metadaten
 * Seitentyp: FAQ
-* Reihenfolge: 7
+* Reihenfolge: 8
 * Textauszug: Kurze Antworten auf die häufigsten Fragen zu Living Handbook, jede mit Verweis auf die ausführliche Seite.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

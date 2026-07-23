@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.43.0
+Stable tag: 0.44.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.44.0 =
+* The GitHub folder import now reports internal .md links that point at no page. After it wires up every link whose target exists, anything left pointing at a .md file is a dead link, a typo or a page not yet written, and the result list names the page it is on and the file it points at. This makes a large handbook with many cross-references far easier to keep whole.
 
 = 0.43.0 =
 * The GitHub source note ("This page is maintained on GitHub…") now reads as a note rather than body text: smaller, muted, with a subtle accent bar.
@@ -300,6 +303,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.44.0 =
+The GitHub folder import now lists internal links that resolve to no page. Pre-release: best on a fresh database.
 
 = 0.43.0 =
 Cosmetic: the GitHub source note is now styled as a hint. Plus a docs fix. Pre-release: best on a fresh database.

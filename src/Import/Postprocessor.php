@@ -118,6 +118,40 @@ final class Postprocessor {
 	}
 
 	/**
+	 * The internal .md links that finalize() could not resolve to a page.
+	 *
+	 * Run after finalize(): every link whose target exists has been rewritten to
+	 * a permalink, so anything still pointing at a .md file is a dead link, a
+	 * typo or a page that is not in the import. Reporting these turns "click every
+	 * link to find the broken ones" into a list the importer hands you.
+	 *
+	 * @param array<int, int> $ids Post ids of the import.
+	 * @return array<int, array{source: string, target: string}> Source page title and target file name per dead link.
+	 */
+	public static function unresolved_md_links( array $ids ): array {
+		$found = array();
+		foreach ( $ids as $id ) {
+			$id   = (int) $id;
+			$post = 0 !== $id ? get_post( $id ) : null;
+			if ( ! $post instanceof WP_Post ) {
+				continue;
+			}
+			$count = preg_match_all( '/<a href="([^"]+\.md)"/i', (string) $post->post_content, $matches );
+			if ( ! $count ) {
+				continue;
+			}
+			foreach ( $matches[1] as $href ) {
+				$clean   = rawurldecode( (string) preg_replace( '/[?#].*$/', '', $href ) );
+				$found[] = array(
+					'source' => (string) get_the_title( $id ),
+					'target' => basename( $clean ),
+				);
+			}
+		}
+		return $found;
+	}
+
+	/**
 	 * Set a page's parent from the stored parent title, then clear the marker.
 	 *
 	 * @param int $post_id Post id.

@@ -1,6 +1,6 @@
 # Sichtbarkeit einstellen
 
-Die Sichtbarkeit wird pro Handbuch geregelt, nicht pro Seite. Diese Anleitung stellt ein, wer ein Handbuch im Frontend lesen darf.
+Die Sichtbarkeit wird pro Handbuch geregelt, nicht pro Seite. Diese Anleitung stellt ein, wer ein Handbuch auf der Website lesen darf.
 
 ## Schritte
 
@@ -16,13 +16,13 @@ Die Sichtbarkeit wird pro Handbuch geregelt, nicht pro Seite. Diese Anleitung st
 
 ## Ergebnis
 
-Die Regel wirkt sofort und überall: auf der Übersicht, der Einstiegsseite, den Einzelseiten, in der Suche, in den Filtern und im Menü. Ein gesperrtes Handbuch taucht für diese Person nirgends auf, auch nicht als Name in einer Liste. Angemeldete ohne Berechtigung sehen „Seite nicht gefunden“. Abgemeldete werden zur Anmeldung geleitet.
+Die Regel wirkt sofort und überall: auf der Handbuch-Übersicht, auf den Seiten, in der Suche, in den Filtern und im Menü. Ein gesperrtes Handbuch taucht für diese Person nirgends auf, auch nicht als Name in einer Liste. Angemeldete ohne Berechtigung sehen „Seite nicht gefunden“. Abgemeldete werden zur Anmeldung geleitet.
 
 <details>
 <summary>Stolpersteine: Typische Überraschungen</summary>
 
 * **„Ich sehe mein Handbuch nicht“:** Du bist vermutlich abgemeldet, und das Handbuch steht auf „Alle Mitglieder“. Teste die Sicht deiner Leserinnen in einem privaten Browserfenster.
-* **Die Bearbeitung in wp-admin ist nicht eingeschränkt.** Die Sichtbarkeit gilt fürs Frontend. Wer im Backend arbeiten darf, regeln die normalen WordPress-Rollen.
+* **Die Sichtbarkeit gilt nur für die Website.** Wer in der WordPress-Verwaltung arbeiten und Seiten bearbeiten darf, regeln weiterhin die normalen WordPress-Benutzerrollen.
 * **Beim Umzug auf eine andere Website reisen einzeln freigegebene Personen nicht mit.** Siehe [Handbuch umziehen](../inhalte/handbuch-umziehen.md).
 
 </details>
@@ -35,6 +35,6 @@ Die Regel wirkt sofort und überall: auf der Übersicht, der Einstiegsseite, den
 ## Transport-Metadaten
 * Seitentyp: Anleitung
 * Reihenfolge: 1
-* Textauszug: Die Sichtbarkeit wird pro Handbuch geregelt; diese Anleitung stellt ein, wer ein Handbuch im Frontend lesen darf.
+* Textauszug: Die Sichtbarkeit wird pro Handbuch geregelt; diese Anleitung stellt ein, wer ein Handbuch auf der Website lesen darf.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

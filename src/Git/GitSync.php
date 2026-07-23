@@ -451,6 +451,17 @@ final class GitSync {
 		// transport block for a repository that carries none.
 		Postprocessor::finalize( $ids );
 
+		// Report .md links that point at no page, so a typo or a page still to be
+		// written is a line in the result rather than a click to discover.
+		foreach ( Postprocessor::unresolved_md_links( $ids ) as $link ) {
+			$notes[] = sprintf(
+				/* translators: 1: page title the link is on, 2: link target file name. */
+				__( 'On "%1$s": the link to %2$s points at no page. Add that page, or fix the link.', 'living-handbook' ),
+				$link['source'],
+				$link['target']
+			);
+		}
+
 		$result = array( 'pages' => $pages );
 		if ( array() !== $notes ) {
 			$result['notes'] = $notes;

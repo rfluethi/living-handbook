@@ -1,11 +1,11 @@
 # Gestaltung anpassen
 
-Die Handbuch-Seiten übernehmen Schrift und Abstände von deinem Theme. Auch die Farben passen sich an. Diese Anleitung zeigt, wie du die Farben gezielt änderst, ohne das Plugin anzufassen.
+Die Handbuch-Seiten übernehmen Schrift, Abstände und Farben von deinem Theme. Meist musst du also gar nichts tun. Diese Anleitung zeigt, wie du die Farben trotzdem gezielt änderst. Dafür brauchst du ein paar Zeilen CSS. CSS ist die Sprache, mit der Websites gestaltet werden. Du kannst das Beispiel unten aber auch einfach kopieren und die Farbwerte austauschen.
 
 <details>
-<summary>Konzept: CSS-Variablen statt Plugin-Änderungen</summary>
+<summary>Konzept: Warum das Umfärben so gelöst ist</summary>
 
-Alle Oberflächen des Plugins beziehen ihre Farben aus CSS-Variablen mit dem Präfix `--lh-`. Fläche, Text und Akzentfarbe folgen den Farb-Voreinstellungen deines Themes. Ein dunkles Theme macht Karten, Navigation und Inhaltsverzeichnis automatisch dunkel. Setzt du eigene Werte, übersteuerst du diese Automatik. Ein Plugin-Update überschreibt nichts davon.
+Alle Farben des Plugins hängen an zentralen Stellwerten, sogenannten CSS-Variablen. Ihre Namen beginnen mit `--lh-`. Änderst du einen Stellwert, ändert sich die Farbe überall zugleich. Ohne eigene Werte folgen die Farben deinem Theme. Ein dunkles Theme macht die Handbuch-Seiten automatisch dunkel. Ein Plugin-Update überschreibt deine Werte nicht.
 
 </details>
 
@@ -29,7 +29,7 @@ Alle Oberflächen des Plugins beziehen ihre Farben aus CSS-Variablen mit dem Pr�
    }
    ```
 
-3. Speichere und prüfe das Ergebnis im Frontend.
+3. Speichere und prüfe das Ergebnis auf der Website.
 
 ## Ergebnis
 

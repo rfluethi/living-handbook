@@ -40,6 +40,8 @@ On a re-import the repository decides the structure again, so a parent set by ha
 
 An `index.md` or `README.md` that stands for a folder takes its slug from the **folder** name, not from the file name, so the area page gets a clean URL instead of `readme`.
 
+**Internal links.** A relative `.md` link is resolved by the target's **file name** (`[x](../access/understanding-access.md)` and `[x](understanding-access.md)` both find the page whose file was `understanding-access.md`), so file names have to be unique across the handbook. After the import wires up every link whose target exists, it lists the ones that resolve to no page, naming the page each is on and the file it points at. That line is a typo or a page you still have to write, not a failure; nothing breaks, the link just leads nowhere until the target exists.
+
 ## Importing the same source twice
 
 Re-importing the same source **updates the existing pages instead of creating duplicates**. How a page is recognised depends on the import:

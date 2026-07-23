@@ -5,7 +5,7 @@ Ein Handbuch ist der Behälter für deine Seiten. Es bestimmt, wer die Seiten le
 <details>
 <summary>Konzept: Warum zuerst der Behälter kommt</summary>
 
-Jede Handbuch-Seite gehört zu genau einem Handbuch. Die Sichtbarkeit wird pro Handbuch geregelt, nicht pro Seite. Eine Seite ohne Handbuch hat darum keine Sichtbarkeitsregel. Sie bleibt im Frontend unsichtbar. Deshalb legst du erst das Handbuch an und dann die Seiten. Mehr dazu unter [Zugriff verstehen](../zugriff/zugriff-verstehen.md).
+Jede Handbuch-Seite gehört zu genau einem Handbuch. Wer etwas lesen darf, wird pro Handbuch geregelt, nicht pro Seite. Eine Seite ohne Handbuch hat darum keine Regel, die das Lesen erlauben könnte. Sie bleibt auf der Website unsichtbar. Deshalb legst du erst das Handbuch an und dann die Seiten. Mehr dazu unter [Zugriff verstehen](../zugriff/zugriff-verstehen.md).
 
 </details>
 
@@ -13,7 +13,7 @@ Jede Handbuch-Seite gehört zu genau einem Handbuch. Die Sichtbarkeit wird pro H
 
 1. Öffne **Handbuch → Handbücher** und lege ein neues Handbuch an.
 2. Gib einen **Namen** ein, zum Beispiel „Allgemein“. Ergänze eine kurze **Beschreibung**. Sie erscheint später auf der Übersicht und der Einstiegsseite.
-3. Setze auf derselben Seite die **Sichtbarkeit**. Es gibt drei Stufen: **Öffentlich** für alle Besucher, **Alle Mitglieder (angemeldet)** für ein internes Handbuch, oder **Eingeschränkt** auf bestimmte Rollen und Personen.
+3. Setze auf derselben Seite die **Sichtbarkeit**. Es gibt drei Stufen: **Öffentlich** für alle Besucher, **Alle Mitglieder (angemeldet)** für ein internes Handbuch, oder **Eingeschränkt** auf bestimmte Benutzerrollen und Personen.
 4. Speichere.
 
 > **Screenshot folgt:** Das Formular „Handbuch anlegen“ mit Name, Beschreibung und den drei Sichtbarkeits-Stufen.

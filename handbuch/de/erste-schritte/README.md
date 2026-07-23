@@ -1,6 +1,6 @@
 # Erste Schritte
 
-Dieser Bereich führt dich in vier Schritten zum ersten sichtbaren Handbuch. Gehe die Seiten der Reihe nach durch. Jede baut auf der vorherigen auf.
+Dieser Bereich führt dich in vier Schritten zum ersten sichtbaren Handbuch. Gehe die Seiten der Reihe nach durch. Jede baut auf der vorherigen auf. Du kennst WordPress schon gut? Dann fasst der [Schnellstart](../schnellstart.md) denselben Weg auf einer Seite zusammen.
 
 ```mermaid
 graph LR;
@@ -13,7 +13,7 @@ graph LR;
 |---|---|
 | [Installation](installation.md) | Das Plugin läuft, die Seite „Handbuch“ existiert. |
 | [Erstes Handbuch anlegen](erstes-handbuch-anlegen.md) | Ein Handbuch als Behälter für deine Seiten, mit passender Sichtbarkeit. |
-| [Erste Seite anlegen](erste-seite-anlegen.md) | Eine veröffentlichte Seite, die im Frontend erscheint. |
+| [Erste Seite anlegen](erste-seite-anlegen.md) | Eine veröffentlichte Seite, die auf der Website erscheint. |
 | [Seiten ordnen](seiten-ordnen.md) | Eine Navigation, die deine Struktur abbildet. |
 | [App-Handbuch laden](app-handbuch-laden.md) | Optional: dieses Handbuch als Anleitung und Beispiel in deiner Installation. |
 
@@ -26,7 +26,7 @@ Du musst nicht bei null anfangen. Lade dieses Handbuch mit einem Klick in deine 
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
-* Reihenfolge: 2
+* Reihenfolge: 3
 * Textauszug: Dieser Bereich führt dich in vier Schritten von der Installation bis zu einem Handbuch, das Besucherinnen und Besucher wirklich sehen können.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

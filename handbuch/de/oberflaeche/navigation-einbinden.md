@@ -5,7 +5,7 @@ Diese Anleitung bringt deine Handbücher dorthin, wo Besucherinnen und Besucher 
 <details>
 <summary>Konzept: Warum die Handbuch-Liste kein normales Menü ist</summary>
 
-Welche Handbücher eine Person sieht, hängt von ihren Leserechten ab. Die Liste wird darum pro Besucherin aufgebaut. Ein statisches, von Hand gepflegtes Menü kann das nicht. Stattdessen hängt das Plugin die erlaubten Handbücher automatisch in dein Menü ein.
+Welche Handbücher eine Person sieht, hängt von ihren Leserechten ab. Die Liste ist also für jede Besucherin anders. Ein von Hand gepflegtes Menü kann das nicht abbilden. Darum hängt das Plugin die erlaubten Handbücher automatisch in dein Menü ein. Du markierst nur die Stelle, an der sie erscheinen sollen. Als Markierung dient eine CSS-Klasse: eine Art Etikett, das du einem Menüpunkt anhängst. Das Plugin sucht nach diesem Etikett.
 
 </details>
 

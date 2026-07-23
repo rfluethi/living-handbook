@@ -7,12 +7,12 @@ Dokumentation ohne Pflege wird falsch. Und falsche Dokumentation ist schlimmer a
 | Seite | Was du danach kannst |
 |---|---|
 | [Der Prüfzyklus](der-pruefzyklus.md) | Verstehen, wie aus Prüfdatum und Intervall die drei Status entstehen. |
-| [Seiten prüfen](seiten-pruefen.md) | Prüfungen erledigen: Metabox, Schnellbearbeitung, Dashboard-Widget, Seitenliste. |
+| [Seiten prüfen](seiten-pruefen.md) | Prüfungen erledigen: im Editor, per Schnellbearbeitung oder über das Dashboard. |
 | [Feedback auswerten](feedback-auswerten.md) | Aus „War das hilfreich?“ die Seiten finden, die Arbeit brauchen. |
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
-* Reihenfolge: 6
+* Reihenfolge: 7
 * Textauszug: Living Handbook ist um die Pflege gebaut: der Prüfzyklus, die tägliche Prüfarbeit und das Leser-Feedback.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

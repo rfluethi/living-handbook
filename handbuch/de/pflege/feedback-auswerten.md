@@ -13,7 +13,7 @@ Abstimmen können nur angemeldete Personen, die die Seite lesen dürfen. Es gilt
 
 1. Öffne die Seitenliste unter **Handbuch**.
 2. Sortiere die Spalte **Feedback**. Sie zeigt die Differenz aus Ja- und Nein-Stimmen. Die am schlechtesten bewerteten Seiten stehen so ganz oben oder ganz unten, je nach Sortierrichtung.
-3. Wirf zusätzlich einen Blick auf das Dashboard. Es meldet die Gesamtzahlen zusammen mit den überfälligen Prüfungen.
+3. Wirf zusätzlich einen Blick auf das Dashboard, die Startseite der WordPress-Verwaltung. Der Kasten dort meldet die Gesamtzahlen zusammen mit den überfälligen Prüfungen.
 4. Öffne eine schlecht bewertete Seite. Lies sie mit einer Frage: Woran liegt die Ratlosigkeit? Meist fehlt ein Schritt. Oder ein Begriff wird nicht erklärt. Oder die Seite beantwortet eine andere Frage als die, mit der Leute ankommen.
 5. Schreibe den Teil neu, der die Verwirrung auslöst.
 

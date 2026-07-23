@@ -1,47 +1,47 @@
 # GitHub-Synchronisation
 
-Eine Seite kann dauerhaft aus einem GitHub-Repository gepflegt werden. Die Markdown-Datei dort ist das Original. WordPress zeigt immer den aktuellen Stand. Diese Anleitung richtet das ein. Sie erklärt auch, wann die Seite aktualisiert wird.
+Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben. Die Datei dort ist dann das Original. WordPress holt sich Änderungen automatisch und zeigt immer den aktuellen Stand. Diese Anleitung richtet das ein.
 
 <details>
-<summary>Konzept: Eine Quelle pro Seite</summary>
+<summary>Konzept: Jede Seite hat eine Quelle</summary>
 
-Jede Seite hat eine Quelle. Der Normalfall ist **In WordPress gepflegt**: ganz normal bearbeitbar. Die Alternative ist **Von GitHub synchronisiert**. Bei einer synchronisierten Seite ist der Inhaltseditor gesperrt. So kann niemand Änderungen machen, die der nächste Abgleich überschreiben würde. Eine Spalte in der Seitenliste zeigt die Quelle jeder Seite. Der Block „GitHub-Quellenhinweis“ kann die öffentliche Seite als extern gepflegt kennzeichnen. Dieses Handbuch hier ist selbst so eine synchronisierte Quelle.
+Der Normalfall ist **In WordPress gepflegt**: Du bearbeitest die Seite direkt in WordPress. Die Alternative ist **Von GitHub synchronisiert**: Die Seite wird aus einer Datei auf GitHub befüllt. Bearbeiten lässt sie sich dann in WordPress nicht mehr, ihr Editor ist gesperrt. Das ist Absicht. Sonst würde der nächste Abgleich deine Änderungen überschreiben. In der Seitenliste zeigt eine eigene Spalte, welche Quelle jede Seite hat. Dieses Handbuch hier ist selbst so mit GitHub verbunden.
 
 </details>
 
 ## Schritte
 
-1. Öffne die Seite im Editor und suche die Box **Quelle**.
+1. Öffne die Seite im Editor und suche den Kasten **Quelle**.
 2. Stelle die Quelle auf **Von GitHub synchronisiert**.
-3. Trage die Adresse der Markdown-Datei ein (`raw.githubusercontent.com/...`). Aus Sicherheitsgründen sind nur Adressen von erlaubten Hosts über HTTPS zugelassen.
-4. Speichere. Schon beim Speichern wird die Datei abgeholt und die Seite neu aufgebaut.
+3. Trage die Adresse der Markdown-Datei ein. Sie beginnt mit `raw.githubusercontent.com`. Diese Adresse findest du auf GitHub über den Knopf **Raw** auf der Datei-Ansicht.
+4. Speichere. Beim Speichern holt WordPress die Datei sofort ab und baut die Seite neu auf.
 
 ## Ergebnis
 
-Die Seite zeigt den Stand aus dem Repository. Künftig aktualisiert sie sich selbst. Es gibt drei Auslöser:
+Die Seite zeigt den Stand der Datei auf GitHub. Künftig aktualisiert sie sich selbst. Es gibt drei Auslöser:
 
 ```mermaid
 graph TD;
-  A["Beim Speichern der Seite"] --> S["Abgleich: Datei holen und neu rendern"];
+  A["Beim Speichern der Seite"] --> S["Abgleich: Datei holen, Seite neu aufbauen"];
   B["Von Hand: Knopf 'Jetzt synchronisieren'"] --> S;
-  C["Nach Zeitplan (WordPress-Cron)"] --> S;
-  S --> D["Seite zeigt aktuellen Stand"];
-  S -->|"Fehler"| E["Seite behält alten Stand, Hinweis im Backend"];
+  C["Automatisch nach Zeitplan"] --> S;
+  S --> D["Seite zeigt den aktuellen Stand"];
+  S -->|"Fehler"| E["Seite behält den alten Stand, Hinweis in der Verwaltung"];
 ```
 
-Den Zeitplan stellst du unter **Handbuch → Einstellungen** ein. Zur Wahl stehen: aus, stündlich, zweimal täglich, täglich oder wöchentlich. Wöchentlich ist der Standard auf einer neuen Installation. „Aus“ heißt nur: kein Zeitplan. Beim Speichern und per Knopf wird trotzdem abgeglichen. Ein großes Handbuch wird in Etappen abgeglichen, nie alles auf einmal.
+Den Zeitplan stellst du unter **Handbuch → Einstellungen** ein: aus, stündlich, zweimal täglich, täglich oder wöchentlich. Auf einer neuen Installation ist wöchentlich eingestellt. „Aus“ heißt nur: kein automatischer Abgleich. Beim Speichern und per Knopf wird trotzdem abgeglichen.
 
 <details>
 <summary>Stolpersteine: Wenn ein Abgleich fehlschlägt</summary>
 
-Ein fehlgeschlagener Abgleich leert die Seite nie. Sie behält ihren letzten Stand. Der Fehler wird an der Seite vermerkt. Ein Hinweis im Backend sagt dir, wie viele Seiten betroffen sind. Den Grund findest du auf der Seite selbst: in der Box **Quelle** unter „Letzter Abgleich“. Typische Gründe sind ein GitHub-Limit, ein HTTP-Fehler oder ein nicht erreichbarer Host. Für private Repositories funktioniert der Live-Abgleich nicht. Nimm dort den [ZIP-Import](markdown-importieren.md).
+Ein fehlgeschlagener Abgleich leert die Seite nie. Sie behält einfach ihren letzten Stand. In der Verwaltung erscheint ein Hinweis mit der Zahl der betroffenen Seiten. Den Grund findest du auf der Seite selbst, im Kasten **Quelle** unter „Letzter Abgleich“. Häufige Gründe: Die Adresse war falsch oder nicht erreichbar, oder GitHub hat vorübergehend gebremst. Nicht öffentliche GitHub-Projekte lassen sich nicht abrufen. Nimm für sie den [ZIP-Import](markdown-importieren.md).
 
 </details>
 
 <details>
-<summary>Hintergrund: Was gespeichert wird und warum</summary>
+<summary>Hintergrund: Warum die Seite gesperrt ist und wie der Abgleich läuft</summary>
 
-Synchronisierte Seiten werden als fertig gerendertes, bereinigtes HTML gespeichert, nicht als bearbeitbare Blöcke. Der Grund: Der zeitgesteuerte Abgleich läuft ohne Browser. Nur der Browser kann HTML in Blöcke umwandeln. Einen Webhook gibt es nicht. WordPress holt die Datei selbst ab (Pull). Details für Entwickler stehen in der [Entwickler-Dokumentation zum Import und Sync](https://github.com/rfluethi/living-handbook/blob/main/docs/import-and-sync.md).
+WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinsteht. GitHub meldet sich nicht von selbst. Darum gibt es die drei Auslöser oben. Der automatische Abgleich arbeitet in kleinen Portionen. Auch ein großes Handbuch bremst die Website so nicht aus. Technische Details stehen in der [Entwickler-Dokumentation zum Import und Sync](https://github.com/rfluethi/living-handbook/blob/main/docs/import-and-sync.md).
 
 </details>
 
@@ -53,6 +53,6 @@ Synchronisierte Seiten werden als fertig gerendertes, bereinigtes HTML gespeiche
 ## Transport-Metadaten
 * Seitentyp: Anleitung
 * Reihenfolge: 3
-* Textauszug: Eine Seite kann dauerhaft aus einem GitHub-Repository gepflegt werden; diese Anleitung richtet das ein und erklärt die drei Auslöser des Abgleichs.
+* Textauszug: Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben; diese Anleitung richtet das ein.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

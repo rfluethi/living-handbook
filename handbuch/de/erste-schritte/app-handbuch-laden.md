@@ -5,9 +5,9 @@ Dieses Handbuch ist die Dokumentation von Living Handbook. Du kannst es mit eine
 <details>
 <summary>Voraussetzungen: Was du brauchst</summary>
 
-* Ein Benutzerkonto mit Bearbeitungsrechten für Handbuch-Seiten.
+* Ein Benutzerkonto, das Handbuch-Seiten bearbeiten darf.
 * Ein Handbuch als Ziel, zum Beispiel eines mit dem Namen „App-Handbuch“. Lege es vorher an, siehe [Erstes Handbuch anlegen](erstes-handbuch-anlegen.md). Bestimme dort auch, wer es lesen darf.
-* Dein Server muss GitHub erreichen können. Die Seiten kommen aus einem öffentlichen Repository.
+* Deine Website muss GitHub erreichen können. GitHub ist die Website, auf der die Texte dieses Handbuchs öffentlich liegen.
 
 </details>
 
@@ -16,26 +16,26 @@ Dieses Handbuch ist die Dokumentation von Living Handbook. Du kannst es mit eine
 1. Öffne **Handbuch → Import** und wechsle auf den Reiter **App-Handbuch**.
 2. Wähle unter **Laden in** das Ziel-Handbuch aus.
 3. Klicke auf **App-Handbuch laden**.
-4. Lies die Ergebnisliste. Sieh dir danach das geladene Handbuch im Frontend an.
+4. Lies die Ergebnisliste. Sieh dir danach das geladene Handbuch auf der Website an.
 
 > **Screenshot folgt:** Die Import-Seite mit geöffnetem Reiter „App-Handbuch“, markiert sind die Auswahl „Laden in“ und der Lade-Knopf.
 
 ## Ergebnis
 
-Alle Seiten dieses Handbuchs stehen jetzt in deinem gewählten Handbuch. Sie sind sofort veröffentlicht. Die Ordnerstruktur des Repositories ist als Navigationsbaum übernommen. Wer die Seiten sehen darf, bestimmt allein die Sichtbarkeit des Ziel-Handbuchs. Steht es auf „Alle Mitglieder“, lesen nur Angemeldete. Öffentlich wird es erst, wenn du das Handbuch auf „Öffentlich“ stellst.
+Alle Seiten dieses Handbuchs stehen jetzt in deinem gewählten Handbuch, samt Navigation und Bildern. Sie sind sofort veröffentlicht. Wer die Seiten sehen darf, bestimmt allein die Sichtbarkeit des Ziel-Handbuchs. Steht es auf „Alle Mitglieder“, lesen nur Angemeldete. Öffentlich wird es erst, wenn du das Handbuch auf „Öffentlich“ stellst.
 
 <details>
 <summary>Konzept: Warum das Handbuch aktuell bleibt</summary>
 
-Hinter dem Reiter steckt der normale [GitHub-Ordner-Import](../inhalte/markdown-importieren.md) mit einer fest hinterlegten Adresse. Der Ordner richtet sich nach deiner Admin-Sprache. Die Seiten sind darum [von GitHub synchronisiert](../inhalte/github-synchronisation.md). Eine spätere Änderung im Repository erreicht deine Website beim nächsten Laden. Die Bilder aus dem Repository kommen mit. Geladen wird nie automatisch, nur wenn du es anstößt.
+Die Texte dieses Handbuchs werden öffentlich auf GitHub gepflegt. Der Reiter **App-Handbuch** lädt sie von dort, passend zur Sprache deiner WordPress-Verwaltung. Technisch ist das ein normaler [Import von GitHub](../inhalte/markdown-importieren.md) mit fest hinterlegter Adresse. Die geladenen Seiten bleiben [mit GitHub verbunden](../inhalte/github-synchronisation.md). Wird das Handbuch dort verbessert, erreicht dich die Verbesserung beim nächsten Laden. Geladen wird nie automatisch, nur wenn du es anstößt.
 
 </details>
 
 <details>
 <summary>Stolpersteine: Zwei Eigenheiten dieses Imports</summary>
 
-* **Die Seiten sind direkt veröffentlicht.** Jeder andere GitHub-Import legt Entwürfe an. Hier ist das anders, und zwar mit Absicht: Es ist kuratierter, im Editor gesperrter Inhalt. Die Sichtbarkeit regelt das Ziel-Handbuch.
-* **Bearbeiten kannst du die Seiten in WordPress nicht.** Ihr Editor ist gesperrt. Der nächste Abgleich würde Änderungen ohnehin überschreiben. Die Quelle ist das [GitHub-Repository](https://github.com/rfluethi/living-handbook/tree/main/handbuch/de).
+* **Die Seiten sind sofort veröffentlicht.** Jeder andere Import legt erst unveröffentlichte Entwürfe an. Hier ist das anders, mit Absicht: Es ist die geprüfte Dokumentation des Plugins, und wer sie sehen darf, regelt ohnehin das Ziel-Handbuch.
+* **Bearbeiten kannst du die Seiten in WordPress nicht.** Sie sind mit GitHub verbunden, und der nächste Abgleich würde Änderungen überschreiben. Verbesserungen gehören in die [Original-Dateien auf GitHub](https://github.com/rfluethi/living-handbook/tree/main/handbuch/de).
 
 </details>
 

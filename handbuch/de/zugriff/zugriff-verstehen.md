@@ -4,7 +4,7 @@ Diese Seite beantwortet eine Frage: Warum zeigt Living Handbook im Zweifel liebe
 
 ## Worum es geht
 
-Ein internes Handbuch enthält Dinge, die nicht öffentlich sein sollen: Abläufe, Zuständigkeiten, interne Adressen. Der teuerste Fehler eines solchen Systems ist nicht eine unsichtbare Seite. Der teuerste Fehler ist eine versehentlich öffentliche Seite. Living Handbook ist darum **fail-closed** gebaut: Im Zweifel wird versteckt.
+Ein internes Handbuch enthält Dinge, die nicht öffentlich sein sollen: Abläufe, Zuständigkeiten, interne Adressen. Der teuerste Fehler eines solchen Systems ist nicht eine unsichtbare Seite. Der teuerste Fehler ist eine versehentlich öffentliche Seite. Living Handbook folgt darum einer einfachen Grundregel: Im Zweifel wird versteckt. Fachleute nennen dieses Prinzip „fail-closed“.
 
 ```mermaid
 graph TD;
@@ -24,8 +24,8 @@ graph TD;
 
 * **Eine Regel pro Handbuch statt pro Seite.** Sichtbarkeit pro Seite klingt flexibel. Sie wird aber schnell unübersichtlich, denn niemand behält hundert Einzelregeln im Kopf. Eine Regel pro Handbuch kannst du in einem Satz aussprechen: „Das Team-Handbuch sehen alle Angemeldeten.“
 * **Eine Seite ohne Handbuch ist unsichtbar.** Sie hat keine Regel, die Zugriff erlauben könnte. Also gilt die sichere Antwort: kein Zugriff. Das ist die häufigste Ursache für „meine Seite erscheint nicht“, siehe [Häufige Fragen](../haeufige-fragen.md).
-* **Es gibt einen zentralen Prüfpunkt.** Jede Stelle, die Handbuch-Inhalte ausliefert, stellt dieselbe Frage an dieselbe zentrale Prüfung. Das gilt für Einzelseiten, Suche, Filter, Menü, Feedback und Schnittstellen. Es gibt keine Hintertür, die vergessen gehen könnte.
-* **Auch die Nebenwege sind geschlossen.** Handbuch-Seiten erscheinen nicht in der XML-Sitemap, nicht in Feeds und nicht in Vorschau-Einbettungen. Ein internes Handbuch hinterlässt keine öffentlichen Spuren.
+* **Es gibt einen zentralen Prüfpunkt.** Jede Stelle, die Handbuch-Inhalte anzeigt, stellt vorher dieselbe Frage: Darf diese Person das lesen? Das gilt für Seiten, Suche, Filter, Menü und Feedback. Es gibt keine Hintertür, die vergessen gehen könnte.
+* **Auch die Nebenwege sind geschlossen.** Handbuch-Seiten tauchen nicht in den technischen Listen auf, die Suchmaschinen und andere Websites auslesen. Ein internes Handbuch hinterlässt keine öffentlichen Spuren.
 
 ## Was das für deine Arbeit bedeutet
 

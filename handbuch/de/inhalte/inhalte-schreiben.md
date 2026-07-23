@@ -1,41 +1,37 @@
 # Inhalte schreiben
 
-Diese Seite ist dein Nachschlagewerk fürs Schreiben. Sie zeigt, was im Block-Editor geht. Sie zeigt auch, welches Markdown den Import übersteht und wie du Diagramme einsetzt.
+Diese Seite hilft dir beim Schreiben von Handbuch-Seiten. Der erste Teil gilt für alle. Der zweite Teil betrifft nur Seiten, die aus Markdown-Dateien kommen.
 
-## Schreiben im Block-Editor
+## Schreiben in WordPress
 
-Eine Handbuch-Seite ist eine normale Block-Editor-Seite. Alles, was der Editor kann, kannst du auch im Handbuch verwenden: Überschriften, Listen, Tabellen, Bilder, Zitate. Zusätzlich bringt das Plugin eigene Blöcke mit, etwa das Mermaid-Diagramm. Du findest sie im Block-Einfüger unter der Kategorie **Living Handbook**.
+Eine Handbuch-Seite schreibst du wie jede andere WordPress-Seite. Alles Gewohnte funktioniert: Überschriften, Listen, Tabellen, Bilder, Zitate. Dazu bringt das Plugin eigene Bausteine mit, zum Beispiel für Diagramme. Du findest sie beim Einfügen eines Blocks unter der Kategorie **Living Handbook**.
 
-Zwei Empfehlungen für lesbare Handbuch-Seiten:
+Zwei Empfehlungen für lesbare Seiten:
 
-* **Beginne mit einem kurzen Einleitungssatz.** Er sagt, was die Seite leistet und für wen sie ist. Er eignet sich zugleich als Textauszug für die Karten.
-* **Gliedere mit Überschriften ab Ebene 2.** Der Seitentitel ist die einzige Überschrift der Ebene 1. Aus den Ebenen darunter baut sich das Inhaltsverzeichnis rechts automatisch auf.
+* **Beginne mit einem kurzen Einleitungssatz.** Er sagt, was die Seite leistet und für wen sie ist. Derselbe Satz eignet sich als Kurztext auf den Übersichts-Kacheln.
+* **Gliedere mit Zwischentiteln.** Nutze dafür Überschriften der Ebene 2 und tiefer. Aus ihnen baut sich das Verzeichnis „Auf dieser Seite“ automatisch auf.
 
-## Schreiben in Markdown
+## Diagramme einsetzen
 
-Deine Seiten können auch aus Markdown-Dateien kommen, per [Import](markdown-importieren.md) oder [GitHub-Synchronisation](github-synchronisation.md). Dabei wird Markdown zu HTML umgewandelt und danach bereinigt. Das entscheidet, was übersteht.
+Hat ein Ablauf mehrere Schritte oder Entscheidungen? Dann zeigt ein Diagramm oft mehr als ein langer Absatz. Living Handbook zeichnet Diagramme selbst, direkt auf der Seite. Beschrieben werden sie in [Mermaid](https://mermaid.js.org/), einer einfachen Textsprache für Diagramme. Füge im Editor den Block **Mermaid-Diagramm** ein und schreibe die Diagramm-Beschreibung hinein. Ein Beispiel-Diagramm siehst du auf [Der Prüfzyklus](../pflege/der-pruefzyklus.md). Gib dem Diagramm einen Titel und eine kurze Beschreibung. Der Titel wird zur Bildunterschrift. Die Beschreibung wird vorgelesen, wenn jemand die Seite mit einem Screenreader nutzt.
+
+## Schreiben in Markdown-Dateien
+
+Dieser Teil betrifft dich nur, wenn deine Seiten aus Markdown-Dateien kommen. Die zwei Wege dafür sind der [Import](markdown-importieren.md) und die [GitHub-Synchronisation](github-synchronisation.md). Beim Einlesen wird der Text umgewandelt und aus Sicherheitsgründen bereinigt. Das meiste übersteht das problemlos. Ein paar Dinge gehen verloren.
 
 ### Was funktioniert
 
 * Überschriften, Absätze, Listen, Tabellen, Zitate, Fettdruck und Kursiv.
-* Links, auch auf andere Seiten des Handbuchs als relative `.md`-Links. Der Import biegt sie automatisch auf die richtigen Seiten um, samt sichtbarem Linktext.
-* Bilder, auch SVG-Vektorgrafiken. Sie werden aus dem `assets`-Ordner des Repositories in die Mediathek geladen. SVG-Dateien werden dabei bereinigt.
-* Mermaid-Diagramme in einem Codeblock mit der Sprachangabe `mermaid`. Der Import macht daraus einen echten Diagramm-Block. Er wird im Editor und im Frontend gerendert.
-* Aufklappbereiche als `<details>`-Abschnitte. Der Import macht daraus echte Details-Blöcke.
+* Links zwischen den Dateien. Der Import macht daraus automatisch Links zwischen den fertigen Seiten.
+* Bilder. Sie werden in die WordPress-Mediathek übernommen. Das gilt auch für SVG-Grafiken, also verlustfrei skalierbare Vektorbilder.
+* Diagramme. Schreibe die Mermaid-Beschreibung in der Datei als Codeblock und gib als Sprache `mermaid` an. Daraus wird auf der fertigen Seite ein gezeichnetes Diagramm.
+* Aufklappbare Abschnitte, wie die Kästen „Was du brauchst“ oder „Stolpersteine“ in diesem Handbuch. In der Datei schreibst du sie als `<details>`-Abschnitt. Auf der fertigen Seite bleiben sie aufklappbar.
 
 ### Was nicht funktioniert
 
-* Die plugin-eigenen Blöcke: Bereichsliste, Feedback, Abzeichen, Seitenmetadaten. Sie lassen sich in Markdown nicht ausdrücken. Technisch bestehen sie aus HTML-Kommentaren, und die Bereinigung entfernt Kommentare. Schreibst du einen solchen Block in eine Markdown-Datei, verschwindet er beim Import spurlos. Zwei davon brauchst du ohnehin nicht selbst: Der Navigationsbaum entsteht aus der Ordnerstruktur. Und eine Bereichsseite ohne eigene Datei bekommt ihre Kartenliste automatisch.
-* Skripte, Event-Handler und unsichere Adressen. Sie werden aus Sicherheitsgründen entfernt.
-* MkDocs-Spezialsyntax wie Admonitions (`!!! note`). Sie gehört nicht zu GitHub Flavored Markdown und wird zu einfachem Text.
-
-## Diagramme einsetzen
-
-Hat ein Ablauf mehrere Schritte, Rollen oder Zustände? Dann sagt ein Diagramm mehr als ein langer Absatz. Living Handbook rendert [Mermaid](https://mermaid.js.org/)-Diagramme direkt im Browser. Ein Beispiel steht auf [Der Prüfzyklus](../pflege/der-pruefzyklus.md). Im Editor fügst du den Block **Mermaid-Diagramm** ein und trägst den Diagramm-Text ein. Ein Titel wird zur Bildunterschrift. Eine Beschreibung wird zur Textalternative für Screenreader.
-
-## Transport-Metadaten am Dateiende
-
-Eine Markdown-Datei kann am Ende einen Abschnitt `## Transport-Metadaten` tragen. Er ist kein Seiteninhalt, sondern eine Mitgift für den Import. Seitentyp, Thema, Zielgruppe, Reihenfolge, Textauszug und Prüfdaten wandern daraus in die Felder der Seite. Die Feldliste steht unter [Markdown importieren](markdown-importieren.md).
+* Die eigenen Bausteine des Plugins, etwa die Feedback-Frage oder die Abzeichen. Sie lassen sich in einer Markdown-Datei nicht schreiben. Das brauchst du aber auch nicht: Das Plugin setzt sie von selbst an die richtigen Stellen.
+* Programmcode, der auf der Seite etwas ausführen würde. Die Bereinigung entfernt ihn. Das schützt deine Website.
+* Sonderformate anderer Werkzeuge, zum Beispiel farbige Hinweiskästen aus MkDocs (`!!! note`). Sie werden zu einfachem Text.
 
 ## Verwandte Seiten
 
@@ -45,6 +41,6 @@ Eine Markdown-Datei kann am Ende einen Abschnitt `## Transport-Metadaten` tragen
 ## Transport-Metadaten
 * Seitentyp: Tool-Übersicht
 * Reihenfolge: 1
-* Textauszug: Dein Nachschlagewerk fürs Schreiben: was der Block-Editor kann, welches Markdown den Import übersteht und wie du Diagramme einsetzt.
+* Textauszug: Was auf eine gute Handbuch-Seite gehört, wie du Diagramme einsetzt und was beim Einlesen von Markdown-Dateien übersteht.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

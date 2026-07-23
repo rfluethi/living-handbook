@@ -14,16 +14,16 @@ Diese Anleitung erstellt deine erste Handbuch-Seite. Die Schritte: schreiben, ei
 
 1. Öffne **Handbuch → Erstellen**. Es öffnet sich der gewohnte Block-Editor.
 2. Schreibe die Seite wie jede andere: ein klarer Titel, ein kurzer Einleitungssatz, dann der Inhalt.
-3. **Weise die Seite in der Seitenleiste einem Handbuch zu.** Diesen Schritt übersehen fast alle. Eine Seite ohne Handbuch bleibt im Frontend unsichtbar.
-4. **Klassifiziere die Seite** in der Seitenleiste. Setze den Seitentyp (Anleitung, Prozess, Referenz, Rolle, Hintergrund, FAQ), ein oder mehrere Themen, die Zielgruppe und die verantwortliche Rolle. Diese Angaben erzeugen die Abzeichen auf der Seite und die Filter auf der Einstiegsseite.
-5. Fülle unten im Editor die Metabox **Handbuch-Wartung** aus: verantwortliche Rolle, letzte Prüfung, Prüfintervall. Auch grobe Werte sind besser als keine. Verfeinern kannst du später.
+3. **Weise die Seite in der Seitenleiste einem Handbuch zu.** Diesen Schritt übersehen fast alle. Eine Seite ohne Handbuch bleibt auf der Website unsichtbar.
+4. **Ordne die Seite ein**, ebenfalls in der Seitenleiste. Wähle den Seitentyp (zum Beispiel Anleitung oder Hintergrund), ein Thema, die Zielgruppe und die verantwortliche Rolle. Aus diesen Angaben entstehen die Abzeichen auf der Seite und die Filter auf der Einstiegsseite des Handbuchs.
+5. Fülle den Kasten **Handbuch-Wartung** unten im Editor aus: verantwortliche Rolle, letzte Prüfung, Prüfintervall. Auch grobe Werte sind besser als keine. Verfeinern kannst du später. Was diese Felder bewirken, erklärt [Der Prüfzyklus](../pflege/der-pruefzyklus.md).
 6. Klicke auf **Veröffentlichen**.
 
-> **Screenshot folgt:** Der Block-Editor mit geöffneter Seitenleiste, markiert sind die Handbuch-Zuweisung und die Klassifizierung; darunter die Metabox „Handbuch-Wartung“.
+> **Screenshot folgt:** Der Editor mit geöffneter Seitenleiste, markiert sind die Handbuch-Zuweisung und die Einordnung; darunter der Kasten „Handbuch-Wartung“.
 
 ## Ergebnis
 
-Die Seite ist unter `/handbook/<seitenname>/` erreichbar. Auf der Einstiegsseite ihres Handbuchs erscheint sie unter „Zuletzt aktualisiert“. Oben zeigt sie die Abzeichen, rechts das Inhaltsverzeichnis. Unten steht die Metadaten-Fußzeile mit dem Prüfstatus.
+Die Seite ist auf der Website erreichbar, unter `/handbook/<seitenname>/`. Auf der Einstiegsseite ihres Handbuchs erscheint sie unter „Zuletzt aktualisiert“. Oben zeigt sie die Abzeichen, rechts das Verzeichnis „Auf dieser Seite“. Ganz unten stehen die Angaben zur Seite, mit dem Prüfstatus als Abzeichen.
 
 ![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.svg)
 

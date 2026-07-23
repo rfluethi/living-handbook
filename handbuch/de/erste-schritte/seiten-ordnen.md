@@ -5,7 +5,7 @@ Die Navigation eines Handbuchs baust du nicht von Hand. Sie entsteht aus der Hie
 <details>
 <summary>Konzept: Hierarchie statt Menüpflege</summary>
 
-Ein handgepflegtes Menü und die tatsächlichen Seiten laufen mit der Zeit auseinander. Seiten entstehen, das Menü hinkt nach. Darum liest Living Handbook die Navigation direkt aus der Seitenhierarchie. Seiten der obersten Ebene werden zu den **Bereichen**. Sie erscheinen als Kacheln auf der Einstiegsseite. Ihre Unterseiten bilden den Navigationsbaum. Was in der Hierarchie steht, steht damit automatisch im Menü.
+Ein von Hand gepflegtes Menü und die tatsächlichen Seiten laufen mit der Zeit auseinander. Seiten entstehen, das Menü hinkt nach. Darum baut Living Handbook die Navigation direkt aus der Ordnung der Seiten. Seiten der obersten Ebene werden zu den **Bereichen**. Sie erscheinen als Kacheln auf der Einstiegsseite des Handbuchs. Ihre Unterseiten bilden den Navigationsbaum. Was du ordnest, steht damit automatisch im Menü.
 
 </details>
 
@@ -19,7 +19,7 @@ Ein handgepflegtes Menü und die tatsächlichen Seiten laufen mit der Zeit ausei
 
 ## Ergebnis
 
-Die Seite steht an der gewählten Stelle im Navigationsbaum. Eine Seite oberster Ebene erscheint zusätzlich als Bereichskachel auf der Einstiegsseite. Ein Beispiel ist dieses Handbuch: Jeder Bereich wie „Erste Schritte“ oder „Pflege“ ist eine Seite oberster Ebene mit Unterseiten.
+Die Seite steht an der gewählten Stelle im Navigationsbaum. Eine Seite oberster Ebene erscheint zusätzlich als Bereichskachel auf der Einstiegsseite des Handbuchs. Ein Beispiel ist dieses Handbuch: Jeder Bereich wie „Erste Schritte“ oder „Pflege“ ist eine Seite oberster Ebene mit Unterseiten.
 
 ```mermaid
 graph TD;
@@ -33,7 +33,7 @@ graph TD;
 <details>
 <summary>Hinweis: Wenn deine Seiten aus einem Import stammen</summary>
 
-Beim Import eines Ordners entsteht die Hierarchie automatisch aus der Ordnerstruktur. Die Reihenfolge kommt aus den Transport-Metadaten der Dateien. Bei einem erneuten Import setzt das Repository die Struktur wieder durch. Eine von Hand geänderte Eltern-Seite wird dann zurückgesetzt. Ordne importierte Handbücher darum in den Quelldateien, siehe [Markdown importieren](../inhalte/markdown-importieren.md).
+Kommen deine Seiten aus importierten Markdown-Dateien, entsteht die Ordnung automatisch aus der Ordnerstruktur der Dateien. Ein erneuter Import stellt diese Ordnung wieder her. Eine von Hand geänderte Eltern-Seite wird dabei zurückgesetzt. Ordne importierte Handbücher darum in den Dateien selbst. Wie das geht, steht unter [Markdown importieren](../inhalte/markdown-importieren.md).
 
 </details>
 

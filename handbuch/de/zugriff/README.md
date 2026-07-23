@@ -9,7 +9,7 @@ Dieser Bereich regelt die wichtigste Frage eines internen Handbuchs: Wer darf wa
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
-* Reihenfolge: 5
+* Reihenfolge: 6
 * Textauszug: Dieser Bereich regelt, wer welche Handbücher lesen darf: die Einstellung der Sichtbarkeit und das Prinzip dahinter.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

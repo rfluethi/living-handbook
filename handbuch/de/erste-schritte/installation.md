@@ -5,9 +5,9 @@ So machst du das Plugin einsatzbereit. Der Weg führt von der ZIP-Datei bis zur 
 <details>
 <summary>Voraussetzungen: Was deine Website mitbringen muss</summary>
 
-* **WordPress 6.7 oder neuer, mit einem Block-Theme.** Ein Beispiel ist Twenty Twenty-Five. Die Handbuch-Seiten werden aus Block-Templates gebaut. Ein klassisches Theme kann sie nicht darstellen.
+* **WordPress 6.7 oder neuer, mit einem Block-Theme.** Ein Block-Theme ist ein neueres WordPress-Design, das sich vollständig im Website-Editor bearbeiten lässt. Ein Beispiel ist das mitgelieferte Theme Twenty Twenty-Five. Mit einem älteren, klassischen Theme werden die Handbuch-Seiten nicht richtig dargestellt.
 * **PHP 8.1 oder neuer.** Die PHP-Version deiner Website steht unter **Werkzeuge → Website-Zustand → Bericht**.
-* **Eine Einzelinstallation.** Living Handbook ist für eine einzelne Website gebaut. Auf einem Multisite-Netzwerk aktivierst du es pro Website, nicht netzwerkweit.
+* **Eine einzelne WordPress-Website.** Betreibst du ein Netzwerk aus mehreren Websites (Multisite), aktiviere das Plugin pro Website, nicht fürs ganze Netzwerk.
 
 </details>
 
@@ -22,18 +22,18 @@ So machst du das Plugin einsatzbereit. Der Weg führt von der ZIP-Datei bis zur 
 
 Die Aktivierung richtet drei Dinge für dich ein:
 
-* Sie registriert den Inhaltstyp „Handbuch-Seite“. Außerdem legt sie die vier Schlagwort-Gruppen an: Seitentyp, Thema, verantwortliche Rolle und Zielgruppe. Alle sind mit Startwerten gefüllt.
-* Sie erstellt eine normale WordPress-Seite namens **Handbuch** mit dem Übersichts-Block darauf. So zeigt eine frische Installation etwas an. Du kannst diese Seite später verschieben, umgestalten oder ersetzen.
-* Sie aktualisiert die Permalink-Regeln. Die Handbuch-Adressen funktionieren damit sofort.
+* Eine eigene Seiten-Art für Handbuch-Seiten, getrennt von deinen normalen Seiten und Beiträgen.
+* Vier Schlagwort-Gruppen zum Einordnen der Seiten: Seitentyp, Thema, verantwortliche Rolle und Zielgruppe. Alle sind mit Startwerten gefüllt.
+* Eine normale WordPress-Seite namens **Handbuch**. Sie zeigt später die Liste deiner Handbücher. Du kannst sie verschieben, umgestalten oder ersetzen.
 
-Den Erfolg erkennst du an zwei Dingen: Im Admin-Menü steht der Eintrag **Handbuch**, und die Seite **Handbuch** ist im Frontend erreichbar. Sie ist anfangs leer. Das ist normal, denn es gibt noch kein Handbuch.
+Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **Handbuch**, und die Seite **Handbuch** ist auf der Website erreichbar. Sie ist anfangs leer. Das ist normal, denn es gibt noch kein Handbuch.
 
 <details>
 <summary>Stolpersteine: Wenn etwas nicht klappt</summary>
 
-* **Die Handbuch-Seiten sehen kaputt oder unformatiert aus:** Dein Theme ist vermutlich kein Block-Theme. Prüfe das unter **Design**. Fehlt dort der Eintrag **Website-Editor**, ist das Theme klassisch. Die Handbuch-Templates greifen dann nicht.
+* **Die Handbuch-Seiten sehen kaputt oder unformatiert aus:** Dein Theme ist vermutlich kein Block-Theme. Prüfe das unter **Design**. Fehlt dort der Eintrag **Website-Editor**, ist das Theme klassisch.
 * **Handbuch-Adressen liefern „Seite nicht gefunden“:** Öffne einmal **Einstellungen → Permalinks**. Das erneuert die Adress-Regeln.
-* **Du baust das Plugin aus dem Quellcode statt aus der Release-ZIP:** Führe vorher `composer install` aus. Sonst fehlt der Ordner `vendor/`. Die Release-ZIP bringt ihn schon mit. Details stehen in der [Entwickler-Dokumentation auf GitHub](https://github.com/rfluethi/living-handbook#development).
+* **Du arbeitest mit dem Quellcode statt mit der fertigen ZIP-Datei:** Dann sind zusätzliche Schritte nötig. Sie stehen in der [Entwickler-Dokumentation auf GitHub](https://github.com/rfluethi/living-handbook#development).
 
 </details>
 

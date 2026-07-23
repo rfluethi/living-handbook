@@ -10,7 +10,7 @@ Jede Seite trägt zwei Daten und ein Intervall:
 * **Geprüft** setzt eine Person von Hand. Es bedeutet: „Ich habe das gelesen, es stimmt noch.“ Das gilt auch, wenn nichts geändert wurde. Nur ein Mensch kann das sagen. Darum setzt es sich nie automatisch.
 * **Das Prüfintervall** sagt, wie lange eine Prüfung gilt. Schnelllebiges bekommt ein kurzes Intervall, etwa Tools und externe Dienste. Stabiles bekommt ein langes, etwa Grundsätze und Organisation.
 
-Aus Prüfdatum und Intervall berechnet das Plugin den Status. Er erscheint als Abzeichen in der Metadaten-Fußzeile jeder Seite:
+Aus Prüfdatum und Intervall berechnet das Plugin den Status. Er erscheint als Abzeichen unten auf jeder Seite:
 
 ![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.svg)
 
