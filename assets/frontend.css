@@ -937,3 +937,15 @@
 	display: flex;
 	align-items: center;
 }
+
+/* GitHub source note: a quiet hint, not body text. Smaller and muted, with a
+ * subtle accent bar, so a reader takes it as a note about the page rather than
+ * part of the content. */
+.lh-source-note {
+	font-size: 0.82rem;
+	color: var(--lh-muted);
+	padding: 0.4rem 0.75rem;
+	border-inline-start: 3px solid var(--lh-border-strong);
+	background: color-mix(in srgb, var(--lh-surface-text) 4%, transparent);
+	border-radius: 0 6px 6px 0;
+}

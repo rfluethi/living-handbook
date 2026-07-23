@@ -1,11 +1,11 @@
 # GitHub-Synchronisation
 
-Eine Seite kann dauerhaft aus einem GitHub-Repository gepflegt werden: Die Markdown-Datei dort ist das Original, WordPress zeigt den jeweils aktuellen Stand. Diese Anleitung richtet das ein und erklärt, wann die Seite aktualisiert wird.
+Eine Seite kann dauerhaft aus einem GitHub-Repository gepflegt werden. Die Markdown-Datei dort ist das Original. WordPress zeigt immer den aktuellen Stand. Diese Anleitung richtet das ein. Sie erklärt auch, wann die Seite aktualisiert wird.
 
 <details>
 <summary>Konzept: Eine Quelle pro Seite</summary>
 
-Jede Seite hat eine Quelle: **In WordPress gepflegt** (der Normalfall, ganz normal bearbeitbar) oder **Von GitHub synchronisiert**. Bei einer synchronisierten Seite ist der Inhaltseditor gesperrt, damit niemand Änderungen macht, die der nächste Abgleich überschreiben würde. Eine Spalte in der Seitenliste zeigt die Quelle jeder Seite, und der Block „GitHub-Quellenhinweis“ kann die öffentliche Seite als extern gepflegt kennzeichnen. Dieses Handbuch hier ist selbst so eine synchronisierte Quelle.
+Jede Seite hat eine Quelle. Der Normalfall ist **In WordPress gepflegt**: ganz normal bearbeitbar. Die Alternative ist **Von GitHub synchronisiert**. Bei einer synchronisierten Seite ist der Inhaltseditor gesperrt. So kann niemand Änderungen machen, die der nächste Abgleich überschreiben würde. Eine Spalte in der Seitenliste zeigt die Quelle jeder Seite. Der Block „GitHub-Quellenhinweis“ kann die öffentliche Seite als extern gepflegt kennzeichnen. Dieses Handbuch hier ist selbst so eine synchronisierte Quelle.
 
 </details>
 
@@ -18,7 +18,7 @@ Jede Seite hat eine Quelle: **In WordPress gepflegt** (der Normalfall, ganz norm
 
 ## Ergebnis
 
-Die Seite zeigt den Stand aus dem Repository und aktualisiert sich künftig selbst. Es gibt drei Auslöser:
+Die Seite zeigt den Stand aus dem Repository. Künftig aktualisiert sie sich selbst. Es gibt drei Auslöser:
 
 ```mermaid
 graph TD;
@@ -29,19 +29,19 @@ graph TD;
   S -->|"Fehler"| E["Seite behält alten Stand, Hinweis im Backend"];
 ```
 
-Den Zeitplan stellst du unter **Handbuch → Einstellungen** ein: aus, stündlich, zweimal täglich, täglich oder wöchentlich (Standard auf einer neuen Installation). „Aus“ heißt nur: kein Zeitplan; beim Speichern und per Knopf wird trotzdem abgeglichen. Ein großes Handbuch wird in Etappen abgeglichen, nie alles auf einmal.
+Den Zeitplan stellst du unter **Handbuch → Einstellungen** ein. Zur Wahl stehen: aus, stündlich, zweimal täglich, täglich oder wöchentlich. Wöchentlich ist der Standard auf einer neuen Installation. „Aus“ heißt nur: kein Zeitplan. Beim Speichern und per Knopf wird trotzdem abgeglichen. Ein großes Handbuch wird in Etappen abgeglichen, nie alles auf einmal.
 
 <details>
 <summary>Stolpersteine: Wenn ein Abgleich fehlschlägt</summary>
 
-Ein fehlgeschlagener Abgleich leert die Seite nie: Sie behält ihren letzten Stand. Der Fehler wird an der Seite vermerkt, und ein Hinweis im Backend sagt dir, wie viele Seiten betroffen sind. Öffne die Seite und lies in der Box **Quelle** unter „Letzter Abgleich“ den Grund nach, etwa ein GitHub-Limit, einen HTTP-Fehler oder einen nicht erreichbaren Host. Für private Repositories funktioniert der Live-Abgleich nicht; nimm dort den [ZIP-Import](markdown-importieren.md).
+Ein fehlgeschlagener Abgleich leert die Seite nie. Sie behält ihren letzten Stand. Der Fehler wird an der Seite vermerkt. Ein Hinweis im Backend sagt dir, wie viele Seiten betroffen sind. Den Grund findest du auf der Seite selbst: in der Box **Quelle** unter „Letzter Abgleich“. Typische Gründe sind ein GitHub-Limit, ein HTTP-Fehler oder ein nicht erreichbarer Host. Für private Repositories funktioniert der Live-Abgleich nicht. Nimm dort den [ZIP-Import](markdown-importieren.md).
 
 </details>
 
 <details>
 <summary>Hintergrund: Was gespeichert wird und warum</summary>
 
-Synchronisierte Seiten werden als fertig gerendertes, bereinigtes HTML gespeichert, nicht als bearbeitbare Blöcke: Der zeitgesteuerte Abgleich läuft ohne Browser, und nur der Browser kann HTML in Blöcke umwandeln. Es gibt keinen Webhook; WordPress holt die Datei selbst (Pull). Details für Entwickler stehen in der [Entwickler-Dokumentation zum Import und Sync](https://github.com/rfluethi/living-handbook/blob/main/docs/import-and-sync.md).
+Synchronisierte Seiten werden als fertig gerendertes, bereinigtes HTML gespeichert, nicht als bearbeitbare Blöcke. Der Grund: Der zeitgesteuerte Abgleich läuft ohne Browser. Nur der Browser kann HTML in Blöcke umwandeln. Einen Webhook gibt es nicht. WordPress holt die Datei selbst ab (Pull). Details für Entwickler stehen in der [Entwickler-Dokumentation zum Import und Sync](https://github.com/rfluethi/living-handbook/blob/main/docs/import-and-sync.md).
 
 </details>
 

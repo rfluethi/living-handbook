@@ -1,6 +1,6 @@
 # Erste Seite anlegen
 
-Diese Anleitung erstellt deine erste Handbuch-Seite: schreiben, einem Handbuch zuweisen, klassifizieren, Prüfdaten setzen, veröffentlichen.
+Diese Anleitung erstellt deine erste Handbuch-Seite. Die Schritte: schreiben, einem Handbuch zuweisen, klassifizieren, Prüfdaten setzen, veröffentlichen.
 
 <details>
 <summary>Voraussetzungen: Was schon da sein muss</summary>
@@ -14,23 +14,23 @@ Diese Anleitung erstellt deine erste Handbuch-Seite: schreiben, einem Handbuch z
 
 1. Öffne **Handbuch → Erstellen**. Es öffnet sich der gewohnte Block-Editor.
 2. Schreibe die Seite wie jede andere: ein klarer Titel, ein kurzer Einleitungssatz, dann der Inhalt.
-3. **Weise die Seite in der Seitenleiste einem Handbuch zu.** Das ist der eine Schritt, den fast alle übersehen: Eine Seite ohne Handbuch bleibt im Frontend unsichtbar.
-4. **Klassifiziere die Seite** in der Seitenleiste: Seitentyp (Anleitung, Prozess, Referenz, Rolle, Hintergrund, FAQ), ein oder mehrere Themen, die Zielgruppe und die verantwortliche Rolle. Diese Angaben erzeugen die Abzeichen auf der Seite und die Filter auf der Einstiegsseite.
-5. Fülle unten im Editor die Metabox **Handbuch-Wartung** aus: verantwortliche Rolle, letzte Prüfung, Prüfintervall. Auch grobe Werte sind besser als keine; verfeinern kannst du später.
+3. **Weise die Seite in der Seitenleiste einem Handbuch zu.** Diesen Schritt übersehen fast alle. Eine Seite ohne Handbuch bleibt im Frontend unsichtbar.
+4. **Klassifiziere die Seite** in der Seitenleiste. Setze den Seitentyp (Anleitung, Prozess, Referenz, Rolle, Hintergrund, FAQ), ein oder mehrere Themen, die Zielgruppe und die verantwortliche Rolle. Diese Angaben erzeugen die Abzeichen auf der Seite und die Filter auf der Einstiegsseite.
+5. Fülle unten im Editor die Metabox **Handbuch-Wartung** aus: verantwortliche Rolle, letzte Prüfung, Prüfintervall. Auch grobe Werte sind besser als keine. Verfeinern kannst du später.
 6. Klicke auf **Veröffentlichen**.
 
 > **Screenshot folgt:** Der Block-Editor mit geöffneter Seitenleiste, markiert sind die Handbuch-Zuweisung und die Klassifizierung; darunter die Metabox „Handbuch-Wartung“.
 
 ## Ergebnis
 
-Die Seite ist unter `/handbook/<seitenname>/` erreichbar und erscheint auf der Einstiegsseite ihres Handbuchs unter „Zuletzt aktualisiert“. Sie zeigt oben die Abzeichen, rechts das Inhaltsverzeichnis und unten die Metadaten-Fußzeile mit dem Prüfstatus.
+Die Seite ist unter `/handbook/<seitenname>/` erreichbar. Auf der Einstiegsseite ihres Handbuchs erscheint sie unter „Zuletzt aktualisiert“. Oben zeigt sie die Abzeichen, rechts das Inhaltsverzeichnis. Unten steht die Metadaten-Fußzeile mit dem Prüfstatus.
 
 ![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.svg)
 
 <details>
 <summary>Stolpersteine: „Meine Seite erscheint nicht“</summary>
 
-Fast immer hat das eine von drei Ursachen: Die Seite hat kein Handbuch zugewiesen, das Handbuch ist für die aktuelle Besucherin nicht sichtbar, oder die Seite ist noch ein Entwurf. Die Prüfreihenfolge und die Lösungen stehen unter [Häufige Fragen](../haeufige-fragen.md).
+Fast immer hat das eine von drei Ursachen: Die Seite hat kein Handbuch zugewiesen. Oder das Handbuch ist für die aktuelle Besucherin nicht sichtbar. Oder die Seite ist noch ein Entwurf. Die Prüfreihenfolge und die Lösungen stehen unter [Häufige Fragen](../haeufige-fragen.md).
 
 </details>
 

@@ -2,7 +2,7 @@
 
 Die meisten Dokumentations-Werkzeuge helfen beim Veröffentlichen. Living Handbook ist um das gebaut, was danach kommt: Seiten richtig halten, wenn sie einmal existieren. Dieser Bereich erklärt den Prüfzyklus, die tägliche Prüfarbeit und das Leser-Feedback.
 
-Dokumentation ohne Pflege wird falsch, und falsche Dokumentation ist schlimmer als keine: Ihr vertraut man, bis es schiefgeht.
+Dokumentation ohne Pflege wird falsch. Und falsche Dokumentation ist schlimmer als keine: Ihr vertraut man, bis es schiefgeht.
 
 | Seite | Was du danach kannst |
 |---|---|

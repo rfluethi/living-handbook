@@ -1,6 +1,6 @@
 # Zugriff
 
-Dieser Bereich regelt die wichtigste Frage eines internen Handbuchs: Wer darf was lesen? Die erste Seite zeigt, wie du die Sichtbarkeit einstellst; die zweite erklärt das Prinzip dahinter, damit dich das Verhalten des Plugins nie überrascht.
+Dieser Bereich regelt die wichtigste Frage eines internen Handbuchs: Wer darf was lesen? Die erste Seite zeigt, wie du die Sichtbarkeit einstellst. Die zweite erklärt das Prinzip dahinter. Damit überrascht dich das Verhalten des Plugins nie.
 
 | Seite | Was du danach weißt |
 |---|---|

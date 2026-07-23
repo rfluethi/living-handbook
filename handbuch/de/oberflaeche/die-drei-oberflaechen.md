@@ -1,6 +1,6 @@
 # Die drei Oberflächen
 
-Diese Seite erklärt die drei Seiten-Arten, aus denen ein Handbuch im Frontend besteht: die Übersicht, die Einstiegsseite und die Einzelseite. Wer sie auseinanderhält, weiß immer, wo eine Anpassung hingehört.
+Ein Handbuch besteht im Frontend aus drei Seiten-Arten: der Übersicht, der Einstiegsseite und der Einzelseite. Diese Seite erklärt alle drei. Wer sie auseinanderhält, weiß immer, wo eine Anpassung hingehört.
 
 ## Worum es geht
 
@@ -21,29 +21,29 @@ graph TD;
 
 ![Schema der Einstiegsseite: Titel, Navigation links, Suchfeld, Bereichs-Kacheln, zuletzt aktualisierte Seiten und die Filterleiste rechts](../assets/einstiegsseite-aufbau.svg)
 
-Die Suche und die Filter (Seitentyp, Thema, Rolle, Zielgruppe) grenzen die Seitenliste ein, ohne die Seite neu zu laden; ohne JavaScript funktionieren sie als gewöhnliches Formular weiter. Die Bereichs-Kacheln sind die Seiten der obersten Ebene, siehe [Seiten ordnen](../erste-schritte/seiten-ordnen.md).
+Die Suche und die Filter grenzen die Seitenliste ein, ohne die Seite neu zu laden. Gefiltert wird nach Seitentyp, Thema, Rolle und Zielgruppe. Ohne JavaScript funktioniert beides als gewöhnliches Formular weiter. Die Bereichs-Kacheln sind die Seiten der obersten Ebene, siehe [Seiten ordnen](../erste-schritte/seiten-ordnen.md).
 
 ## Die Einzelseite
 
 ![Schema der Einzelseite: Navigation links, in der Mitte Abzeichen, Titel, Inhalt, Feedback-Frage und Metadaten-Fußzeile, rechts das Inhaltsverzeichnis](../assets/einzelseite-aufbau.svg)
 
-Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf und markiert beim Lesen den aktuellen Abschnitt; auf schmalen Bildschirmen erscheint es stattdessen über dem Inhalt. Die Metadaten-Fußzeile zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle, samt [Prüfstatus-Abzeichen](../pflege/der-pruefzyklus.md).
+Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Beim Lesen markiert es den aktuellen Abschnitt. Auf schmalen Bildschirmen erscheint es stattdessen über dem Inhalt. Die Metadaten-Fußzeile zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle. Dazu kommt das [Prüfstatus-Abzeichen](../pflege/der-pruefzyklus.md).
 
 ## Woher die Layouts kommen
 
-Einstiegsseite und Einzelseite bringen fertige Block-Templates mit, die alle Blöcke bereits an der richtigen Stelle platzieren. Du kannst sie im Website-Editor unter **Design → Editor → Templates** umbauen: Navigation nach rechts, Inhaltsverzeichnis weg, Inhalt breiter. Die Übersicht ist dagegen eine ganz normale Seite mit dem Übersichts-Block; verschiebe oder ersetze sie nach Belieben.
+Einstiegsseite und Einzelseite bringen fertige Block-Templates mit. Alle Blöcke stehen darin schon an der richtigen Stelle. Du kannst die Templates im Website-Editor umbauen, unter **Design → Editor → Templates**. Beispiele: Navigation nach rechts, Inhaltsverzeichnis weg, Inhalt breiter. Die Übersicht ist dagegen eine ganz normale Seite mit dem Übersichts-Block. Verschiebe oder ersetze sie nach Belieben.
 
 <details>
 <summary>Hinweis: Templates nach einem Plugin-Update</summary>
 
-Sobald du ein Template im Website-Editor speicherst, behält WordPress deine Fassung, auch über Plugin-Updates hinweg. Wirkt ein Template nach einem Update veraltet, öffne es im Website-Editor und wähle **Anpassungen zurücksetzen**; dann gilt wieder die aktuelle Fassung des Plugins.
+Sobald du ein Template im Website-Editor speicherst, behält WordPress deine Fassung. Das gilt auch über Plugin-Updates hinweg. Wirkt ein Template nach einem Update veraltet, öffne es im Website-Editor. Wähle dort **Anpassungen zurücksetzen**. Dann gilt wieder die aktuelle Fassung des Plugins.
 
 </details>
 
 <details>
 <summary>Hintergrund: Alle Blöcke im Detail</summary>
 
-Das Plugin bringt elf eigene Blöcke mit, von der Handbuch-Übersicht bis zum Mermaid-Diagramm. Die meisten rendern nur in ihrem vorgesehenen Zusammenhang; außerhalb davon geben sie nichts aus. Die vollständige Referenz mit allen Einstellungen steht in der [Entwickler-Dokumentation zu den Blöcken](https://github.com/rfluethi/living-handbook/blob/main/docs/blocks.md).
+Das Plugin bringt elf eigene Blöcke mit, von der Handbuch-Übersicht bis zum Mermaid-Diagramm. Die meisten rendern nur in ihrem vorgesehenen Zusammenhang. Außerhalb davon geben sie nichts aus. Die vollständige Referenz mit allen Einstellungen steht in der [Entwickler-Dokumentation zu den Blöcken](https://github.com/rfluethi/living-handbook/blob/main/docs/blocks.md).
 
 </details>
 

@@ -1,6 +1,6 @@
 # Oberfläche
 
-Dieser Bereich erklärt, was deine Leserinnen und Leser sehen: die drei Seiten-Arten eines Handbuchs im Frontend, wie die Handbücher in die Navigation deines Themes kommen und wie du die Farben an deine Website anpasst.
+Dieser Bereich erklärt, was deine Leserinnen und Leser sehen. Er zeigt die drei Seiten-Arten eines Handbuchs im Frontend. Er zeigt auch, wie die Handbücher in die Navigation deines Themes kommen und wie du die Farben anpasst.
 
 | Seite | Was du danach kannst |
 |---|---|

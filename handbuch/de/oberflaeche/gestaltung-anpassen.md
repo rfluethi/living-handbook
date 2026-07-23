@@ -1,18 +1,18 @@
 # Gestaltung anpassen
 
-Die Handbuch-Seiten übernehmen Schrift und Abstände von deinem Theme und passen sich dessen Farben an. Diese Anleitung zeigt, wie du die Farben gezielt änderst, ohne das Plugin anzufassen.
+Die Handbuch-Seiten übernehmen Schrift und Abstände von deinem Theme. Auch die Farben passen sich an. Diese Anleitung zeigt, wie du die Farben gezielt änderst, ohne das Plugin anzufassen.
 
 <details>
 <summary>Konzept: CSS-Variablen statt Plugin-Änderungen</summary>
 
-Alle Oberflächen des Plugins beziehen ihre Farben aus CSS-Variablen mit dem Präfix `--lh-`. Fläche, Text und Akzentfarbe folgen standardmäßig den Farb-Voreinstellungen deines Themes; ein dunkles Theme macht Karten, Navigation und Inhaltsverzeichnis automatisch dunkel. Wer eigene Werte setzt, übersteuert diese Automatik, und ein Plugin-Update überschreibt nichts davon.
+Alle Oberflächen des Plugins beziehen ihre Farben aus CSS-Variablen mit dem Präfix `--lh-`. Fläche, Text und Akzentfarbe folgen den Farb-Voreinstellungen deines Themes. Ein dunkles Theme macht Karten, Navigation und Inhaltsverzeichnis automatisch dunkel. Setzt du eigene Werte, übersteuerst du diese Automatik. Ein Plugin-Update überschreibt nichts davon.
 
 </details>
 
 ## Schritte
 
-1. Öffne **Handbuch → Einstellungen** und suche das Feld **Eigenes CSS**. Es wirkt nur auf den Handbuch-Seiten und wird mit dem Plugin wieder entfernt.
-2. Trage die Variablen ein, die du ändern willst, zum Beispiel die Akzentfarbe:
+1. Öffne **Handbuch → Einstellungen** und suche das Feld **Eigenes CSS**. Es wirkt nur auf den Handbuch-Seiten. Beim Löschen des Plugins wird es mit entfernt.
+2. Trage die Variablen ein, die du ändern willst. Ein Beispiel mit Akzentfarbe und Kopfzeilen-Abstand:
 
    ```css
    .living-handbook-overview,
@@ -45,16 +45,16 @@ Alle Handbuch-Oberflächen verwenden die neuen Werte einheitlich: Karten, Naviga
 <details>
 <summary>Stolpersteine: Was du beim Umfärben beachten solltest</summary>
 
-* **Halte die drei Prüfstatus-Farben unterscheidbar**, am besten nicht nur über den Farbton. Die Formen (Kreis, abgerundetes Quadrat, Raute) helfen zusätzlich, verlass dich aber nicht allein darauf.
-* **Prüfe den Kontrast**, wenn du Grautöne aufhellst; die Voreinstellungen erfüllen die Anforderungen der Barrierefreiheit (WCAG AA).
-* **Entferne die Fokus-Ringe nicht.** Sie machen die Bedienung per Tastatur sichtbar; wer sie umgestaltet, sollte einen klar sichtbaren Ersatz behalten.
+* **Halte die drei Prüfstatus-Farben unterscheidbar**, am besten nicht nur über den Farbton. Die Formen (Kreis, abgerundetes Quadrat, Raute) helfen zusätzlich. Verlass dich aber nicht allein darauf.
+* **Prüfe den Kontrast, wenn du Grautöne aufhellst.** Die Voreinstellungen erfüllen die Anforderungen der Barrierefreiheit (WCAG AA).
+* **Entferne die Fokus-Ringe nicht.** Sie machen die Bedienung per Tastatur sichtbar. Wer sie umgestaltet, sollte einen klar sichtbaren Ersatz behalten.
 
 </details>
 
 <details>
 <summary>Hintergrund: Alle Variablen und Klassennamen</summary>
 
-Jeder Block bietet unter **Erweitert** zusätzlich eine eigene CSS-Klasse und einen HTML-Anker, um einzelne Instanzen zu stylen oder zu verlinken. Die vollständige Referenz aller `--lh-`-Variablen und stabilen Klassennamen steht in der [Entwickler-Dokumentation zur Gestaltung](https://github.com/rfluethi/living-handbook/blob/main/docs/customization.md).
+Jeder Block bietet unter **Erweitert** zusätzlich eine eigene CSS-Klasse und einen HTML-Anker. Damit stylst oder verlinkst du einzelne Instanzen. Die vollständige Referenz aller `--lh-`-Variablen und stabilen Klassennamen steht in der [Entwickler-Dokumentation zur Gestaltung](https://github.com/rfluethi/living-handbook/blob/main/docs/customization.md).
 
 </details>
 

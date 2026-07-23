@@ -14,7 +14,7 @@ Diese Anleitung zeigt die praktische Prüfarbeit: einzelne Seiten bestätigen, m
 
 1. Öffne die Seite im Editor.
 2. Lies sie mit der Frage: Würde ich das heute noch genauso schreiben?
-3. Stimmt der Inhalt noch, setze in der Metabox **Handbuch-Wartung** unten im Editor das Prüfdatum auf heute. Stimmt er nicht mehr, korrigiere zuerst den Inhalt.
+3. Stimmt der Inhalt noch? Dann setze in der Metabox **Handbuch-Wartung** das Prüfdatum auf heute. Stimmt er nicht mehr? Dann korrigiere zuerst den Inhalt.
 4. Aktualisiere die Seite.
 
 ## Mehrere Seiten schnell prüfen
@@ -31,15 +31,15 @@ Für den häufigen Fall „gelesen, stimmt noch“ musst du die Seite gar nicht 
 
 Drei Werkzeuge führen dich zu den Seiten, die Aufmerksamkeit brauchen:
 
-* **Das Dashboard-Widget** listet alle Seiten, deren Prüfung fällig oder überfällig ist. Es ist die Einstiegsfläche für die Prüfarbeit: von oben nach unten durchgehen, prüfen, Datum zurücksetzen.
-* **Der Status-Filter über der Seitenliste** zieht mit einem Klick alles Fällige, Überfällige oder noch nie Geprüfte heraus. Daneben filtern Auswahllisten nach Handbuch, Seitentyp, Thema, Rolle, Zielgruppe und Quelle.
-* **Die Spalte „Geprüft“** lässt sich sortieren; die ältesten Prüfungen zuerst ist die nützliche Richtung.
+* **Das Dashboard-Widget** listet alle Seiten mit fälliger oder überfälliger Prüfung. Es ist die Einstiegsfläche für die Prüfarbeit: von oben nach unten durchgehen, prüfen, Datum zurücksetzen.
+* **Der Status-Filter über der Seitenliste** zieht mit einem Klick alles Fällige, Überfällige oder noch nie Geprüfte heraus. Daneben gibt es Auswahllisten. Sie filtern nach Handbuch, Seitentyp, Thema, Rolle, Zielgruppe und Quelle.
+* **Die Spalte „Geprüft“** lässt sich sortieren. Die nützliche Richtung: älteste Prüfungen zuerst.
 
-Zwei Warnhinweise können zusätzlich über der Liste erscheinen: Seiten ohne Handbuch (die im Frontend unsichtbar bleiben) und GitHub-Seiten, deren letzter Abgleich fehlschlug. Beide verlinken die betroffenen Seiten direkt.
+Über der Liste können zwei Warnhinweise erscheinen. Der eine nennt Seiten ohne Handbuch, die im Frontend unsichtbar bleiben. Der andere nennt GitHub-Seiten, deren letzter Abgleich fehlschlug. Beide verlinken die betroffenen Seiten direkt.
 
 ## Ergebnis
 
-Alle Seiten tragen ein aktuelles Prüfdatum, das Dashboard-Widget ist leer, und die Abzeichen im Frontend zeigen „Geprüft“. Deine Leserinnen und Leser sehen damit auf jeder Seite, dass jemand hinschaut.
+Alle Seiten tragen ein aktuelles Prüfdatum. Das Dashboard-Widget ist leer. Die Abzeichen im Frontend zeigen „Geprüft“. Deine Leserinnen und Leser sehen damit auf jeder Seite: Hier schaut jemand hin.
 
 ## Verwandte Seiten
 

@@ -1,6 +1,6 @@
 # Inhalte
 
-Dieser Bereich erklärt, wie Inhalte in dein Handbuch kommen und wie sie dort bleiben, wo sie hingehören. Es gibt zwei Wege: Du schreibst direkt in WordPress, oder du bringst Markdown-Dateien mit, per Import oder dauerhaft synchronisiert von GitHub.
+Dieser Bereich erklärt, wie Inhalte in dein Handbuch kommen. Es gibt zwei Wege: Du schreibst direkt in WordPress. Oder du bringst Markdown-Dateien mit, per Import oder dauerhaft synchronisiert von GitHub.
 
 ```mermaid
 graph LR;
@@ -23,7 +23,7 @@ graph LR;
 | [Inhalte schreiben](inhalte-schreiben.md) | Immer: was in Handbuch-Seiten gehört und welches Markdown den Import übersteht. |
 | [Markdown importieren](markdown-importieren.md) | Du hast bestehende Markdown-Dateien und willst sie als Seiten übernehmen. |
 | [GitHub-Synchronisation](github-synchronisation.md) | Seiten sollen dauerhaft aus einem GitHub-Repository gepflegt werden. |
-| [Handbuch umziehen](handbuch-umziehen.md) | Ein Handbuch soll auf eine andere Website, als Export-Paket. |
+| [Handbuch umziehen](handbuch-umziehen.md) | Ein Handbuch soll als Export-Paket auf eine andere Website. |
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht

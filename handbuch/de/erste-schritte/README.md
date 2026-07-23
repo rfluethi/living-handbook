@@ -1,6 +1,6 @@
 # Erste Schritte
 
-Dieser Bereich führt dich in vier Schritten von der Installation bis zu einem Handbuch, das Besucherinnen und Besucher wirklich sehen können. Gehe die Seiten der Reihe nach durch; jede baut auf der vorherigen auf.
+Dieser Bereich führt dich in vier Schritten zum ersten sichtbaren Handbuch. Gehe die Seiten der Reihe nach durch. Jede baut auf der vorherigen auf.
 
 ```mermaid
 graph LR;
@@ -15,11 +15,12 @@ graph LR;
 | [Erstes Handbuch anlegen](erstes-handbuch-anlegen.md) | Ein Handbuch als Behälter für deine Seiten, mit passender Sichtbarkeit. |
 | [Erste Seite anlegen](erste-seite-anlegen.md) | Eine veröffentlichte Seite, die im Frontend erscheint. |
 | [Seiten ordnen](seiten-ordnen.md) | Eine Navigation, die deine Struktur abbildet. |
+| [App-Handbuch laden](app-handbuch-laden.md) | Optional: dieses Handbuch als Anleitung und Beispiel in deiner Installation. |
 
 <details>
 <summary>Hinweis: Wenn du es zuerst nur ansehen willst</summary>
 
-Du musst nicht bei null anfangen, um das Plugin kennenzulernen. Lade dieses Handbuch selbst in deine Installation: **Handbuch → Import**, Reiter **App-Handbuch**, **App-Handbuch laden**. Dann siehst du ein fertiges, gefülltes Handbuch und kannst darin herumklicken, bevor du dein eigenes baust. Details dazu stehen unter [Markdown importieren](../inhalte/markdown-importieren.md).
+Du musst nicht bei null anfangen. Lade dieses Handbuch mit einem Klick in deine Installation: [App-Handbuch laden](app-handbuch-laden.md). Dann siehst du ein fertiges, gefülltes Handbuch. Darin kannst du herumklicken, bevor du dein eigenes baust.
 
 </details>
 
