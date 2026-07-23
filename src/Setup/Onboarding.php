@@ -29,10 +29,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * what to do next, and the page list warns about pages that are invisible
  * because they have no handbook.
  *
- * No content is created beyond that one structural page. The plugin does ship an
- * app handbook, but it is only loaded when someone asks for it on the import
- * screen; content that appears by itself is content the site owner did not ask
- * for. A handbook with real pages is imported from Markdown, GitHub or a bundle.
+ * No content is created beyond that one structural page. The notice does point
+ * at the app handbook, which is the documentation of the app kept on GitHub, but
+ * loading it is a choice the site owner makes: content that appears by itself is
+ * content nobody asked for. A handbook with real pages is imported from Markdown,
+ * GitHub or a bundle.
  */
 final class Onboarding {
 
@@ -199,11 +200,11 @@ final class Onboarding {
 		// The app handbook comes first on purpose. An empty install cannot show
 		// what a page type, a filter or a freshness badge is for, so the fastest
 		// honest answer to "what does this plugin do" is a filled handbook.
-		if ( AppHandbook::can_load() && '' !== AppHandbook::file() ) {
+		if ( AppHandbook::can_load() ) {
 			printf(
 				'<p><strong>%1$s</strong> %2$s</p><p><a href="%3$s" class="button button-primary">%4$s</a></p>',
 				esc_html__( 'Start here:', 'living-handbook' ),
-				esc_html__( 'the plugin brings its own handbook along. It explains how a Living Handbook is built and is itself an example of one, with nine pages, several page types, filled filters and pages in every review state. Load it, take it apart, delete it when you have seen enough.', 'living-handbook' ),
+				esc_html__( 'the plugin comes with a handbook of its own, the documentation of the app, written as a Living Handbook. Load it from the import screen and read it as a first example of what a handbook looks like.', 'living-handbook' ),
 				esc_url(
 					add_query_arg(
 						array(

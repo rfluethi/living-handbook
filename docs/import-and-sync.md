@@ -15,7 +15,7 @@ The sources are:
    - a folder, a `github.com/.../tree/...` URL. Every `.md` file under that folder is imported, subfolders included, and the folder structure becomes the page hierarchy (see below).
 
 4. **Bundle**: upload a bundle exported from another site running the plugin (see below). Needs the content-manager role.
-5. **App handbook**: load the handbook the plugin brings along. Needs the content-manager role.
+5. **App handbook**: pull the app's own handbook from GitHub in one click (see below). Needs edit rights.
 
 Pages that land without a handbook are invisible on the front end, because access is fail-closed.
 
@@ -74,16 +74,15 @@ Importing needs the content-manager role. A bundle is a file from another site, 
 
 ## The app handbook
 
-The plugin ships its own handbook: nine pages in three areas that document how a Living Handbook is built. It is written as a working handbook, so it is at the same time an example, with several page types, filled vocabularies and pages in every review state. It is meant to be taken apart.
+The plugin comes with a handbook of its own: the documentation of the app, written as a Living Handbook so it doubles as a first example of one. It is not shipped inside the plugin. It is written and maintained in a public GitHub repository, and the **App handbook** tab loads the current state straight from there.
 
-It is an ordinary bundle without the ZIP wrapper, so it goes through the same import path as any other bundle. Images ship alongside it and are sideloaded into the media library on load, recognised again by a content hash so a second load does not duplicate them; they do stay in the media library when the handbook is deleted. Two things are handled by the loader rather than by the file:
+Behind the tab is nothing new: it is the ordinary GitHub folder import (see above) against a fixed URL, and the folder is chosen by the admin language. So the handbook has one source, is visible and editable where it is written, and every load pulls the current state rather than a copy frozen at some release. Its pages are GitHub-sourced, so a later change in the repository reaches the site on the next load, and images in the repository come along.
 
-- **Vocabulary terms are referenced by token, not by slug.** The seeded terms are translated when they are created, so their slugs depend on the site language. A file with fixed English slugs would create a second set of terms on a German site; a token is resolved against the term that is actually there.
-- **Review dates are stored as an age in days, not as a date.** A fixed date would make every page overdue a year after release, which is the wrong first impression of a feature whose whole point is staying current.
+Because it is a GitHub import, the same thing applies as to any GitHub-sourced page: the content is stored as sanitised HTML, so the plugin's own blocks (the entry list, the feedback prompt, the badges) cannot travel this way; they are described in the text, not embedded. Mermaid diagrams do travel.
 
-It is loaded only on request, never on activation, and always with the rule "skip existing pages", so a second load never overwrites an edit. How its content is written and where its parts live is in [writing the app handbook](app-handbook.md).
+**Load into** picks the handbook the pages belong to. Create one first, for example "App handbook", and set who may read it there.
 
-**Load into** decides where the pages land. By default they go into a handbook of their own with visibility **members**, which keeps them apart from your content and makes them easy to delete again. Pick an existing handbook to put them there instead; that handbook keeps its own access configuration, so if it is public, the pages are public. Delete the pages and then the handbook to remove the whole thing.
+The URL defaults to this plugin's own documentation repository. A fork with its own documentation points the tab elsewhere through the `living_handbook_app_handbook_url` filter (see [hooks](hooks.md)); returning an empty string hides the tab and the setup hint, so there is never a button leading nowhere.
 
 ## Transport metadata
 

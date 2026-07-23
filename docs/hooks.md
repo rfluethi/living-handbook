@@ -106,6 +106,30 @@ add_filter(
 );
 ```
 
+### `living_handbook_app_handbook_url`
+
+Filters the GitHub folder URL the **App handbook** tab loads from. The default points at this plugin's own documentation repository, chosen by the admin language. A fork with its own documentation uses this filter to point the tab at its repository, without editing the plugin. Return an empty string to hide the tab and the setup hint entirely.
+
+Parameters:
+
+- `string $default` The default tree URL for the current admin language.
+- `string $locale` The current admin locale.
+
+Return a `github.com/.../tree/<branch>/<path>` URL, or `''`. Example, point it at your own handbook:
+
+```php
+add_filter(
+	'living_handbook_app_handbook_url',
+	function ( string $default, string $locale ): string {
+		return 0 === strpos( $locale, 'fr' )
+			? 'https://github.com/me/my-docs/tree/main/handbook/fr'
+			: 'https://github.com/me/my-docs/tree/main/handbook/en';
+	},
+	10,
+	2
+);
+```
+
 _Planned: filters for the navigation markup, the metadata output and the freshness evaluation._
 
 ## Actions

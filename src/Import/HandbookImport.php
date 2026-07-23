@@ -164,13 +164,10 @@ final class HandbookImport {
 	/**
 	 * Store the report and return to the import screen.
 	 *
-	 * Public because the app handbook is loaded by its own action but lands
-	 * on the same screen and reports the same way.
-	 *
 	 * @param array<string, mixed> $report Result report.
 	 * @return void
 	 */
-	public function finish( array $report ): void {
+	private function finish( array $report ): void {
 		set_transient( self::NOTICE_TRANSIENT . get_current_user_id(), $report, 120 );
 		wp_safe_redirect(
 			add_query_arg(

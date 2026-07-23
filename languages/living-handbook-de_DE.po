@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-22T19:34:11+00:00\n"
+"POT-Creation-Date: 2026-07-23T09:17:42+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -425,13 +425,13 @@ msgstr[1] ""
 "Living Handbook: %d GitHub-Seiten konnten nicht synchronisiert werden. Öffne "
 "sie, um den Fehler zu sehen."
 
-#: src/Git/GitSync.php:1012 src/Setup/Onboarding.php:320
+#: src/Git/GitSync.php:1012 src/Setup/Onboarding.php:321
 msgid "(no title)"
 msgstr "(ohne Titel)"
 
 #. translators: %d: number of further failed pages not listed.
 #. translators: %d: number of further affected pages not listed.
-#: src/Git/GitSync.php:1022 src/Setup/Onboarding.php:333
+#: src/Git/GitSync.php:1022 src/Setup/Onboarding.php:334
 #, php-format
 msgid "… and %d more."
 msgstr "… und %d weitere."
@@ -511,8 +511,7 @@ msgstr "Zugriff"
 msgid "Public"
 msgstr "Öffentlich"
 
-#: src/Handbook/HandbookAdmin.php:166 src/Import/AppHandbook.php:190
-#: src/Setup/Seeder.php:49
+#: src/Handbook/HandbookAdmin.php:166 src/Setup/Seeder.php:49
 msgid "All members"
 msgstr "Alle Mitglieder"
 
@@ -543,79 +542,9 @@ msgstr "Beschränkt (Rollen und/oder Personen)"
 # Post type and taxonomies
 #: src/Handbook/Handbooks.php:75 src/Import/HandbookExport.php:114
 #: src/PostType/Handbook.php:73 src/PostType/Handbook.php:75
-#: src/Setup/Onboarding.php:99
+#: src/Setup/Onboarding.php:100
 msgid "Handbook"
 msgstr "Handbuch"
-
-# Seeded vocabulary
-#: src/Import/AppHandbook.php:181 src/Setup/Seeder.php:36
-msgid "Guide"
-msgstr "Anleitung"
-
-#: src/Import/AppHandbook.php:182 src/Setup/Seeder.php:37
-msgid "Process description"
-msgstr "Prozessbeschreibung"
-
-#: src/Import/AppHandbook.php:183 src/Setup/Seeder.php:38
-msgid "Tool overview"
-msgstr "Tool-Übersicht"
-
-#: src/Import/AppHandbook.php:184 src/Setup/Seeder.php:39
-msgid "Role / Organisation"
-msgstr "Rolle / Organisation"
-
-#: src/Import/AppHandbook.php:185 src/Setup/Seeder.php:40
-msgid "Background / Concept"
-msgstr "Hintergrund / Konzept"
-
-#: src/Import/AppHandbook.php:186 src/Setup/Seeder.php:41
-msgid "FAQ"
-msgstr "FAQ"
-
-#: src/Import/AppHandbook.php:187 src/Setup/Seeder.php:42
-msgid "Area overview"
-msgstr "Bereichs-Übersicht"
-
-#: src/Import/AppHandbook.php:191 src/Setup/Seeder.php:50
-msgid "Content creators"
-msgstr "Inhalts-Erstellende"
-
-#: src/Import/AppHandbook.php:192 src/Setup/Seeder.php:51
-msgid "Coordination"
-msgstr "Koordination"
-
-#: src/Import/AppHandbook.php:193 src/Setup/Seeder.php:52
-msgid "Tech"
-msgstr "Technik"
-
-#: src/Import/AppHandbook.php:196 src/Setup/Seeder.php:59
-msgid "Handbook editors"
-msgstr "Handbuch-Redaktion"
-
-#: src/Import/AppHandbook.php:197 src/Setup/Seeder.php:60
-msgid "GitHub specialist"
-msgstr "GitHub-Spezialist"
-
-#: src/Import/AppHandbook.php:200
-msgid "Documentation"
-msgstr "Dokumentation"
-
-#: src/Import/AppHandbook.php:201 src/Import/MarkdownImportPage.php:89
-#: src/Import/MarkdownImportPage.php:822 src/Import/MarkdownImportPage.php:838
-msgid "Import"
-msgstr "Import"
-
-#: src/Import/AppHandbook.php:202
-msgid "Quality"
-msgstr "Qualität"
-
-#: src/Import/AppHandbook.php:306
-msgid "You are not allowed to import content."
-msgstr "Du darfst keine Inhalte importieren."
-
-#: src/Import/AppHandbook.php:314
-msgid "The app handbook could not be read."
-msgstr "Das App-Handbuch konnte nicht gelesen werden."
 
 #: src/Import/HandbookExport.php:77
 msgid "Export handbooks"
@@ -640,7 +569,7 @@ msgstr ""
 msgid "There are no handbooks yet, so there is nothing to export."
 msgstr "Es gibt noch keine Handbücher, also nichts zu exportieren."
 
-#: src/Import/HandbookExport.php:117 src/Import/MarkdownImportPage.php:789
+#: src/Import/HandbookExport.php:117 src/Import/MarkdownImportPage.php:790
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
@@ -717,11 +646,11 @@ msgstr "Das Bündel enthält keine manifest.json."
 msgid "This file is not a Living Handbook bundle."
 msgstr "Diese Datei ist kein Living-Handbook-Bündel."
 
-#: src/Import/HandbookImport.php:229
+#: src/Import/HandbookImport.php:226
 msgid "The bundle names no handbook."
 msgstr "Das Bündel nennt kein Handbuch."
 
-#: src/Import/HandbookImport.php:276
+#: src/Import/HandbookImport.php:273
 msgid ""
 "The pages went into the handbook you chose; its access configuration was "
 "left unchanged."
@@ -729,14 +658,14 @@ msgstr ""
 "Die Seiten gingen in das von dir gewählte Handbuch; dessen Zugriffs-"
 "Konfiguration blieb unverändert."
 
-#: src/Import/HandbookImport.php:290
+#: src/Import/HandbookImport.php:287
 msgid ""
 "An existing handbook was reused; its access configuration was left unchanged."
 msgstr ""
 "Ein vorhandenes Handbuch wurde wiederverwendet; seine Zugriffs-Konfiguration "
 "blieb unverändert."
 
-#: src/Import/HandbookImport.php:301
+#: src/Import/HandbookImport.php:298
 msgid ""
 "The handbook was created with visibility \"members\". Raise it by hand if "
 "the content really should be public."
@@ -744,14 +673,14 @@ msgstr ""
 "Das Handbuch wurde mit der Sichtbarkeit „Mitglieder“ angelegt. Stelle sie "
 "von Hand höher, wenn der Inhalt wirklich öffentlich sein soll."
 
-#: src/Import/HandbookImport.php:319
+#: src/Import/HandbookImport.php:316
 msgid ""
 "The bundle carried a list of individually allowed users. It was not applied; "
 "set the people by hand if the handbook should be restricted."
 msgstr ""
 
 #. translators: 1: created count, 2: updated count, 3: skipped count, 4: protected count.
-#: src/Import/HandbookImport.php:621
+#: src/Import/HandbookImport.php:618
 #, php-format
 msgid ""
 "Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected."
@@ -763,6 +692,11 @@ msgstr ""
 #: src/Import/MarkdownImportPage.php:88
 msgid "Markdown import"
 msgstr "Markdown-Import"
+
+#: src/Import/MarkdownImportPage.php:89 src/Import/MarkdownImportPage.php:823
+#: src/Import/MarkdownImportPage.php:838
+msgid "Import"
+msgstr "Import"
 
 #: src/Import/MarkdownImportPage.php:113
 msgid "How the import works"
@@ -834,11 +768,11 @@ msgstr "Seite konnte nicht erstellt werden. Prüfe die URL."
 msgid "Imported page"
 msgstr "Importierte Seite"
 
-#: src/Import/MarkdownImportPage.php:786
+#: src/Import/MarkdownImportPage.php:787
 msgid "Target handbook"
 msgstr "Ziel-Handbuch"
 
-#: src/Import/MarkdownImportPage.php:796
+#: src/Import/MarkdownImportPage.php:797
 msgid ""
 "Applied to the imported page(s). A \"Handbuch\" line in the transport block "
 "overrides it."
@@ -846,20 +780,20 @@ msgstr ""
 "Gilt für die importierte(n) Seite(n). Eine «Handbuch»-Zeile im Transport-"
 "Block hat Vorrang."
 
-#: src/Import/MarkdownImportPage.php:798
+#: src/Import/MarkdownImportPage.php:799
 msgid "No handbooks yet. Create one first under Handbook, Handbooks."
 msgstr ""
 "Noch keine Handbücher. Lege zuerst eines unter Handbuch, Handbücher an."
 
-#: src/Import/MarkdownImportPage.php:804
+#: src/Import/MarkdownImportPage.php:805
 msgid "Page title (optional)"
 msgstr "Seitentitel (optional)"
 
-#: src/Import/MarkdownImportPage.php:807
+#: src/Import/MarkdownImportPage.php:808
 msgid "If empty, the first heading of the document is used."
 msgstr "Wenn leer, wird die erste Überschrift des Dokuments verwendet."
 
-#: src/Import/MarkdownImportPage.php:823
+#: src/Import/MarkdownImportPage.php:824
 msgid ""
 "The Markdown library is missing. Run in the plugin folder: composer require "
 "league/commonmark"
@@ -972,73 +906,44 @@ msgstr "Bündel importieren"
 
 #: src/Import/MarkdownImportPage.php:931
 msgid ""
-"The plugin's own handbook: it explains how a Living Handbook is put "
-"together, and it is written as a working handbook, so it is at the same time "
-"an example. Nine pages in three areas, with several page types, filled "
-"vocabularies and pages in every review state."
+"The plugin brings a handbook of its own: the documentation of the app, "
+"written as a Living Handbook. It is maintained on GitHub, so this loads the "
+"current state straight from there, with its pages, structure and images."
 msgstr ""
-"Das Handbuch des Plugins selbst: es erklärt, wie ein Living Handbook "
-"aufgebaut ist, und ist als richtiges Handbuch geschrieben, also zugleich ein "
-"Beispiel. Neun Seiten in drei Bereichen, mit mehreren Seitentypen, gefüllten "
-"Vokabularen und Seiten in jedem Prüfzustand."
+"Das Plugin bringt ein eigenes Handbuch mit: die Dokumentation der App, "
+"geschrieben als Living Handbook. Es wird auf GitHub gepflegt, dies lädt also "
+"den aktuellen Stand direkt von dort, mit seinen Seiten, seiner Struktur und "
+"seinen Bildern."
 
 #: src/Import/MarkdownImportPage.php:932
 msgid ""
-"Loading it never overwrites anything and never deletes anything. To get rid "
-"of it again, delete its pages and then the handbook; nothing else depends on "
-"it."
+"It is a normal GitHub folder import: the pages are pulled from the "
+"repository and kept in sync with it, so later changes on GitHub reach your "
+"site on the next load. Nothing is deleted."
 msgstr ""
-"Das Laden überschreibt nie etwas und löscht nie etwas. Um es wieder "
-"loszuwerden, lösche seine Seiten und danach das Handbuch; nichts anderes "
-"hängt daran."
+"Es ist ein gewöhnlicher GitHub-Ordner-Import: die Seiten werden aus dem "
+"Repository geholt und mit ihm abgeglichen, spätere Änderungen auf GitHub "
+"erreichen deine Seite also beim nächsten Laden. Es wird nichts gelöscht."
 
-#: src/Import/MarkdownImportPage.php:944
-msgid "The app handbook is already there."
-msgstr "Das App-Handbuch ist bereits vorhanden."
-
-#: src/Import/MarkdownImportPage.php:945
-msgid "Show its pages"
-msgstr "Seiten anzeigen"
-
-#: src/Import/MarkdownImportPage.php:947
-msgid ""
-"You can load it again: existing pages are never overwritten, so only pages "
-"you deleted come back."
-msgstr ""
-"Du kannst es erneut laden: vorhandene Seiten werden nie überschrieben, es "
-"kommen also nur gelöschte Seiten zurück."
-
-#: src/Import/MarkdownImportPage.php:949
-msgid ""
-"Recommended on a fresh install: it is the fastest way to see what the page "
-"type, the filters and the freshness badges actually do."
-msgstr ""
-"Auf einer frischen Installation empfohlen: das ist der schnellste Weg zu "
-"sehen, was Seitentyp, Filter und Aktualitäts-Abzeichen wirklich tun."
-
-#: src/Import/MarkdownImportPage.php:956
+#: src/Import/MarkdownImportPage.php:935
 msgid "Load into"
 msgstr "Laden in"
 
-#: src/Import/MarkdownImportPage.php:959
-msgid "— a handbook of its own —"
-msgstr "— ein eigenes Handbuch —"
+#: src/Import/MarkdownImportPage.php:938
+msgid "— no handbook (assign later) —"
+msgstr "— kein Handbuch (später zuweisen) —"
 
-#: src/Import/MarkdownImportPage.php:966
+#: src/Import/MarkdownImportPage.php:945
 msgid ""
-"By default the pages go into a separate handbook with visibility "
-"\"members\", which keeps them apart from your own content and makes them "
-"easy to delete again. Pick an existing handbook to put them there instead; "
-"that handbook keeps its own access configuration, so check afterwards "
-"whether it is public."
+"Pick the handbook the pages should belong to. Create one first (for example "
+"\"App handbook\") if you want them in their own, and set who may read it "
+"there."
 msgstr ""
-"Standardmässig gehen die Seiten in ein eigenes Handbuch mit der Sichtbarkeit "
-"\"Mitglieder\". Das hält sie von deinen eigenen Inhalten getrennt und macht "
-"sie leicht wieder löschbar. Wähle ein bestehendes Handbuch, um sie "
-"stattdessen dort abzulegen; dieses Handbuch behält seine eigene "
-"Zugriffskonfiguration, prüfe also anschliessend, ob es öffentlich ist."
+"Wähle das Handbuch, zu dem die Seiten gehören sollen. Lege zuerst eines an "
+"(zum Beispiel \"App-Handbuch\"), wenn du sie in einem eigenen willst, und "
+"stelle dort ein, wer es lesen darf."
 
-#: src/Import/MarkdownImportPage.php:970
+#: src/Import/MarkdownImportPage.php:949
 msgid "Load app handbook"
 msgstr "App-Handbuch laden"
 
@@ -1108,31 +1013,29 @@ msgid "Search handbook pages"
 msgstr "Handbuch-Seiten durchsuchen"
 
 # First-run setup (Onboarding). Source strings live in src/Setup/Onboarding.php.
-#: src/Setup/Onboarding.php:196
+#: src/Setup/Onboarding.php:197
 msgid "Living Handbook is ready."
 msgstr "Living Handbook ist bereit."
 
-#: src/Setup/Onboarding.php:205
+#: src/Setup/Onboarding.php:206
 msgid "Start here:"
 msgstr "Fang hier an:"
 
-#: src/Setup/Onboarding.php:206
+#: src/Setup/Onboarding.php:207
 msgid ""
-"the plugin brings its own handbook along. It explains how a Living Handbook "
-"is built and is itself an example of one, with nine pages, several page "
-"types, filled filters and pages in every review state. Load it, take it "
-"apart, delete it when you have seen enough."
+"the plugin comes with a handbook of its own, the documentation of the app, "
+"written as a Living Handbook. Load it from the import screen and read it as "
+"a first example of what a handbook looks like."
 msgstr ""
-"das Plugin bringt sein eigenes Handbuch mit. Es erklärt, wie ein Living "
-"Handbook aufgebaut ist, und ist selbst eines, mit neun Seiten, mehreren "
-"Seitentypen, gefüllten Filtern und Seiten in jedem Prüfzustand. Lade es, "
-"nimm es auseinander, lösche es, wenn du genug gesehen hast."
+"das Plugin bringt ein eigenes Handbuch mit, die Dokumentation der App, "
+"geschrieben als Living Handbook. Lade es von der Import-Seite und lies es "
+"als erstes Beispiel dafür, wie ein Handbuch aussieht."
 
-#: src/Setup/Onboarding.php:216
+#: src/Setup/Onboarding.php:217
 msgid "Load the app handbook"
 msgstr "App-Handbuch laden"
 
-#: src/Setup/Onboarding.php:223
+#: src/Setup/Onboarding.php:224
 msgid ""
 "Your handbook overview was created as a normal page, so you can style and "
 "move it like any other:"
@@ -1140,7 +1043,7 @@ msgstr ""
 "Deine Handbuch-Übersicht wurde als normale Seite angelegt, du kannst sie "
 "also wie jede andere gestalten und verschieben:"
 
-#: src/Setup/Onboarding.php:231
+#: src/Setup/Onboarding.php:232
 msgid ""
 "For your own content: create a handbook under Handbook, Handbook types, and "
 "set who may read it. Then assign your pages to that handbook."
@@ -1149,7 +1052,7 @@ msgstr ""
 "an und stelle ein, wer es lesen darf. Weise anschliessend deine Seiten "
 "diesem Handbuch zu."
 
-#: src/Setup/Onboarding.php:232
+#: src/Setup/Onboarding.php:233
 msgid ""
 "A page without a handbook stays invisible on the front end. That is on "
 "purpose: access is granted per handbook, so a page that belongs to none "
@@ -1159,12 +1062,12 @@ msgstr ""
 "Zugriff wird pro Handbuch vergeben, eine Seite ohne Handbuch gehört also "
 "niemandem."
 
-#: src/Setup/Onboarding.php:238
+#: src/Setup/Onboarding.php:239
 msgid "Create a handbook"
 msgstr "Handbuch anlegen"
 
 #. translators: %d: number of handbook pages without a handbook.
-#: src/Setup/Onboarding.php:281
+#: src/Setup/Onboarding.php:282
 #, php-format
 msgid ""
 "%d handbook page is not assigned to a handbook, so it stays invisible on the "
@@ -1178,6 +1081,55 @@ msgstr[0] ""
 msgstr[1] ""
 "%d Handbuch-Seiten sind keinem Handbuch zugeordnet und bleiben deshalb im "
 "Frontend unsichtbar. Öffne sie und wähle in der Seitenleiste ein Handbuch."
+
+# Seeded vocabulary
+#: src/Setup/Seeder.php:36
+msgid "Guide"
+msgstr "Anleitung"
+
+#: src/Setup/Seeder.php:37
+msgid "Process description"
+msgstr "Prozessbeschreibung"
+
+#: src/Setup/Seeder.php:38
+msgid "Tool overview"
+msgstr "Tool-Übersicht"
+
+#: src/Setup/Seeder.php:39
+msgid "Role / Organisation"
+msgstr "Rolle / Organisation"
+
+#: src/Setup/Seeder.php:40
+msgid "Background / Concept"
+msgstr "Hintergrund / Konzept"
+
+#: src/Setup/Seeder.php:41
+msgid "FAQ"
+msgstr "FAQ"
+
+#: src/Setup/Seeder.php:42
+msgid "Area overview"
+msgstr "Bereichs-Übersicht"
+
+#: src/Setup/Seeder.php:50
+msgid "Content creators"
+msgstr "Inhalts-Erstellende"
+
+#: src/Setup/Seeder.php:51
+msgid "Coordination"
+msgstr "Koordination"
+
+#: src/Setup/Seeder.php:52
+msgid "Tech"
+msgstr "Technik"
+
+#: src/Setup/Seeder.php:59
+msgid "Handbook editors"
+msgstr "Handbuch-Redaktion"
+
+#: src/Setup/Seeder.php:60
+msgid "GitHub specialist"
+msgstr "GitHub-Spezialist"
 
 #: src/Setup/Seeder.php:67
 msgid "General"
@@ -1568,6 +1520,10 @@ msgstr ""
 "Kein Ziel-Handbuch gewählt. Importierte Seiten bleiben unsichtbar, bis du "
 "sie einem Handbuch zuweist. Trotzdem importieren?"
 
+#: assets/js/markdown-import.js:507
+msgid "The app handbook URL is not configured."
+msgstr "Die URL des App-Handbuchs ist nicht konfiguriert."
+
 #: assets/js/mermaid-block.js:64
 msgid "mermaid.min.js is missing in assets/js/."
 msgstr "mermaid.min.js fehlt in assets/js/."
@@ -1765,6 +1721,71 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#~ msgid "Documentation"
+#~ msgstr "Dokumentation"
+
+#~ msgid "Quality"
+#~ msgstr "Qualität"
+
+#~ msgid ""
+#~ "The plugin's own handbook: it explains how a Living Handbook is put "
+#~ "together, and it is written as a working handbook, so it is at the same "
+#~ "time an example. Nine pages in three areas, with several page types, "
+#~ "filled vocabularies and pages in every review state."
+#~ msgstr ""
+#~ "Das Handbuch des Plugins selbst: es erklärt, wie ein Living Handbook "
+#~ "aufgebaut ist, und ist als richtiges Handbuch geschrieben, also zugleich "
+#~ "ein Beispiel. Neun Seiten in drei Bereichen, mit mehreren Seitentypen, "
+#~ "gefüllten Vokabularen und Seiten in jedem Prüfzustand."
+
+#~ msgid ""
+#~ "Loading it never overwrites anything and never deletes anything. To get "
+#~ "rid of it again, delete its pages and then the handbook; nothing else "
+#~ "depends on it."
+#~ msgstr ""
+#~ "Das Laden überschreibt nie etwas und löscht nie etwas. Um es wieder "
+#~ "loszuwerden, lösche seine Seiten und danach das Handbuch; nichts anderes "
+#~ "hängt daran."
+
+#~ msgid ""
+#~ "You can load it again: existing pages are never overwritten, so only "
+#~ "pages you deleted come back."
+#~ msgstr ""
+#~ "Du kannst es erneut laden: vorhandene Seiten werden nie überschrieben, es "
+#~ "kommen also nur gelöschte Seiten zurück."
+
+#~ msgid ""
+#~ "Recommended on a fresh install: it is the fastest way to see what the "
+#~ "page type, the filters and the freshness badges actually do."
+#~ msgstr ""
+#~ "Auf einer frischen Installation empfohlen: das ist der schnellste Weg zu "
+#~ "sehen, was Seitentyp, Filter und Aktualitäts-Abzeichen wirklich tun."
+
+#~ msgid ""
+#~ "By default the pages go into a separate handbook with visibility "
+#~ "\"members\", which keeps them apart from your own content and makes them "
+#~ "easy to delete again. Pick an existing handbook to put them there "
+#~ "instead; that handbook keeps its own access configuration, so check "
+#~ "afterwards whether it is public."
+#~ msgstr ""
+#~ "Standardmässig gehen die Seiten in ein eigenes Handbuch mit der "
+#~ "Sichtbarkeit \"Mitglieder\". Das hält sie von deinen eigenen Inhalten "
+#~ "getrennt und macht sie leicht wieder löschbar. Wähle ein bestehendes "
+#~ "Handbuch, um sie stattdessen dort abzulegen; dieses Handbuch behält seine "
+#~ "eigene Zugriffskonfiguration, prüfe also anschliessend, ob es öffentlich "
+#~ "ist."
+
+#~ msgid ""
+#~ "the plugin brings its own handbook along. It explains how a Living "
+#~ "Handbook is built and is itself an example of one, with nine pages, "
+#~ "several page types, filled filters and pages in every review state. Load "
+#~ "it, take it apart, delete it when you have seen enough."
+#~ msgstr ""
+#~ "das Plugin bringt sein eigenes Handbuch mit. Es erklärt, wie ein Living "
+#~ "Handbook aufgebaut ist, und ist selbst eines, mit neun Seiten, mehreren "
+#~ "Seitentypen, gefüllten Filtern und Seiten in jedem Prüfzustand. Lade es, "
+#~ "nimm es auseinander, lösche es, wenn du genug gesehen hast."
 
 #~ msgid ""
 #~ "Next: create a handbook under Handbook, Handbook types, and set who may "

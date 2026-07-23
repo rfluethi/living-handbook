@@ -497,5 +497,21 @@
 				run( importGithub( url ) );
 			} );
 		}
+		// The app handbook is a GitHub folder import against a fixed URL the
+		// server picks by admin language; the button just runs the same path.
+		var appBtn = document.getElementById( 'lh-app-btn' );
+		if ( appBtn ) {
+			appBtn.addEventListener( 'click', function () {
+				var url = ( window.lhImport && lhImport.appHandbookUrl ) ? lhImport.appHandbookUrl : '';
+				if ( ! url ) {
+					setStatus( __( 'The app handbook URL is not configured.', 'living-handbook' ) );
+					return;
+				}
+				if ( ! begin() ) {
+					return;
+				}
+				run( importGithub( url ) );
+			} );
+		}
 	} );
 }() );

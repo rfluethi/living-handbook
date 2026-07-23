@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.40.0
+Stable tag: 0.41.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,7 +27,7 @@ Core features:
 * A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder; a folder is read with its subfolders and the folder structure becomes the page hierarchy. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
-* The plugin brings its own handbook along: nine pages documenting how a Living Handbook is built, written as a working handbook, so it doubles as a worked example. Loaded on request from the import screen, in English or German, never automatically.
+* The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and kept on GitHub. One click on the import screen pulls it into the site, in English or German.
 * Fully translatable (English source), with a German translation included.
 * No external WordPress plugin is required; a block theme is. The import and sync use three bundled Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
 
@@ -82,6 +82,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.41.0 =
+* The app handbook now comes from GitHub instead of being shipped inside the plugin. The documentation of the app lives in a public repository, so it has one source, can be read and edited where it is written, and every install pulls the current state instead of a snapshot frozen at release time. The import screen keeps its "App handbook" tab and one-click button; behind it is an ordinary GitHub folder import against a fixed URL, chosen by the admin language.
+* This drops the bundled example handbook added in 0.39.0. A separate demo made little sense next to real documentation: a good handbook explains the app well enough that the reader can try it, the same way any application's manual does. The bundle export and import between sites is untouched; only the shipped copy is gone.
 
 = 0.40.0 =
 * The GitHub folder import now descends into subfolders, and the folder structure becomes the page hierarchy. Previously only the files directly in the chosen folder were imported and everything landed side by side.
@@ -287,6 +291,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.41.0 =
+The app handbook now loads from GitHub rather than shipping in the plugin, one click on the import screen. Pre-release: best on a fresh database.
 
 = 0.40.0 =
 The GitHub folder import now includes subfolders and turns the folder structure into the page hierarchy. Pre-release: best on a fresh database.

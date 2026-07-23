@@ -20,14 +20,13 @@ Activation does three things for you:
 
 ## Shortcut: load the app handbook first
 
-The plugin brings its own handbook along. It documents how a Living Handbook is built, and because it is written as a working handbook it is at the same time an example of one. Go to **Handbook → Import**, open the tab **App handbook** and press **Load app handbook**. You get nine pages in three areas, with several page types, filled vocabularies and pages in every review state, so the page type, the filters and the freshness badges are visible doing their job.
+The plugin comes with a handbook of its own: the documentation of the app, written as a Living Handbook so it doubles as a first example of one. Go to **Handbook → Import**, open the tab **App handbook** and press **Load app handbook**. It is pulled from a public GitHub repository, so you read the current documentation and see a real handbook at the same time.
 
 Some details worth knowing:
 
-- It is never loaded on activation, only when you ask for it. It follows the admin language and exists in English and German.
-- By default it goes into a handbook of its own with visibility **members**, so nothing becomes public. You can pick an existing handbook instead, under **Load into**; that handbook keeps its own visibility.
-- Loading it a second time never overwrites your edits; only pages you deleted come back.
-- To get rid of it, delete its pages and then the handbook. Nothing else depends on it.
+- It is never loaded on activation, only when you ask for it. It follows the admin language.
+- It is a GitHub folder import, so its pages stay synced with the repository: a later change on GitHub reaches your site on the next load.
+- Pick the handbook it goes into under **Load into**; create one first (for example "App handbook") and set who may read it there.
 
 The rest of this guide builds a handbook from scratch, which is what you will do for real content.
 

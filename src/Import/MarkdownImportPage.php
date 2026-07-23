@@ -755,11 +755,12 @@ final class MarkdownImportPage {
 			'living-handbook-markdown-import',
 			'lhImport',
 			array(
-				'convertPath'  => '/living-handbook/v1/convert',
-				'zipPath'      => '/living-handbook/v1/import-zip',
-				'githubPath'   => '/living-handbook/v1/import-github',
-				'createPath'   => '/living-handbook/v1/create',
-				'finalizePath' => '/living-handbook/v1/finalize',
+				'convertPath'    => '/living-handbook/v1/convert',
+				'zipPath'        => '/living-handbook/v1/import-zip',
+				'githubPath'     => '/living-handbook/v1/import-github',
+				'createPath'     => '/living-handbook/v1/create',
+				'finalizePath'   => '/living-handbook/v1/finalize',
+				'appHandbookUrl' => AppHandbook::url(),
 			)
 		);
 
@@ -831,8 +832,7 @@ final class MarkdownImportPage {
 		);
 		$handbooks = is_array( $handbooks ) ? $handbooks : array();
 		$bundle    = HandbookImport::can_import();
-		$app       = AppHandbook::can_load() && '' !== AppHandbook::file();
-		$app_term  = $app ? AppHandbook::existing_handbook() : null;
+		$app       = AppHandbook::can_load();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Import', 'living-handbook' ); ?></h1>
@@ -928,47 +928,25 @@ final class MarkdownImportPage {
 				<?php endif; ?>
 				<?php if ( $app ) : ?>
 					<div class="living-handbook-import__panel" id="lh-panel-app" role="tabpanel" aria-labelledby="lh-tab-app" hidden>
-						<p><?php esc_html_e( 'The plugin\'s own handbook: it explains how a Living Handbook is put together, and it is written as a working handbook, so it is at the same time an example. Nine pages in three areas, with several page types, filled vocabularies and pages in every review state.', 'living-handbook' ); ?></p>
-						<p class="description"><?php esc_html_e( 'Loading it never overwrites anything and never deletes anything. To get rid of it again, delete its pages and then the handbook; nothing else depends on it.', 'living-handbook' ); ?></p>
-						<?php if ( $app_term instanceof WP_Term ) : ?>
-							<?php
-							$app_link = add_query_arg(
-								array(
-									'post_type'         => Handbook::POST_TYPE,
-									Handbooks::TAXONOMY => $app_term->slug,
-								),
-								admin_url( 'edit.php' )
-							);
-							?>
-							<p>
-								<strong><?php esc_html_e( 'The app handbook is already there.', 'living-handbook' ); ?></strong>
-								<a href="<?php echo esc_url( $app_link ); ?>"><?php esc_html_e( 'Show its pages', 'living-handbook' ); ?></a>
-							</p>
-							<p class="description"><?php esc_html_e( 'You can load it again: existing pages are never overwritten, so only pages you deleted come back.', 'living-handbook' ); ?></p>
-						<?php else : ?>
-							<p class="description"><?php esc_html_e( 'Recommended on a fresh install: it is the fastest way to see what the page type, the filters and the freshness badges actually do.', 'living-handbook' ); ?></p>
-						<?php endif; ?>
-						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-							<input type="hidden" name="action" value="<?php echo esc_attr( AppHandbook::action() ); ?>">
-							<?php wp_nonce_field( AppHandbook::action() ); ?>
-							<table class="form-table" role="presentation">
-								<tr>
-									<th scope="row"><label for="lh-app-handbook"><?php esc_html_e( 'Load into', 'living-handbook' ); ?></label></th>
-									<td>
-										<select id="lh-app-handbook" name="handbook">
-											<option value="0"><?php esc_html_e( '— a handbook of its own —', 'living-handbook' ); ?></option>
-											<?php foreach ( $handbooks as $term ) : ?>
-												<?php if ( $term instanceof WP_Term ) : ?>
-													<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
-												<?php endif; ?>
-											<?php endforeach; ?>
-										</select>
-										<p class="description"><?php esc_html_e( 'By default the pages go into a separate handbook with visibility "members", which keeps them apart from your own content and makes them easy to delete again. Pick an existing handbook to put them there instead; that handbook keeps its own access configuration, so check afterwards whether it is public.', 'living-handbook' ); ?></p>
-									</td>
-								</tr>
-							</table>
-							<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Load app handbook', 'living-handbook' ); ?></button></p>
-						</form>
+						<p><?php esc_html_e( 'The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It is maintained on GitHub, so this loads the current state straight from there, with its pages, structure and images.', 'living-handbook' ); ?></p>
+						<p class="description"><?php esc_html_e( 'It is a normal GitHub folder import: the pages are pulled from the repository and kept in sync with it, so later changes on GitHub reach your site on the next load. Nothing is deleted.', 'living-handbook' ); ?></p>
+						<table class="form-table" role="presentation">
+							<tr>
+								<th scope="row"><label for="lh-app-handbook"><?php esc_html_e( 'Load into', 'living-handbook' ); ?></label></th>
+								<td>
+									<select id="lh-app-handbook" class="lh-import-handbook" name="handbook">
+										<option value="0"><?php esc_html_e( '— no handbook (assign later) —', 'living-handbook' ); ?></option>
+										<?php foreach ( $handbooks as $term ) : ?>
+											<?php if ( $term instanceof WP_Term ) : ?>
+												<option value="<?php echo esc_attr( (string) $term->term_id ); ?>"><?php echo esc_html( $term->name ); ?></option>
+											<?php endif; ?>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'Pick the handbook the pages should belong to. Create one first (for example "App handbook") if you want them in their own, and set who may read it there.', 'living-handbook' ); ?></p>
+								</td>
+							</tr>
+						</table>
+						<p><button type="button" id="lh-app-btn" class="button button-primary"><?php esc_html_e( 'Load app handbook', 'living-handbook' ); ?></button></p>
 					</div>
 				<?php endif; ?>
 			</div>
