@@ -12,7 +12,7 @@ Alle Farben des Plugins hängen an zentralen Stellwerten, sogenannten CSS-Variab
 ## Schritte
 
 1. Öffne die [Einstellungen](../die-einstellungen.md) unter **Handbuch → Einstellungen** und suche das Feld **Eigenes CSS**. Es wirkt nur auf den Handbuch-Seiten. Beim Löschen des Plugins wird es mit entfernt.
-2. Trage die Variablen ein, die du ändern willst. Dieses Beispiel färbt sichtbar um: Flächen auf einen warmen Papierton, Akzente auf Bordeaux:
+2. Trage die Variablen ein, die du ändern willst. Dieses Beispiel stellt das Handbuch komplett um: dunkle Kästen auf heller Website, Bernstein als Akzent, passend eingefärbte Abzeichen. So ist die Wirkung unübersehbar:
 
    ```css
    .living-handbook-overview,
@@ -24,13 +24,24 @@ Alle Farben des Plugins hängen an zentralen Stellwerten, sogenannten CSS-Variab
    .living-handbook-meta,
    .living-handbook-feedback,
    .living-handbook-badge {
-     --lh-surface: #f8f4ec;      /* Flächen der Karten und Kästen: warmes Papier */
-     --lh-surface-text: #33302b; /* Text auf diesen Flächen: dunkles Braun */
-     --lh-accent: #7a1f3d;       /* Links, Knöpfe, Markierungen: Bordeaux */
+     /* Flächen: dunkles Blaugrau statt Weiß, helle Schrift darauf */
+     --lh-surface: #1d2733;
+     --lh-surface-text: #f2f5f8;
+
+     /* Akzent: Bernstein für Links, Knöpfe und Markierungen.
+        --lh-on-accent ist die Schriftfarbe auf gefüllten Knöpfen. */
+     --lh-accent: #ffb84d;
+     --lh-on-accent: #1d2733;
+
+     /* Abzeichen-Etiketten: dunkler Chip mit heller Schrift */
+     --lh-badge-bg: #33414f;
+     --lh-badge-text: #d7dee5;
    }
    ```
 
-3. Speichere und öffne eine Handbuch-Seite. Die Wirkung ist sofort zu sehen: Karten, Navigation und Inhaltsverzeichnis stehen auf dem Papierton, Links und Knöpfe sind bordeauxrot. Gefällt es nicht, leere das Feld wieder; dann gelten erneut die Farben des Themes.
+   Rahmen und Nebentexte musst du nicht anfassen. Sie rechnen sich automatisch aus Fläche und Schriftfarbe und ziehen mit um.
+
+3. Speichere und öffne die Einstiegsseite deines Handbuchs. Bereichs-Kacheln, Filterleiste und Suchfeld sind jetzt dunkel mit heller Schrift, Knöpfe und Verweise bernsteinfarben. Auf einer Einzelseite wechseln das Inhaltsverzeichnis, die Abzeichen und die aktiven Einträge in der Navigation. Gefällt es nicht, leere das Feld wieder; dann gelten erneut die Farben des Themes.
 
 ## Ergebnis
 
@@ -38,14 +49,16 @@ Alle Handbuch-Oberflächen verwenden die neuen Werte einheitlich: Karten, Naviga
 
 | Variable | Steuert |
 |---|---|
-| `--lh-surface`, `--lh-surface-text` | Flächen- und Textfarbe der Karten und Kästen |
+| `--lh-surface`, `--lh-surface-text` | Flächen und Text von Karten, Inhaltsverzeichnis, Filterleiste und Suchfeld |
 | `--lh-accent`, `--lh-on-accent` | Akzentfarbe und Textfarbe auf Akzentflächen |
+| `--lh-badge-bg`, `--lh-badge-text` | Flächen- und Textfarbe der Abzeichen-Etiketten |
 | `--lh-ok`, `--lh-due`, `--lh-overdue` | Die drei Prüfstatus-Farben (Geprüft, fällig, überfällig) |
 | `--lh-sticky-top` | Oberer Abstand der fixierten Navigation und des Inhaltsverzeichnisses |
 
 <details>
 <summary>Stolpersteine: Was du beim Umfärben beachten solltest</summary>
 
+* **Zwei Stellen ändern sich absichtlich nicht mit.** Der Kasten der Navigation hat keinen eigenen Hintergrund; er zeigt immer den Seitenhintergrund durch. Und Links im Seiteninhalt gehören dem Theme, nicht dem Plugin; ihre Farbe stellst du im Website-Editor um.
 * **Halte die drei Prüfstatus-Farben unterscheidbar**, am besten nicht nur über den Farbton. Die Formen (Kreis, abgerundetes Quadrat, Raute) helfen zusätzlich. Verlass dich aber nicht allein darauf.
 * **Prüfe den Kontrast, wenn du Grautöne aufhellst.** Die Voreinstellungen erfüllen die Anforderungen der Barrierefreiheit (WCAG AA).
 * **Entferne die Fokus-Ringe nicht.** Sie machen die Bedienung per Tastatur sichtbar. Wer sie umgestaltet, sollte einen klar sichtbaren Ersatz behalten.
