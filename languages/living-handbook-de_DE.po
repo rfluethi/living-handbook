@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-24T13:08:53+00:00\n"
+"POT-Creation-Date: 2026-07-24T13:45:04+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -207,7 +207,7 @@ msgid "No matches. Adjust the filters or the search."
 msgstr "Keine Treffer. Passe die Filter oder die Suche an."
 
 # Menu labels and taxonomy label set (batch: backend menu and labels)
-#: src/Frontend/Filters.php:549 src/PostType/Handbook.php:76
+#: src/Frontend/Filters.php:549 src/PostType/Handbook.php:93
 msgid "Handbook pages"
 msgstr "Handbuch-Seiten"
 
@@ -310,7 +310,7 @@ msgstr ""
 "Handbuch-Eintrag: auf einer Handbuch-Seite zeigt er Suche, Filter, Bereiche "
 "und zuletzt aktualisierte Seiten dieses Handbuchs."
 
-#: src/Frontend/Templates.php:65 src/PostType/Handbook.php:74
+#: src/Frontend/Templates.php:65 src/PostType/Handbook.php:91
 msgid "Handbook page"
 msgstr "Handbuch-Seite"
 
@@ -565,7 +565,7 @@ msgstr "Beschränkt (Rollen und/oder Personen)"
 
 # Post type and taxonomies
 #: src/Handbook/Handbooks.php:75 src/Import/HandbookExport.php:114
-#: src/PostType/Handbook.php:73 src/PostType/Handbook.php:75
+#: src/PostType/Handbook.php:90 src/PostType/Handbook.php:92
 #: src/Setup/Onboarding.php:100
 msgid "Handbook"
 msgstr "Handbuch"
@@ -1024,19 +1024,19 @@ msgstr ""
 msgid "The last updated date is set automatically on save."
 msgstr "Das Aktualisierungsdatum wird beim Speichern automatisch gesetzt."
 
-#: src/PostType/Handbook.php:77
+#: src/PostType/Handbook.php:94
 msgid "New pages"
 msgstr "Neue Seiten"
 
-#: src/PostType/Handbook.php:78
+#: src/PostType/Handbook.php:95
 msgid "Add new handbook page"
 msgstr "Neue Handbuch-Seite"
 
-#: src/PostType/Handbook.php:79
+#: src/PostType/Handbook.php:96
 msgid "Edit handbook page"
 msgstr "Handbuch-Seite bearbeiten"
 
-#: src/PostType/Handbook.php:80
+#: src/PostType/Handbook.php:97
 msgid "Search handbook pages"
 msgstr "Handbuch-Seiten durchsuchen"
 

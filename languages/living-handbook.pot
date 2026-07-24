@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-24T13:09:06+00:00\n"
+"POT-Creation-Date: 2026-07-24T13:45:04+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -210,7 +210,7 @@ msgid "No matches. Adjust the filters or the search."
 msgstr ""
 
 #: src/Frontend/Filters.php:549
-#: src/PostType/Handbook.php:76
+#: src/PostType/Handbook.php:93
 msgid "Handbook pages"
 msgstr ""
 
@@ -310,7 +310,7 @@ msgid "Entry page of a single handbook: navigation, search, filters, areas and r
 msgstr ""
 
 #: src/Frontend/Templates.php:65
-#: src/PostType/Handbook.php:74
+#: src/PostType/Handbook.php:91
 msgid "Handbook page"
 msgstr ""
 
@@ -545,8 +545,8 @@ msgstr ""
 
 #: src/Handbook/Handbooks.php:75
 #: src/Import/HandbookExport.php:114
-#: src/PostType/Handbook.php:73
-#: src/PostType/Handbook.php:75
+#: src/PostType/Handbook.php:90
+#: src/PostType/Handbook.php:92
 #: src/Setup/Onboarding.php:100
 msgid "Handbook"
 msgstr ""
@@ -909,19 +909,19 @@ msgstr ""
 msgid "The last updated date is set automatically on save."
 msgstr ""
 
-#: src/PostType/Handbook.php:77
+#: src/PostType/Handbook.php:94
 msgid "New pages"
 msgstr ""
 
-#: src/PostType/Handbook.php:78
+#: src/PostType/Handbook.php:95
 msgid "Add new handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:79
+#: src/PostType/Handbook.php:96
 msgid "Edit handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:80
+#: src/PostType/Handbook.php:97
 msgid "Search handbook pages"
 msgstr ""
 

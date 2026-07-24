@@ -42,6 +42,23 @@ final class Handbook {
 		add_filter( 'wp_sitemaps_post_types', array( $this, 'exclude_from_sitemap' ) );
 		add_action( 'admin_menu', array( $this, 'reorder_submenu' ), 999 );
 		add_action( 'admin_head', array( $this, 'submenu_divider_style' ) );
+		add_filter( 'get_default_comment_status', array( $this, 'default_comments_closed' ), 10, 2 );
+	}
+
+	/**
+	 * Default new handbook pages to comments closed, so a handbook is not a
+	 * comment thread unless the site wants one. This is only the default: an
+	 * editor can still switch comments on for a page in its Discussion panel, and
+	 * an imported page (the app handbook included) is created with comments off,
+	 * because the import writes no explicit status and so takes this default.
+	 * Other post types are untouched.
+	 *
+	 * @param string $status    The default comment status.
+	 * @param string $post_type The post type it is asked for.
+	 * @return string
+	 */
+	public function default_comments_closed( string $status, string $post_type ): string {
+		return self::POST_TYPE === $post_type ? 'closed' : $status;
 	}
 
 	/**
