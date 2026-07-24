@@ -11,7 +11,9 @@ namespace LivingHandbook\Git;
 
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Import\HtmlSanitizer;
+use LivingHandbook\Import\ImageRefs;
 use LivingHandbook\Import\MarkdownConverter;
+use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Import\Postprocessor;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -475,6 +477,96 @@ final class GitSync {
 	}
 
 	/**
+	 * Import a local folder of Markdown as handbook pages, the same way the GitHub
+	 * folder import does, but reading the files from disk. This is how the app
+	 * handbook that ships inside the plugin is loaded, so it needs no network and
+	 * always matches the installed version. Images referenced by a relative path
+	 * are sideloaded from the folder, and internal links are resolved once every
+	 * page of the import exists. The pages are ordinary WordPress pages, editable
+	 * and not synced, distinguished by their stored source path so a re-import
+	 * refreshes them instead of duplicating.
+	 *
+	 * @param string $dir         Absolute path to the folder.
+	 * @param int    $handbook_id Optional handbook term id.
+	 * @param bool   $publish     Whether new pages are published rather than drafted.
+	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
+	 */
+	public function import_local_folder( string $dir, int $handbook_id = 0, bool $publish = false ) {
+		$dir = rtrim( $dir, '/' );
+		if ( '' === $dir || ! is_dir( $dir ) ) {
+			return new WP_Error( 'living_handbook_import', __( 'The app handbook folder was not found in the plugin.', 'living-handbook' ), array( 'status' => 404 ) );
+		}
+
+		$files = self::local_markdown_paths( $dir );
+		if ( array() === $files ) {
+			return new WP_Error( 'living_handbook_import', __( 'No Markdown files were found in the app handbook folder.', 'living-handbook' ), array( 'status' => 404 ) );
+		}
+
+		$notes = array();
+		if ( count( $files ) > self::MAX_FOLDER_FILES ) {
+			$files   = array_slice( $files, 0, self::MAX_FOLDER_FILES );
+			$notes[] = sprintf(
+				/* translators: %d: maximum number of files imported from one folder. */
+				__( 'Only the first %d files were imported.', 'living-handbook' ),
+				self::MAX_FOLDER_FILES
+			);
+		}
+
+		$plan      = self::plan_folder_import( $files, '' );
+		$pages     = array();
+		$ids       = array();
+		$folder_id = array( '' => 0 );
+		$auto      = 0;
+
+		foreach ( $plan['folders'] as $folder ) {
+			if ( '' !== $folder['index'] ) {
+				$post_id = $this->create_local_page( $dir, $folder['index'], $handbook_id, $publish, basename( $folder['path'] ) );
+			} else {
+				$post_id = $this->create_local_folder_page( $folder['path'], $handbook_id, $publish );
+			}
+			if ( 0 === $post_id ) {
+				continue;
+			}
+			$folder_id[ $folder['path'] ] = $post_id;
+			$auto                        += 10;
+			$this->place( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ), $auto );
+			if ( '' !== $folder['index'] ) {
+				update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $folder['index'] );
+			}
+			$ids[]   = $post_id;
+			$pages[] = self::page_result( $post_id );
+		}
+
+		foreach ( $plan['files'] as $file ) {
+			$post_id = $this->create_local_page( $dir, $file['path'], $handbook_id, $publish );
+			if ( 0 === $post_id ) {
+				continue;
+			}
+			$auto += 10;
+			$this->place( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $auto );
+			update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $file['path'] );
+			$ids[]   = $post_id;
+			$pages[] = self::page_result( $post_id );
+		}
+
+		$report = Postprocessor::finalize_report( $ids );
+		foreach ( $report['unresolved'] as $link ) {
+			$notes[] = sprintf(
+				/* translators: 1: page title the link is on, 2: link target file name. */
+				__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
+				$link['source'],
+				$link['target']
+			);
+		}
+
+		$result = array( 'pages' => $pages );
+		if ( array() !== $notes ) {
+			$result['notes'] = $notes;
+		}
+		return $result;
+	}
+
+	/**
 	 * Read the repository tree in one request.
 	 *
 	 * @param array{owner:string, repo:string, branch:string, path:string} $parsed Parsed tree URL.
@@ -757,6 +849,217 @@ final class GitSync {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}
 		return $post_id;
+	}
+
+	/**
+	 * The Markdown files under a local folder, as paths relative to it, shallow
+	 * first and alphabetical, so it matches the order the GitHub tree walk uses.
+	 *
+	 * @param string $dir Absolute folder path.
+	 * @return array<int, string> Relative paths.
+	 */
+	private static function local_markdown_paths( string $dir ): array {
+		$files    = array();
+		$prefix   = rtrim( $dir, '/' ) . '/';
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $dir, \FilesystemIterator::SKIP_DOTS )
+		);
+		foreach ( $iterator as $file ) {
+			if ( ! $file instanceof \SplFileInfo || ! $file->isFile() || 'md' !== strtolower( $file->getExtension() ) ) {
+				continue;
+			}
+			$path = $file->getPathname();
+			if ( 0 === strpos( $path, $prefix ) ) {
+				$files[] = substr( $path, strlen( $prefix ) );
+			}
+		}
+
+		usort(
+			$files,
+			static function ( string $a, string $b ): int {
+				$depth = substr_count( $a, '/' ) <=> substr_count( $b, '/' );
+				return 0 !== $depth ? $depth : strcmp( $a, $b );
+			}
+		);
+
+		return $files;
+	}
+
+	/**
+	 * Create, or refresh on a re-import, a handbook page from a local Markdown
+	 * file. The page is an ordinary WordPress page (editable, not synced); its
+	 * source path is stored so a re-import finds it again instead of duplicating.
+	 *
+	 * @param string $base_dir      Absolute folder the import points at.
+	 * @param string $rel_path      File path relative to that folder.
+	 * @param int    $handbook_id   Optional handbook term id.
+	 * @param bool   $publish       Whether a new page is published rather than drafted.
+	 * @param string $slug_override Slug to use instead of the one from the file name.
+	 * @return int Post id, or 0 on failure.
+	 */
+	private function create_local_page( string $base_dir, string $rel_path, int $handbook_id, bool $publish, string $slug_override = '' ): int {
+		$abs = rtrim( $base_dir, '/' ) . '/' . ltrim( $rel_path, '/' );
+		if ( ! is_file( $abs ) || ! is_readable( $abs ) ) {
+			return 0;
+		}
+		$slug = '' !== $slug_override
+			? sanitize_title( $slug_override )
+			: sanitize_title( pathinfo( $rel_path, PATHINFO_FILENAME ) );
+
+		$post_id = self::find_local_by_path( $rel_path, $handbook_id );
+		if ( $post_id > 0 && ! current_user_can( 'edit_post', $post_id ) ) {
+			$post_id = 0;
+		}
+		if ( 0 === $post_id ) {
+			$inserted = wp_insert_post(
+				array(
+					'post_type'   => Handbook::POST_TYPE,
+					'post_status' => $publish ? 'publish' : 'draft',
+					'post_title'  => __( 'App handbook page', 'living-handbook' ),
+					'post_name'   => $slug,
+				),
+				true
+			);
+			if ( is_wp_error( $inserted ) ) {
+				return 0;
+			}
+			$post_id = (int) $inserted;
+		}
+
+		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
+		if ( 0 < $handbook_id ) {
+			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a bundled plugin file from disk, not a remote resource.
+		$markdown  = (string) file_get_contents( $abs );
+		$image_map = $this->local_image_map( $markdown, $abs, $base_dir );
+		$this->render_markdown_into_post( $post_id, $markdown, $image_map );
+
+		return $post_id;
+	}
+
+	/**
+	 * Create, or find again, the page that stands for a local folder without its
+	 * own Markdown file. Mirrors create_folder_page for the bundled import.
+	 *
+	 * @param string $folder      Folder path relative to the import base.
+	 * @param int    $handbook_id Optional handbook term id.
+	 * @param bool   $publish     Whether the page is published rather than drafted.
+	 * @return int Post id, or 0.
+	 */
+	private function create_local_folder_page( string $folder, int $handbook_id = 0, bool $publish = false ): int {
+		$marker = 'local:' . $folder;
+
+		$existing = get_posts(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			)
+		);
+		if ( ! empty( $existing ) ) {
+			return (int) $existing[0];
+		}
+
+		$name  = basename( $folder );
+		$title = ucfirst( trim( (string) preg_replace( '/[-_]+/', ' ', $name ) ) );
+
+		$inserted = wp_insert_post(
+			array(
+				'post_type'    => Handbook::POST_TYPE,
+				'post_status'  => $publish ? 'publish' : 'draft',
+				'post_title'   => '' !== $title ? $title : $name,
+				'post_name'    => sanitize_title( $name ),
+				'post_content' => '<!-- wp:living-handbook/entry {"display":"cards"} /-->',
+			),
+			true
+		);
+		if ( is_wp_error( $inserted ) ) {
+			return 0;
+		}
+
+		$post_id = (int) $inserted;
+		update_post_meta( $post_id, self::META_FOLDER, $marker );
+		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
+		if ( 0 < $handbook_id ) {
+			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
+		}
+		return $post_id;
+	}
+
+	/**
+	 * Find an existing local-import page by its stored source path, so a re-import
+	 * refreshes it instead of creating a duplicate. Scoped to the target handbook
+	 * when one is given.
+	 *
+	 * @param string $rel_path    File path relative to the import base.
+	 * @param int    $handbook_id Target handbook term id (0 for none).
+	 * @return int Post id, or 0.
+	 */
+	private static function find_local_by_path( string $rel_path, int $handbook_id ): int {
+		$args = array(
+			'post_type'      => Handbook::POST_TYPE,
+			'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			'meta_key'       => Postprocessor::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			'meta_value'     => $rel_path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+		);
+		if ( $handbook_id > 0 ) {
+			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				array(
+					'taxonomy' => Handbooks::TAXONOMY,
+					'field'    => 'term_id',
+					'terms'    => $handbook_id,
+				),
+			);
+		}
+		$found = get_posts( $args );
+		return ! empty( $found ) ? (int) $found[0] : 0;
+	}
+
+	/**
+	 * Build the image map for a local page: for each image the Markdown references
+	 * by a relative path, resolve it against the file's folder, read it from disk
+	 * and sideload it. Kept inside the import base, so a crafted "../" reference
+	 * cannot read a file outside the bundled folder.
+	 *
+	 * @param string $markdown Markdown source.
+	 * @param string $abs_file Absolute path of the Markdown file.
+	 * @param string $base_dir Absolute import base folder.
+	 * @return array<string, string> File name to media URL.
+	 */
+	private function local_image_map( string $markdown, string $abs_file, string $base_dir ): array {
+		$map      = array();
+		$base_dir = rtrim( $base_dir, '/' );
+		$file_dir = dirname( $abs_file );
+		foreach ( ImageRefs::extract( $markdown ) as $ref ) {
+			$clean = (string) preg_replace( '/[?#].*$/', '', $ref );
+			$name  = basename( $clean );
+			if ( '' === $name || isset( $map[ $name ] ) ) {
+				continue;
+			}
+			$path = self::normalize_path( $file_dir . '/' . ltrim( $clean, '/' ) );
+			if ( 0 !== strpos( $path . '/', $base_dir . '/' ) || ! is_file( $path ) || ! is_readable( $path ) ) {
+				continue;
+			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a bundled plugin file from disk, not a remote resource.
+			$data = (string) file_get_contents( $path );
+			if ( '' === $data ) {
+				continue;
+			}
+			$url = MarkdownImportPage::sideload_image( $name, $data );
+			if ( '' !== $url ) {
+				$map[ $name ] = $url;
+			}
+		}
+		return $map;
 	}
 
 	/**
@@ -1201,9 +1504,43 @@ final class GitSync {
 		}
 		$markdown = (string) wp_remote_retrieve_body( $response );
 
-		$result = ( new MarkdownConverter() )->convert( $markdown );
+		// Bring the images the page references along: fetch each one from the
+		// repository and sideload it, so a relative link like ../assets/x.svg
+		// points at the media library instead of a path that 404s on the site.
+		$image_map = $this->github_image_map( $markdown, $url );
+
+		$this->render_markdown_into_post( $post_id, $markdown, $image_map );
+
+		update_post_meta( $post_id, Metadata::UPDATED, current_time( 'Y-m-d' ) );
+		delete_post_meta( $post_id, self::META_ERROR );
+		$this->set_status(
+			$post_id,
+			sprintf(
+				/* translators: %s: date and time of the successful sync. */
+				__( 'OK %s', 'living-handbook' ),
+				current_time( 'Y-m-d H:i' )
+			)
+		);
+	}
+
+	/**
+	 * Convert a Markdown string and store it as the page's content, title,
+	 * transport metadata and resolved internal links. Shared by the GitHub sync
+	 * (Markdown fetched over HTTP) and the bundled app-handbook import (Markdown
+	 * read from disk), so both render a page the same way. The image map maps a
+	 * file name to a media URL, so the converter can point relative image
+	 * references at the sideloaded copies.
+	 *
+	 * @param int                   $post_id   Post id.
+	 * @param string                $markdown  Markdown source.
+	 * @param array<string, string> $image_map File name to media URL.
+	 * @return void
+	 */
+	private function render_markdown_into_post( int $post_id, string $markdown, array $image_map = array() ): void {
+		$result = ( new MarkdownConverter() )->convert( $markdown, $image_map );
 		$html   = $this->mermaid_to_html( (string) $result['html'] );
-		// The HTML is from an external repo; strip anything unsafe before storing.
+		// The HTML came from outside the editor; strip anything unsafe before it
+		// is stored.
 		$html = HtmlSanitizer::clean( $html );
 
 		$update = array(
@@ -1218,22 +1555,100 @@ final class GitSync {
 		self::$is_syncing = true;
 		wp_update_post( $update );
 		Postprocessor::apply_transport( $post_id, (array) $result['transport'] );
-		// Every sync re-renders the Markdown, so the internal .md links come back
-		// raw and have to be resolved to their pages again. Without this, the
-		// first scheduled sync after an import turns every cross-link into a 404.
+		// Re-rendering brings the internal .md links back raw, so resolve them to
+		// their pages again. A folder import resolves once more at the end, when
+		// every page of the import exists.
 		Postprocessor::convert_md_links( $post_id );
 		self::$is_syncing = false;
+	}
 
-		update_post_meta( $post_id, Metadata::UPDATED, current_time( 'Y-m-d' ) );
-		delete_post_meta( $post_id, self::META_ERROR );
-		$this->set_status(
-			$post_id,
-			sprintf(
-				/* translators: %s: date and time of the successful sync. */
-				__( 'OK %s', 'living-handbook' ),
-				current_time( 'Y-m-d H:i' )
-			)
-		);
+	/**
+	 * Build the image map for a GitHub page: for each image the Markdown
+	 * references by a relative path, resolve it against the page's source URL,
+	 * fetch it from the repository and sideload it into the media library. The map
+	 * is keyed by file name, which is how the converter rewrites the image
+	 * sources. Sideloading dedupes by file name and content, so a shared image is
+	 * stored once and a later sync reuses it instead of piling up copies. An image
+	 * that cannot be fetched is skipped, and its reference is left untouched.
+	 *
+	 * @param string $markdown   The page Markdown.
+	 * @param string $source_url The page's raw Markdown source URL.
+	 * @return array<string, string> File name to media URL.
+	 */
+	private function github_image_map( string $markdown, string $source_url ): array {
+		$map = array();
+		foreach ( ImageRefs::extract( $markdown ) as $ref ) {
+			$name = basename( (string) preg_replace( '/[?#].*$/', '', $ref ) );
+			if ( '' === $name || isset( $map[ $name ] ) ) {
+				continue;
+			}
+			$image_url = self::resolve_relative_url( $source_url, $ref );
+			if ( '' === $image_url || ! self::is_allowed_source( $image_url ) ) {
+				continue;
+			}
+			$response = wp_safe_remote_get(
+				$image_url,
+				array(
+					'timeout'             => 15,
+					'redirection'         => 0,
+					'limit_response_size' => 5 * MB_IN_BYTES,
+				)
+			);
+			if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+				continue;
+			}
+			$data = (string) wp_remote_retrieve_body( $response );
+			if ( '' === $data ) {
+				continue;
+			}
+			$url = MarkdownImportPage::sideload_image( $name, $data );
+			if ( '' !== $url ) {
+				$map[ $name ] = $url;
+			}
+		}
+		return $map;
+	}
+
+	/**
+	 * Resolve a relative reference against a base URL, the way a browser resolves
+	 * a link on a page: the reference is applied to the base's folder, and "." and
+	 * ".." segments are collapsed. Returns '' if the base cannot be parsed.
+	 *
+	 * @param string $base_url The absolute URL the reference sits on.
+	 * @param string $relative The relative reference (e.g. "../assets/x.svg").
+	 * @return string The resolved absolute URL, or ''.
+	 */
+	private static function resolve_relative_url( string $base_url, string $relative ): string {
+		$parts = wp_parse_url( $base_url );
+		if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || empty( $parts['host'] ) || empty( $parts['path'] ) ) {
+			return '';
+		}
+		$relative = (string) preg_replace( '/[?#].*$/', '', $relative );
+		$dir      = self::dirname_of( (string) $parts['path'] );
+		$path     = self::normalize_path( $dir . '/' . ltrim( $relative, '/' ) );
+		return $parts['scheme'] . '://' . $parts['host'] . $path;
+	}
+
+	/**
+	 * Collapse "." and ".." segments in a path. A ".." that would climb above the
+	 * root is dropped, so the result never escapes the root.
+	 *
+	 * @param string $path A path, possibly with . and .. segments.
+	 * @return string The normalised path, starting with "/".
+	 */
+	private static function normalize_path( string $path ): string {
+		$out = array();
+		foreach ( explode( '/', $path ) as $segment ) {
+			if ( '' === $segment || '.' === $segment ) {
+				continue;
+			}
+			if ( '..' === $segment ) {
+				array_pop( $out );
+				continue;
+			}
+			$out[] = $segment;
+		}
+		return '/' . implode( '/', $out );
 	}
 
 	/**

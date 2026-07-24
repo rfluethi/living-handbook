@@ -40,6 +40,8 @@ On a re-import the repository decides the structure again, so a parent set by ha
 
 An `index.md` or `README.md` that stands for a folder takes its slug from the **folder** name, not from the file name, so the area page gets a clean URL instead of `readme`.
 
+**Images.** An image a page references by a relative path (for example `../assets/x.svg`) is fetched from the repository and sideloaded into the media library, so the stored page points at the media copy instead of a path that would 404 on the site. It happens on the import and on every later sync; sideloading dedupes by file name and content, so a shared image is stored once and reused. An absolute image URL is left as it is.
+
 ## Importing the same source twice
 
 Re-importing the same source **updates the existing pages instead of creating duplicates**. How a page is recognised depends on the import:
@@ -78,13 +80,13 @@ Importing needs the content-manager role. A bundle is a file from another site, 
 
 ## The app handbook
 
-The plugin comes with a handbook of its own: the documentation of the app, written as a Living Handbook so it doubles as a first example of one. It is not shipped inside the plugin. It is written and maintained in a public GitHub repository, and the **App handbook** tab loads the current state straight from there.
+The plugin comes with a handbook of its own: the documentation of the app, written as a Living Handbook so it doubles as a first example of one. It **ships inside the plugin**, as Markdown under `handbuch/`, and the **App handbook** tab imports it from there. Shipping it means it always matches the installed version and no install depends on a repository staying reachable. The Markdown is authored in a public repository and copied into the plugin at build time, so it still has one editing source; it just travels with the release. Loading it again after a plugin update refreshes the pages.
 
-Behind the tab is nothing new: it is the ordinary GitHub folder import (see above) against a fixed URL, and the folder is chosen by the admin language. So the handbook has one source, is visible and editable where it is written, and every load pulls the current state rather than a copy frozen at some release. Its pages are GitHub-sourced, so a later change in the repository reaches the site on the next load, and images in the repository come along.
+The pages are read from disk and their images sideloaded into the media library, the same way the GitHub folder import handles a repository. The content is stored as sanitised HTML, so the plugin's own blocks (the entry list, the feedback prompt, the badges) cannot travel this way; they are described in the text, not embedded. Mermaid diagrams do travel.
 
-Because it is a GitHub import, the same thing applies as to any GitHub-sourced page: the content is stored as sanitised HTML, so the plugin's own blocks (the entry list, the feedback prompt, the badges) cannot travel this way; they are described in the text, not embedded. Mermaid diagrams do travel.
+A fork, or anyone who would rather pull the latest state straight from GitHub, points the tab at a repository through the `living_handbook_app_handbook_url` filter (see [hooks.md](hooks.md)): any tree URL it returns is imported as a GitHub folder instead of the bundled copy. The default is the bundled copy.
 
-Unlike an ordinary GitHub import, the app handbook is **published straight away** rather than left as a draft: it is curated, editor-locked content from a repository the site owner chose, and its front-end visibility is governed by the handbook it lands in. Put it in a handbook set to "members" and only logged-in people see it; it becomes public only if you set that handbook to public. Any other GitHub import stays a draft, so you can review the pages before publishing.
+The app handbook is **published straight away** rather than left as a draft: it is curated content, and its front-end visibility is governed by the handbook it lands in. Put it in a handbook set to "members" and only logged-in people see it; it becomes public only if you set that handbook to public. A manual GitHub import, by contrast, stays a draft, so you can review the pages before publishing.
 
 **Load into** picks the handbook the pages belong to. Create one first, for example "App handbook", and set who may read it there.
 

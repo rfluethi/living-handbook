@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.49.0
+Stable tag: 0.50.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.50.0 =
+* The app handbook now ships with the plugin instead of loading from GitHub, so it always matches the installed version and no install depends on a repository staying reachable. The "App handbook" tab imports it from the bundled folder; loading again after a plugin update refreshes the pages. A fork can still point the tab at a GitHub repository through the living_handbook_app_handbook_url filter.
+* The GitHub folder import now brings images along: an image a page references by a relative path (like ../assets/x.svg) is fetched from the repository and sideloaded into the media library, so it is no longer a link that 404s on the site. The same happens on every later sync, and shared images are stored once.
+
 = 0.49.0 =
 * Public feedback: a new setting lets logged-out visitors vote "Was this helpful?" on public pages. To stay privacy-friendly it stores nothing personal, no cookie, no IP, no identifier, so the same visitor can vote again after reloading; the trade-off is no per-person limit. Off by default. On internal pages, logged-in users still vote once each regardless of this setting.
 * Feedback can be reset per page: a "Reset feedback" action in the handbook list clears a page's counters, for a page reworked after weak feedback.
@@ -109,18 +113,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 = 0.44.0 =
 * The GitHub folder import now reports internal .md links that point at no page. After it wires up every link whose target exists, anything left pointing at a .md file is a dead link, a typo or a page not yet written, and the result list names the page it is on and the file it points at. This makes a large handbook with many cross-references far easier to keep whole.
 
-= 0.43.0 =
-* The GitHub source note ("This page is maintained on GitHub…") now reads as a note rather than body text: smaller, muted, with a subtle accent bar.
-* Fixed a self-contradiction in the developer docs, where the limits section still said the folder import does not descend into subfolders, which it has since 0.40.0.
-
-= 0.42.0 =
-* The GitHub folder import now respects the transport "Reihenfolge" of a page for its order, instead of overwriting it with an automatic value. Number only the pages whose order matters, keep the numbers small; everything else falls back to its import position and sorts after them. An area's order lives in its README.
-* An index or README file that stands for a folder now takes its slug from the folder name, so an area page gets a clean URL instead of "readme".
-* The app handbook is published on load rather than left as drafts. It is curated, editor-locked content, and its visibility is governed by the handbook it lands in, so a "members" handbook keeps it behind the login. Any other GitHub import still stays a draft for review.
-
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.50.0 =
+The app handbook now ships with the plugin (loaded from the bundled folder, matching your version), and the GitHub folder import brings referenced images into the media library. Reload the app handbook after updating. Pre-release: best on a fresh database.
 
 = 0.49.0 =
 Optional public "Was this helpful?" voting (privacy-friendly, no cookie or IP, off by default), a per-page feedback reset, and filters to change the handbook URL bases. Pre-release: best on a fresh database.

@@ -2,6 +2,10 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.50.0 =
+* The app handbook now ships with the plugin instead of loading from GitHub, so it always matches the installed version and no install depends on a repository staying reachable. The "App handbook" tab imports it from the bundled folder; loading again after a plugin update refreshes the pages. A fork can still point the tab at a GitHub repository through the living_handbook_app_handbook_url filter.
+* The GitHub folder import now brings images along: an image a page references by a relative path (like ../assets/x.svg) is fetched from the repository and sideloaded into the media library, so it is no longer a link that 404s on the site. The same happens on every later sync, and shared images are stored once.
+
 = 0.49.0 =
 * Public feedback: a new setting lets logged-out visitors vote "Was this helpful?" on public pages. To stay privacy-friendly it stores nothing personal, no cookie, no IP, no identifier, so the same visitor can vote again after reloading; the trade-off is no per-person limit. Off by default. On internal pages, logged-in users still vote once each regardless of this setting.
 * Feedback can be reset per page: a "Reset feedback" action in the handbook list clears a page's counters, for a page reworked after weak feedback.

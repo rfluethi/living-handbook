@@ -108,14 +108,14 @@ add_filter(
 
 ### `living_handbook_app_handbook_url`
 
-Filters the GitHub folder URL the **App handbook** tab loads from. The default points at this plugin's own documentation repository, chosen by the admin language. A fork with its own documentation uses this filter to point the tab at its repository, without editing the plugin. Return an empty string to hide the tab and the setup hint entirely.
+Filters where the **App handbook** tab loads from. The default is an empty string, which means "use the copy bundled with the plugin". Return a GitHub tree URL to load from a repository instead: a fork with its own documentation points the tab at its repository this way, without editing the plugin, and any install that would rather pull the latest state from GitHub than the bundled copy can too.
 
 Parameters:
 
-- `string $default` The default tree URL for the current admin language.
+- `string $default` The default, an empty string (use the bundled copy).
 - `string $locale` The current admin locale.
 
-Return a `github.com/.../tree/<branch>/<path>` URL, or `''`. Example, point it at your own handbook:
+Return a `github.com/.../tree/<branch>/<path>` URL, or `''` to keep the bundled copy. Example, pull from your own repository instead of the bundle:
 
 ```php
 add_filter(

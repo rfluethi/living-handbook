@@ -1,6 +1,6 @@
 <?php
 /**
- * The app's own handbook, offered as a one-click GitHub import.
+ * The app's own handbook, offered as a one-click import.
  *
  * @package LivingHandbook
  */
@@ -9,88 +9,108 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Import;
 
+use LivingHandbook\Git\GitSync;
+use WP_Error;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Points the import screen at the handbook the plugin's own documentation lives
- * in, on GitHub.
+ * Loads the handbook the plugin's own documentation lives in.
  *
- * The handbook is not shipped inside the plugin. It is written and maintained in
- * a public GitHub repository, and the "App handbook" tab is a shortcut that runs
- * the ordinary GitHub folder import against a fixed URL, choosing the folder that
- * matches the admin language. That way the documentation has one source, is
- * visible and editable where it is written, and every install pulls the current
- * state instead of a snapshot frozen at release time.
+ * The handbook ships inside the plugin, as Markdown under handbuch/, and the
+ * "App handbook" tab imports it from there. Shipping it means it always matches
+ * the installed version and no install ever depends on a repository staying
+ * reachable. The Markdown is authored in a public repository and copied into the
+ * plugin at build time, so it still has one editing source; it just travels with
+ * the release.
  *
- * This class holds no logic beyond picking the right URL. The import itself is
- * the same code path as the GitHub tab: {@see GitSync::import_folder()}.
- *
- * The default URLs point at this plugin's own repository. A fork with its own
- * documentation overrides them through the `living_handbook_app_handbook_url`
- * filter rather than editing this file; returning an empty string from the
- * filter hides the tab and the setup hint, so there is never a button that leads
- * nowhere.
+ * A fork, or anyone who would rather pull the latest state straight from GitHub,
+ * overrides the source through the `living_handbook_app_handbook_url` filter: any
+ * non-empty tree URL it returns is imported instead of the bundled folder. The
+ * default is empty, meaning "use the bundled copy". Returning nothing from the
+ * filter with no bundled folder present hides the tab and the setup hint, so
+ * there is never a button that leads nowhere.
  */
 final class AppHandbook {
 
 	/**
-	 * The GitHub folder holding the German handbook, as a tree URL.
+	 * The bundled folder holding the German handbook, relative to the plugin.
 	 */
-	private const URL_DE = 'https://github.com/rfluethi/living-handbook/tree/main/handbuch/de';
+	private const PATH_DE = 'handbuch/de';
 
 	/**
-	 * The GitHub folder holding the English handbook, as a tree URL. Also the
-	 * fallback for any language without its own folder.
+	 * The bundled folder holding the English handbook, relative to the plugin.
+	 * Also the fallback for any language without its own folder.
 	 */
-	private const URL_EN = 'https://github.com/rfluethi/living-handbook/tree/main/handbuch/en';
+	private const PATH_EN = 'handbuch/en';
 
 	/**
-	 * Whether the app handbook can be offered: the user may import, and a URL is
-	 * configured.
+	 * Whether the app handbook can be offered: the user may import, and there is
+	 * either a bundled folder or a GitHub override to load from.
 	 *
 	 * @return bool
 	 */
 	public static function can_load(): bool {
-		return MarkdownImportPage::can_import() && '' !== self::url();
+		return MarkdownImportPage::can_import() && ( '' !== self::override_url() || '' !== self::local_dir() );
 	}
 
 	/**
-	 * The tree URL for the current admin language, English as the fallback,
-	 * filterable so a fork can point it at its own repository.
+	 * The bundled folder for the current admin language, English as the fallback,
+	 * or '' when the folder is not present (a source build without the docs).
 	 *
-	 * @return string The URL, or '' when the filter clears it.
+	 * @return string Absolute path, or ''.
 	 */
-	public static function url(): string {
-		$locale  = determine_locale();
-		$default = ( 0 === strpos( $locale, 'de' ) ) ? self::URL_DE : self::URL_EN;
+	public static function local_dir(): string {
+		$locale = determine_locale();
+		$rel    = ( 0 === strpos( $locale, 'de' ) ) ? self::PATH_DE : self::PATH_EN;
+		$dir    = rtrim( LIVING_HANDBOOK_DIR, '/' ) . '/' . $rel;
+		return is_dir( $dir ) ? $dir : '';
+	}
+
+	/**
+	 * A GitHub tree URL to load from instead of the bundled folder, or '' to use
+	 * the bundle. Empty by default: the app handbook ships with the plugin.
+	 *
+	 * @return string The override URL, or ''.
+	 */
+	public static function override_url(): string {
+		$locale = determine_locale();
 
 		/**
-		 * Filter the GitHub folder URL the app handbook is loaded from.
+		 * Filter the source the app handbook is loaded from. Return a
+		 * github.com/.../tree/<branch>/<path> URL to pull from GitHub instead of
+		 * the bundled folder, or '' (the default) to use the bundled copy.
 		 *
-		 * @param string $default The default URL for the admin language.
+		 * @param string $default The default, an empty string (use the bundle).
 		 * @param string $locale  The current admin locale.
 		 */
-		$url = (string) apply_filters( 'living_handbook_app_handbook_url', $default, $locale );
+		$url = (string) apply_filters( 'living_handbook_app_handbook_url', '', $locale );
 
 		return trim( $url );
 	}
 
 	/**
-	 * Whether a URL is the app handbook's own source.
+	 * Load the app handbook into a handbook, published straight away. It is
+	 * curated content, so its front-end visibility is governed by the handbook it
+	 * lands in, not by a draft status. A GitHub override is imported as a folder;
+	 * otherwise the bundled folder is imported from disk.
 	 *
-	 * The import uses this to publish the app handbook straight away: it is
-	 * curated, editor-locked content from a repository the site owner chose, and
-	 * its front-end visibility is governed by the handbook it lands in, not by the
-	 * draft status. An ordinary GitHub import of some other repository stays a
-	 * draft, so this deliberately matches only the configured URL.
-	 *
-	 * @param string $url The URL being imported.
-	 * @return bool
+	 * @param int $handbook_id Target handbook term id (0 for none).
+	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
 	 */
-	public static function is_source( string $url ): bool {
-		$url = trim( $url );
-		return '' !== $url && self::url() === $url;
+	public static function load( int $handbook_id ) {
+		$sync     = new GitSync();
+		$override = self::override_url();
+		if ( '' !== $override ) {
+			return $sync->import_folder( $override, $handbook_id, true );
+		}
+
+		$dir = self::local_dir();
+		if ( '' === $dir ) {
+			return new WP_Error( 'living_handbook_import', __( 'The app handbook is not available in this build.', 'living-handbook' ), array( 'status' => 404 ) );
+		}
+		return $sync->import_local_folder( $dir, $handbook_id, true );
 	}
 }

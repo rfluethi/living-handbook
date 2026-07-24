@@ -45,6 +45,9 @@ cp -R src "$dest"/
 cp -R assets "$dest"/
 if [ -d blocks ]; then cp -R blocks "$dest"/; fi
 cp -R languages "$dest"/
+# The app handbook ships with the plugin: its Markdown and images are imported
+# from here by the "App handbook" tab, so it always matches the installed version.
+if [ -d handbuch ]; then cp -R handbuch "$dest"/; fi
 cp -R vendor "$dest"/
 if [ -f readme.txt ]; then cp readme.txt "$dest"/; fi
 if [ -f README.md ]; then cp README.md "$dest"/; fi

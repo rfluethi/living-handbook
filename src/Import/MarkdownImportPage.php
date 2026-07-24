@@ -363,25 +363,28 @@ final class MarkdownImportPage {
 		if ( ! MarkdownConverter::available() ) {
 			return self::no_commonmark();
 		}
+		$handbook_id = absint( $request->get_param( 'handbook' ) );
+
+		// The app handbook loads from the bundled folder (or a GitHub override, via
+		// the filter), published straight away, through its own path. It needs no
+		// URL from the browser.
+		if ( (bool) $request->get_param( 'app_handbook' ) ) {
+			return AppHandbook::load( $handbook_id );
+		}
+
 		$url = trim( (string) $request->get_param( 'url' ) );
 		if ( '' === $url ) {
 			return self::import_error( __( 'No GitHub URL given.', 'living-handbook' ) );
 		}
-		$title       = sanitize_text_field( (string) $request->get_param( 'title' ) );
-		$handbook_id = absint( $request->get_param( 'handbook' ) );
-		$git         = new GitSync();
+		$title = sanitize_text_field( (string) $request->get_param( 'title' ) );
+		$git   = new GitSync();
 
-		// The app handbook is curated, editor-locked content from a repository the
-		// site owner chose, so it is published straight away; its visibility is
-		// governed by the handbook it lands in. Any other GitHub import stays a
-		// draft for review.
-		$publish = AppHandbook::is_source( $url );
-
+		// A manual GitHub import stays a draft for review.
 		if ( false !== strpos( $url, '/tree/' ) ) {
-			return $git->import_folder( $url, $handbook_id, $publish );
+			return $git->import_folder( $url, $handbook_id, false );
 		}
 
-		$post_id = $git->create_github_page( $url, $handbook_id, $title, $publish );
+		$post_id = $git->create_github_page( $url, $handbook_id, $title, false );
 		if ( 0 === $post_id ) {
 			return self::import_error( __( 'Could not create the page. Check the URL.', 'living-handbook' ) );
 		}
@@ -761,12 +764,11 @@ final class MarkdownImportPage {
 			'living-handbook-markdown-import',
 			'lhImport',
 			array(
-				'convertPath'    => '/living-handbook/v1/convert',
-				'zipPath'        => '/living-handbook/v1/import-zip',
-				'githubPath'     => '/living-handbook/v1/import-github',
-				'createPath'     => '/living-handbook/v1/create',
-				'finalizePath'   => '/living-handbook/v1/finalize',
-				'appHandbookUrl' => AppHandbook::url(),
+				'convertPath'  => '/living-handbook/v1/convert',
+				'zipPath'      => '/living-handbook/v1/import-zip',
+				'githubPath'   => '/living-handbook/v1/import-github',
+				'createPath'   => '/living-handbook/v1/create',
+				'finalizePath' => '/living-handbook/v1/finalize',
 			)
 		);
 
@@ -934,8 +936,8 @@ final class MarkdownImportPage {
 				<?php endif; ?>
 				<?php if ( $app ) : ?>
 					<div class="living-handbook-import__panel" id="lh-panel-app" role="tabpanel" aria-labelledby="lh-tab-app" hidden>
-						<p><?php esc_html_e( 'The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It is maintained on GitHub, so this loads the current state straight from there, with its pages, structure and images.', 'living-handbook' ); ?></p>
-						<p class="description"><?php esc_html_e( 'The pages are pulled from the repository, published into the handbook you pick, and kept in sync, so later changes on GitHub reach your site on the next load. Whether they are visible on the front end depends on that handbook: set it to "members" and only logged-in people see them. Nothing is deleted.', 'living-handbook' ); ?></p>
+						<p><?php esc_html_e( 'The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It ships with the plugin, so this loads it from the installed version, with its pages, structure and images.', 'living-handbook' ); ?></p>
+						<p class="description"><?php esc_html_e( 'The pages are published into the handbook you pick. Whether they are visible on the front end depends on that handbook: set it to "members" and only logged-in people see them. Loading again after a plugin update refreshes the pages; nothing is deleted.', 'living-handbook' ); ?></p>
 						<table class="form-table" role="presentation">
 							<tr>
 								<th scope="row"><label for="lh-app-handbook"><?php esc_html_e( 'Load into', 'living-handbook' ); ?></label></th>

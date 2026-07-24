@@ -464,6 +464,29 @@
 			} );
 		}
 
+		function importApp() {
+			setStatus( __( 'Loading the app handbook…', 'living-handbook' ) );
+			return wp.apiFetch( {
+				path: lhImport.githubPath,
+				method: 'POST',
+				data: { app_handbook: 1, handbook: handbookId() }
+			} ).then( function ( res ) {
+				var pages = ( res && res.pages ) ? res.pages : [];
+				if ( ! pages.length ) {
+					setStatus( __( 'No pages were loaded.', 'living-handbook' ) );
+					return;
+				}
+				pages.forEach( function ( p ) {
+					addResult( p, p.title );
+				} );
+				showNotes( ( res && res.notes ) ? res.notes : [] );
+				// translators: %d is the number of pages loaded.
+				setStatus( sprintf( _n( 'Done: loaded %d page.', 'Done: loaded %d pages.', pages.length, 'living-handbook' ), pages.length ) );
+			} ).catch( function ( err ) {
+				setStatus( errorMessage( err ) );
+			} );
+		}
+
 		function begin() {
 			if ( results ) {
 				results.innerHTML = '';
@@ -526,20 +549,16 @@
 				run( importGithub( url ) );
 			} );
 		}
-		// The app handbook is a GitHub folder import against a fixed URL the
-		// server picks by admin language; the button just runs the same path.
+		// The app handbook ships with the plugin; the server loads it from the
+		// bundled folder (or a GitHub override if the filter sets one). The button
+		// just asks for it by a flag, no URL from the browser.
 		var appBtn = document.getElementById( 'lh-app-btn' );
 		if ( appBtn ) {
 			appBtn.addEventListener( 'click', function () {
-				var url = ( window.lhImport && lhImport.appHandbookUrl ) ? lhImport.appHandbookUrl : '';
-				if ( ! url ) {
-					setStatus( __( 'The app handbook URL is not configured.', 'living-handbook' ) );
-					return;
-				}
 				if ( ! begin() ) {
 					return;
 				}
-				run( importGithub( url ) );
+				run( importApp() );
 			} );
 		}
 	} );
