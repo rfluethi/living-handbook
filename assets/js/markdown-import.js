@@ -121,6 +121,37 @@
 		var githubField = document.getElementById( 'lh-import-github' );
 		var statusEl = document.getElementById( 'lh-import-status' );
 		var results = document.getElementById( 'lh-import-results' );
+		var notesEl = document.getElementById( 'lh-import-notes' );
+
+		// Render the import notes as one highlighted warning block, or clear it.
+		function showNotes( notes ) {
+			if ( ! notesEl ) {
+				return;
+			}
+			notesEl.innerHTML = '';
+			if ( ! notes || ! notes.length ) {
+				return;
+			}
+			var box = document.createElement( 'div' );
+			box.className = 'notice notice-warning';
+			box.style.margin = '0 0 1rem';
+			box.style.padding = '0.5rem 0.75rem';
+			var head = document.createElement( 'p' );
+			head.style.margin = '0 0 0.25rem';
+			head.innerHTML = '<strong>' + __( 'Some links need attention:', 'living-handbook' ) + '</strong>';
+			box.appendChild( head );
+			var list = document.createElement( 'ul' );
+			list.style.margin = '0';
+			list.style.listStyle = 'disc';
+			list.style.marginLeft = '1.5em';
+			notes.forEach( function ( note ) {
+				var item = document.createElement( 'li' );
+				item.textContent = note;
+				list.appendChild( item );
+			} );
+			box.appendChild( list );
+			notesEl.appendChild( box );
+		}
 
 		var pasteBtn = document.getElementById( 'lh-import-run-paste' );
 		var zipBtn = document.getElementById( 'lh-import-run-zip' );
@@ -421,16 +452,11 @@
 				pages.forEach( function ( p ) {
 					addResult( p, p.title );
 				} );
-				// A folder import can succeed and still be incomplete, when the
-				// repository is too large for one tree response or the file limit
-				// was reached. Saying so is the whole point of the note.
-				( ( res && res.notes ) ? res.notes : [] ).forEach( function ( note ) {
-					var item = document.createElement( 'li' );
-					item.textContent = note;
-					if ( results ) {
-						results.appendChild( item );
-					}
-				} );
+				// Notes report what needs attention: links that resolved to no
+				// page, or an import cut short by the file or tree limit. They go
+				// in their own highlighted block above the page list, not lost at
+				// the end of it.
+				showNotes( ( res && res.notes ) ? res.notes : [] );
 				// translators: %d is the number of pages created from GitHub.
 				setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', pages.length, 'living-handbook' ), pages.length ) );
 			} ).catch( function ( err ) {
@@ -441,6 +467,9 @@
 		function begin() {
 			if ( results ) {
 				results.innerHTML = '';
+			}
+			if ( notesEl ) {
+				notesEl.innerHTML = '';
 			}
 			if ( ! window.wp || ! wp.blocks ) {
 				setStatus( __( 'wp.blocks is not loaded.', 'living-handbook' ) );

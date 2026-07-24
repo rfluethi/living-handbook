@@ -957,6 +957,7 @@ final class MarkdownImportPage {
 				<?php endif; ?>
 			</div>
 			<p><span id="lh-import-status" aria-live="polite"></span></p>
+			<div id="lh-import-notes"></div>
 			<ul id="lh-import-results" style="list-style:disc;margin-left:1.5em;"></ul>
 
 		</div>
