@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-24T17:13:16+00:00\n"
+"POT-Creation-Date: 2026-07-24T17:50:19+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -319,47 +319,47 @@ msgid ""
 "Single handbook page: navigation left, content centre, on-this-page right."
 msgstr ""
 
-#: src/Git/GitSync.php:147
+#: src/Git/GitSync.php:154
 msgid "Off (only on save and Sync now)"
 msgstr "Aus (nur beim Speichern und über «Jetzt synchronisieren»)"
 
-#: src/Git/GitSync.php:148
+#: src/Git/GitSync.php:155
 msgid "Hourly"
 msgstr "Stündlich"
 
-#: src/Git/GitSync.php:149
+#: src/Git/GitSync.php:156
 msgid "Twice daily"
 msgstr "Zweimal täglich"
 
-#: src/Git/GitSync.php:150
+#: src/Git/GitSync.php:157
 msgid "Daily"
 msgstr "Täglich"
 
-#: src/Git/GitSync.php:151
+#: src/Git/GitSync.php:158
 msgid "Weekly"
 msgstr "Wöchentlich"
 
-#: src/Git/GitSync.php:298
+#: src/Git/GitSync.php:305
 msgid "GitHub page"
 msgstr "GitHub-Seite"
 
 # GitHub sync: folder import and pull errors. Source strings live in src/Git/GitSync.php.
-#: src/Git/GitSync.php:383
+#: src/Git/GitSync.php:390
 msgid "Not a GitHub folder URL."
 msgstr "Keine GitHub-Ordner-URL."
 
-#: src/Git/GitSync.php:393
+#: src/Git/GitSync.php:400
 msgid "No Markdown files found in that folder."
 msgstr ""
 
-#: src/Git/GitSync.php:398
+#: src/Git/GitSync.php:405
 msgid ""
 "The repository is too large for GitHub to return its tree in one piece, so "
 "this import may be incomplete."
 msgstr ""
 
 #. translators: %d: maximum number of files imported from one folder.
-#: src/Git/GitSync.php:404
+#: src/Git/GitSync.php:411
 #, php-format
 msgid ""
 "Only the first %d files were imported. Import the remaining subfolders "
@@ -367,28 +367,28 @@ msgid ""
 msgstr ""
 
 #. translators: 1: page title the link is on, 2: link target file name.
-#: src/Git/GitSync.php:466 src/Git/GitSync.php:556
+#: src/Git/GitSync.php:473 src/Git/GitSync.php:563
 #, php-format
 msgid ""
 "On \"%1$s\": the link to %2$s points at no page, so it was shown as plain "
 "text. Add that page, or fix the link."
 msgstr ""
 
-#: src/Git/GitSync.php:497
+#: src/Git/GitSync.php:504
 msgid "The app handbook folder was not found in the plugin."
 msgstr "Der App-Handbuch-Ordner wurde im Plugin nicht gefunden."
 
-#: src/Git/GitSync.php:502
+#: src/Git/GitSync.php:509
 msgid "No Markdown files were found in the app handbook folder."
 msgstr "Im App-Handbuch-Ordner wurden keine Markdown-Dateien gefunden."
 
 #. translators: %d: maximum number of files imported from one folder.
-#: src/Git/GitSync.php:510
+#: src/Git/GitSync.php:517
 #, php-format
 msgid "Only the first %d files were imported."
 msgstr ""
 
-#: src/Git/GitSync.php:598
+#: src/Git/GitSync.php:605
 msgid ""
 "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try "
 "again later."
@@ -397,45 +397,45 @@ msgstr ""
 "Versuche es später erneut."
 
 #. translators: %d: HTTP status code returned by the GitHub API.
-#: src/Git/GitSync.php:601
+#: src/Git/GitSync.php:608
 #, php-format
 msgid "GitHub API HTTP %d"
 msgstr "GitHub-API HTTP %d"
 
-#: src/Git/GitSync.php:606
+#: src/Git/GitSync.php:613
 msgid "Unexpected GitHub API response."
 msgstr "Unerwartete Antwort der GitHub-API."
 
-#: src/Git/GitSync.php:918
+#: src/Git/GitSync.php:925
 msgid "App handbook page"
 msgstr "App-Handbuch-Seite"
 
 # GitHub sync: source box
-#: src/Git/GitSync.php:1191 src/Git/GitSync.php:1722
+#: src/Git/GitSync.php:1203 src/Git/GitSync.php:1751
 msgid "Source"
 msgstr "Quelle"
 
-#: src/Git/GitSync.php:1213
+#: src/Git/GitSync.php:1225
 msgid "Maintained in WordPress"
 msgstr "In WordPress gepflegt"
 
-#: src/Git/GitSync.php:1214
+#: src/Git/GitSync.php:1226
 msgid "Synced from GitHub"
 msgstr "Aus GitHub synchronisiert"
 
-#: src/Git/GitSync.php:1216
+#: src/Git/GitSync.php:1228
 msgid "Markdown source (raw or blob URL)"
 msgstr "Markdown-Quelle (Raw- oder Blob-URL)"
 
-#: src/Git/GitSync.php:1221
+#: src/Git/GitSync.php:1233
 msgid "Sync now"
 msgstr "Jetzt synchronisieren"
 
-#: src/Git/GitSync.php:1225
+#: src/Git/GitSync.php:1237
 msgid "Last sync:"
 msgstr "Letzter Sync:"
 
-#: src/Git/GitSync.php:1227
+#: src/Git/GitSync.php:1239
 msgid ""
 "A GitHub page is pulled when you save it, and its content editor is locked. "
 "Change the source here."
@@ -443,7 +443,17 @@ msgstr ""
 "Eine GitHub-Seite wird beim Speichern gezogen, und ihr Inhalts-Editor ist "
 "gesperrt. Die Quelle änderst du hier."
 
-#: src/Git/GitSync.php:1304
+#: src/Git/GitSync.php:1330
+msgid ""
+"This page is part of the app handbook that ships with the plugin. Its "
+"content is managed there and a re-load replaces it, so it cannot be edited "
+"here."
+msgstr ""
+"Diese Seite gehört zum App-Handbuch, das mit dem Plugin ausgeliefert wird. "
+"Ihr Inhalt wird dort verwaltet, und ein erneutes Laden ersetzt sie, sie kann "
+"hier also nicht bearbeitet werden."
+
+#: src/Git/GitSync.php:1333
 msgid ""
 "This page is synced from GitHub. Its content is managed in the repository "
 "and cannot be edited here."
@@ -452,7 +462,7 @@ msgstr ""
 "gepflegt und kann hier nicht bearbeitet werden."
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:1343
+#: src/Git/GitSync.php:1372
 #, php-format
 msgid ""
 "Living Handbook: %d GitHub page could not be synced. Open it to see the "
@@ -467,64 +477,64 @@ msgstr[1] ""
 "Living Handbook: %d GitHub-Seiten konnten nicht synchronisiert werden. Öffne "
 "sie, um den Fehler zu sehen."
 
-#: src/Git/GitSync.php:1364 src/Setup/Onboarding.php:321
+#: src/Git/GitSync.php:1393 src/Setup/Onboarding.php:321
 msgid "(no title)"
 msgstr "(ohne Titel)"
 
 #. translators: %d: number of further failed pages not listed.
 #. translators: %d: number of further affected pages not listed.
-#: src/Git/GitSync.php:1374 src/Setup/Onboarding.php:334
+#: src/Git/GitSync.php:1403 src/Setup/Onboarding.php:334
 #, php-format
 msgid "… and %d more."
 msgstr "… und %d weitere."
 
-#: src/Git/GitSync.php:1400
+#: src/Git/GitSync.php:1429
 msgid "You are not allowed to do this."
 msgstr "Dazu bist du nicht berechtigt."
 
 # GitHub sync: status messages
-#: src/Git/GitSync.php:1475
+#: src/Git/GitSync.php:1504
 msgid "Error: CommonMark is not installed."
 msgstr "Fehler: CommonMark ist nicht installiert."
 
-#: src/Git/GitSync.php:1483
+#: src/Git/GitSync.php:1512
 msgid "Error: source host not allowed."
 msgstr "Fehler: Quell-Host nicht erlaubt."
 
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
-#: src/Git/GitSync.php:1496 assets/js/markdown-import.js:234
+#: src/Git/GitSync.php:1525 assets/js/markdown-import.js:234
 #: assets/js/markdown-import.js:324
 #, php-format
 msgid "Error: %s"
 msgstr "Fehler: %s"
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:1502
+#: src/Git/GitSync.php:1531
 #, php-format
 msgid "Error: HTTP %d"
 msgstr "Fehler: HTTP %d"
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:1520
+#: src/Git/GitSync.php:1549
 #, php-format
 msgid "OK %s"
 msgstr "OK %s"
 
-#: src/Git/GitSync.php:1738 src/Git/GitSync.php:1761
+#: src/Git/GitSync.php:1767 src/Git/GitSync.php:1790
 #: src/Import/MarkdownImportPage.php:861
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/Git/GitSync.php:1738 src/Git/GitSync.php:1762
+#: src/Git/GitSync.php:1767 src/Git/GitSync.php:1791
 msgid "WordPress"
 msgstr "WordPress"
 
-#: src/Git/GitSync.php:1742
+#: src/Git/GitSync.php:1771
 msgid "(sync failed)"
 msgstr "(Sync fehlgeschlagen)"
 
-#: src/Git/GitSync.php:1760
+#: src/Git/GitSync.php:1789
 msgid "All sources"
 msgstr "Alle Quellen"
 

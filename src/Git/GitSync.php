@@ -77,6 +77,13 @@ final class GitSync {
 	private const META_FOLDER = '_lh_github_folder';
 
 	/**
+	 * Marks a page that came from the bundled app handbook. Its editor is locked
+	 * like a GitHub page: the content is managed, and a re-load replaces it, so
+	 * editing here would only be lost on the next load.
+	 */
+	private const META_APP = '_lh_app_handbook';
+
+	/**
 	 * How many files one folder import may create. A guard against pointing the
 	 * import at a repository root and waiting for a thousand pages.
 	 */
@@ -927,6 +934,7 @@ final class GitSync {
 		}
 
 		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
+		update_post_meta( $post_id, self::META_APP, '1' );
 		if ( 0 < $handbook_id ) {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}
@@ -986,6 +994,7 @@ final class GitSync {
 		$post_id = (int) $inserted;
 		update_post_meta( $post_id, self::META_FOLDER, $marker );
 		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
+		update_post_meta( $post_id, self::META_APP, '1' );
 		if ( 0 < $handbook_id ) {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}
@@ -1045,7 +1054,10 @@ final class GitSync {
 			if ( '' === $name || isset( $map[ $name ] ) ) {
 				continue;
 			}
-			$path = self::normalize_path( $file_dir . '/' . ltrim( $clean, '/' ) );
+			// The reference may be percent-encoded (a space as %20); the file on
+			// disk is not, so decode before building the path.
+			$decoded = rawurldecode( $clean );
+			$path    = self::normalize_path( $file_dir . '/' . ltrim( $decoded, '/' ) );
 			if ( 0 !== strpos( $path . '/', $base_dir . '/' ) || ! is_file( $path ) || ! is_readable( $path ) ) {
 				continue;
 			}
@@ -1269,7 +1281,9 @@ final class GitSync {
 	}
 
 	/**
-	 * Remove the content editor for a GitHub page so it cannot be edited by hand.
+	 * Remove the content editor for a page whose content is managed, so it cannot
+	 * be edited by hand: a GitHub-synced page, or a page from the bundled app
+	 * handbook (which a re-load replaces).
 	 *
 	 * @return void
 	 */
@@ -1279,13 +1293,27 @@ final class GitSync {
 		if ( 0 === $post_id || Handbook::POST_TYPE !== get_post_type( $post_id ) ) {
 			return;
 		}
-		if ( self::SOURCE_GITHUB === get_post_meta( $post_id, self::META_SOURCE, true ) ) {
+		if ( self::is_managed_page( $post_id ) ) {
 			remove_post_type_support( Handbook::POST_TYPE, 'editor' );
 		}
 	}
 
 	/**
-	 * Show a notice on the edit screen of a GitHub-synced page.
+	 * Whether a page's content is managed elsewhere, so its editor is locked: a
+	 * GitHub-synced page, or a page from the bundled app handbook.
+	 *
+	 * @param int $post_id Post id.
+	 * @return bool
+	 */
+	private static function is_managed_page( int $post_id ): bool {
+		if ( self::SOURCE_GITHUB === get_post_meta( $post_id, self::META_SOURCE, true ) ) {
+			return true;
+		}
+		return '1' === (string) get_post_meta( $post_id, self::META_APP, true );
+	}
+
+	/**
+	 * Show a notice on the edit screen of a page whose content is managed.
 	 *
 	 * @return void
 	 */
@@ -1295,10 +1323,11 @@ final class GitSync {
 			return;
 		}
 		$post = get_post();
-		if ( ! $post instanceof WP_Post ) {
+		if ( ! $post instanceof WP_Post || ! self::is_managed_page( $post->ID ) ) {
 			return;
 		}
-		if ( self::SOURCE_GITHUB !== get_post_meta( $post->ID, self::META_SOURCE, true ) ) {
+		if ( '1' === (string) get_post_meta( $post->ID, self::META_APP, true ) ) {
+			echo '<div class="notice notice-warning"><p>' . esc_html__( 'This page is part of the app handbook that ships with the plugin. Its content is managed there and a re-load replaces it, so it cannot be edited here.', 'living-handbook' ) . '</p></div>';
 			return;
 		}
 		echo '<div class="notice notice-warning"><p>' . esc_html__( 'This page is synced from GitHub. Its content is managed in the repository and cannot be edited here.', 'living-handbook' ) . '</p></div>';

@@ -2,6 +2,11 @@
 
 Der ganze Weg zum fertigen Handbuch auf einer Seite. Für alle, die WordPress gut kennen und sich nur einen Überblick verschaffen wollen. Jeder Schritt verlinkt die ausführliche Anleitung.
 
+![](assets/schnellstart-uebersicht.png)
+![](assets/einzelseite-aufbau.svg)
+![](assets/pruefstatus-abzeichen.svg)
+![](assets/einstiegsseite-aufbau.svg)
+
 ## In sechs Schritten zum Handbuch
 
 1. **Installieren:** Plugin-ZIP hochladen und aktivieren. Voraussetzungen: WordPress 6.7 mit Block-Theme, PHP 8.1. Details: [Installation](erste-schritte/installation.md).
