@@ -40,6 +40,8 @@ On a re-import the repository decides the structure again, so a parent set by ha
 
 An `index.md` or `README.md` that stands for a folder takes its slug from the **folder** name, not from the file name, so the area page gets a clean URL instead of `readme`.
 
+**Internal links.** A relative `.md` link is resolved to its page in two ways: exactly by repository path (so a link to a folder's `README.md` finds that folder's page, and a link is unambiguous even when two folders hold a file of the same name), and, failing that, by the target's file-name slug. A link that resolves to **no** page is turned into plain text: the link text stays, the dead link is dropped, so a handbook never shows a link that 404s. The link comes back on its own once you add the target page, because every sync resolves the links again. The import lists every link it had to defuse, naming the page it is on and the file it pointed at, so a typo or a page you still have to write stays visible.
+
 ## Importing the same source twice
 
 Re-importing the same source **updates the existing pages instead of creating duplicates**. How a page is recognised depends on the import:

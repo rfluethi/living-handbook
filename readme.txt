@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.45.0
+Stable tag: 0.46.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.46.0 =
+* Internal links can no longer become 404s, by two mechanisms. First, a folder import now records each page's repository path, so an internal .md link resolves to its page exactly by path, regardless of slug; this fixes links to a folder's README, whose page takes the folder name as its slug, not "readme". Second, a link that still resolves to no page is turned into plain text instead of a raw .md link: the text stays, the dead link cannot reach the browser, and the link comes back on its own once the target page exists. The import still lists every such link so a typo or missing page stays visible.
 
 = 0.45.0 =
 * Fixed internal links turning into 404s on GitHub-sourced pages. The import resolved a page's internal .md links to real pages, but every later sync re-rendered the Markdown and left the links raw again, so the first scheduled sync after an import broke every cross-link. The sync now resolves the links too, the same way the import does.
@@ -306,6 +309,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.46.0 =
+Internal links can no longer turn into 404s: they resolve by repository path, and any that resolve to nothing become plain text. Reload the app handbook after updating. Pre-release: best on a fresh database.
 
 = 0.45.0 =
 Fixes internal links on GitHub-synced pages breaking into 404s after the first sync. Reload the app handbook after updating. Pre-release: best on a fresh database.

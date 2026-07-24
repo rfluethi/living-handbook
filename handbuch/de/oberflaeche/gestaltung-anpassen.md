@@ -12,40 +12,37 @@ Alle Farben des Plugins hängen an zentralen Stellwerten, sogenannten CSS-Variab
 ## Schritte
 
 1. Öffne die [Einstellungen](../die-einstellungen.md) unter **Handbuch → Einstellungen** und suche das Feld **Eigenes CSS**. Es wirkt nur auf den Handbuch-Seiten. Beim Löschen des Plugins wird es mit entfernt.
-2. Trage die Variablen ein, die du ändern willst. Dieses Beispiel stellt das Handbuch komplett um: dunkle Kästen auf heller Website, Bernstein als Akzent, passend eingefärbte Abzeichen. So ist die Wirkung unübersehbar:
+2. Trage die Variablen ein, die du ändern willst. Dieses Beispiel wirkt genau dort, wo du gerade liest: auf der Einzelseite. Es färbt das Suchfeld, das Inhaltsverzeichnis, die Abzeichen und den aktiven Navigationseintrag dunkel. Zusätzlich verkleinert es den Fließtext ein wenig:
 
    ```css
-   .living-handbook-overview,
-   .living-handbook-entry,
-   .living-handbook-cards,
-   .living-handbook-card,
+   /* Dunkle Kästen auf der Einzelseite */
    .living-handbook-nav,
    .living-handbook-toc,
-   .living-handbook-meta,
-   .living-handbook-feedback,
-   .living-handbook-badge {
-     /* Flächen: dunkles Blaugrau statt Weiß, helle Schrift darauf */
-     --lh-surface: #1d2733;
-     --lh-surface-text: #f2f5f8;
-
-     /* Akzent: Bernstein für Links, Knöpfe und Markierungen.
-        --lh-on-accent ist die Schriftfarbe auf gefüllten Knöpfen. */
-     --lh-accent: #ffb84d;
+   .living-handbook-badge,
+   .living-handbook-page-search {
+     --lh-surface: #1d2733;      /* Fläche */
+     --lh-surface-text: #f2f5f8; /* Schrift */
+     --lh-accent: #ffb84d;       /* Akzent */
      --lh-on-accent: #1d2733;
-
-     /* Abzeichen-Etiketten: dunkler Chip mit heller Schrift */
      --lh-badge-bg: #33414f;
      --lh-badge-text: #d7dee5;
    }
+
+   /* Fließtext der Handbuch-Seiten kleiner */
+   .living-handbook-page .wp-block-post-content {
+     font-size: 0.92em;
+   }
    ```
 
-   Rahmen und Nebentexte musst du nicht anfassen. Sie rechnen sich automatisch aus Fläche und Schriftfarbe und ziehen mit um.
+   Die zweite Regel nutzt die Klasse `living-handbook-page`. Sie sitzt auf jeder Handbuch-Ansicht. Damit gestaltest du auch normale Theme-Elemente, ohne den Rest der Website zu verändern.
 
-3. Speichere und öffne die Einstiegsseite deines Handbuchs. Bereichs-Kacheln, Filterleiste und Suchfeld sind jetzt dunkel mit heller Schrift, Knöpfe und Verweise bernsteinfarben. Auf einer Einzelseite wechseln das Inhaltsverzeichnis, die Abzeichen und die aktiven Einträge in der Navigation. Gefällt es nicht, leere das Feld wieder; dann gelten erneut die Farben des Themes.
+3. Speichere und lade eine Einzelseite neu. Du siehst sofort: Das Suchfeld oben und das Inhaltsverzeichnis sind dunkel mit heller Schrift. Die Abzeichen sind dunkle Chips. Der aktive Eintrag in der Navigation leuchtet bernsteinfarben. Der Fließtext ist eine Spur kleiner. Gefällt es nicht, leere das Feld wieder; dann gelten erneut die Farben des Themes.
+
+4. Willst du das ganze Handbuch umfärben, ergänze vorne in der Selektor-Liste die übrigen Oberflächen: `.living-handbook-overview`, `.living-handbook-entry`, `.living-handbook-cards`, `.living-handbook-card`. Dann wechseln auch die Übersicht und die Einstiegsseite mit ihren Kacheln.
 
 ## Ergebnis
 
-Alle Handbuch-Oberflächen verwenden die neuen Werte einheitlich: Karten, Navigation, Inhaltsverzeichnis, Abzeichen und Feedback. Die wichtigsten Variablen:
+Die Selektor-Liste bestimmt, wo die neuen Werte gelten; jede aufgeführte Oberfläche übernimmt sie einheitlich. Die wichtigsten Variablen:
 
 | Variable | Steuert |
 |---|---|

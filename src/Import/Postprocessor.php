@@ -105,50 +105,37 @@ final class Postprocessor {
 	 * @return int Number of links converted.
 	 */
 	public static function finalize( array $ids ): int {
-		$converted = 0;
+		return self::finalize_report( $ids )['converted'];
+	}
+
+	/**
+	 * Like finalize(), but also returns the links that could not be resolved.
+	 *
+	 * A link with no target is turned into plain text by convert_md_links(), so
+	 * after this runs no raw .md link is left in any page to become a 404. The
+	 * unresolved list is what would otherwise be a dead link: a typo or a page
+	 * not (yet) in the import.
+	 *
+	 * @param array<int, int|string> $ids Post ids.
+	 * @return array{converted: int, unresolved: array<int, array{source: string, target: string}>}
+	 */
+	public static function finalize_report( array $ids ): array {
+		$converted  = 0;
+		$unresolved = array();
 		foreach ( $ids as $id ) {
 			$id = (int) $id;
 			if ( 0 === $id ) {
 				continue;
 			}
 			self::resolve_parent( $id );
-			$converted += self::convert_md_links( $id );
+			$result     = self::convert_md_links( $id );
+			$converted += $result['converted'];
+			$unresolved = array_merge( $unresolved, $result['unresolved'] );
 		}
-		return $converted;
-	}
-
-	/**
-	 * The internal .md links that finalize() could not resolve to a page.
-	 *
-	 * Run after finalize(): every link whose target exists has been rewritten to
-	 * a permalink, so anything still pointing at a .md file is a dead link, a
-	 * typo or a page that is not in the import. Reporting these turns "click every
-	 * link to find the broken ones" into a list the importer hands you.
-	 *
-	 * @param array<int, int> $ids Post ids of the import.
-	 * @return array<int, array{source: string, target: string}> Source page title and target file name per dead link.
-	 */
-	public static function unresolved_md_links( array $ids ): array {
-		$found = array();
-		foreach ( $ids as $id ) {
-			$id   = (int) $id;
-			$post = 0 !== $id ? get_post( $id ) : null;
-			if ( ! $post instanceof WP_Post ) {
-				continue;
-			}
-			$count = preg_match_all( '/<a href="([^"]+\.md)"/i', (string) $post->post_content, $matches );
-			if ( ! $count ) {
-				continue;
-			}
-			foreach ( $matches[1] as $href ) {
-				$clean   = rawurldecode( (string) preg_replace( '/[?#].*$/', '', $href ) );
-				$found[] = array(
-					'source' => (string) get_the_title( $id ),
-					'target' => basename( $clean ),
-				);
-			}
-		}
-		return $found;
+		return array(
+			'converted'  => $converted,
+			'unresolved' => $unresolved,
+		);
 	}
 
 	/**
@@ -175,44 +162,61 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Convert internal .md links to WordPress permalinks where the target exists.
+	 * Convert internal .md links to WordPress permalinks, and defuse the rest.
 	 *
-	 * Pages with a source path resolve links by path; otherwise the target is
-	 * found by file-name slug. When the visible link text is itself a file name
-	 * ending in .md, it is replaced with the target page title.
+	 * A link is resolved to its page in three tries: by source path (exact, when
+	 * the page carries one), then by the folder name for an index or README file
+	 * (whose page takes the folder's slug, not "readme"), then by the file-name
+	 * slug. When the visible link text is itself a file name ending in .md, it is
+	 * replaced with the target page title.
+	 *
+	 * A link that still resolves to no page is turned into plain text: the anchor
+	 * is dropped and only its text kept. This is the guarantee that a handbook
+	 * never shows a 404 link. A raw relative .md link left in the content would
+	 * resolve in the browser to a page that does not exist; turning it into text
+	 * makes that impossible. The link comes back by itself if the target page is
+	 * added later, because every sync re-runs this.
 	 *
 	 * Public because the GitHub sync re-renders a page's Markdown on every pull
 	 * and has to run this again: without it, the first scheduled sync after an
 	 * import would turn every resolved cross-link back into a raw .md link.
 	 *
 	 * @param int $post_id Post id.
-	 * @return int Number of links converted.
+	 * @return array{converted: int, unresolved: array<int, array{source: string, target: string}>}
 	 */
-	public static function convert_md_links( int $post_id ): int {
+	public static function convert_md_links( int $post_id ): array {
 		$post = get_post( $post_id );
 		if ( ! $post instanceof WP_Post ) {
-			return 0;
+			return array(
+				'converted'  => 0,
+				'unresolved' => array(),
+			);
 		}
 		$source_path = (string) get_post_meta( $post_id, self::META_SOURCE_PATH, true );
 		$base_dir    = '' !== $source_path ? self::dir_of( $source_path ) : '';
+		$page_title  = (string) get_the_title( $post_id );
 		$count       = 0;
+		$unresolved  = array();
 		$content     = (string) preg_replace_callback(
 			'/<a href="([^"]+\.md)"([^>]*)>(.*?)<\/a>/is',
-			static function ( array $found ) use ( &$count, $source_path, $base_dir ): string {
+			static function ( array $found ) use ( &$count, &$unresolved, $source_path, $base_dir, $page_title ): string {
 				$clean  = rawurldecode( (string) preg_replace( '/[?#].*$/', '', $found[1] ) );
 				$target = 0;
 				if ( '' !== $source_path ) {
 					$target = self::find_page_by_source_path( self::resolve_path( $base_dir, $clean ) );
 				}
 				if ( 0 === $target ) {
-					$target = self::find_page_by_slug( sanitize_title( pathinfo( $clean, PATHINFO_FILENAME ) ) );
+					$target = self::find_page_by_slug( self::slug_for_link( $clean ) );
 				}
-				if ( 0 === $target ) {
-					return $found[0];
-				}
-				$permalink = get_permalink( $target );
-				if ( ! is_string( $permalink ) ) {
-					return $found[0];
+				$permalink = $target > 0 ? get_permalink( $target ) : false;
+				if ( 0 === $target || ! is_string( $permalink ) ) {
+					// No page: drop the anchor, keep the text. Never leave a raw
+					// .md link that would 404 in the browser.
+					$unresolved[] = array(
+						'source' => $page_title,
+						'target' => basename( $clean ),
+					);
+					return $found[3];
 				}
 				++$count;
 				$text  = $found[3];
@@ -233,7 +237,28 @@ final class Postprocessor {
 				)
 			);
 		}
-		return $count;
+		return array(
+			'converted'  => $count,
+			'unresolved' => $unresolved,
+		);
+	}
+
+	/**
+	 * The slug a .md link points at. An index or README file resolves to its
+	 * folder's slug, because a folder's page takes the folder name, not "readme".
+	 *
+	 * @param string $path The link target, e.g. "../area/README.md".
+	 * @return string
+	 */
+	private static function slug_for_link( string $path ): string {
+		$name = pathinfo( $path, PATHINFO_FILENAME );
+		if ( in_array( strtolower( $name ), array( 'index', 'readme' ), true ) ) {
+			$dir = self::dir_of( $path );
+			if ( '' !== $dir ) {
+				$name = basename( $dir );
+			}
+		}
+		return sanitize_title( $name );
 	}
 
 	/**

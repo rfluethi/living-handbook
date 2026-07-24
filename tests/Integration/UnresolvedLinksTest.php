@@ -1,11 +1,11 @@
 <?php
 /**
- * Reporting internal .md links that resolve to no page.
+ * Resolving internal .md links, and defusing the ones that resolve to nothing.
  *
- * After the import rewrites every link whose target exists, anything still
- * pointing at a .md file is dead: a typo, or a page not in the import. This is
- * the check that turns those into a list the importer can hand back, so they are
- * covered here rather than found by clicking.
+ * Two promises are tested here. A link to a page that exists becomes that page's
+ * permalink, including a link to a folder's README, whose page takes the folder
+ * slug. A link to no page becomes plain text, never a raw .md link that would
+ * 404 in the browser; the importer still reports it so the gap is visible.
  *
  * @package LivingHandbook
  */
@@ -19,104 +19,113 @@ use LivingHandbook\PostType\Handbook;
 use WP_UnitTestCase;
 
 /**
- * Postprocessor::unresolved_md_links.
+ * Postprocessor::convert_md_links.
  */
 final class UnresolvedLinksTest extends WP_UnitTestCase {
 
 	/**
-	 * Create a handbook page with the given content.
+	 * Create a handbook page.
 	 *
 	 * @param string $title   Page title.
 	 * @param string $content Post content.
+	 * @param string $slug    Optional slug.
 	 * @return int Post ID.
 	 */
-	private function page( string $title, string $content ): int {
-		return (int) self::factory()->post->create(
-			array(
-				'post_type'    => Handbook::POST_TYPE,
-				'post_status'  => 'publish',
-				'post_title'   => $title,
-				'post_content' => $content,
-			)
+	private function page( string $title, string $content = '', string $slug = '' ): int {
+		$args = array(
+			'post_type'    => Handbook::POST_TYPE,
+			'post_status'  => 'publish',
+			'post_title'   => $title,
+			'post_content' => $content,
 		);
-	}
-
-	/**
-	 * A link still pointing at a .md file is reported, with the page it is on and
-	 * the file it points at.
-	 *
-	 * @return void
-	 */
-	public function test_it_reports_a_dead_md_link(): void {
-		$id = $this->page( 'The review cycle', 'See <a href="checking-pages.md">Checking pages</a>.' );
-
-		$unresolved = Postprocessor::unresolved_md_links( array( $id ) );
-
-		$this->assertCount( 1, $unresolved );
-		$this->assertSame( 'The review cycle', $unresolved[0]['source'] );
-		$this->assertSame( 'checking-pages.md', $unresolved[0]['target'] );
-	}
-
-	/**
-	 * Only the file name is reported, not the path in the link, because the
-	 * import resolves by file name.
-	 *
-	 * @return void
-	 */
-	public function test_it_reduces_a_path_to_the_file_name(): void {
-		$id = $this->page( 'A', 'See <a href="../access/understanding-access.md">it</a>.' );
-
-		$unresolved = Postprocessor::unresolved_md_links( array( $id ) );
-
-		$this->assertSame( 'understanding-access.md', $unresolved[0]['target'] );
-	}
-
-	/**
-	 * A resolved link (already a real URL) is not a .md link, so it is not
-	 * reported. This is the counter-check: the method must not flag good links.
-	 *
-	 * @return void
-	 */
-	public function test_it_ignores_a_resolved_link(): void {
-		$id = $this->page( 'A', 'See <a href="https://example.com/handbook/checking/">Checking</a>.' );
-
-		$this->assertSame( array(), Postprocessor::unresolved_md_links( array( $id ) ) );
-	}
-
-	/**
-	 * A page with no links at all yields nothing.
-	 *
-	 * @return void
-	 */
-	public function test_a_page_without_links_yields_nothing(): void {
-		$id = $this->page( 'A', 'Just prose, no links.' );
-
-		$this->assertSame( array(), Postprocessor::unresolved_md_links( array( $id ) ) );
+		if ( '' !== $slug ) {
+			$args['post_name'] = $slug;
+		}
+		return (int) self::factory()->post->create( $args );
 	}
 
 	/**
 	 * A link to a page that exists is rewritten to that page's permalink. This is
-	 * the behaviour the GitHub sync has to repeat on every pull; without it, the
-	 * first scheduled sync after an import turned every cross-link into a 404.
+	 * the behaviour the GitHub sync has to repeat on every pull.
 	 *
 	 * @return void
 	 */
 	public function test_it_resolves_a_link_to_an_existing_page(): void {
-		$target = (int) self::factory()->post->create(
-			array(
-				'post_type'   => Handbook::POST_TYPE,
-				'post_status' => 'publish',
-				'post_title'  => 'Understanding access',
-				'post_name'   => 'understanding-access',
-			)
-		);
+		$target = $this->page( 'Understanding access', '', 'understanding-access' );
 		$source = $this->page( 'A', 'See <a href="../access/understanding-access.md">Understanding access</a>.' );
 
-		Postprocessor::convert_md_links( $source );
+		$result = Postprocessor::convert_md_links( $source );
 
 		$content = (string) get_post( $source )->post_content;
 		$this->assertStringNotContainsString( '.md', $content, 'The raw .md link must be gone.' );
 		$this->assertStringContainsString( (string) get_permalink( $target ), $content );
-		$this->assertSame( array(), Postprocessor::unresolved_md_links( array( $source ) ) );
+		$this->assertSame( 1, $result['converted'] );
+		$this->assertSame( array(), $result['unresolved'] );
+	}
+
+	/**
+	 * A link to a folder's README resolves to that folder's page, whose slug is
+	 * the folder name, not "readme". This is the case that broke after the README
+	 * slug change, and the most common cross-link in a real handbook.
+	 *
+	 * @return void
+	 */
+	public function test_a_readme_link_resolves_to_the_folder_page(): void {
+		$area   = $this->page( 'Content', '', 'content' );
+		$source = $this->page( 'A', 'See <a href="../content/README.md">Content</a>.' );
+
+		Postprocessor::convert_md_links( $source );
+
+		$content = (string) get_post( $source )->post_content;
+		$this->assertStringContainsString( (string) get_permalink( $area ), $content );
+		$this->assertStringNotContainsString( '.md', $content );
+	}
+
+	/**
+	 * A link to no page becomes plain text: the anchor is dropped, the text kept,
+	 * and no raw .md link is left to 404. It is also reported.
+	 *
+	 * @return void
+	 */
+	public function test_a_dead_link_becomes_plain_text_and_is_reported(): void {
+		$source = $this->page( 'The review cycle', 'See <a href="checking-pages.md">Checking pages</a>.' );
+
+		$result  = Postprocessor::convert_md_links( $source );
+		$content = (string) get_post( $source )->post_content;
+
+		$this->assertStringNotContainsString( '<a', $content, 'The dead anchor must be gone.' );
+		$this->assertStringNotContainsString( '.md', $content, 'No raw .md link may remain.' );
+		$this->assertStringContainsString( 'Checking pages', $content, 'The link text stays.' );
+		$this->assertCount( 1, $result['unresolved'] );
+		$this->assertSame( 'The review cycle', $result['unresolved'][0]['source'] );
+		$this->assertSame( 'checking-pages.md', $result['unresolved'][0]['target'] );
+	}
+
+	/**
+	 * finalize_report aggregates the unresolved links across all pages.
+	 *
+	 * @return void
+	 */
+	public function test_finalize_report_aggregates_unresolved(): void {
+		$a = $this->page( 'A', 'See <a href="gone.md">Gone</a>.' );
+		$b = $this->page( 'B', 'Just prose.' );
+
+		$report = Postprocessor::finalize_report( array( $a, $b ) );
+
+		$this->assertCount( 1, $report['unresolved'] );
+		$this->assertSame( 'gone.md', $report['unresolved'][0]['target'] );
+	}
+
+	/**
+	 * A page with no links is left alone.
+	 *
+	 * @return void
+	 */
+	public function test_a_page_without_links_yields_nothing(): void {
+		$id     = $this->page( 'A', 'Just prose, no links.' );
+		$result = Postprocessor::convert_md_links( $id );
+
+		$this->assertSame( 0, $result['converted'] );
+		$this->assertSame( array(), $result['unresolved'] );
 	}
 }

@@ -431,6 +431,11 @@ final class GitSync {
 			$folder_id[ $folder['path'] ] = $post_id;
 			$auto                        += 10;
 			$this->place( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ), $auto );
+			// The repository path lets internal links resolve exactly by path,
+			// regardless of the page's slug (a README's page takes the folder's).
+			if ( '' !== $folder['index'] ) {
+				update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $folder['index'] );
+			}
 			$ids[]   = $post_id;
 			$pages[] = self::page_result( $post_id );
 		}
@@ -442,21 +447,21 @@ final class GitSync {
 			}
 			$auto += 10;
 			$this->place( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $auto );
+			update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $file['path'] );
 			$ids[]   = $post_id;
 			$pages[] = self::page_result( $post_id );
 		}
 
 		// Resolve internal links once every page of the import exists. Parents are
 		// set here from the folder structure, which is more reliable than the
-		// transport block for a repository that carries none.
-		Postprocessor::finalize( $ids );
-
-		// Report .md links that point at no page, so a typo or a page still to be
-		// written is a line in the result rather than a click to discover.
-		foreach ( Postprocessor::unresolved_md_links( $ids ) as $link ) {
+		// transport block for a repository that carries none. A link with no page
+		// is turned into text, so nothing is left to 404; the leftovers are
+		// reported so a typo or a missing page is a line here, not a click away.
+		$report = Postprocessor::finalize_report( $ids );
+		foreach ( $report['unresolved'] as $link ) {
 			$notes[] = sprintf(
 				/* translators: 1: page title the link is on, 2: link target file name. */
-				__( 'On "%1$s": the link to %2$s points at no page. Add that page, or fix the link.', 'living-handbook' ),
+				__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
 				$link['source'],
 				$link['target']
 			);
