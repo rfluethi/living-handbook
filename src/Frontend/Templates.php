@@ -110,11 +110,16 @@ final class Templates {
 	 * @return string
 	 */
 	private static function single_content(): string {
+		// A separator block sits between the feedback prompt and the metadata
+		// footer. It is a static block, so the divider is always there, whether or
+		// not the feedback prompt renders (a guest without public feedback gets no
+		// prompt). Styled through the living-handbook-divider class.
 		$center = '<!-- wp:living-handbook/badges /-->'
 			. '<!-- wp:post-title {"level":1} /-->'
 			. '<!-- wp:living-handbook/toc {"variant":"mobile"} /-->'
 			. '<!-- wp:post-content /-->'
 			. '<!-- wp:living-handbook/feedback /-->'
+			. '<!-- wp:separator {"className":"living-handbook-divider"} --><hr class="wp-block-separator has-alpha-channel-opacity living-handbook-divider"/><!-- /wp:separator -->'
 			. '<!-- wp:living-handbook/pagemeta /-->';
 
 		$columns = '<!-- wp:columns {"align":"wide"} --><div class="wp-block-columns alignwide">'

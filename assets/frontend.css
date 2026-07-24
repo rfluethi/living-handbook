@@ -487,8 +487,19 @@
 
 .living-handbook-meta {
 	margin-block-start: 1.5rem;
-	padding-block-start: 1rem;
-	border-top: 1px solid var(--lh-border);
+}
+
+/* The divider between the feedback prompt and the metadata footer. A separator
+ * block in the single template, so the line is always present even when the
+ * feedback prompt is not shown. Styled here as a full-width thin rule, so it
+ * reads as a clear divider regardless of the theme's separator style. */
+.wp-block-separator.living-handbook-divider {
+	border: 0;
+	border-top: 1px solid var(--lh-border-strong, #6b7784);
+	width: 100%;
+	max-width: 100%;
+	margin-block: 1.5rem;
+	opacity: 1;
 }
 
 .living-handbook-metagrid {
