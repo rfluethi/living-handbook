@@ -42,7 +42,7 @@ Zeigt dieselbe Handbuch-Liste kompakt, gedacht für den Kopfbereich der Website.
 
 ![Icon des Blocks „GitHub-Quellenhinweis“](../assets/block-icon-quellenhinweis.png)
 
-Kennzeichnet eine Seite als [auf GitHub gepflegt](../inhalte/github-synchronisation.md). Der Text des Hinweises ist anpassbar. Der Block zeigt sich nur auf Seiten mit GitHub-Quelle; überall sonst bleibt er unsichtbar. Du kannst ihn also einmal im Seitenlayout platzieren und vergessen.
+Kennzeichnet eine Seite als [auf GitHub gepflegt](../inhalte/github-synchronisation.md) und verlinkt zusätzlich die Quelldatei auf GitHub, damit Lesende sie dort direkt öffnen können. Der Text des Hinweises ist anpassbar. Der Block zeigt sich nur auf Seiten mit GitHub-Quelle; überall sonst bleibt er unsichtbar. Du kannst ihn also einmal im Seitenlayout platzieren und vergessen.
 
 ## Diese Blöcke platziert das Plugin für dich
 

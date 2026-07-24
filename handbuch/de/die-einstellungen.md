@@ -10,6 +10,10 @@ Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → E
 
 **Eigenes CSS:** Gestaltungsregeln, die nur auf den Handbuch-Seiten laden. Sie werden mit dem Plugin gespeichert und beim Löschen des Plugins mit entfernt. Wie du damit die Farben änderst, zeigt [Gestaltung anpassen](oberflaeche/gestaltung-anpassen.md). Beispiele stehen direkt auf der Einstellungs-Seite im Reiter **Hilfe** oben rechts.
 
+## Feedback
+
+**Öffentliches Feedback:** Standardmäßig aus. Ist es an, sehen auch abgemeldete Besucherinnen und Besucher die Frage „War das hilfreich?“ auf öffentlichen Seiten und können abstimmen. Zum Schutz der Privatsphäre wird eine solche Stimme keiner Person zugeordnet: kein Cookie, keine IP, nichts anderes Persönliches. Dafür gibt es dort keine Begrenzung auf eine Stimme, dieselbe Person kann nach dem Neuladen erneut abstimmen. Auf internen Seiten stimmen unabhängig davon nur angemeldete Personen ab, je eine Stimme. Wie du die Stimmen auswertest und zurücksetzt, steht unter [Feedback auswerten](pflege/feedback-auswerten.md).
+
 ## Deinstallieren
 
 **Beim Löschen des Plugins:** Standardmäßig bleiben beim Löschen alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen und Zwischenspeicher des Plugins. Ein versehentliches Löschen kostet dich so nie das Handbuch. Erst wenn du hier das Häkchen **«Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen»** setzt, räumt das Löschen wirklich alles weg, auch im Website-Editor bearbeitete Templates.

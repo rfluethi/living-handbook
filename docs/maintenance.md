@@ -60,3 +60,5 @@ Because pages are maintained in WordPress, WordPress revisions are the version h
 ## Related feedback signal
 
 The **Was this helpful?** prompt on each page (see [blocks.md](blocks.md)) counts one vote per allowed reader and reports the totals on the dashboard. A page that keeps drawing "no" is a maintenance signal: it is not answering the question people arrive with.
+
+By default only logged-in readers who may view the page vote, one vote each. Turn on **Public feedback** under Handbook → Settings to let logged-out visitors vote on public pages too; to stay privacy-friendly those votes store nothing personal (no cookie, no IP, no identifier), so they have no per-person limit. After reworking a page you can reset its counters: the page list shows a **Reset feedback** action on any page that has votes, which clears its yes and no counts.

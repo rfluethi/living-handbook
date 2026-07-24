@@ -5,7 +5,7 @@ Unter jeder Seite steht die Frage „War das hilfreich?“ mit Ja und Nein. Dies
 <details>
 <summary>Konzept: Wie gezählt wird</summary>
 
-Abstimmen können nur angemeldete Personen, die die Seite lesen dürfen. Es gilt eine Stimme pro Person und Seite. Abgemeldete sehen die Knöpfe nicht, denn ihre Stimme könnte nicht gezählt werden.
+Standardmäßig stimmen nur angemeldete Personen ab, die die Seite lesen dürfen, mit einer Stimme pro Person und Seite. In den [Einstellungen](../die-einstellungen.md) lässt sich öffentliches Feedback einschalten. Dann stimmen auch abgemeldete Besucherinnen und Besucher auf öffentlichen Seiten ab. Solche Stimmen werden datenschonend keiner Person zugeordnet, kein Cookie, keine IP; dort gibt es deshalb keine Begrenzung auf eine Stimme.
 
 </details>
 
@@ -24,7 +24,7 @@ Du weißt jederzeit, welche Seiten helfen und welche nicht. Dafür brauchst du w
 <details>
 <summary>Hinweis: Feedback bleibt auf der Website</summary>
 
-Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Paket-Import überschreibt sie nie. Zurücksetzen lassen sich die Zähler nicht; nach einer großen Überarbeitung liest du die Entwicklung deshalb an der Tendenz ab, nicht am Stand.
+Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Paket-Import überschreibt sie nie. Nach einer großen Überarbeitung kannst du die Zähler einer Seite zurücksetzen: in der Seitenliste unter **Handbuch** erscheint bei einer Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler auf null stellt.
 
 </details>
 

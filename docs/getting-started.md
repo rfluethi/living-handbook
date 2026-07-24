@@ -47,6 +47,8 @@ Two settings in the editor sidebar matter before you publish:
 
 > **The most common "nothing shows up".** If a page you published does not appear, it almost always has no handbook assigned, or its handbook is not visible to the current visitor. Assign the handbook, and check the handbook's visibility.
 
+New handbook pages default to comments closed, so a handbook is not a comment thread unless you want one. This is only the default: turn comments on for a page in its **Discussion** panel if you want them. Imported pages, the app handbook included, are created with comments off the same way.
+
 ## 4. Set ownership and freshness
 
 At the bottom of the editor, the **Handbook maintenance** meta box carries the review fields: the responsible role, when the page was last reviewed, and the review interval. Fill these in now, even roughly. They power the freshness badge on the page and the overdue dashboard, which is the whole point of a living handbook. The details are in [maintenance.md](maintenance.md).

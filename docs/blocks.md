@@ -100,7 +100,7 @@ The templates place two instances: a sticky desktop one in the side column and a
 
 ![](_attachments/handbook-feedback-en.png)
 
-The "Was this helpful?" prompt with Yes and No buttons. Votes are counted per page, one per user, and only from users who are allowed to read that page. The buttons are shown to logged-in visitors only, because the endpoint requires a login. The maintenance dashboard reports the totals.
+The "Was this helpful?" prompt with Yes and No buttons. By default a vote counts once per user and page, and only users allowed to read the page vote, so the buttons show to logged-in visitors only. Turn on **Public feedback** in the settings and the buttons also show to logged-out visitors on public pages; those votes store nothing personal (no cookie, no IP) and so have no per-person limit. The maintenance dashboard reports the totals.
 
 **Renders on:** single handbook pages only.
 
@@ -130,7 +130,7 @@ Renders a diagram written in [Mermaid](https://mermaid.js.org/) syntax, drawn in
 
 ![](_attachments/github-source-notes-en.png)
 
-A short note marking a page as maintained on GitHub and updated automatically. It only appears on a page whose source is GitHub; on a page maintained in WordPress it renders nothing, so you can place it in the single template once and forget about it.
+A short note marking a page as maintained on GitHub and updated automatically, with a link to the source file on GitHub next to it (the stored raw URL is turned into the matching github.com/blob URL). It only appears on a page whose source is GitHub; on a page maintained in WordPress it renders nothing, so you can place it in the single template once and forget about it.
 
 **Settings:** the note text is editable.
 
