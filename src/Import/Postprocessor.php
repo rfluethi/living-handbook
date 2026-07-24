@@ -181,10 +181,14 @@ final class Postprocessor {
 	 * found by file-name slug. When the visible link text is itself a file name
 	 * ending in .md, it is replaced with the target page title.
 	 *
+	 * Public because the GitHub sync re-renders a page's Markdown on every pull
+	 * and has to run this again: without it, the first scheduled sync after an
+	 * import would turn every resolved cross-link back into a raw .md link.
+	 *
 	 * @param int $post_id Post id.
 	 * @return int Number of links converted.
 	 */
-	private static function convert_md_links( int $post_id ): int {
+	public static function convert_md_links( int $post_id ): int {
 		$post = get_post( $post_id );
 		if ( ! $post instanceof WP_Post ) {
 			return 0;

@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.44.0
+Stable tag: 0.45.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.45.0 =
+* Fixed internal links turning into 404s on GitHub-sourced pages. The import resolved a page's internal .md links to real pages, but every later sync re-rendered the Markdown and left the links raw again, so the first scheduled sync after an import broke every cross-link. The sync now resolves the links too, the same way the import does.
 
 = 0.44.0 =
 * The GitHub folder import now reports internal .md links that point at no page. After it wires up every link whose target exists, anything left pointing at a .md file is a dead link, a typo or a page not yet written, and the result list names the page it is on and the file it points at. This makes a large handbook with many cross-references far easier to keep whole.
@@ -303,6 +306,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * Initial scaffold, data model, frontend access control, and internationalisation.
 
 == Upgrade Notice ==
+
+= 0.45.0 =
+Fixes internal links on GitHub-synced pages breaking into 404s after the first sync. Reload the app handbook after updating. Pre-release: best on a fresh database.
 
 = 0.44.0 =
 The GitHub folder import now lists internal links that resolve to no page. Pre-release: best on a fresh database.

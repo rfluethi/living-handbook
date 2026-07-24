@@ -1213,6 +1213,10 @@ final class GitSync {
 		self::$is_syncing = true;
 		wp_update_post( $update );
 		Postprocessor::apply_transport( $post_id, (array) $result['transport'] );
+		// Every sync re-renders the Markdown, so the internal .md links come back
+		// raw and have to be resolved to their pages again. Without this, the
+		// first scheduled sync after an import turns every cross-link into a 404.
+		Postprocessor::convert_md_links( $post_id );
 		self::$is_syncing = false;
 
 		update_post_meta( $post_id, Metadata::UPDATED, current_time( 'Y-m-d' ) );

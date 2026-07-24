@@ -93,4 +93,30 @@ final class UnresolvedLinksTest extends WP_UnitTestCase {
 
 		$this->assertSame( array(), Postprocessor::unresolved_md_links( array( $id ) ) );
 	}
+
+	/**
+	 * A link to a page that exists is rewritten to that page's permalink. This is
+	 * the behaviour the GitHub sync has to repeat on every pull; without it, the
+	 * first scheduled sync after an import turned every cross-link into a 404.
+	 *
+	 * @return void
+	 */
+	public function test_it_resolves_a_link_to_an_existing_page(): void {
+		$target = (int) self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'publish',
+				'post_title'  => 'Understanding access',
+				'post_name'   => 'understanding-access',
+			)
+		);
+		$source = $this->page( 'A', 'See <a href="../access/understanding-access.md">Understanding access</a>.' );
+
+		Postprocessor::convert_md_links( $source );
+
+		$content = (string) get_post( $source )->post_content;
+		$this->assertStringNotContainsString( '.md', $content, 'The raw .md link must be gone.' );
+		$this->assertStringContainsString( (string) get_permalink( $target ), $content );
+		$this->assertSame( array(), Postprocessor::unresolved_md_links( array( $source ) ) );
+	}
 }

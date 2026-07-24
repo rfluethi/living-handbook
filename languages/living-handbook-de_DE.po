@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-23T18:46:58+00:00\n"
+"POT-Creation-Date: 2026-07-24T08:51:01+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -377,7 +377,7 @@ msgid "Unexpected GitHub API response."
 msgstr "Unerwartete Antwort der GitHub-API."
 
 # GitHub sync: source box
-#: src/Git/GitSync.php:883 src/Git/GitSync.php:1298
+#: src/Git/GitSync.php:883 src/Git/GitSync.php:1302
 msgid "Source"
 msgstr "Quelle"
 
@@ -472,25 +472,25 @@ msgid "Error: HTTP %d"
 msgstr "Fehler: HTTP %d"
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:1224
+#: src/Git/GitSync.php:1228
 #, php-format
 msgid "OK %s"
 msgstr "OK %s"
 
-#: src/Git/GitSync.php:1314 src/Git/GitSync.php:1337
+#: src/Git/GitSync.php:1318 src/Git/GitSync.php:1341
 #: src/Import/MarkdownImportPage.php:859
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/Git/GitSync.php:1314 src/Git/GitSync.php:1338
+#: src/Git/GitSync.php:1318 src/Git/GitSync.php:1342
 msgid "WordPress"
 msgstr "WordPress"
 
-#: src/Git/GitSync.php:1318
+#: src/Git/GitSync.php:1322
 msgid "(sync failed)"
 msgstr "(Sync fehlgeschlagen)"
 
-#: src/Git/GitSync.php:1336
+#: src/Git/GitSync.php:1340
 msgid "All sources"
 msgstr "Alle Quellen"
 
