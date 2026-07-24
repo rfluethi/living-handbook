@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.47.0
+Stable tag: 0.48.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,13 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.48.0 =
+* Import: a "## Transport-Metadaten" heading inside a fenced code block is no longer mistaken for the page's own transport block, so a page documenting the metadata format keeps its code block instead of being cut off there.
+* Import: MkDocs admonitions ("!!! note", "??? tip") now become a blockquote led by the title, instead of collapsing into stray text with lost indentation.
+* The GitHub source note now links to the source file on GitHub, next to the "maintained on GitHub" line.
+* Handbook tables render with visible lines between rows and columns, a wider first column and top-aligned cells, so an imported Markdown table reads as a table; a wide code block scrolls instead of stretching the page.
+* The handbook navigation takes the surface background, matching the cards and the on-this-page box, and a separator line sets off the "Was this helpful?" block.
+
 = 0.47.0 =
 * The import screen now shows its notes (links that resolved to no page, or an import cut short by a limit) in a highlighted block above the page list, instead of a plain line at the end where a large import buried them.
 
@@ -108,15 +115,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * The app handbook now comes from GitHub instead of being shipped inside the plugin. The documentation of the app lives in a public repository, so it has one source, can be read and edited where it is written, and every install pulls the current state instead of a snapshot frozen at release time. The import screen keeps its "App handbook" tab and one-click button; behind it is an ordinary GitHub folder import against a fixed URL, chosen by the admin language.
 * This drops the bundled example handbook added in 0.39.0. A separate demo made little sense next to real documentation: a good handbook explains the app well enough that the reader can try it, the same way any application's manual does. The bundle export and import between sites is untouched; only the shipped copy is gone.
 
-= 0.40.0 =
-* The GitHub folder import now descends into subfolders, and the folder structure becomes the page hierarchy. Previously only the files directly in the chosen folder were imported and everything landed side by side.
-* A folder becomes a page: an index.md or README.md inside it becomes that folder's own page and its siblings hang under it; a folder with neither gets a page made from its name, carrying the area entries block, so a level that exists in the repository does not go missing from the navigation.
-* The whole repository tree is now read in a single request to the Git trees API instead of one request per folder. Unauthenticated GitHub allows 60 requests an hour, so the old approach would have run out on any real documentation repository. At most 200 files are imported at once, and the result says so when the limit or GitHub's own tree limit was hit.
-* On a re-import the repository decides the structure again, the same way it already decides the content of a synced page.
-
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.48.0 =
+Import fixes (transport block inside code fences, MkDocs admonitions), a GitHub link on the source note, and table, navigation and code-block styling. Reload the app handbook after updating. Pre-release: best on a fresh database.
 
 = 0.47.0 =
 Import notes (unresolved links, limits) now stand out in their own block. Pre-release: best on a fresh database.

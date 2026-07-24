@@ -109,6 +109,10 @@ msgstr "Dieses Handbuch durchsuchen …"
 msgid "This page is maintained on GitHub and updated automatically."
 msgstr "Diese Seite wird auf GitHub gepflegt und automatisch aktualisiert."
 
+#: src/Blocks/SourceNoteBlock.php:83
+msgid "View the source file"
+msgstr "Quelldatei ansehen"
+
 # Cards
 #. translators: %s: name of the responsible role.
 #: src/Frontend/Cards.php:68

@@ -52,11 +52,21 @@ final class MarkdownConverter {
 		$markdown = $this->strip_front_matter( $markdown );
 
 		$transport_raw = '';
-		if ( preg_match( '/^##\s*Transport-Metadaten.*$/mi', $markdown, $found, PREG_OFFSET_CAPTURE ) ) {
-			$position      = (int) $found[0][1];
-			$transport_raw = substr( $markdown, $position );
-			$markdown      = rtrim( (string) substr( $markdown, 0, $position ) );
-			$markdown      = (string) preg_replace( '/\n-{3,}\s*$/', '', $markdown );
+		if ( preg_match_all( '/^##\s*Transport-Metadaten.*$/mi', $markdown, $all, PREG_OFFSET_CAPTURE ) ) {
+			foreach ( $all[0] as $match ) {
+				$position = (int) $match[1];
+				// A "## Transport-Metadaten" inside a fenced code block is a page
+				// documenting the format, not its own transport section. An odd
+				// number of ``` fences before the line means it sits in one, so
+				// skip it and take the first real marker (which ends the body).
+				if ( 1 === (int) preg_match_all( '/^```/m', substr( $markdown, 0, $position ) ) % 2 ) {
+					continue;
+				}
+				$transport_raw = substr( $markdown, $position );
+				$markdown      = rtrim( (string) substr( $markdown, 0, $position ) );
+				$markdown      = (string) preg_replace( '/\n-{3,}\s*$/', '', $markdown );
+				break;
+			}
 		}
 		$transport = ( new TransportBlock() )->parse( $transport_raw );
 
@@ -66,7 +76,8 @@ final class MarkdownConverter {
 			$markdown = substr_replace( $markdown, '', (int) $heading[0][1], strlen( $heading[0][0] ) );
 		}
 
-		$html = $this->to_html( $markdown );
+		$markdown = $this->convert_admonitions( $markdown );
+		$html     = $this->to_html( $markdown );
 		// GitHub task lists render as <input type="checkbox">, which the block
 		// editor's paste handler drops. Turn them into ballot symbols so the
 		// checkbox stays visible as text on every import path.
@@ -83,6 +94,55 @@ final class MarkdownConverter {
 			'html'      => $html,
 			'transport' => $transport,
 		);
+	}
+
+	/**
+	 * Turn MkDocs admonitions into Markdown blockquotes.
+	 *
+	 * `!!! note "Title"` with an indented body becomes a blockquote led by the
+	 * title in bold, so a note that GitHub Flavored Markdown does not understand
+	 * still reads as a set-apart block instead of stray text and lost indentation.
+	 * A collapsible `???` admonition is treated the same way. Without an explicit
+	 * title the admonition type is used, capitalised.
+	 *
+	 * @param string $markdown Markdown.
+	 * @return string
+	 */
+	private function convert_admonitions( string $markdown ): string {
+		$lines = preg_split( '/\r\n|\r|\n/', $markdown );
+		if ( ! is_array( $lines ) ) {
+			return $markdown;
+		}
+		$out   = array();
+		$count = count( $lines );
+		$i     = 0;
+		while ( $i < $count ) {
+			$line = $lines[ $i ];
+			if ( 1 !== preg_match( '/^(?:!!!|\?\?\??)\s+([A-Za-z][\w-]*)(?:\s+"([^"]*)")?\s*$/', $line, $matched ) ) {
+				$out[] = $line;
+				++$i;
+				continue;
+			}
+
+			$title = ( isset( $matched[2] ) && '' !== $matched[2] ) ? $matched[2] : ucfirst( $matched[1] );
+			$body  = array();
+			++$i;
+			while ( $i < $count && ( '' === trim( $lines[ $i ] ) || 1 === preg_match( '/^(?:\t| {4})/', $lines[ $i ] ) ) ) {
+				$body[] = (string) preg_replace( '/^(?:\t| {4})/', '', $lines[ $i ] );
+				++$i;
+			}
+			while ( ! empty( $body ) && '' === trim( (string) end( $body ) ) ) {
+				array_pop( $body );
+			}
+
+			$out[] = '> **' . $title . '**';
+			$out[] = '>';
+			foreach ( $body as $body_line ) {
+				$out[] = '' === trim( $body_line ) ? '>' : '> ' . $body_line;
+			}
+			$out[] = '';
+		}
+		return implode( "\n", $out );
 	}
 
 	/**

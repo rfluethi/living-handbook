@@ -2,6 +2,13 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.48.0 =
+* Import: a "## Transport-Metadaten" heading inside a fenced code block is no longer mistaken for the page's own transport block, so a page documenting the metadata format keeps its code block instead of being cut off there.
+* Import: MkDocs admonitions ("!!! note", "??? tip") now become a blockquote led by the title, instead of collapsing into stray text with lost indentation.
+* The GitHub source note now links to the source file on GitHub, next to the "maintained on GitHub" line.
+* Handbook tables render with visible lines between rows and columns, a wider first column and top-aligned cells, so an imported Markdown table reads as a table; a wide code block scrolls instead of stretching the page.
+* The handbook navigation takes the surface background, matching the cards and the on-this-page box, and a separator line sets off the "Was this helpful?" block.
+
 = 0.47.0 =
 * The import screen now shows its notes (links that resolved to no page, or an import cut short by a limit) in a highlighted block above the page list, instead of a plain line at the end where a large import buried them.
 

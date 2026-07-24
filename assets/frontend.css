@@ -293,6 +293,8 @@
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 	padding: 0.9rem 1rem;
+	background: var(--lh-surface);
+	color: var(--lh-surface-text);
 	position: sticky;
 	top: var(--lh-sticky-top, 2rem);
 }
@@ -571,6 +573,8 @@
 
 .living-handbook-feedback {
 	margin-block-start: 1.25rem;
+	padding-block-start: 1rem;
+	border-top: 1px solid var(--lh-border);
 	display: flex;
 	align-items: center;
 	gap: 0.4rem;
@@ -948,4 +952,42 @@
 	border-inline-start: 3px solid var(--lh-border-strong);
 	background: color-mix(in srgb, var(--lh-surface-text) 4%, transparent);
 	border-radius: 0 6px 6px 0;
+}
+
+/* ---------- Handbook content: tables and code blocks ---------- */
+
+/* Imported Markdown tables should read as tables: full width, visible lines
+ * between rows and columns, and cell content aligned to the top. Scoped to the
+ * handbook body class so tables elsewhere on the site are untouched. The custom
+ * properties are not set on the post content, so each value carries a literal
+ * fallback. */
+.living-handbook-page :is(.wp-block-post-content, .entry-content) table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1.5rem 0;
+}
+
+.living-handbook-page :is(.wp-block-post-content, .entry-content) :is(th, td) {
+	border: 1px solid var(--lh-border-strong, #6b7784);
+	padding: 0.5rem 0.7rem;
+	vertical-align: top;
+	text-align: start;
+}
+
+/* The first column usually carries the term or label; keep it from collapsing
+ * to a narrow strip, while long body text in the other columns still wraps. */
+.living-handbook-page :is(.wp-block-post-content, .entry-content) :is(th, td):first-child {
+	width: 22%;
+	min-width: 9rem;
+}
+
+.living-handbook-page :is(.wp-block-post-content, .entry-content) thead th {
+	background: var(--lh-accent-soft, #eaf1f8);
+}
+
+/* A long code block or a wide preformatted line must not push the page wider
+ * than the column; let it scroll on its own instead. */
+.living-handbook-page :is(.wp-block-post-content, .entry-content) pre {
+	max-width: 100%;
+	overflow-x: auto;
 }

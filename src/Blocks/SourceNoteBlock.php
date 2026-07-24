@@ -75,7 +75,35 @@ final class SourceNoteBlock {
 		if ( '' === $label ) {
 			$label = __( 'This page is maintained on GitHub and updated automatically.', 'living-handbook' );
 		}
+
+		$link = self::source_link( (int) $post_id );
+		$body = esc_html( $label );
+		if ( '' !== $link ) {
+			$body .= ' <a href="' . esc_url( $link ) . '" rel="noopener" target="_blank">'
+				. esc_html__( 'View the source file', 'living-handbook' ) . '</a>';
+		}
+
 		$wrapper = get_block_wrapper_attributes( array( 'class' => 'lh-source-note' ) );
-		return '<div ' . $wrapper . '>' . esc_html( $label ) . '</div>';
+		return '<div ' . $wrapper . '>' . $body . '</div>';
+	}
+
+	/**
+	 * A human-facing github.com link to the page's source file, from the stored
+	 * Markdown source URL. A raw.githubusercontent.com URL is turned into the
+	 * matching blob URL so it opens the file in GitHub's interface; any other
+	 * host is linked as it is.
+	 *
+	 * @param int $post_id Page id.
+	 * @return string The URL, or '' when there is none.
+	 */
+	private static function source_link( int $post_id ): string {
+		$url = (string) get_post_meta( $post_id, GitSync::META_URL, true );
+		if ( '' === $url ) {
+			return '';
+		}
+		if ( 1 === preg_match( '#^https?://raw\.githubusercontent\.com/([^/]+)/([^/]+)/(.+)$#', $url, $parts ) ) {
+			return 'https://github.com/' . $parts[1] . '/' . $parts[2] . '/blob/' . $parts[3];
+		}
+		return $url;
 	}
 }
