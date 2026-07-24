@@ -12,7 +12,7 @@ Alle Farben des Plugins hängen an zentralen Stellwerten, sogenannten CSS-Variab
 ## Schritte
 
 1. Öffne die [Einstellungen](../die-einstellungen.md) unter **Handbuch → Einstellungen** und suche das Feld **Eigenes CSS**. Es wirkt nur auf den Handbuch-Seiten. Beim Löschen des Plugins wird es mit entfernt.
-2. Trage die Variablen ein, die du ändern willst. Ein Beispiel mit Akzentfarbe und Kopfzeilen-Abstand:
+2. Trage die Variablen ein, die du ändern willst. Dieses Beispiel färbt sichtbar um: Flächen auf einen warmen Papierton, Akzente auf Bordeaux:
 
    ```css
    .living-handbook-overview,
@@ -24,12 +24,13 @@ Alle Farben des Plugins hängen an zentralen Stellwerten, sogenannten CSS-Variab
    .living-handbook-meta,
    .living-handbook-feedback,
    .living-handbook-badge {
-     --lh-accent: #7a1f3d;   /* Akzentfarbe: Links, Knöpfe, Markierungen */
-     --lh-sticky-top: 5rem;  /* Abstand unter einem fixierten Header */
+     --lh-surface: #f8f4ec;      /* Flächen der Karten und Kästen: warmes Papier */
+     --lh-surface-text: #33302b; /* Text auf diesen Flächen: dunkles Braun */
+     --lh-accent: #7a1f3d;       /* Links, Knöpfe, Markierungen: Bordeaux */
    }
    ```
 
-3. Speichere und prüfe das Ergebnis auf der Website.
+3. Speichere und öffne eine Handbuch-Seite. Die Wirkung ist sofort zu sehen: Karten, Navigation und Inhaltsverzeichnis stehen auf dem Papierton, Links und Knöpfe sind bordeauxrot. Gefällt es nicht, leere das Feld wieder; dann gelten erneut die Farben des Themes.
 
 ## Ergebnis
 
@@ -68,7 +69,7 @@ Jeder Block bietet unter **Erweitert** zusätzlich eine eigene CSS-Klasse und ei
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Gestaltung
 * Zielgruppe: Technik
-* Reihenfolge: 3
+* Reihenfolge: 4
 * Textauszug: Die Handbuch-Seiten folgen den Farben deines Themes; über CSS-Variablen mit dem Präfix --lh- passt du sie gezielt an.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 365 Tage

@@ -13,7 +13,7 @@ Zwei Empfehlungen für lesbare Seiten:
 
 ## Diagramme einsetzen
 
-Hat ein Ablauf mehrere Schritte oder Entscheidungen? Dann zeigt ein Diagramm oft mehr als ein langer Absatz. Living Handbook zeichnet Diagramme selbst, direkt auf der Seite. Beschrieben werden sie in [Mermaid](https://mermaid.js.org/), einer einfachen Textsprache für Diagramme. Füge im Editor den Block **Mermaid-Diagramm** ein und schreibe die Diagramm-Beschreibung hinein. Ein Beispiel-Diagramm siehst du auf [Der Prüfzyklus](../pflege/der-pruefzyklus.md). Gib dem Diagramm einen Titel und eine kurze Beschreibung. Der Titel wird zur Bildunterschrift. Die Beschreibung wird vorgelesen, wenn jemand die Seite mit einem Screenreader nutzt.
+Hat ein Ablauf mehrere Schritte oder Entscheidungen? Dann zeigt ein Diagramm oft mehr als ein langer Absatz. Living Handbook zeichnet Diagramme selbst, direkt auf der Seite. Beschrieben werden sie in [Mermaid](https://mermaid.js.org/), einer einfachen Textsprache für Diagramme. Füge im Editor den Block **Mermaid** ein und schreibe die Diagramm-Beschreibung hinein. Wie der Block funktioniert, steht mit einem Beispiel auf [Die Blöcke des Plugins](../oberflaeche/bloecke.md); ein größeres Diagramm siehst du auf [Der Prüfzyklus](../pflege/der-pruefzyklus.md).
 
 ## Schreiben in Markdown-Dateien
 

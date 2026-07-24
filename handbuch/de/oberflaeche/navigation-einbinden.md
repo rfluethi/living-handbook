@@ -21,11 +21,11 @@ Welche Handbücher eine Person sieht, hängt von ihren Leserechten ab. Die Liste
 
 ## Ergebnis
 
-Der Menüpunkt wird zu einem Untermenü. Sein Name und sein Linkziel bleiben erhalten. Darunter erscheinen die Handbücher, die die aktuelle Besucherin lesen darf. Das Ganze passiert im Theme-Menü. Auf dem Handy wandern die Handbücher darum automatisch mit ins Hamburger-Menü.
+Der Menüpunkt bleibt bestehen und bekommt ein Untermenü. Darin erscheinen die Handbücher, die die aktuelle Besucherin lesen darf, als einzelne Einträge. Name und Linkziel des Menüpunkts ändern sich nicht. Das Ganze passiert im Theme-Menü. Auf dem Handy wandern die Handbücher darum automatisch mit ins Hamburger-Menü.
 
 ## Die drei Orte für die Klasse
 
-* **Auf einem einzelnen Menü-Link (empfohlen):** Der Link wird zum Untermenü mit den Handbüchern als Einträgen. Er behält Name und Ziel.
+* **Auf einem einzelnen Menü-Link (empfohlen):** Der Link bekommt ein Untermenü mit den Handbüchern als Einträgen. Er behält Name und Ziel.
 * **Auf einem bestehenden Untermenü:** Dessen Einträge werden durch die Handbücher ersetzt. Name und Ziel des Untermenüs bestimmst du.
 * **Auf dem ganzen Navigations-Block:** Ein Untermenü „Handbücher“ wird als erster Eintrag ergänzt. Es zeigt auf die bei der Aktivierung angelegte Übersichts-Seite. Existiert diese Seite nicht mehr, wird nichts eingefügt. Ein Menüpunkt ins Leere wäre schlimmer als keiner.
 
@@ -48,7 +48,7 @@ Der Menüpunkt wird zu einem Untermenü. Sein Name und sein Linkziel bleiben erh
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Gestaltung
 * Zielgruppe: Alle Mitglieder
-* Reihenfolge: 2
+* Reihenfolge: 3
 * Textauszug: Diese Anleitung bringt die Handbücher ins Menü deines Themes, über die CSS-Klasse has-handbook-menu im Navigations-Block.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

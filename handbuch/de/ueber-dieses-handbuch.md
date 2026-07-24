@@ -10,7 +10,9 @@ Du entwickelst selbst am Plugin mit? Dann gibt es für dich zusätzlich die engl
 
 ## Wie es aufgebaut ist
 
-Ein Handbuch besteht aus **Bereichen**. Jeder Bereich enthält **Seiten**. Die Bereiche siehst du als Kacheln auf der Einstiegsseite des Handbuchs und als Hauptpunkte in der Navigation links.
+Mit Living Handbook kann eine Website mehrere Handbücher führen, zum Beispiel ein öffentliches Benutzerhandbuch und daneben ein internes Team-Handbuch. Jedes Handbuch hat seine eigenen Seiten, seine eigene Einstiegsseite und seine eigene Regel, wer lesen darf. Das Handbuch, das du gerade liest, ist eines davon: die Dokumentation des Plugins.
+
+Jedes Handbuch ist gleich aufgebaut. Es besteht aus **Bereichen**, und jeder Bereich enthält **Seiten**. Die Bereiche siehst du als Kacheln auf der Einstiegsseite des Handbuchs und als Hauptpunkte in der Navigation links.
 
 Die Bereiche dieses Handbuchs, in Leserichtung:
 

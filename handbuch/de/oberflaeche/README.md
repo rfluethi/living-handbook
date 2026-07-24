@@ -5,6 +5,7 @@ Dieser Bereich erklärt, was deine Leserinnen und Leser sehen. Er zeigt die drei
 | Seite | Was du danach kannst |
 |---|---|
 | [Die drei Oberflächen](die-drei-oberflaechen.md) | Übersicht, Einstiegsseite und Einzelseite auseinanderhalten und gezielt anpassen. |
+| [Die Blöcke des Plugins](bloecke.md) | Die Bausteine kennen und selbst einsetzen, allen voran das Mermaid-Diagramm. |
 | [Navigation einbinden](navigation-einbinden.md) | Die Handbücher im Kopfbereich oder im Theme-Menü anbieten. |
 | [Gestaltung anpassen](gestaltung-anpassen.md) | Farben und Abstände ändern, ohne das Plugin anzufassen. |
 
