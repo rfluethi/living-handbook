@@ -15,7 +15,7 @@ Diese Anleitung erstellt deine erste Handbuch-Seite. Die Schritte: schreiben, ei
 1. Öffne **Handbuch → Erstellen**. Es öffnet sich der gewohnte Block-Editor.
 2. Schreibe die Seite wie jede andere: ein klarer Titel, ein kurzer Einleitungssatz, dann der Inhalt.
 3. **Weise die Seite in der Seitenleiste einem Handbuch zu.** Diesen Schritt übersehen fast alle. Eine Seite ohne Handbuch bleibt auf der Website unsichtbar.
-4. **Ordne die Seite ein**, ebenfalls in der Seitenleiste. Wähle den Seitentyp (zum Beispiel Anleitung oder Hintergrund), ein Thema, die Zielgruppe und die verantwortliche Rolle. Aus diesen Angaben entstehen die Abzeichen auf der Seite und die Filter auf der Einstiegsseite des Handbuchs.
+4. **Ordne die Seite ein**, ebenfalls in der Seitenleiste. Wähle den Seitentyp (zum Beispiel Anleitung oder Hintergrund), ein Thema, die Zielgruppe und die verantwortliche Rolle. Aus diesen Angaben entstehen die Abzeichen auf der Seite und die Filter auf der Einstiegsseite des Handbuchs. Eigene Begriffe legst du zentral an, siehe [Schlagworte und Rollen pflegen](../pflege/schlagworte-und-rollen.md).
 5. Fülle den Kasten **Handbuch-Wartung** unten im Editor aus: verantwortliche Rolle, letzte Prüfung, Prüfintervall. Auch grobe Werte sind besser als keine. Verfeinern kannst du später. Was diese Felder bewirken, erklärt [Der Prüfzyklus](../pflege/der-pruefzyklus.md).
 6. Klicke auf **Veröffentlichen**.
 
@@ -42,6 +42,9 @@ Fast immer hat das eine von drei Ursachen: Die Seite hat kein Handbuch zugewiese
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Einstieg
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 3
 * Textauszug: Diese Anleitung erstellt deine erste Handbuch-Seite: schreiben, einem Handbuch zuweisen, klassifizieren, Prüfdaten setzen, veröffentlichen.
 * Letzte Prüfung: 2026-07-23

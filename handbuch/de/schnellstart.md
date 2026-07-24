@@ -23,7 +23,7 @@ Im Zweifel versteckt das Plugin. Eine Seite ohne Handbuch ist unsichtbar. Ein ne
 | **Handbuch → Erstellen** | Seiten schreiben. |
 | **Handbuch → Import** | Markdown übernehmen: eingefügt, als ZIP, von GitHub oder als Paket. Auch dieses Handbuch lädst du hier, im Reiter [App-Handbuch](erste-schritte/app-handbuch-laden.md). |
 | **Handbuch → Export** | Ein Handbuch als Paket für eine andere Website [exportieren](inhalte/handbuch-umziehen.md). |
-| **Handbuch → Einstellungen** | Zeitplan der [GitHub-Synchronisation](inhalte/github-synchronisation.md), eigenes CSS, Verhalten beim Deinstallieren. |
+| **Handbuch → Einstellungen** | [Alle Optionen](die-einstellungen.md): Abgleich-Zeitplan, eigenes CSS, Verhalten beim Deinstallieren. |
 | **Dashboard** | Überfällige Prüfungen und Feedback-Zahlen im Blick behalten. |
 
 ## Wenn du mehr willst
@@ -35,7 +35,10 @@ Im Zweifel versteckt das Plugin. Eine Seite ohne Handbuch ist unsichtbar. Ein ne
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Überblick
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 2
 * Textauszug: Der ganze Weg zum fertigen Handbuch auf einer Seite, für alle, die WordPress gut kennen und sich nur einen Überblick verschaffen wollen.
 * Letzte Prüfung: 2026-07-23
-* Prüfintervall: 180 Tage
+* Prüfintervall: 90 Tage

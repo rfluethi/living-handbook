@@ -44,6 +44,9 @@ Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **H
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Einstieg
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 1
 * Textauszug: So machst du das Plugin einsatzbereit, von der ZIP-Datei bis zur ersten sichtbaren Handbuch-Seite in deiner WordPress-Installation.
 * Letzte Prüfung: 2026-07-23

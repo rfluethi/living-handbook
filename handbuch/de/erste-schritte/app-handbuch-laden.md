@@ -29,6 +29,8 @@ Alle Seiten dieses Handbuchs stehen jetzt in deinem gewählten Handbuch, samt Na
 
 Die Texte dieses Handbuchs werden öffentlich auf GitHub gepflegt. Der Reiter **App-Handbuch** lädt sie von dort, passend zur Sprache deiner WordPress-Verwaltung. Technisch ist das ein normaler [Import von GitHub](../inhalte/markdown-importieren.md) mit fest hinterlegter Adresse. Die geladenen Seiten bleiben [mit GitHub verbunden](../inhalte/github-synchronisation.md). Wird das Handbuch dort verbessert, erreicht dich die Verbesserung beim nächsten Laden. Geladen wird nie automatisch, nur wenn du es anstößt.
 
+Das Handbuch gibt es auf Deutsch und Englisch. Der Reiter wählt die Sprache deiner Verwaltung. Willst du die jeweils andere Sprache, importiere ihren Ordner von Hand über den [GitHub-Import](../inhalte/markdown-importieren.md).
+
 </details>
 
 <details>
@@ -47,6 +49,9 @@ Die Texte dieses Handbuchs werden öffentlich auf GitHub gepflegt. Der Reiter **
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Einstieg
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 5
 * Textauszug: Dieses Handbuch lässt sich mit einem Klick in deine eigene Installation laden und bleibt danach mit GitHub abgeglichen.
 * Letzte Prüfung: 2026-07-23

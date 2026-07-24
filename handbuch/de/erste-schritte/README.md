@@ -1,6 +1,6 @@
 # Erste Schritte
 
-Dieser Bereich führt dich in vier Schritten zum ersten sichtbaren Handbuch. Gehe die Seiten der Reihe nach durch. Jede baut auf der vorherigen auf. Du kennst WordPress schon gut? Dann fasst der [Schnellstart](../schnellstart.md) denselben Weg auf einer Seite zusammen.
+Dieser Bereich führt dich in vier Schritten zum ersten sichtbaren Handbuch. Gehe die Seiten der Reihe nach durch. Jede baut auf der vorherigen auf. Du kennst WordPress schon gut? Dann fasst der [Schnellstart](../schnellstart.md) denselben Weg auf einer Seite zusammen. Eine fünfte, freiwillige Seite lädt dieses Handbuch als Beispiel in deine Installation.
 
 ```mermaid
 graph LR;
@@ -26,7 +26,10 @@ Du musst nicht bei null anfangen. Lade dieses Handbuch mit einem Klick in deine 
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Einstieg
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 3
 * Textauszug: Dieser Bereich führt dich in vier Schritten von der Installation bis zu einem Handbuch, das Besucherinnen und Besucher wirklich sehen können.
 * Letzte Prüfung: 2026-07-23
-* Prüfintervall: 180 Tage
+* Prüfintervall: 90 Tage

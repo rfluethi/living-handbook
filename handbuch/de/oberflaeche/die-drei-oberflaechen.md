@@ -4,6 +4,8 @@ Auf deiner Website besteht ein Handbuch aus drei Arten von Seiten: der Übersich
 
 ## Worum es geht
 
+Das Diagramm zeigt den Weg der Lesenden: von der Übersicht über die Einstiegsseite eines Handbuchs zur einzelnen Seite.
+
 ```mermaid
 graph TD;
   U["Übersicht: alle Handbücher"] -->|"Handbuch wählen"| E["Einstiegsseite: ein Handbuch"];
@@ -29,6 +31,12 @@ Die Suche und die Filter grenzen die Seitenliste ein, ohne die Seite neu zu lade
 
 Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Beim Lesen markiert es den aktuellen Abschnitt. Auf schmalen Bildschirmen erscheint es stattdessen über dem Inhalt. Die Metadaten-Fußzeile zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle. Dazu kommt das [Prüfstatus-Abzeichen](../pflege/der-pruefzyklus.md).
 
+## Suchen und Finden
+
+Es gibt zwei Suchen, beide auf das jeweilige Handbuch begrenzt. Die Suche auf der **Einstiegsseite** filtert die Seitenliste; durchsucht werden Titel und Text der Seiten, auch der Inhalt zugeklappter Abschnitte. Das Suchfeld auf einer **Einzelseite** schlägt schon beim Tippen passende Seiten vor, als direkte Links. Beide Suchen zeigen nur Seiten, die die suchende Person lesen darf.
+
+Zwei Grenzen sind gewollt: Die normale WordPress-Suche der Website findet Handbuch-Seiten nicht, dafür gibt es die Handbuch-Suche. Und die Adressen der Handbuch-Seiten (`/handbook/...`, `/handbook-set/...`) sind fest vorgegeben und englisch; ändern lassen sie sich zurzeit nicht.
+
 ## Woher die Layouts kommen
 
 Für die Einstiegsseite und die Einzelseite bringt das Plugin fertige Seitenlayouts mit, sogenannte Templates. Alle Bausteine stehen darin schon an der richtigen Stelle. Du kannst die Templates im Website-Editor umbauen, unter **Design → Editor → Templates**. Beispiele: Navigation nach rechts, Inhaltsverzeichnis weg, Inhalt breiter. Die Übersicht ist dagegen eine ganz normale WordPress-Seite. Verschiebe oder ersetze sie nach Belieben.
@@ -53,7 +61,10 @@ Das Plugin bringt elf eigene Blöcke mit, von der Handbuch-Übersicht bis zum Me
 * [Gestaltung anpassen](gestaltung-anpassen.md)
 
 ## Transport-Metadaten
-* Seitentyp: Hintergrund/Konzept
+* Seitentyp: Hintergrund / Konzept
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Gestaltung
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 1
 * Textauszug: Ein Handbuch besteht auf der Website aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
 * Letzte Prüfung: 2026-07-23

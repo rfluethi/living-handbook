@@ -10,6 +10,9 @@ Dieser Bereich erklärt, was deine Leserinnen und Leser sehen. Er zeigt die drei
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Gestaltung
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 5
 * Textauszug: Dieser Bereich erklärt die drei Arten von Handbuch-Seiten auf der Website, die Einbindung ins Theme-Menü und die Anpassung der Gestaltung.
 * Letzte Prüfung: 2026-07-23

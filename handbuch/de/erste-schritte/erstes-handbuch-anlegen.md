@@ -36,6 +36,9 @@ Ein neues Handbuch steht auf **Alle Mitglieder (angemeldet)**. Ausgeloggt siehst
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Einstieg
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 2
 * Textauszug: Ein Handbuch ist der Behälter, in dem deine Seiten liegen; diese Anleitung legt dein erstes Handbuch an und setzt seine Sichtbarkeit.
 * Letzte Prüfung: 2026-07-23

@@ -45,6 +45,9 @@ Der Menüpunkt wird zu einem Untermenü. Sein Name und sein Linkziel bleiben erh
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Gestaltung
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 2
 * Textauszug: Diese Anleitung bringt die Handbücher ins Menü deines Themes, über die CSS-Klasse has-handbook-menu im Navigations-Block.
 * Letzte Prüfung: 2026-07-23

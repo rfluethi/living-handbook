@@ -9,9 +9,13 @@ Dokumentation ohne Pflege wird falsch. Und falsche Dokumentation ist schlimmer a
 | [Der Prüfzyklus](der-pruefzyklus.md) | Verstehen, wie aus Prüfdatum und Intervall die drei Status entstehen. |
 | [Seiten prüfen](seiten-pruefen.md) | Prüfungen erledigen: im Editor, per Schnellbearbeitung oder über das Dashboard. |
 | [Feedback auswerten](feedback-auswerten.md) | Aus „War das hilfreich?“ die Seiten finden, die Arbeit brauchen. |
+| [Schlagworte und Rollen pflegen](schlagworte-und-rollen.md) | Die vier Schlagwort-Gruppen erweitern und Rollen sauber verwalten. |
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Pflege
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 7
 * Textauszug: Living Handbook ist um die Pflege gebaut: der Prüfzyklus, die tägliche Prüfarbeit und das Leser-Feedback.
 * Letzte Prüfung: 2026-07-23

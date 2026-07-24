@@ -40,8 +40,6 @@ On a re-import the repository decides the structure again, so a parent set by ha
 
 An `index.md` or `README.md` that stands for a folder takes its slug from the **folder** name, not from the file name, so the area page gets a clean URL instead of `readme`.
 
-**Internal links.** A relative `.md` link is resolved by the target's **file name** (`[x](../access/understanding-access.md)` and `[x](understanding-access.md)` both find the page whose file was `understanding-access.md`), so file names have to be unique across the handbook. After the import wires up every link whose target exists, it lists the ones that resolve to no page, naming the page each is on and the file it points at. That line is a typo or a page you still have to write, not a failure; nothing breaks, the link just leads nowhere until the target exists.
-
 ## Importing the same source twice
 
 Re-importing the same source **updates the existing pages instead of creating duplicates**. How a page is recognised depends on the import:
@@ -160,7 +158,7 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 
 ## Limits
 
-- The folder import reads at most 200 files in one go and needs a public repository. For a larger tree, import the remaining subfolders separately.
+- A folder import covers subfolders, but at most 200 files in one go. If the limit is hit, import the remaining subfolders separately.
 - A ZIP is read within limits (at most 2000 entries, 5 MB per file, 100 MB uncompressed in total), so a prepared archive cannot exhaust the server's memory. The uncompressed total is adjustable in code through the `living_handbook_zip_max_bytes` filter (see [hooks.md](hooks.md)); the real ceiling stays the server's PHP upload and memory limits.
 - The transport marker and its field labels are German.
 - Synced content is stored as rendered HTML, not editable blocks, because a cron job has no browser to convert HTML into blocks.

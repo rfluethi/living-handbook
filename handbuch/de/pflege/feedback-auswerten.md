@@ -24,7 +24,7 @@ Du weißt jederzeit, welche Seiten helfen und welche nicht. Dafür brauchst du w
 <details>
 <summary>Hinweis: Feedback bleibt auf der Website</summary>
 
-Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Paket-Import überschreibt sie nie.
+Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Paket-Import überschreibt sie nie. Zurücksetzen lassen sich die Zähler nicht; nach einer großen Überarbeitung liest du die Entwicklung deshalb an der Tendenz ab, nicht am Stand.
 
 </details>
 
@@ -35,6 +35,9 @@ Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines 
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Pflege
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 3
 * Textauszug: Wo die Stimmen aus „War das hilfreich?“ landen und wie du daraus die Seiten findest, die Arbeit brauchen.
 * Letzte Prüfung: 2026-07-23

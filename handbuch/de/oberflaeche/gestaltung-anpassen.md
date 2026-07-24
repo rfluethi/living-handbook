@@ -11,7 +11,7 @@ Alle Farben des Plugins hängen an zentralen Stellwerten, sogenannten CSS-Variab
 
 ## Schritte
 
-1. Öffne **Handbuch → Einstellungen** und suche das Feld **Eigenes CSS**. Es wirkt nur auf den Handbuch-Seiten. Beim Löschen des Plugins wird es mit entfernt.
+1. Öffne die [Einstellungen](../die-einstellungen.md) unter **Handbuch → Einstellungen** und suche das Feld **Eigenes CSS**. Es wirkt nur auf den Handbuch-Seiten. Beim Löschen des Plugins wird es mit entfernt.
 2. Trage die Variablen ein, die du ändern willst. Ein Beispiel mit Akzentfarbe und Kopfzeilen-Abstand:
 
    ```css
@@ -65,6 +65,9 @@ Jeder Block bietet unter **Erweitert** zusätzlich eine eigene CSS-Klasse und ei
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Gestaltung
+* Zielgruppe: Technik
 * Reihenfolge: 3
 * Textauszug: Die Handbuch-Seiten folgen den Farben deines Themes; über CSS-Variablen mit dem Präfix --lh- passt du sie gezielt an.
 * Letzte Prüfung: 2026-07-23

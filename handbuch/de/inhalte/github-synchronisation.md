@@ -29,7 +29,7 @@ graph TD;
   S -->|"Fehler"| E["Seite behält den alten Stand, Hinweis in der Verwaltung"];
 ```
 
-Den Zeitplan stellst du unter **Handbuch → Einstellungen** ein: aus, stündlich, zweimal täglich, täglich oder wöchentlich. Auf einer neuen Installation ist wöchentlich eingestellt. „Aus“ heißt nur: kein automatischer Abgleich. Beim Speichern und per Knopf wird trotzdem abgeglichen.
+Den Zeitplan stellst du in den [Einstellungen](../die-einstellungen.md) ein: aus, stündlich, zweimal täglich, täglich oder wöchentlich. Auf einer neuen Installation ist wöchentlich eingestellt. „Aus“ heißt nur: kein automatischer Abgleich. Beim Speichern und per Knopf wird trotzdem abgeglichen.
 
 <details>
 <summary>Stolpersteine: Wenn ein Abgleich fehlschlägt</summary>
@@ -52,6 +52,9 @@ WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinste
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Inhalte
+* Zielgruppe: Alle Mitglieder, Technik
 * Reihenfolge: 3
 * Textauszug: Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben; diese Anleitung richtet das ein.
 * Letzte Prüfung: 2026-07-23

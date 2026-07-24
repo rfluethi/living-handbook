@@ -16,6 +16,8 @@ Aus Prüfdatum und Intervall berechnet das Plugin den Status. Er erscheint als A
 
 Jeder Status hat neben der Farbe eine eigene Form und eine Beschriftung. Er bleibt darum auch ohne Farbensehen und mit Screenreader erkennbar.
 
+Das Diagramm zeigt den Kreislauf: Nach der Prüfung läuft das Intervall. Läuft es ab, erscheint das Abzeichen, und die verantwortliche Rolle prüft erneut.
+
 ```mermaid
 graph TD;
   A["Seite geprüft"] --> B["Intervall läuft"];
@@ -32,7 +34,7 @@ graph TD;
 ## Warum es so gebaut ist
 
 * **„Fällig“ heißt nicht „falsch“.** Es heißt nur: Niemand hat es in letzter Zeit bestätigt. Nach dem doppelten Intervall eskaliert der Status zu „überfällig“. So altert eine Seite nicht leise vor sich hin.
-* **Verantwortung liegt bei Rollen, nicht bei Personen.** Jede Seite nennt eine verantwortliche Rolle. Welche Person die Rolle gerade innehat, wird an einer einzigen Stelle gepflegt. Ein Personalwechsel bedeutet darum nicht, hundert Seiten anzufassen.
+* **Verantwortung liegt bei Rollen, nicht bei Personen.** Jede Seite nennt eine verantwortliche Rolle. Welche Person die Rolle gerade innehat, pflegt ihr an einer einzigen Stelle außerhalb der Seiten, zum Beispiel auf einer eigenen Seite „Rollen im Team“. Ein Personalwechsel bedeutet darum nicht, hundert Seiten anzufassen. Wie du Rollen anlegst, steht unter [Schlagworte und Rollen pflegen](schlagworte-und-rollen.md).
 * **Es gibt keine zentrale Handbuch-Besitzerin.** Die Pflege ist verteilt: Jede Rolle hält ihre Seiten aktuell. Übergreifendes liegt bei einer redaktionellen Rolle, etwa Struktur, Feedback lesen und Stichproben.
 
 ## Was das für deine Arbeit bedeutet
@@ -56,7 +58,10 @@ Die Seiten leben in WordPress. Die WordPress-Revisionen sind darum die Versionsg
 * [Feedback auswerten](feedback-auswerten.md)
 
 ## Transport-Metadaten
-* Seitentyp: Hintergrund/Konzept
+* Seitentyp: Hintergrund / Konzept
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Pflege
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 1
 * Textauszug: Jede Seite trägt Prüfdatum und Prüfintervall; daraus entsteht sichtbar, wie verlässlich eine Seite gerade ist.
 * Letzte Prüfung: 2026-07-23

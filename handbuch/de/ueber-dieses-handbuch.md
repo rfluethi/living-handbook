@@ -20,7 +20,19 @@ Die Bereiche dieses Handbuchs, in Leserichtung:
 4. **[Oberfläche](oberflaeche/README.md):** was deine Leserinnen und Leser sehen, und wie du es anpasst.
 5. **[Zugriff](zugriff/README.md):** wer welche Handbücher sehen darf.
 6. **[Pflege](pflege/README.md):** wie Seiten aktuell bleiben. Das ist der Kern des Plugins.
-7. **[Häufige Fragen](haeufige-fragen.md):** kurze Antworten, allen voran auf „Warum wird nichts angezeigt?“.
+7. **[Die Einstellungen](die-einstellungen.md):** alle Optionen des Plugins auf einen Blick.
+8. **[Häufige Fragen](haeufige-fragen.md):** kurze Antworten, allen voran auf „Warum wird nichts angezeigt?“.
+
+## Die wichtigsten Begriffe
+
+| Begriff | Bedeutung |
+|---|---|
+| **Handbuch** | Der Behälter für zusammengehörige Seiten. Er regelt, wer lesen darf. Eine Website kann mehrere Handbücher haben. |
+| **Handbuch-Seite** | Eine einzelne Seite in einem Handbuch. |
+| **Bereich** | Eine Seite der obersten Ebene mit ihren Unterseiten, zum Beispiel „Erste Schritte“. |
+| **Einstiegsseite** | Die Startseite eines Handbuchs, mit Suche, Filtern und Bereichs-Kacheln. |
+| **Abzeichen** | Die kleinen Etiketten auf jeder Seite: Seitentyp, Thema, Zielgruppe und Prüfstatus. |
+| **Prüfintervall** | Wie lange eine Prüfung gilt, bevor die Seite als „Prüfung fällig“ markiert wird. |
 
 ## Wie du es liest
 
@@ -36,7 +48,10 @@ Die Texte dieses Handbuchs werden auf GitHub gepflegt. GitHub ist eine Website, 
 </details>
 
 ## Transport-Metadaten
-* Seitentyp: Hintergrund/Konzept
+* Seitentyp: Hintergrund / Konzept
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Überblick
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 1
 * Textauszug: Dieses Benutzerhandbuch erklärt Schritt für Schritt, wie du mit Living Handbook arbeitest, und ist zugleich ein Beispiel für ein fertiges Handbuch.
 * Letzte Prüfung: 2026-07-23

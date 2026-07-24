@@ -17,7 +17,7 @@ Ein Paket ist eine einzelne ZIP-Datei. Darin steckt alles, was das Handbuch ausm
 
 ## Importieren
 
-1. Öffne auf der Ziel-Website **Handbuch → Import**, Reiter **Paket**. Dafür braucht dein Konto dort die Rolle Content-Manager.
+1. Öffne auf der Ziel-Website **Handbuch → Import**, Reiter **Paket**. Dafür braucht dein Konto dort mindestens die WordPress-Rolle Redakteur, denn der Import verändert auch Seiten anderer Autorinnen und Autoren.
 2. Lade die ZIP-Datei hoch.
 3. Wähle, was mit Seiten passieren soll, die es dort schon gibt:
    * **Überspringen** (Standard): Vorhandene Seiten bleiben unangetastet. Nur neue werden angelegt.
@@ -47,6 +47,9 @@ Die Seiten stehen auf der Ziel-Website. Links zwischen den Seiten führen zu den
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Inhalte
+* Zielgruppe: Alle Mitglieder, Technik
 * Reihenfolge: 4
 * Textauszug: Ein Handbuch lässt sich als Paket exportieren und auf einer anderen Website wieder importieren; so gehst du vor.
 * Letzte Prüfung: 2026-07-23

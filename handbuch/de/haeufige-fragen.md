@@ -68,7 +68,7 @@ Die Knöpfe erscheinen nur für angemeldete Personen. Jede Stimme wird einem Kon
 <details>
 <summary>Wird beim Löschen des Plugins mein Inhalt gelöscht?</summary>
 
-Nein, standardmäßig bleiben alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen des Plugins. Das vollständige Aufräumen ist eine bewusste Option unter **Handbuch → Einstellungen**. So kostet ein versehentliches Löschen nie das Handbuch. Details: [Entwickler-Dokumentation zum Deinstallieren](https://github.com/rfluethi/living-handbook/blob/main/docs/import-and-sync.md).
+Nein, standardmäßig bleiben alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen des Plugins. Das vollständige Aufräumen ist eine bewusste Option unter **Handbuch → Einstellungen**. So kostet ein versehentliches Löschen nie das Handbuch. Details: [Die Einstellungen](die-einstellungen.md).
 
 </details>
 
@@ -86,7 +86,10 @@ Nein. Es liest nur die Adressen, die du selbst einträgst, beim Import oder in d
 
 ## Transport-Metadaten
 * Seitentyp: FAQ
-* Reihenfolge: 8
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Überblick
+* Zielgruppe: Alle Mitglieder
+* Reihenfolge: 9
 * Textauszug: Kurze Antworten auf die häufigsten Fragen zu Living Handbook, jede mit Verweis auf die ausführliche Seite.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

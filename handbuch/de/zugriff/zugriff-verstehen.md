@@ -6,6 +6,8 @@ Diese Seite beantwortet eine Frage: Warum zeigt Living Handbook im Zweifel liebe
 
 Ein internes Handbuch enthält Dinge, die nicht öffentlich sein sollen: Abläufe, Zuständigkeiten, interne Adressen. Der teuerste Fehler eines solchen Systems ist nicht eine unsichtbare Seite. Der teuerste Fehler ist eine versehentlich öffentliche Seite. Living Handbook folgt darum einer einfachen Grundregel: Im Zweifel wird versteckt. Fachleute nennen dieses Prinzip „fail-closed“.
 
+Das Diagramm zeigt den Entscheidungsweg beim Aufruf einer Seite: von der Handbuch-Zuweisung über die Sichtbarkeit bis zur Anzeige, Anmeldung oder Ablehnung.
+
 ```mermaid
 graph TD;
   A["Besucher ruft eine Handbuch-Seite auf"] --> B{"Gehört die Seite zu einem Handbuch?"};
@@ -27,6 +29,8 @@ graph TD;
 * **Es gibt einen zentralen Prüfpunkt.** Jede Stelle, die Handbuch-Inhalte anzeigt, stellt vorher dieselbe Frage: Darf diese Person das lesen? Das gilt für Seiten, Suche, Filter, Menü und Feedback. Es gibt keine Hintertür, die vergessen gehen könnte.
 * **Auch die Nebenwege sind geschlossen.** Handbuch-Seiten tauchen nicht in den technischen Listen auf, die Suchmaschinen und andere Websites auslesen. Ein internes Handbuch hinterlässt keine öffentlichen Spuren.
 
+Eine Folge davon musst du kennen: Diese Zurückhaltung gilt auch für öffentliche Handbücher. Deren Seiten sind zwar für alle aufrufbar, werden von Suchmaschinen aber schlechter gefunden als normale Seiten. Das Plugin ist für interne Handbücher gebaut; eine öffentliche Produkt-Dokumentation mit Suchmaschinen-Anspruch ist nicht sein Kerneinsatz.
+
 ## Was das für deine Arbeit bedeutet
 
 * Ein neues Handbuch startet auf **Alle Mitglieder**. Öffentlich wird es nur durch deine bewusste Entscheidung.
@@ -46,7 +50,10 @@ Die zentrale Prüfung ist filterbar. So bekommt zum Beispiel ein Dienstkonto Les
 * [Häufige Fragen](../haeufige-fragen.md)
 
 ## Transport-Metadaten
-* Seitentyp: Hintergrund/Konzept
+* Seitentyp: Hintergrund / Konzept
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Zugriff
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 2
 * Textauszug: Living Handbook versteckt im Zweifel lieber, als versehentlich etwas preiszugeben; diese Seite erklärt das Fail-closed-Prinzip.
 * Letzte Prüfung: 2026-07-23

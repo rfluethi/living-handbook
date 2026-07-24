@@ -34,6 +34,9 @@ Die Regel wirkt sofort und überall: auf der Handbuch-Übersicht, auf den Seiten
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Zugriff
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 1
 * Textauszug: Die Sichtbarkeit wird pro Handbuch geregelt; diese Anleitung stellt ein, wer ein Handbuch auf der Website lesen darf.
 * Letzte Prüfung: 2026-07-23

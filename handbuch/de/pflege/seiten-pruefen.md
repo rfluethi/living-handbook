@@ -48,6 +48,9 @@ Alle Seiten tragen ein aktuelles Prüfdatum. Der Kasten auf dem Dashboard ist le
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Pflege
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 2
 * Textauszug: Die praktische Prüfarbeit: einzelne Seiten bestätigen, mehrere schnell abarbeiten und die überfälligen zuverlässig finden.
 * Letzte Prüfung: 2026-07-23

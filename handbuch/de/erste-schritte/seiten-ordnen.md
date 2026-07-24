@@ -19,7 +19,7 @@ Ein von Hand gepflegtes Menü und die tatsächlichen Seiten laufen mit der Zeit 
 
 ## Ergebnis
 
-Die Seite steht an der gewählten Stelle im Navigationsbaum. Eine Seite oberster Ebene erscheint zusätzlich als Bereichskachel auf der Einstiegsseite des Handbuchs. Ein Beispiel ist dieses Handbuch: Jeder Bereich wie „Erste Schritte“ oder „Pflege“ ist eine Seite oberster Ebene mit Unterseiten.
+Die Seite steht an der gewählten Stelle im Navigationsbaum. Eine Seite oberster Ebene erscheint zusätzlich als Bereichskachel auf der Einstiegsseite des Handbuchs. Ein Beispiel ist dieses Handbuch: Jeder Bereich wie „Erste Schritte“ oder „Pflege“ ist eine Seite oberster Ebene mit Unterseiten. Das Diagramm zeigt diese Ordnung als Baum.
 
 ```mermaid
 graph TD;
@@ -44,6 +44,9 @@ Kommen deine Seiten aus importierten Markdown-Dateien, entsteht die Ordnung auto
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Einstieg
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 4
 * Textauszug: Die Navigation eines Handbuchs entsteht aus der Hierarchie der Seiten; diese Anleitung zeigt, wie du sie mit Eltern-Seite und Reihenfolge bestimmst.
 * Letzte Prüfung: 2026-07-23
