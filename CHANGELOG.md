@@ -2,6 +2,12 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.49.0 =
+* Public feedback: a new setting lets logged-out visitors vote "Was this helpful?" on public pages. To stay privacy-friendly it stores nothing personal, no cookie, no IP, no identifier, so the same visitor can vote again after reloading; the trade-off is no per-person limit. Off by default. On internal pages, logged-in users still vote once each regardless of this setting.
+* Feedback can be reset per page: a "Reset feedback" action in the handbook list clears a page's counters, for a page reworked after weak feedback.
+* The URL bases of a handbook page and a handbook grouping (/handbook/, /handbook-set/) can now be changed with two filters, living_handbook_post_type_slug and living_handbook_taxonomy_slug, for a site that needs a localized base. Changing them on a live site rewrites URLs and needs the permalinks flushed.
+* Documented how to detach a GitHub-synced page and keep it in WordPress: switch its Source to "Maintained in WordPress" and the content stays, the sync stops and the editor unlocks.
+
 = 0.48.0 =
 * Import: a "## Transport-Metadaten" heading inside a fenced code block is no longer mistaken for the page's own transport block, so a page documenting the metadata format keeps its code block instead of being cut off there.
 * Import: MkDocs admonitions ("!!! note", "??? tip") now become a blockquote led by the title, instead of collapsing into stray text with lost indentation.

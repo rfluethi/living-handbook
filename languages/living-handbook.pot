@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.47.0\n"
+"Project-Id-Version: Living Handbook 0.49.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-24T11:55:16+00:00\n"
+"POT-Creation-Date: 2026-07-24T13:09:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -40,52 +40,65 @@ msgstr ""
 msgid "https://rfluethi.com"
 msgstr ""
 
-#: src/Admin/Maintenance.php:60
+#: src/Admin/Maintenance.php:83
+msgid "Reset feedback"
+msgstr ""
+
+#: src/Admin/Maintenance.php:97
+msgid "You are not allowed to reset feedback for this page."
+msgstr ""
+
+#: src/Admin/Maintenance.php:127
+msgid "Feedback was reset."
+msgstr ""
+
+#: src/Admin/Maintenance.php:141
 msgid "Handbook: reviews overdue"
 msgstr ""
 
 #. translators: 1: overdue count, 2: total count, 3: percentage.
-#: src/Admin/Maintenance.php:115
+#: src/Admin/Maintenance.php:196
 #, php-format
 msgid "%1$d of %2$d pages overdue (%3$d%%)."
 msgstr ""
 
-#: src/Admin/Maintenance.php:124
+#: src/Admin/Maintenance.php:205
 msgid "All pages are currently reviewed."
 msgstr ""
 
-#: src/Admin/Maintenance.php:153
+#: src/Admin/Maintenance.php:234
 msgid "Show all handbook pages, oldest review first"
 msgstr ""
 
-#: src/Admin/Maintenance.php:165
-#: src/Frontend/PageMeta.php:79
+#: src/Admin/Maintenance.php:246
+#: src/Frontend/PageMeta.php:81
 #: src/Meta/Metadata.php:162
 #: src/Meta/Metadata.php:299
 msgid "Last reviewed"
 msgstr ""
 
-#: src/Admin/Maintenance.php:166
+#: src/Admin/Maintenance.php:247
+#: src/Setup/Settings.php:189
 msgid "Feedback"
 msgstr ""
 
 #. translators: 1: number of positive votes, 2: number of negative votes.
-#: src/Admin/Maintenance.php:196
+#: src/Admin/Maintenance.php:277
 #, php-format
 msgid "%1$d yes, %2$d no"
 msgstr ""
 
 #. translators: %s: the plural taxonomy name, for example "Topics".
-#: src/Admin/Maintenance.php:322
+#: src/Admin/Maintenance.php:403
 #, php-format
 msgid "All %s"
 msgstr ""
 
-#: src/Admin/Maintenance.php:354
+#: src/Admin/Maintenance.php:435
 msgid "All review statuses"
 msgstr ""
 
-#: src/Admin/Maintenance.php:358
+#: src/Admin/Maintenance.php:439
 msgid "Never reviewed"
 msgstr ""
 
@@ -108,6 +121,10 @@ msgstr ""
 #: src/Blocks/SourceNoteBlock.php:76
 #: assets/js/git-source-note-block.js:5
 msgid "This page is maintained on GitHub and updated automatically."
+msgstr ""
+
+#: src/Blocks/SourceNoteBlock.php:83
+msgid "View the source file"
 msgstr ""
 
 #. translators: %s: name of the responsible role.
@@ -256,31 +273,31 @@ msgstr ""
 msgid "Toggle %s"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:43
+#: src/Frontend/PageMeta.php:45
 msgid "Was this helpful?"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:44
+#: src/Frontend/PageMeta.php:46
 msgid "Yes"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:45
+#: src/Frontend/PageMeta.php:47
 msgid "No"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:75
+#: src/Frontend/PageMeta.php:77
 msgid "never"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:77
+#: src/Frontend/PageMeta.php:79
 msgid "Created"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:78
+#: src/Frontend/PageMeta.php:80
 msgid "Last updated"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:80
+#: src/Frontend/PageMeta.php:82
 msgid "Responsible role"
 msgstr ""
 
@@ -1000,80 +1017,92 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: src/Setup/Settings.php:69
-#: src/Setup/Settings.php:70
-#: src/Setup/Settings.php:283
+#: src/Setup/Settings.php:86
+#: src/Setup/Settings.php:87
+#: src/Setup/Settings.php:339
 msgid "Settings"
 msgstr ""
 
-#: src/Setup/Settings.php:92
+#: src/Setup/Settings.php:109
 msgid "Add CSS that loads on the handbook pages only. It is stored with the plugin and removed when you delete the plugin, unlike CSS kept in the theme."
 msgstr ""
 
-#: src/Setup/Settings.php:93
+#: src/Setup/Settings.php:110
 msgid "Target the plugin classes and the --lh-* custom properties. For example:"
 msgstr ""
 
 #. translators: %s: link to the customization documentation.
-#: src/Setup/Settings.php:97
+#: src/Setup/Settings.php:114
 #, php-format
 msgid "The full reference of variables and class names is in the %s."
 msgstr ""
 
-#: src/Setup/Settings.php:98
+#: src/Setup/Settings.php:115
 msgid "customization documentation"
 msgstr ""
 
-#: src/Setup/Settings.php:103
-#: src/Setup/Settings.php:156
+#: src/Setup/Settings.php:120
+#: src/Setup/Settings.php:182
 msgid "Custom CSS"
 msgstr ""
 
-#: src/Setup/Settings.php:143
+#: src/Setup/Settings.php:169
 msgid "GitHub sync"
 msgstr ""
 
-#: src/Setup/Settings.php:146
+#: src/Setup/Settings.php:172
 msgid "Automatic sync"
 msgstr ""
 
-#: src/Setup/Settings.php:153
+#: src/Setup/Settings.php:179
 msgid "Appearance"
 msgstr ""
 
-#: src/Setup/Settings.php:163
+#: src/Setup/Settings.php:192
+msgid "Public feedback"
+msgstr ""
+
+#: src/Setup/Settings.php:198
 msgid "Uninstall"
 msgstr ""
 
-#: src/Setup/Settings.php:166
+#: src/Setup/Settings.php:201
 msgid "When the plugin is deleted"
 msgstr ""
 
-#: src/Setup/Settings.php:221
+#: src/Setup/Settings.php:266
 msgid "CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples."
 msgstr ""
 
-#: src/Setup/Settings.php:250
+#: src/Setup/Settings.php:276
+msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
+msgstr ""
+
+#: src/Setup/Settings.php:277
+msgid "Off by default. When on, anyone can vote on a public page. To keep it privacy-friendly, votes are not tied to a person: no cookie, no IP and nothing else personal is stored, so the same visitor can vote again after reloading. On internal pages only logged-in users vote, one vote each, regardless of this setting."
+msgstr ""
+
+#: src/Setup/Settings.php:306
 msgid "How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits."
 msgstr ""
 
-#: src/Setup/Settings.php:254
+#: src/Setup/Settings.php:310
 msgid "Next scheduled sync:"
 msgstr ""
 
-#: src/Setup/Settings.php:256
+#: src/Setup/Settings.php:312
 msgid "No background sync scheduled."
 msgstr ""
 
-#: src/Setup/Settings.php:267
+#: src/Setup/Settings.php:323
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr ""
 
-#: src/Setup/Settings.php:268
+#: src/Setup/Settings.php:324
 msgid "Off by default: your content is kept when the plugin is deleted, only the plugin settings and caches are removed. Turn this on to remove everything the plugin created."
 msgstr ""
 
-#: src/Setup/Settings.php:269
+#: src/Setup/Settings.php:325
 msgid "This also removes templates you edited in the Site Editor."
 msgstr ""
 

@@ -52,21 +52,11 @@ final class MarkdownConverter {
 		$markdown = $this->strip_front_matter( $markdown );
 
 		$transport_raw = '';
-		if ( preg_match_all( '/^##\s*Transport-Metadaten.*$/mi', $markdown, $all, PREG_OFFSET_CAPTURE ) ) {
-			foreach ( $all[0] as $match ) {
-				$position = (int) $match[1];
-				// A "## Transport-Metadaten" inside a fenced code block is a page
-				// documenting the format, not its own transport section. An odd
-				// number of ``` fences before the line means it sits in one, so
-				// skip it and take the first real marker (which ends the body).
-				if ( 1 === (int) preg_match_all( '/^```/m', substr( $markdown, 0, $position ) ) % 2 ) {
-					continue;
-				}
-				$transport_raw = substr( $markdown, $position );
-				$markdown      = rtrim( (string) substr( $markdown, 0, $position ) );
-				$markdown      = (string) preg_replace( '/\n-{3,}\s*$/', '', $markdown );
-				break;
-			}
+		$position      = self::transport_marker_position( $markdown );
+		if ( null !== $position ) {
+			$transport_raw = substr( $markdown, $position );
+			$markdown      = rtrim( (string) substr( $markdown, 0, $position ) );
+			$markdown      = (string) preg_replace( '/\n-{3,}\s*$/', '', $markdown );
 		}
 		$transport = ( new TransportBlock() )->parse( $transport_raw );
 
@@ -76,8 +66,7 @@ final class MarkdownConverter {
 			$markdown = substr_replace( $markdown, '', (int) $heading[0][1], strlen( $heading[0][0] ) );
 		}
 
-		$markdown = $this->convert_admonitions( $markdown );
-		$html     = $this->to_html( $markdown );
+		$html = $this->to_html( $markdown );
 		// GitHub task lists render as <input type="checkbox">, which the block
 		// editor's paste handler drops. Turn them into ballot symbols so the
 		// checkbox stays visible as text on every import path.
@@ -97,52 +86,45 @@ final class MarkdownConverter {
 	}
 
 	/**
-	 * Turn MkDocs admonitions into Markdown blockquotes.
+	 * Byte offset of the transport-block marker, or null if there is none.
 	 *
-	 * `!!! note "Title"` with an indented body becomes a blockquote led by the
-	 * title in bold, so a note that GitHub Flavored Markdown does not understand
-	 * still reads as a set-apart block instead of stray text and lost indentation.
-	 * A collapsible `???` admonition is treated the same way. Without an explicit
-	 * title the admonition type is used, capitalised.
+	 * The marker is the German heading «## Transport-Metadaten». Two rules make
+	 * the detection robust enough that a page can talk about the marker without
+	 * being cut in half by it. A marker inside a fenced code block is an example,
+	 * not a marker, so fenced lines are skipped. And when the marker appears more
+	 * than once outside code, the last occurrence wins, because the transport
+	 * block is by definition the tail of the file. The app handbook's import page
+	 * quotes the marker in its documentation, which is exactly this case.
 	 *
-	 * @param string $markdown Markdown.
-	 * @return string
+	 * Public and static so the pure string logic is unit-testable without
+	 * WordPress or the Markdown library.
+	 *
+	 * @param string $markdown Markdown draft.
+	 * @return int|null
 	 */
-	private function convert_admonitions( string $markdown ): string {
-		$lines = preg_split( '/\r\n|\r|\n/', $markdown );
-		if ( ! is_array( $lines ) ) {
-			return $markdown;
+	public static function transport_marker_position( string $markdown ): ?int {
+		$offset   = 0;
+		$fence    = null;
+		$position = null;
+		foreach ( (array) preg_split( '/(?<=\n)/', $markdown ) as $line ) {
+			$line = (string) $line;
+			if ( preg_match( '/^ {0,3}(([`~])\2{2,})/', $line, $found ) ) {
+				// A fence line: it opens a code block, or closes one when it
+				// uses the same character and is at least as long (CommonMark).
+				if ( null === $fence ) {
+					$fence = array(
+						'char' => $found[2],
+						'len'  => strlen( $found[1] ),
+					);
+				} elseif ( $found[2] === $fence['char'] && strlen( $found[1] ) >= $fence['len'] ) {
+					$fence = null;
+				}
+			} elseif ( null === $fence && 1 === preg_match( '/^##[ \t]*Transport-Metadaten/i', $line ) ) {
+				$position = $offset;
+			}
+			$offset += strlen( $line );
 		}
-		$out   = array();
-		$count = count( $lines );
-		$i     = 0;
-		while ( $i < $count ) {
-			$line = $lines[ $i ];
-			if ( 1 !== preg_match( '/^(?:!!!|\?\?\??)\s+([A-Za-z][\w-]*)(?:\s+"([^"]*)")?\s*$/', $line, $matched ) ) {
-				$out[] = $line;
-				++$i;
-				continue;
-			}
-
-			$title = ( isset( $matched[2] ) && '' !== $matched[2] ) ? $matched[2] : ucfirst( $matched[1] );
-			$body  = array();
-			++$i;
-			while ( $i < $count && ( '' === trim( $lines[ $i ] ) || 1 === preg_match( '/^(?:\t| {4})/', $lines[ $i ] ) ) ) {
-				$body[] = (string) preg_replace( '/^(?:\t| {4})/', '', $lines[ $i ] );
-				++$i;
-			}
-			while ( ! empty( $body ) && '' === trim( (string) end( $body ) ) ) {
-				array_pop( $body );
-			}
-
-			$out[] = '> **' . $title . '**';
-			$out[] = '>';
-			foreach ( $body as $body_line ) {
-				$out[] = '' === trim( $body_line ) ? '>' : '> ' . $body_line;
-			}
-			$out[] = '';
-		}
-		return implode( "\n", $out );
+		return $position;
 	}
 
 	/**

@@ -16,8 +16,10 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Tests\Integration;
 
+use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Setup\Settings;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_UnitTestCase;
@@ -221,11 +223,13 @@ final class RestPermissionsTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * The feedback endpoint rejects a logged-out request.
+	 * By default (public feedback off) the feedback endpoint rejects a logged-out
+	 * request.
 	 *
 	 * @return void
 	 */
-	public function test_feedback_denies_guest(): void {
+	public function test_feedback_denies_guest_by_default(): void {
+		delete_option( Settings::OPTION_PUBLIC_FEEDBACK );
 		wp_set_current_user( 0 );
 		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/feedback' );
 		$request->set_body_params(
@@ -236,6 +240,36 @@ final class RestPermissionsTest extends WP_UnitTestCase {
 		);
 		$response = $this->server->dispatch( $request );
 		$this->assertSame( 401, $response->get_status() );
+	}
+
+	/**
+	 * With public feedback switched on, a logged-out visitor may vote on a public
+	 * page, and the vote is counted without storing anything about the voter.
+	 *
+	 * @return void
+	 */
+	public function test_feedback_allows_guest_when_public_enabled(): void {
+		update_option( Settings::OPTION_PUBLIC_FEEDBACK, 1 );
+		$editor      = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$handbook_id = $this->make_handbook();
+		update_term_meta( $handbook_id, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_PUBLIC );
+		$page = $this->make_page( $editor, $handbook_id, 'open', 'OPEN' );
+
+		wp_set_current_user( 0 );
+		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/feedback' );
+		$request->set_body_params(
+			array(
+				'post_id' => $page,
+				'value'   => 'yes',
+			)
+		);
+		$response = $this->server->dispatch( $request );
+
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 1, (int) get_post_meta( $page, Feedback::YES, true ) );
+		$this->assertSame( '', get_post_meta( $page, Feedback::VOTERS, true ), 'A guest vote must store no voter identifier.' );
+
+		delete_option( Settings::OPTION_PUBLIC_FEEDBACK );
 	}
 
 	/**

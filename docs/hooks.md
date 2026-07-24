@@ -130,6 +130,40 @@ add_filter(
 );
 ```
 
+### `living_handbook_post_type_slug`
+
+Filters the URL base of a handbook page. The default is `handbook`, so a page lives at `/handbook/<slug>`. It is English and fixed by default, so permalinks stay stable and do not collide. Change it only with care: on a live site a new base rewrites every page URL, so flush the permalinks afterwards (Settings, Permalinks) and redirect the old links, or existing bookmarks and inbound links break.
+
+Parameters:
+
+- `string $slug` The rewrite base. Default `'handbook'`.
+
+```php
+add_filter(
+	'living_handbook_post_type_slug',
+	function (): string {
+		return 'handbuch';
+	}
+);
+```
+
+### `living_handbook_taxonomy_slug`
+
+Filters the URL base of a handbook grouping term (`handbook_set`), at `/handbook-set/<slug>` by default. Same reason and same caveat as `living_handbook_post_type_slug`.
+
+Parameters:
+
+- `string $slug` The rewrite base. Default `'handbook-set'`.
+
+```php
+add_filter(
+	'living_handbook_taxonomy_slug',
+	function (): string {
+		return 'handbuecher';
+	}
+);
+```
+
 _Planned: filters for the navigation markup, the metadata output and the freshness evaluation._
 
 ## Actions

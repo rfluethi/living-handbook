@@ -40,8 +40,6 @@ On a re-import the repository decides the structure again, so a parent set by ha
 
 An `index.md` or `README.md` that stands for a folder takes its slug from the **folder** name, not from the file name, so the area page gets a clean URL instead of `readme`.
 
-**Internal links.** A relative `.md` link is resolved to its page in two ways: exactly by repository path (so a link to a folder's `README.md` finds that folder's page, and a link is unambiguous even when two folders hold a file of the same name), and, failing that, by the target's file-name slug. A link that resolves to **no** page is turned into plain text: the link text stays, the dead link is dropped, so a handbook never shows a link that 404s. The link comes back on its own once you add the target page, because every sync resolves the links again. The import lists every link it had to defuse, naming the page it is on and the file it pointed at, so a typo or a page you still have to write stays visible.
-
 ## Importing the same source twice
 
 Re-importing the same source **updates the existing pages instead of creating duplicates**. How a page is recognised depends on the import:
@@ -94,7 +92,7 @@ The URL defaults to this plugin's own documentation repository. A fork with its 
 
 ## Transport metadata
 
-A page can carry a metadata block that maps it onto the handbook's taxonomies and freshness fields. The block is detected by the German heading marker `## Transport-Metadaten`; everything above it is the page body, and the first `# H1` becomes the title. An English heading is not recognised as the marker.
+A page can carry a metadata block that maps it onto the handbook's taxonomies and freshness fields. The block is detected by the German heading marker `## Transport-Metadaten`; everything above it is the page body, and the first `# H1` becomes the title. An English heading is not recognised as the marker. A marker inside a fenced code block is treated as an example and skipped, and when the marker appears more than once outside code, the last occurrence wins — so a page can quote the marker in its documentation without being cut in half.
 
 The fields (German labels, one per list item):
 
@@ -130,6 +128,10 @@ Each page has a source, set in the **Source** box in the editor:
 - **Maintained in WordPress** (default): edited normally in WordPress.
 - **Synced from GitHub**: the page carries a Markdown source URL. On save, via the **Sync now** button, and on a schedule, the page is pulled from the repository and re-rendered to HTML (filtered through `wp_kses` before it is stored). Its content editor is locked so it cannot be edited by hand. The page list shows the source in its own column, and the "GitHub source note" block marks the public page as maintained on GitHub.
 
+### Converting a synced page to a WordPress page
+
+A page synced from GitHub can be detached and kept in WordPress. In the **Source** box, switch it from **Synced from GitHub** to **Maintained in WordPress** and save. The current content stays exactly as it is, the background sync stops touching the page, the content editor is unlocked so you can edit it by hand, and the "GitHub source note" no longer shows on the public page. Nothing is fetched again, so the page will not revert on the next sync. The move is one-way in practice: to go back, switch the source to GitHub again and re-enter the Markdown source URL, and the next sync overwrites the page with the repository version.
+
 ### How the sync learns of changes
 
 There is no webhook. WordPress pulls: on save, on demand (Sync now), and on a background schedule (WordPress cron, which fires on site visits). Set the schedule under **Handbook → Settings**: off, hourly, twice daily, daily, or weekly (the default on a new install). "Off" still syncs on save and via Sync now.
@@ -164,5 +166,5 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 - A ZIP is read within limits (at most 2000 entries, 5 MB per file, 100 MB uncompressed in total), so a prepared archive cannot exhaust the server's memory. The uncompressed total is adjustable in code through the `living_handbook_zip_max_bytes` filter (see [hooks.md](hooks.md)); the real ceiling stays the server's PHP upload and memory limits.
 - The transport marker and its field labels are German.
 - Synced content is stored as rendered HTML, not editable blocks, because a cron job has no browser to convert HTML into blocks.
-- MkDocs-specific syntax degrades to plain text: admonitions (`!!! note`) and pymdownx tabs are not part of GitHub Flavored Markdown, so the converter does not understand them.
+- MkDocs admonitions (`!!! note`, `??? tip`) are converted to a blockquote led by the title, so the note stays set apart instead of collapsing into stray text. Other MkDocs-specific syntax still degrades to plain text: pymdownx tabs, for one, are not part of GitHub Flavored Markdown, so the converter does not understand them.
 - Living Handbook is built for single-site installations; on a multisite network, import per site.

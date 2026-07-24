@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.48.0
+Stable tag: 0.49.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.49.0 =
+* Public feedback: a new setting lets logged-out visitors vote "Was this helpful?" on public pages. To stay privacy-friendly it stores nothing personal, no cookie, no IP, no identifier, so the same visitor can vote again after reloading; the trade-off is no per-person limit. Off by default. On internal pages, logged-in users still vote once each regardless of this setting.
+* Feedback can be reset per page: a "Reset feedback" action in the handbook list clears a page's counters, for a page reworked after weak feedback.
+* The URL bases of a handbook page and a handbook grouping (/handbook/, /handbook-set/) can now be changed with two filters, living_handbook_post_type_slug and living_handbook_taxonomy_slug, for a site that needs a localized base. Changing them on a live site rewrites URLs and needs the permalinks flushed.
+* Documented how to detach a GitHub-synced page and keep it in WordPress: switch its Source to "Maintained in WordPress" and the content stays, the sync stops and the editor unlocks.
+
 = 0.48.0 =
 * Import: a "## Transport-Metadaten" heading inside a fenced code block is no longer mistaken for the page's own transport block, so a page documenting the metadata format keeps its code block instead of being cut off there.
 * Import: MkDocs admonitions ("!!! note", "??? tip") now become a blockquote led by the title, instead of collapsing into stray text with lost indentation.
@@ -111,13 +117,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * An index or README file that stands for a folder now takes its slug from the folder name, so an area page gets a clean URL instead of "readme".
 * The app handbook is published on load rather than left as drafts. It is curated, editor-locked content, and its visibility is governed by the handbook it lands in, so a "members" handbook keeps it behind the login. Any other GitHub import still stays a draft for review.
 
-= 0.41.0 =
-* The app handbook now comes from GitHub instead of being shipped inside the plugin. The documentation of the app lives in a public repository, so it has one source, can be read and edited where it is written, and every install pulls the current state instead of a snapshot frozen at release time. The import screen keeps its "App handbook" tab and one-click button; behind it is an ordinary GitHub folder import against a fixed URL, chosen by the admin language.
-* This drops the bundled example handbook added in 0.39.0. A separate demo made little sense next to real documentation: a good handbook explains the app well enough that the reader can try it, the same way any application's manual does. The bundle export and import between sites is untouched; only the shipped copy is gone.
-
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.49.0 =
+Optional public "Was this helpful?" voting (privacy-friendly, no cookie or IP, off by default), a per-page feedback reset, and filters to change the handbook URL bases. Pre-release: best on a fresh database.
 
 = 0.48.0 =
 Import fixes (transport block inside code fences, MkDocs admonitions), a GitHub link on the source note, and table, navigation and code-block styling. Reload the app handbook after updating. Pre-release: best on a fresh database.

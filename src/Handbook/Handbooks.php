@@ -81,8 +81,15 @@ final class Handbooks {
 				'show_admin_column'  => true,
 				'show_in_rest'       => true,
 				'query_var'          => true,
+				/**
+				 * The URL base of a handbook grouping term. English and fixed by
+				 * default; filterable for the same reason and with the same caveat
+				 * as the page slug, see living_handbook_post_type_slug.
+				 *
+				 * @param string $slug The rewrite base. Default 'handbook-set'.
+				 */
 				'rewrite'            => array(
-					'slug'       => 'handbook-set',
+					'slug'       => (string) apply_filters( 'living_handbook_taxonomy_slug', 'handbook-set' ),
 					'with_front' => false,
 				),
 			)

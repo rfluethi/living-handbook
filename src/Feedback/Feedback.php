@@ -11,6 +11,7 @@ namespace LivingHandbook\Feedback;
 
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Setup\Settings;
 use WP_Post;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -22,10 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Stores per-page yes/no counts and exposes a REST endpoint to increment them.
  *
- * The endpoint is limited to logged-in users who may view the page (the
- * handbook is internal and access is enforced per handbook), and counts one
- * vote per user and page: a second submit from the same user is accepted but
- * does not change the counters.
+ * A logged-in vote is counted once per user and page: a second submit from the
+ * same user is accepted but does not change the counters. When public feedback
+ * is switched on (Settings), a logged-out visitor may also vote on a page they
+ * can view; that vote has no per-person limit and stores nothing personal (no
+ * cookie, no IP, no id), so it stays privacy-friendly at the cost of dedup.
  */
 final class Feedback {
 
@@ -59,7 +61,10 @@ final class Feedback {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'handle' ),
 				'permission_callback' => static function () {
-					return is_user_logged_in();
+					// Logged-in users may always vote (one vote each). Logged-out
+					// visitors only when public feedback is switched on; the page
+					// access check in handle() still limits them to public pages.
+					return is_user_logged_in() || Settings::public_feedback_enabled();
 				},
 				'args'                => array(
 					'post_id' => array(
@@ -107,7 +112,28 @@ final class Feedback {
 		}
 
 		$user_id = get_current_user_id();
-		$voters  = get_post_meta( $post_id, self::VOTERS, true );
+
+		// A logged-out vote (user id 0) only counts when public feedback is on, and
+		// carries no dedup: to stay privacy-friendly we store no cookie, no IP and
+		// no id for it, so the same visitor can vote again after reloading. The
+		// buttons hide client-side after a vote to blunt casual double-clicks.
+		if ( 0 === $user_id ) {
+			if ( ! Settings::public_feedback_enabled() ) {
+				return new WP_REST_Response( array( 'ok' => false ), 403 );
+			}
+			$count = (int) get_post_meta( $post_id, $key, true ) + 1;
+			update_post_meta( $post_id, $key, $count );
+			return new WP_REST_Response(
+				array(
+					'ok'      => true,
+					'counted' => true,
+				)
+			);
+		}
+
+		// A logged-in vote counts once per user and page: the user id is kept in a
+		// voter list so a second submit is accepted but does not change the counts.
+		$voters = get_post_meta( $post_id, self::VOTERS, true );
 		if ( ! is_array( $voters ) ) {
 			$voters = array();
 		}

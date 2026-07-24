@@ -45,6 +45,23 @@ final class Settings {
 	public const OPTION_CUSTOM_CSS = 'living_handbook_custom_css';
 
 	/**
+	 * Option that lets logged-out visitors vote on public pages. Off by default:
+	 * anonymous voting has no per-person limit (see Feedback), so a site opts in
+	 * deliberately. No cookie, no IP and nothing else personal is stored either
+	 * way.
+	 */
+	public const OPTION_PUBLIC_FEEDBACK = 'living_handbook_public_feedback';
+
+	/**
+	 * Whether anonymous voting on public pages is switched on.
+	 *
+	 * @return bool
+	 */
+	public static function public_feedback_enabled(): bool {
+		return (bool) get_option( self::OPTION_PUBLIC_FEEDBACK, false );
+	}
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -139,6 +156,15 @@ final class Settings {
 				'default'           => '',
 			)
 		);
+		register_setting(
+			self::OPTION_GROUP,
+			self::OPTION_PUBLIC_FEEDBACK,
+			array(
+				'type'              => 'integer',
+				'sanitize_callback' => array( $this, 'sanitize_public_feedback' ),
+				'default'           => 0,
+			)
+		);
 
 		add_settings_section( 'living_handbook_sync_section', __( 'GitHub sync', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
 		add_settings_field(
@@ -158,6 +184,15 @@ final class Settings {
 			self::PAGE_SLUG,
 			'living_handbook_appearance_section',
 			array( 'label_for' => self::OPTION_CUSTOM_CSS )
+		);
+
+		add_settings_section( 'living_handbook_feedback_section', __( 'Feedback', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_field(
+			self::OPTION_PUBLIC_FEEDBACK,
+			__( 'Public feedback', 'living-handbook' ),
+			array( $this, 'render_public_feedback_field' ),
+			self::PAGE_SLUG,
+			'living_handbook_feedback_section'
 		);
 
 		add_settings_section( 'living_handbook_uninstall_section', __( 'Uninstall', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
@@ -194,6 +229,16 @@ final class Settings {
 	}
 
 	/**
+	 * Normalise the public-feedback checkbox to 0 or 1.
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return int
+	 */
+	public function sanitize_public_feedback( $value ): int {
+		return empty( $value ) ? 0 : 1;
+	}
+
+	/**
 	 * Sanitize the custom CSS. CSS never needs a "<", so removing it prevents
 	 * closing the style tag or injecting a script: the value cannot break out of
 	 * the style block it is printed in.
@@ -219,6 +264,17 @@ final class Settings {
 			esc_textarea( $css )
 		);
 		echo '<p class="description">' . esc_html__( 'CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples.', 'living-handbook' ) . '</p>';
+	}
+
+	/**
+	 * Render the public-feedback field.
+	 *
+	 * @return void
+	 */
+	public function render_public_feedback_field(): void {
+		$on = self::public_feedback_enabled();
+		echo '<label><input type="checkbox" name="' . esc_attr( self::OPTION_PUBLIC_FEEDBACK ) . '" value="1" ' . checked( $on, true, false ) . '> ' . esc_html__( 'Show "Was this helpful?" to logged-out visitors on public pages', 'living-handbook' ) . '</label>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- checked() returns a safe attribute string; the surrounding text is escaped.
+		echo '<p class="description">' . esc_html__( 'Off by default. When on, anyone can vote on a public page. To keep it privacy-friendly, votes are not tied to a person: no cookie, no IP and nothing else personal is stored, so the same visitor can vote again after reloading. On internal pages only logged-in users vote, one vote each, regardless of this setting.', 'living-handbook' ) . '</p>';
 	}
 
 	/**

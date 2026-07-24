@@ -51,7 +51,7 @@ Der Steckbrief beginnt mit einer Überschrift der zweiten Ebene, die genau «Tra
 * Prüfintervall: 90 Tage
 ```
 
-**Wichtig:** Die Überschrift «Transport-Metadaten» darf pro Datei nur einmal vorkommen, auch nicht in Beispielen oder Codeblöcken. Der Import trennt an ihrem ersten Auftreten; ein zweites Vorkommen würde den Rest der Seite abschneiden. Aus demselben Grund fehlt sie im Beispiel oben.
+**Wichtig:** Ab Plugin-Version 0.43 darf die Überschrift „Transport-Metadaten“ auch in Beispielen und Codeblöcken vorkommen. Der Import überspringt Codeblöcke und nimmt das letzte Vorkommen außerhalb davon. Ältere Versionen trennen dagegen am ersten Auftreten; dort schneidet ein zweites Vorkommen den Rest der Seite ab. Deshalb fehlt die Überschrift im Beispiel oben.
 
 Drei Zeilen brauchen eine Erklärung:
 

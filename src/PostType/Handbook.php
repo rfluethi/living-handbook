@@ -94,7 +94,16 @@ final class Handbook {
 				'menu_icon'           => 'dashicons-book',
 				'hierarchical'        => true,
 				'has_archive'         => false,
-				'rewrite'             => array( 'slug' => 'handbook' ),
+				/**
+				 * The URL base of a handbook page. English and fixed by default, so
+				 * permalinks stay stable and do not collide. A site that needs a
+				 * different base (a localized one, say) can filter it, but changing
+				 * it on a live site rewrites every page URL and needs the permalinks
+				 * flushed and old links redirected.
+				 *
+				 * @param string $slug The rewrite base. Default 'handbook'.
+				 */
+				'rewrite'             => array( 'slug' => (string) apply_filters( 'living_handbook_post_type_slug', 'handbook' ) ),
 				'supports'            => array( 'title', 'editor', 'excerpt', 'revisions', 'page-attributes', 'comments', 'author', 'custom-fields' ),
 			)
 		);

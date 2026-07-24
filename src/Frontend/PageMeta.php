@@ -13,6 +13,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Frontend;
 
 use LivingHandbook\Meta\Metadata;
+use LivingHandbook\Setup\Settings;
 use LivingHandbook\Taxonomy\Taxonomies;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,14 +28,15 @@ final class PageMeta {
 	/**
 	 * Build the feedback prompt markup.
 	 *
-	 * The feedback REST endpoint requires a logged-in user, so the buttons are
-	 * only rendered for logged-in visitors; a guest would only get an error.
+	 * A logged-in visitor always sees the buttons. A logged-out visitor sees them
+	 * only when public feedback is switched on, matching what the REST endpoint
+	 * accepts, so a guest never gets buttons that would only error.
 	 *
 	 * @param int $post_id Post ID.
 	 * @return string
 	 */
 	public static function render_feedback( int $post_id ): string {
-		if ( ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() && ! Settings::public_feedback_enabled() ) {
 			return '';
 		}
 		return sprintf(

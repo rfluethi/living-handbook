@@ -15,6 +15,7 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
+use WP_Post;
 use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,6 +27,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * review and feedback columns in the handbook list.
  */
 final class Maintenance {
+
+	/**
+	 * The admin-post action that resets a page's feedback counters.
+	 */
+	private const RESET_ACTION = 'living_handbook_reset_feedback';
 
 	/**
 	 * Hook registration into WordPress.
@@ -44,6 +50,81 @@ final class Maintenance {
 		// matching the columns: source, then the review status of "Last reviewed".
 		add_action( 'restrict_manage_posts', array( $this, 'status_filter_dropdown' ), 25 );
 		add_action( 'pre_get_posts', array( $this, 'filter_by_status' ), 15 );
+		add_filter( 'post_row_actions', array( $this, 'feedback_reset_action' ), 10, 2 );
+		add_action( 'admin_post_' . self::RESET_ACTION, array( $this, 'handle_feedback_reset' ) );
+		add_action( 'admin_notices', array( $this, 'feedback_reset_notice' ) );
+	}
+
+	/**
+	 * Add a "Reset feedback" row action to a handbook page that carries votes, so
+	 * a page reworked after poor feedback can start from zero. Shown only to a
+	 * user who may edit the page, and only when there is something to reset.
+	 *
+	 * @param array<string, string> $actions Existing row actions.
+	 * @param WP_Post               $post    The row's post.
+	 * @return array<string, string>
+	 */
+	public function feedback_reset_action( array $actions, WP_Post $post ): array {
+		if ( Handbook::POST_TYPE !== $post->post_type || ! current_user_can( 'edit_post', $post->ID ) ) {
+			return $actions;
+		}
+		$votes = (int) get_post_meta( $post->ID, Feedback::YES, true ) + (int) get_post_meta( $post->ID, Feedback::NO, true );
+		if ( 0 === $votes ) {
+			return $actions;
+		}
+		$url = wp_nonce_url(
+			admin_url( 'admin-post.php?action=' . self::RESET_ACTION . '&post=' . $post->ID ),
+			self::RESET_ACTION . '_' . $post->ID
+		);
+
+		$actions['living_handbook_reset_feedback'] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( $url ),
+			esc_html__( 'Reset feedback', 'living-handbook' )
+		);
+		return $actions;
+	}
+
+	/**
+	 * Reset a page's feedback counters and voter list, then return to the list.
+	 *
+	 * @return void
+	 */
+	public function handle_feedback_reset(): void {
+		$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
+		check_admin_referer( self::RESET_ACTION . '_' . $post_id );
+		if ( 0 === $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( esc_html__( 'You are not allowed to reset feedback for this page.', 'living-handbook' ) );
+		}
+
+		delete_post_meta( $post_id, Feedback::YES );
+		delete_post_meta( $post_id, Feedback::NO );
+		delete_post_meta( $post_id, Feedback::VOTERS );
+
+		$back = add_query_arg(
+			'living_handbook_feedback_reset',
+			'1',
+			admin_url( 'edit.php?post_type=' . Handbook::POST_TYPE )
+		);
+		wp_safe_redirect( $back );
+		exit;
+	}
+
+	/**
+	 * Confirm a feedback reset on the handbook list.
+	 *
+	 * @return void
+	 */
+	public function feedback_reset_notice(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading a redirect flag to show a notice; no state change.
+		if ( ! isset( $_GET['living_handbook_feedback_reset'] ) ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( null === $screen || 'edit-' . Handbook::POST_TYPE !== $screen->id ) {
+			return;
+		}
+		echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Feedback was reset.', 'living-handbook' ) . '</p></div>';
 	}
 
 	/**

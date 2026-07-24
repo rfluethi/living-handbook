@@ -64,6 +64,7 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Setup\Onboarding::OPTION_SETUP_NOTICE );
 	delete_option( LivingHandbook\Setup\Onboarding::OPTION_OVERVIEW_PAGE );
 	delete_option( LivingHandbook\Setup\Settings::OPTION_CUSTOM_CSS );
+	delete_option( LivingHandbook\Setup\Settings::OPTION_PUBLIC_FEEDBACK );
 
 	// Always: remove the navigation and area caches (transients keyed by version).
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
