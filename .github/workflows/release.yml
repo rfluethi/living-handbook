@@ -1,0 +1,48 @@
+name: Release
+
+# When a release is published on GitHub, build the installable plugin ZIP and
+# attach it to that release, so it can be downloaded straight from the release
+# page. Create the release as usual (tag and notes); this fills in the ZIP.
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and attach the plugin ZIP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer
+
+      # Guard against a mismatch: the tag should match the plugin version in the
+      # header, so the attached ZIP is the one the release claims to be.
+      - name: Check the tag matches the plugin version
+        run: |
+          version="$(grep -oE "Version:[[:space:]]*[0-9]+\.[0-9]+\.[0-9]+" living-handbook.php | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")"
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$version" != "$tag" ]; then
+            echo "Tag '$GITHUB_REF_NAME' does not match plugin version '$version'." >&2
+            echo "Tag the release v$version (or $version) so the ZIP matches." >&2
+            exit 1
+          fi
+          echo "Tag and version agree on $version."
+
+      # bin/build.sh installs the production dependencies and produces
+      # living-handbook-<version>.zip with only the files that ship.
+      - name: Build the plugin ZIP
+        run: bash bin/build.sh
+
+      - name: Attach the ZIP to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${GITHUB_REF_NAME}" living-handbook-*.zip --clobber
