@@ -42,7 +42,7 @@ Die Bereiche dieses Handbuchs, in Leserichtung:
 
 Du musst nicht alles lesen. Kennst du WordPress gut, reicht dir vielleicht schon der [Schnellstart](schnellstart.md) auf einer Seite. Für alle anderen sind die [Ersten Schritte](erste-schritte/README.md) der richtige Einstieg. Alles Weitere schlägst du bei Bedarf nach. Die Suche auf der Einstiegsseite des Handbuchs findet jede Seite.
 
-Du kannst dieses Handbuch auch in deine eigene WordPress-Installation holen. Ein Klick lädt es, danach bleibt es automatisch aktuell. Die Anleitung dazu: [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
+Du kannst dieses Handbuch auch in deine eigene WordPress-Installation holen. Ein Klick lädt es aus dem Plugin, passend zur installierten Version. Die Anleitung dazu: [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
 
 <details>
 <summary>Hintergrund: Woher diese Seiten kommen</summary>

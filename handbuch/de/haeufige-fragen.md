@@ -26,7 +26,7 @@ Das Plugin braucht ein Block-Theme und WordPress 6.7 oder neuer. Ein älteres, k
 <details>
 <summary>Wie lade ich dieses Handbuch in meine eigene Installation?</summary>
 
-Über **Handbuch → Import**, Reiter **App-Handbuch**, mit einem Klick. Danach bleibt es automatisch mit GitHub abgeglichen. Details: [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
+Über **Handbuch → Import**, Reiter **App-Handbuch**, mit einem Klick. Das Handbuch liegt im Plugin und passt damit zur installierten Version. Nach einem Plugin-Update lädst du es einfach erneut. Details: [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
 
 </details>
 
@@ -61,7 +61,7 @@ Nein. Es bedeutet nur: Niemand hat die Seite innerhalb ihres Prüfintervalls bes
 <details>
 <summary>Warum sehe ich die Feedback-Knöpfe „War das hilfreich?“ nicht?</summary>
 
-Die Knöpfe erscheinen nur für angemeldete Personen. Jede Stimme wird einem Konto zugeordnet, eine pro Person und Seite. Details: [Feedback auswerten](pflege/feedback-auswerten.md).
+Standardmäßig erscheinen die Knöpfe nur für angemeldete Personen, mit einer Stimme pro Person und Seite. In den [Einstellungen](die-einstellungen.md) lässt sich öffentliches Feedback einschalten; dann stimmen auf öffentlichen Seiten auch Abgemeldete ab. Details: [Feedback auswerten](pflege/feedback-auswerten.md).
 
 </details>
 

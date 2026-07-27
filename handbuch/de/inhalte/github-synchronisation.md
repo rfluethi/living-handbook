@@ -5,7 +5,7 @@ Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben.
 <details>
 <summary>Konzept: Jede Seite hat eine Quelle</summary>
 
-Der Normalfall ist **In WordPress gepflegt**: Du bearbeitest die Seite direkt in WordPress. Die Alternative ist **Von GitHub synchronisiert**: Die Seite wird aus einer Datei auf GitHub befüllt. Bearbeiten lässt sie sich dann in WordPress nicht mehr, ihr Editor ist gesperrt. Das ist Absicht. Sonst würde der nächste Abgleich deine Änderungen überschreiben. In der Seitenliste zeigt eine eigene Spalte, welche Quelle jede Seite hat. Dieses Handbuch hier ist selbst so mit GitHub verbunden.
+Der Normalfall ist **In WordPress gepflegt**: Du bearbeitest die Seite direkt in WordPress. Die Alternative ist **Von GitHub synchronisiert**: Die Seite wird aus einer Datei auf GitHub befüllt. Bearbeiten lässt sie sich dann in WordPress nicht mehr, ihr Editor ist gesperrt. Das ist Absicht. Sonst würde der nächste Abgleich deine Änderungen überschreiben. In der Seitenliste zeigt eine eigene Spalte, welche Quelle jede Seite hat.
 
 </details>
 

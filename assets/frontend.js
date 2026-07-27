@@ -429,10 +429,108 @@
 
 	/* ---------- Init ---------- */
 
+	/* ---------- Content images: click to enlarge (lightbox) ---------- */
+
+	// Handbook content images are plain <img>, not core Image blocks, so the
+	// core "Enlarge on click" never reaches them. This gives them the same
+	// behaviour: an image shown smaller than its real size becomes clickable and
+	// opens in a dark overlay, closed by a click, the close button, or Escape.
+	function initLightbox() {
+		var scopes = document.querySelectorAll(
+			'.living-handbook-page .wp-block-post-content, .living-handbook-page .entry-content'
+		);
+		if ( ! scopes.length ) {
+			return;
+		}
+
+		var overlay = null;
+		var lastFocus = null;
+
+		function labels() {
+			return ( window.livingHandbook && window.livingHandbook.lightboxClose )
+				? window.livingHandbook.lightboxClose
+				: 'Close';
+		}
+
+		function close() {
+			if ( ! overlay ) {
+				return;
+			}
+			overlay.parentNode.removeChild( overlay );
+			overlay = null;
+			document.removeEventListener( 'keydown', onKey );
+			if ( lastFocus && lastFocus.focus ) {
+				lastFocus.focus();
+			}
+		}
+
+		function onKey( e ) {
+			if ( 'Escape' === e.key || 'Esc' === e.key ) {
+				close();
+			}
+		}
+
+		function open( img ) {
+			lastFocus = document.activeElement;
+
+			overlay = document.createElement( 'div' );
+			overlay.className = 'living-handbook-lightbox';
+			overlay.setAttribute( 'role', 'dialog' );
+			overlay.setAttribute( 'aria-modal', 'true' );
+			if ( img.alt ) {
+				overlay.setAttribute( 'aria-label', img.alt );
+			}
+
+			var big = document.createElement( 'img' );
+			big.src = img.currentSrc || img.src;
+			big.alt = img.alt || '';
+
+			var btn = document.createElement( 'button' );
+			btn.type = 'button';
+			btn.className = 'living-handbook-lightbox__close';
+			btn.setAttribute( 'aria-label', labels() );
+			btn.innerHTML = '&times;';
+
+			overlay.appendChild( big );
+			overlay.appendChild( btn );
+			overlay.addEventListener( 'click', close );
+
+			document.body.appendChild( overlay );
+			document.addEventListener( 'keydown', onKey );
+			btn.focus();
+		}
+
+		function markZoomable( img ) {
+			if ( img.naturalWidth && img.clientWidth && img.naturalWidth > img.clientWidth + 4 ) {
+				img.classList.add( 'living-handbook-zoomable' );
+			} else {
+				img.classList.remove( 'living-handbook-zoomable' );
+			}
+		}
+
+		scopes.forEach( function ( scope ) {
+			scope.querySelectorAll( 'img' ).forEach( function ( img ) {
+				if ( img.complete ) {
+					markZoomable( img );
+				} else {
+					img.addEventListener( 'load', function () {
+						markZoomable( img );
+					} );
+				}
+				img.addEventListener( 'click', function () {
+					if ( img.classList.contains( 'living-handbook-zoomable' ) ) {
+						open( img );
+					}
+				} );
+			} );
+		} );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		buildToc();
 		wireNav();
 		wireMenus();
+		initLightbox();
 
 		document.querySelectorAll( '.living-handbook-entry' ).forEach( wireEntry );
 		document.querySelectorAll( '.living-handbook-page-search' ).forEach( wirePageSearch );

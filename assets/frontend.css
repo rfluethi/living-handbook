@@ -1008,3 +1008,71 @@
 	max-width: 100%;
 	height: auto;
 }
+
+/* Click to enlarge, like the core Image block's lightbox. Only an image shown
+ * smaller than its real size gets the zoom cursor (the script adds the class),
+ * so small icons stay as they are. */
+.living-handbook-page :is(.wp-block-post-content, .entry-content) img.living-handbook-zoomable {
+	cursor: zoom-in;
+}
+
+.living-handbook-lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	padding: 2.5rem;
+	margin: 0;
+	background: rgba(0, 0, 0, 0.9);
+	cursor: zoom-out;
+}
+
+.living-handbook-lightbox img {
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.living-handbook-lightbox__close {
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	width: 2.5rem;
+	height: 2.5rem;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.55);
+	color: #fff;
+	font-size: 1.6rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.living-handbook-lightbox__close:hover,
+.living-handbook-lightbox__close:focus-visible {
+	background: rgba(0, 0, 0, 0.85);
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.living-handbook-lightbox {
+		animation: living-handbook-lightbox-in 0.15s ease;
+	}
+
+	@keyframes living-handbook-lightbox-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+}

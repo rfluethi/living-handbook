@@ -2,6 +2,9 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.51.0 =
+* Images in handbook content can now be clicked to enlarge, in a dark overlay like the core Image block's lightbox, closed by a click, the close button or Escape. This is a handbook-only feature because handbook images are stored as plain HTML, not Image blocks, so the core setting never reaches them. Only an image shown smaller than its real size becomes clickable, so small icons are left alone.
+
 = 0.50.4 =
 * The bundled app handbook was expanded: the German pages now carry screenshots and diagrams, and the text stresses more clearly that a page can be tailored in look and function through the blocks and templates. Reload the app handbook to get the new version.
 

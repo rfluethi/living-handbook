@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.50.4
+Stable tag: 0.51.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.51.0 =
+* Images in handbook content can now be clicked to enlarge, in a dark overlay like the core Image block's lightbox, closed by a click, the close button or Escape. This is a handbook-only feature because handbook images are stored as plain HTML, not Image blocks, so the core setting never reaches them. Only an image shown smaller than its real size becomes clickable, so small icons are left alone.
+
 = 0.50.4 =
 * The bundled app handbook was expanded: the German pages now carry screenshots and diagrams, and the text stresses more clearly that a page can be tailored in look and function through the blocks and templates. Reload the app handbook to get the new version.
 
@@ -121,6 +124,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.51.0 =
+Handbook content images can be clicked to enlarge, like the core lightbox. Pre-release: best on a fresh database.
 
 = 0.50.4 =
 The bundled app handbook was expanded with images and clearer text. Reload the app handbook after updating. Pre-release: best on a fresh database.

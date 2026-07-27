@@ -11,7 +11,7 @@ Standardmäßig stimmen nur angemeldete Personen ab, die die Seite lesen dürfen
 
 ## Schritte
 
-1. Öffne die Seitenliste unter **Handbuch**.
+1. Öffne die Seitenliste unter **Handbuch-Seiten**.
 2. Sortiere die Spalte **Feedback**. Sie zeigt die Differenz aus Ja- und Nein-Stimmen. Die am schlechtesten bewerteten Seiten stehen so ganz oben oder ganz unten, je nach Sortierrichtung.
 3. Wirf zusätzlich einen Blick auf das Dashboard, die Startseite der WordPress-Verwaltung. Der Kasten dort meldet die Gesamtzahlen zusammen mit den überfälligen Prüfungen.
 4. Öffne eine schlecht bewertete Seite. Lies sie mit einer Frage: Woran liegt die Ratlosigkeit? Meist fehlt ein Schritt. Oder ein Begriff wird nicht erklärt. Oder die Seite beantwortet eine andere Frage als die, mit der Leute ankommen.
@@ -24,7 +24,7 @@ Du weißt jederzeit, welche Seiten helfen und welche nicht. Dafür brauchst du w
 <details>
 <summary>Hinweis: Feedback bleibt auf der Website</summary>
 
-Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Paket-Import überschreibt sie nie. Nach einer großen Überarbeitung kannst du die Zähler einer Seite zurücksetzen: in der Seitenliste unter **Handbuch** erscheint bei einer Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler auf null stellt.
+Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Paket-Import überschreibt sie nie. Nach einer großen Überarbeitung kannst du die Zähler einer Seite zurücksetzen: in der Seitenliste unter **Handbuch-Seiten** erscheint bei einer Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler auf null stellt.
 
 </details>
 

@@ -16,7 +16,7 @@ Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → E
 
 ## Deinstallieren
 
-**Beim Löschen des Plugins:** Standardmäßig bleiben beim Löschen alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen und Zwischenspeicher des Plugins. Ein versehentliches Löschen kostet dich so nie das Handbuch. Erst wenn du hier das Häkchen **«Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen»** setzt, räumt das Löschen wirklich alles weg, auch im Website-Editor bearbeitete Templates.
+**Beim Löschen des Plugins:** Standardmäßig bleiben beim Löschen alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen und Zwischenspeicher des Plugins. Ein versehentliches Löschen kostet dich so nie das Handbuch. Erst wenn du hier das Häkchen **„Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen“** setzt, räumt das Löschen wirklich alles weg, auch im Website-Editor bearbeitete Templates.
 
 > **Hinweis:** Diese Einstellungs-Seite können nur Administratorinnen und Administratoren öffnen.
 

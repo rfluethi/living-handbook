@@ -37,7 +37,7 @@ Jeder Bereich braucht dabei eine Startseite. Der Import löst das so:
 
 Zu jeder Handbuch-Seite gehören Angaben wie Seitentyp, Zielgruppe oder Prüfdatum. In WordPress trägst du sie in Felder ein. Eine Markdown-Datei hat diese Felder nicht. Darum darf jede Datei am Ende einen kurzen Steckbrief tragen. Er heißt **Transport-Metadaten**. Der Import liest ihn, füllt damit die Felder der Seite und entfernt ihn aus dem Text.
 
-Der Steckbrief beginnt mit einer Überschrift der zweiten Ebene, die genau «Transport-Metadaten» lautet. Ab dieser Überschrift zählt alles bis zum Dateiende als Steckbrief. Darunter steht eine Liste; jede Zeile ist freiwillig:
+Der Steckbrief beginnt mit einer Überschrift der zweiten Ebene, die genau „Transport-Metadaten“ lautet. Ab dieser Überschrift zählt alles bis zum Dateiende als Steckbrief. Darunter steht eine Liste; jede Zeile ist freiwillig:
 
 ```markdown
 * Seitentyp: Anleitung
@@ -82,6 +82,9 @@ Ein zweiter Import derselben Quelle legt keine Kopien an. Er aktualisiert die be
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
+* Verantwortliche Rolle: Handbuch-Redaktion
+* Thema: Inhalte
+* Zielgruppe: Alle Mitglieder
 * Reihenfolge: 2
 * Textauszug: Diese Anleitung übernimmt fertige Markdown-Texte als Seiten in dein Handbuch: eingefügt, als ZIP-Datei oder von einer GitHub-Adresse.
 * Letzte Prüfung: 2026-07-23

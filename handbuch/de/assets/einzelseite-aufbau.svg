@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 560" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" role="img" aria-label="Schematischer Aufbau einer einzelnen Handbuch-Seite">
+  <title>Aufbau einer Einzelseite</title>
+  <desc>Schema einer Einzelseite in drei Spalten. Links die Navigation als Seitenbaum. In der Mitte von oben nach unten: die Abzeichen, der Seitentitel, der Inhalt, die Frage „War das hilfreich?“ mit Ja und Nein sowie die Metadaten-Fußzeile mit Erstellt, Aktualisiert, Geprüft und der verantwortlichen Rolle. Rechts das Inhaltsverzeichnis der Seite.</desc>
+  <rect width="860" height="560" fill="#ffffff"/>
+  <rect x="10" y="10" width="840" height="540" rx="10" fill="#fafafa" stroke="#cccccc"/>
+
+  <!-- Navigation links -->
+  <rect x="30" y="30" width="185" height="500" rx="8" fill="#ffffff" stroke="#bbbbbb"/>
+  <text x="46" y="60" font-size="14" font-weight="700" fill="#1d2327">▾ Navigation</text>
+  <line x1="30" y1="74" x2="215" y2="74" stroke="#dddddd"/>
+  <text x="46" y="100" font-size="13" fill="#2c5f8a">Erste Schritte</text>
+  <text x="62" y="122" font-size="12" fill="#555555">Installation</text>
+  <rect x="54" y="132" width="150" height="22" rx="4" fill="#e7eef5"/>
+  <text x="62" y="147" font-size="12" font-weight="600" fill="#2c5f8a">Erste Seite anlegen</text>
+  <text x="62" y="176" font-size="12" fill="#555555">Seiten ordnen</text>
+  <text x="46" y="202" font-size="13" fill="#2c5f8a">Pflege</text>
+
+  <!-- Mitte -->
+  <!-- Abzeichen -->
+  <rect x="240" y="30" width="86" height="24" rx="12" fill="#e7eef5"/>
+  <text x="252" y="46" font-size="12" fill="#2c5f8a">Anleitung</text>
+  <rect x="334" y="30" width="98" height="24" rx="12" fill="#eeeeee"/>
+  <text x="346" y="46" font-size="12" fill="#555555">Applikation</text>
+  <rect x="440" y="30" width="120" height="24" rx="12" fill="#eeeeee"/>
+  <text x="452" y="46" font-size="12" fill="#555555">Alle Mitglieder</text>
+
+  <text x="240" y="96" font-size="24" font-weight="700" fill="#1d2327">Erste Seite anlegen</text>
+
+  <!-- Inhalt -->
+  <rect x="240" y="116" width="380" height="10" rx="5" fill="#dddddd"/>
+  <rect x="240" y="136" width="350" height="10" rx="5" fill="#dddddd"/>
+  <rect x="240" y="156" width="368" height="10" rx="5" fill="#dddddd"/>
+  <text x="240" y="200" font-size="16" font-weight="700" fill="#1d2327">Schritte</text>
+  <rect x="240" y="214" width="360" height="10" rx="5" fill="#dddddd"/>
+  <rect x="240" y="234" width="330" height="10" rx="5" fill="#dddddd"/>
+  <rect x="240" y="254" width="352" height="10" rx="5" fill="#dddddd"/>
+  <text x="240" y="298" font-size="16" font-weight="700" fill="#1d2327">Ergebnis</text>
+  <rect x="240" y="312" width="340" height="10" rx="5" fill="#dddddd"/>
+  <rect x="240" y="332" width="300" height="10" rx="5" fill="#dddddd"/>
+
+  <!-- Feedback -->
+  <rect x="240" y="380" width="380" height="52" rx="8" fill="#ffffff" stroke="#bbbbbb"/>
+  <text x="256" y="412" font-size="13" fill="#1d2327">War das hilfreich?</text>
+  <rect x="440" y="392" width="60" height="28" rx="14" fill="#2c5f8a"/>
+  <text x="460" y="411" font-size="13" fill="#ffffff">Ja</text>
+  <rect x="510" y="392" width="70" height="28" rx="14" fill="none" stroke="#2c5f8a"/>
+  <text x="527" y="411" font-size="13" fill="#2c5f8a">Nein</text>
+
+  <!-- Metadaten -->
+  <rect x="240" y="448" width="380" height="82" rx="8" fill="#ffffff" stroke="#bbbbbb"/>
+  <text x="256" y="472" font-size="11" fill="#777777">ERSTELLT</text>
+  <text x="256" y="490" font-size="12" fill="#1d2327">01.06.2026</text>
+  <text x="352" y="472" font-size="11" fill="#777777">AKTUALISIERT</text>
+  <text x="352" y="490" font-size="12" fill="#1d2327">23.07.2026</text>
+  <text x="462" y="472" font-size="11" fill="#777777">GEPRÜFT</text>
+  <circle cx="468" cy="486" r="5" fill="#176e3c"/>
+  <text x="479" y="490" font-size="12" fill="#1d2327">23.07.2026</text>
+  <text x="256" y="516" font-size="11" fill="#777777">VERANTWORTLICH</text>
+  <text x="368" y="516" font-size="12" fill="#1d2327">Handbuch-Redaktion</text>
+
+  <!-- Inhaltsverzeichnis rechts -->
+  <rect x="645" y="30" width="185" height="200" rx="8" fill="#ffffff" stroke="#bbbbbb"/>
+  <text x="661" y="60" font-size="14" font-weight="700" fill="#1d2327">▾ Auf dieser Seite</text>
+  <line x1="645" y1="74" x2="830" y2="74" stroke="#dddddd"/>
+  <rect x="655" y="88" width="168" height="22" rx="4" fill="#e7eef5"/>
+  <text x="663" y="103" font-size="12" font-weight="600" fill="#2c5f8a">Schritte</text>
+  <text x="663" y="132" font-size="12" fill="#555555">Ergebnis</text>
+  <text x="663" y="156" font-size="12" fill="#555555">Stolpersteine</text>
+  <text x="663" y="180" font-size="12" fill="#555555">Verwandte Seiten</text>
+</svg>
