@@ -8,7 +8,7 @@ Living Handbook bringt eigene Blöcke mit, also Bausteine für den Editor. Du fi
 
 ### Mermaid
 
-![Icon des Blocks „Mermaid“](../assets/block-icon-mermaid.png)
+![Icon des Blocks „Mermaid“](_attachments/bloeke-mermaid.webp)
 
 Zeichnet Diagramme direkt auf der Seite: Abläufe, Entscheidungswege, Hierarchien. Du beschreibst das Diagramm als Text in der Diagramm-Sprache [Mermaid](https://mermaid.js.org/); gezeichnet wird es beim Anzeigen der Seite. Füge den Block ein und schreibe die Beschreibung in das Feld **Mermaid-Code**. Ein Titel wird zur Bildunterschrift. Die Textbeschreibung wird vorgelesen, wenn jemand die Seite mit einem Screenreader nutzt. So sieht die Beschreibung eines kleinen Ablaufs aus:
 
@@ -30,19 +30,19 @@ Der Block funktioniert überall, auch mitten im Seiteninhalt. Kommt eine Seite a
 
 ### Handbuch-Übersicht
 
-![Icon des Blocks „Handbuch-Übersicht“](../assets/block-icon-uebersicht.png)
+![Icon des Blocks „Handbuch-Übersicht“](_attachments/bloeke-Uebersicht.webp)
 
 Listet alle Handbücher, die die aktuelle Besucherin lesen darf, mit Name, Beschreibung und Seitenzahl. Die Aktivierung legt eine Seite mit diesem Block an. Du kannst ihn aber auf jede beliebige Seite setzen. Einstellung: Anzeige als **Liste** oder als **Karten**.
 
 ### Handbuch-Menü
 
-![Icon des Blocks „Handbuch-Menü“](../assets/block-icon-menue.png)
+![Icon des Blocks „Handbuch-Menü“](_attachments/bloeke-Menu.webp)
 
 Zeigt dieselbe Handbuch-Liste kompakt, gedacht für den Kopfbereich der Website. Auf schmalen Bildschirmen klappt er hinter einem Knopf zusammen. Meist ist die [Einbindung ins Theme-Menü](navigation-einbinden.md) die bessere Wahl; dieser Block ist die Alternative ohne Theme-Menü.
 
 ### GitHub-Quellenhinweis
 
-![Icon des Blocks „GitHub-Quellenhinweis“](../assets/block-icon-quellenhinweis.png)
+![Icon des Blocks „GitHub-Quellenhinweis“](_attachments/bloeke-GitHub.webp)
 
 Kennzeichnet eine Seite als [auf GitHub gepflegt](../inhalte/github-synchronisation.md) und verlinkt zusätzlich die Quelldatei auf GitHub, damit Lesende sie dort direkt öffnen können. Der Text des Hinweises ist anpassbar. Der Block zeigt sich nur auf Seiten mit GitHub-Quelle; überall sonst bleibt er unsichtbar. Du kannst ihn also einmal im Seitenlayout platzieren und vergessen.
 
@@ -52,43 +52,43 @@ Die folgenden Blöcke sitzen schon an der richtigen Stelle in den mitgelieferten
 
 ### Handbuch-Eintrag
 
-![Icon des Blocks „Handbuch-Eintrag“](../assets/block-icon-eintrag.png)
+![Icon des Blocks „Handbuch-Eintrag“](_attachments/bloeke-Eintrag.webp)
 
 Baut die Einstiegsseite eines Handbuchs: Suche, Filter, Bereichs-Kacheln und die zuletzt aktualisierten Seiten. Wirkt nur auf der Einstiegsseite.
 
 ### Handbuch-Navigation
 
-![Icon des Blocks „Handbuch-Navigation“](../assets/block-icon-navigation.png)
+![Icon des Blocks „Handbuch-Navigation“](_attachments/bloeke-Navigation.webp)
 
 Zeigt den auf- und zuklappbaren Seitenbaum des Handbuchs. Anzeige als **Menü** (alles offen) oder **Akkordeon** (Äste klappen einzeln). Wirkt auf der Einstiegsseite und auf Einzelseiten.
 
 ### Handbuch-Badges
 
-![Icon des Blocks „Handbuch-Badges“](../assets/block-icon-badges.png)
+![Icon des Blocks „Handbuch-Badges“](_attachments/bloeke-Badges.webp)
 
 Zeigt die Abzeichen einer Seite: Seitentyp, Thema, Zielgruppe. Wirkt nur auf Einzelseiten.
 
 ### Inhaltsverzeichnis
 
-![Icon des Blocks „Inhaltsverzeichnis“](../assets/block-icon-inhaltsverzeichnis.png)
+![Icon des Blocks „Inhaltsverzeichnis“](_attachments/bloeke-Inhaltsverzeichnis.webp)
 
 Baut „Auf dieser Seite“ aus den Überschriften der Seite und markiert beim Lesen den aktuellen Abschnitt. Wirkt nur auf Einzelseiten.
 
 ### Handbuch-Suche
 
-![Icon des Blocks „Handbuch-Suche“](../assets/block-icon-suche.png)
+![Icon des Blocks „Handbuch-Suche“](_attachments/bloeke-Suche.webp)
 
 Ein Suchfeld, das schon beim Tippen passende Seiten des Handbuchs vorschlägt. Wirkt nur auf Einzelseiten.
 
 ### Handbuch-Feedback
 
-![Icon des Blocks „Handbuch-Feedback“](../assets/block-icon-feedback.png)
+![Icon des Blocks „Handbuch-Feedback“](_attachments/bloeke-Feedback.webp)
 
 Stellt die Frage „War das hilfreich?“ mit Ja und Nein. Wirkt nur auf Einzelseiten. Standardmäßig sehen nur angemeldete Personen die Knöpfe; öffentliches Feedback lässt sich in den [Einstellungen](../die-einstellungen.md) einschalten.
 
 ### Handbuch-Seiten-Meta
 
-![Icon des Blocks „Handbuch-Seiten-Meta“](../assets/block-icon-seiten-meta.png)
+![Icon des Blocks „Handbuch-Seiten-Meta“](_attachments/bloeke-Seiten-Meta.webp)
 
 Zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle, samt Prüfstatus-Abzeichen. Wirkt nur auf Einzelseiten.
 

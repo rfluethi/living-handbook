@@ -21,13 +21,13 @@ graph TD;
 
 ## Die Einstiegsseite
 
-![Schema der Einstiegsseite: Titel, Navigation links, Suchfeld, Bereichs-Kacheln, zuletzt aktualisierte Seiten und die Filterleiste rechts](../assets/einstiegsseite-aufbau.svg)
+![Die Einstiegsseite: Titel, Navigation links, Suchfeld, Bereichs-Kacheln, zuletzt aktualisierte Seiten und die Filterleiste rechts](../assets/einstiegsseite-aufbau.webp)
 
 Die Suche und die Filter grenzen die Seitenliste ein, ohne die Seite neu zu laden. Gefiltert wird nach Seitentyp, Thema, Rolle und Zielgruppe. Ohne JavaScript funktioniert beides als gewöhnliches Formular weiter. Die Bereichs-Kacheln sind die Seiten der obersten Ebene, siehe [Seiten ordnen](../erste-schritte/seiten-ordnen.md).
 
 ## Die Einzelseite
 
-![Schema der Einzelseite: Navigation links, in der Mitte Abzeichen, Titel, Inhalt, Feedback-Frage und Metadaten-Fußzeile, rechts das Inhaltsverzeichnis](../assets/einzelseite-aufbau.svg)
+![Die Einzelseite: Navigation links, in der Mitte Abzeichen, Titel, Inhalt, Feedback-Frage und Metadaten-Fußzeile, rechts das Inhaltsverzeichnis](../assets/einzelseite-aufbau.webp)
 
 Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Beim Lesen markiert es den aktuellen Abschnitt. Auf schmalen Bildschirmen erscheint es stattdessen über dem Inhalt. Die Metadaten-Fußzeile zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle. Dazu kommt das [Prüfstatus-Abzeichen](../pflege/der-pruefzyklus.md).
 

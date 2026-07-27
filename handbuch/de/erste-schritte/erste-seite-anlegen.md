@@ -25,7 +25,7 @@ Diese Anleitung erstellt deine erste Handbuch-Seite. Die Schritte: schreiben, ei
 
 Die Seite ist auf der Website erreichbar, unter `/handbook/<seitenname>/`. Auf der Einstiegsseite ihres Handbuchs erscheint sie unter „Zuletzt aktualisiert“. Oben zeigt sie die Abzeichen, rechts das Verzeichnis „Auf dieser Seite“. Ganz unten stehen die Angaben zur Seite, mit dem Prüfstatus als Abzeichen.
 
-![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.svg)
+![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.webp)
 
 <details>
 <summary>Stolpersteine: „Meine Seite erscheint nicht“</summary>
