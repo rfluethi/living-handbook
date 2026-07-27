@@ -1,29 +1,68 @@
 # The review cycle
 
-Every page carries a review interval. When it runs out, the page shows a badge and appears in the dashboard widget. Nothing is deleted and nothing is hidden: the handbook simply stops pretending the page is current.
+This page explains the heart of the plugin. Every page carries a review date and a review interval. From them it becomes visible how reliable a page currently is. Nothing is deleted and nothing is hidden. The handbook merely stops pretending a page is current.
+
+## What this is about
+
+Every page carries two dates and one interval:
+
+* **Last updated** sets itself when you save. It shows the state of the content.
+* **Last reviewed** is set by a person, by hand. It means: "I have read this, it still holds." That counts even when nothing was changed. Only a human can say it. That is why it never sets itself.
+* **The review interval** says how long a review stays valid. Fast-moving topics get a short interval, such as tools and external services. Stable topics get a long one, such as principles and organisation.
+
+From the review date and the interval, the plugin computes the state. It appears as a badge at the bottom of every page:
+
+![The three review-status badges: Reviewed, Review due, Review overdue](../assets/pruefstatus-abzeichen.webp)
+
+Besides its colour, every state has its own shape and a text label. It stays recognisable without colour vision and with a screen reader.
+
+The diagram shows the cycle: after the review the interval runs. When it expires, the badge appears, and the responsible role reviews again.
 
 ```mermaid
 graph TD;
-  A[Page reviewed] --> B[Interval running];
-  B --> C{Interval over?};
-  C -->|No| B;
-  C -->|Yes| D[Badge: review due];
-  D --> E{Twice the interval?};
-  E -->|Yes| F[Badge: review overdue];
-  D --> G[Reviewer checks the page];
+  A["Page reviewed"] --> B["Interval running"];
+  B --> C{"Interval expired?"};
+  C -->|"No"| B;
+  C -->|"Yes"| D["Badge: Review due"];
+  D --> E{"Twice the interval expired?"};
+  E -->|"Yes"| F["Badge: Review overdue"];
+  D --> G["Responsible role reviews the page"];
   F --> G;
   G --> A;
 ```
 
-## Choosing an interval
+## Why it is built this way
 
-Short intervals on pages that never change produce noise, and noise teaches people to ignore badges. Twelve months is a sensible default. Use three months only where being out of date does real damage, such as access rules.
+* **"Due" does not mean "wrong".** It only means: nobody has confirmed it lately. After twice the interval, the state escalates to "overdue". That way a page does not age quietly.
+* **Responsibility sits with roles, not people.** Every page names a responsible role. Which person currently holds the role is maintained in a single place outside the pages, for example on a page of its own called "Roles in the team". A staffing change therefore does not mean touching a hundred pages. How you create roles is under [Tags and roles](tags-and-roles.md).
+* **There is no central handbook owner.** Upkeep is distributed: every role keeps its own pages current. Cross-cutting work sits with an editorial role, such as structure, reading feedback and spot checks.
 
-## What a review is
+## What this means for your work
 
-Read the page and ask one question: would I write this the same way today? If yes, confirm the date and stop.
+**Choosing an interval:** Short intervals on pages that never change produce noise. And noise teaches people to ignore badges. Twelve months are a sensible default. Three months only where going stale really causes damage, such as access rules.
+
+**What a review is:** reading the page and asking one question: would I still write this the same way today? If yes, confirm the date, done. How that works in practice is under [Review pages](review-pages.md).
+
+**The second path besides the schedule:** The healthiest upkeep is the occasion-driven one. When a process or a tool changes, adjust the affected page in the same working step. Not later, not as a separate chore.
+
+<details>
+<summary>Background: Versions</summary>
+
+The pages live in WordPress. So the WordPress revisions are the version history: who changed what, and when. An earlier state can be restored. A separate changelog per page is not needed.
+
+</details>
+
+## Related pages
+
+* [Review pages](review-pages.md)
+* [Reading feedback](reading-feedback.md)
 
 ## Transport-Metadaten
+* Seitentyp: Background / Concept
+* Verantwortliche Rolle: Handbook editors
+* Thema: Upkeep
+* Zielgruppe: All members
 * Reihenfolge: 1
-* Letzte Prüfung: 2026-06-01
+* Textauszug: Every page carries a review date and a review interval; from them it becomes visible how reliable a page currently is.
+* Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

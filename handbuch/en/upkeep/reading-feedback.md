@@ -1,16 +1,44 @@
 # Reading feedback
 
-Below every page is the question "Was this helpful?" with Yes and No. By default logged-in people vote, one vote per person and page. Public feedback can be switched on in the settings, so logged-out visitors vote on public pages too; those votes store nothing personal (no cookie, no IP) and so have no per-person limit.
+Below every page sits the question "Was this helpful?" with Yes and No. This guide shows where the votes land. It also shows how you use them to find the pages that need work.
 
-## Where the numbers land
+<details>
+<summary>Concept: How votes are counted</summary>
 
-The page list in the admin has a feedback column. It can be sorted by the difference between Yes and No. That is the fastest way to the pages that need work: pages with many No votes rise to the top.
+By default, only logged-in people who may read the page can vote, with one vote per person and page. Public feedback can be switched on in [the settings](../the-settings.md). Then logged-out visitors can vote on public pages too. Such votes are not linked to any person, out of respect for privacy: no cookie, no IP address; there is therefore no limit of one vote there. On internal pages, independently of this, only logged-in people vote, one vote each.
 
-## What you do with it
+</details>
 
-A page with a poor ratio is not a reason for shame, it is a signal. Read it asking where the confusion comes from, and rewrite the part that causes it. After a rework you can reset a page's counters: the page list shows a **Reset feedback** action on any page that has votes.
+## Steps
+
+1. Open the page list under **Handbook pages**.
+2. Sort the **Feedback** column. It shows the difference between Yes and No votes. The worst-rated pages thus sit at the very top or bottom, depending on the sort direction.
+3. Also glance at the dashboard, the start screen of the WordPress admin. The box there reports the totals together with the overdue reviews.
+4. Open a badly rated page. Read it with one question: what causes the confusion? Usually a step is missing. Or a term goes unexplained. Or the page answers a different question than the one people arrive with.
+5. Rewrite the part that causes the confusion.
+
+## Result
+
+You know at any time which pages help and which do not. You need neither surveys nor guesses for that. A page with a poor ratio is no reason for shame, but a signal. The feedback merely shows you earlier what would otherwise quietly frustrate your readers.
+
+<details>
+<summary>Tip: Feedback stays on the website</summary>
+
+The feedback counters are operating data of this one website. When [moving a handbook](../content/move-a-handbook.md) they do not travel along. A bundle import never overwrites them. After a major rework you can reset a page's counters: in the page list under **Handbook pages**, a page with votes offers the action **Reset feedback**, which sets its Yes and No counters back to zero.
+
+</details>
+
+## Related pages
+
+* [Review pages](review-pages.md)
+* [The review cycle](the-review-cycle.md)
 
 ## Transport-Metadaten
-* Reihenfolge: 2
-* Letzte Prüfung: 2025-06-01
-* Prüfintervall: 90 Tage
+* Seitentyp: Guide
+* Verantwortliche Rolle: Handbook editors
+* Thema: Upkeep
+* Zielgruppe: All members
+* Reihenfolge: 3
+* Textauszug: Where the votes from "Was this helpful?" land, and how you use them to find the pages that need work.
+* Letzte Prüfung: 2026-07-27
+* Prüfintervall: 180 Tage

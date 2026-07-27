@@ -84,7 +84,8 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Changelog ==
 
 = 0.51.0 =
-* Images in handbook content can now be clicked to enlarge, in a dark overlay like the core Image block's lightbox, closed by a click, the close button or Escape. This is a handbook-only feature because handbook images are stored as plain HTML, not Image blocks, so the core setting never reaches them. Only an image shown smaller than its real size becomes clickable, so small icons are left alone.
+* Images in handbook content can now be clicked to enlarge, in a dark overlay like the core Image block's lightbox, closed by a click, the close button or Escape. A raster image becomes clickable only when it is shown smaller than its real size, so small icons are left alone; an SVG is always clickable, since it stays sharp at any size.
+* Mermaid diagrams now render on the bundled app handbook too. The script that draws them only loaded on GitHub-synced pages, so on a locally loaded app handbook (a WordPress-source page) the diagrams stayed as code. It now loads on any handbook page whose content holds a diagram.
 
 = 0.50.4 =
 * The bundled app handbook was expanded: the German pages now carry screenshots and diagrams, and the text stresses more clearly that a page can be tailored in look and function through the blocks and templates. Reload the app handbook to get the new version.
@@ -117,9 +118,6 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * The GitHub source note now links to the source file on GitHub, next to the "maintained on GitHub" line.
 * Handbook tables render with visible lines between rows and columns, a wider first column and top-aligned cells, so an imported Markdown table reads as a table; a wide code block scrolls instead of stretching the page.
 * The handbook navigation takes the surface background, matching the cards and the on-this-page box, and a separator line sets off the "Was this helpful?" block.
-
-= 0.47.0 =
-* The import screen now shows its notes (links that resolved to no page, or an import cut short by a limit) in a highlighted block above the page list, instead of a plain line at the end where a large import buried them.
 
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 

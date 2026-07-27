@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-27T13:21:29+00:00\n"
+"POT-Creation-Date: 2026-07-27T15:22:41+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -415,7 +415,7 @@ msgid "App handbook page"
 msgstr "App-Handbuch-Seite"
 
 # GitHub sync: source box
-#: src/Git/GitSync.php:1204 src/Git/GitSync.php:1753
+#: src/Git/GitSync.php:1204 src/Git/GitSync.php:1752
 msgid "Source"
 msgstr "Quelle"
 
@@ -525,20 +525,20 @@ msgstr "Fehler: HTTP %d"
 msgid "OK %s"
 msgstr "OK %s"
 
-#: src/Git/GitSync.php:1769 src/Git/GitSync.php:1792
+#: src/Git/GitSync.php:1768 src/Git/GitSync.php:1791
 #: src/Import/MarkdownImportPage.php:896
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/Git/GitSync.php:1769 src/Git/GitSync.php:1793
+#: src/Git/GitSync.php:1768 src/Git/GitSync.php:1792
 msgid "WordPress"
 msgstr "WordPress"
 
-#: src/Git/GitSync.php:1773
+#: src/Git/GitSync.php:1772
 msgid "(sync failed)"
 msgstr "(Sync fehlgeschlagen)"
 
-#: src/Git/GitSync.php:1791
+#: src/Git/GitSync.php:1790
 msgid "All sources"
 msgstr "Alle Quellen"
 

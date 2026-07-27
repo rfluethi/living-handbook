@@ -1721,8 +1721,10 @@ final class GitSync {
 	}
 
 	/**
-	 * Load mermaid.js on the frontend for a GitHub-synced handbook page that
-	 * actually contains a Mermaid diagram.
+	 * Load mermaid.js on the frontend for a handbook page whose stored HTML
+	 * contains a Mermaid diagram. This covers any page rendered from Markdown to
+	 * HTML, a GitHub-synced page as well as one from the bundled app handbook; the
+	 * plugin's Mermaid block loads the library itself, so it is not handled here.
 	 *
 	 * @return void
 	 */
@@ -1732,9 +1734,6 @@ final class GitSync {
 		}
 		$post = get_post();
 		if ( ! $post instanceof WP_Post ) {
-			return;
-		}
-		if ( self::SOURCE_GITHUB !== get_post_meta( $post->ID, self::META_SOURCE, true ) ) {
 			return;
 		}
 		if ( false === strpos( (string) $post->post_content, 'class="mermaid"' ) ) {

@@ -12,7 +12,7 @@ Jede Seite trägt zwei Daten und ein Intervall:
 
 Aus Prüfdatum und Intervall berechnet das Plugin den Status. Er erscheint als Abzeichen unten auf jeder Seite:
 
-![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.svg)
+![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.webp)
 
 Jeder Status hat neben der Farbe eine eigene Form und eine Beschriftung. Er bleibt darum auch ohne Farbensehen und mit Screenreader erkennbar.
 

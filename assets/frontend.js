@@ -500,8 +500,15 @@
 			btn.focus();
 		}
 
+		function isSvg( img ) {
+			var src = ( img.currentSrc || img.src || '' ).split( '?' )[ 0 ].split( '#' )[ 0 ];
+			return /\.svg$/i.test( src );
+		}
+
 		function markZoomable( img ) {
-			if ( img.naturalWidth && img.clientWidth && img.naturalWidth > img.clientWidth + 4 ) {
+			// An SVG is vector, so always let it enlarge for detail; a raster only
+			// when it is shown smaller than its real size.
+			if ( isSvg( img ) || ( img.naturalWidth && img.clientWidth && img.naturalWidth > img.clientWidth + 4 ) ) {
 				img.classList.add( 'living-handbook-zoomable' );
 			} else {
 				img.classList.remove( 'living-handbook-zoomable' );
