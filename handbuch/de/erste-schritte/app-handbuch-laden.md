@@ -19,7 +19,7 @@ Das Handbuch liegt im Plugin, du brauchst also keine Internetverbindung, um es z
 3. Klicke auf **App-Handbuch laden**.
 4. Lies die Ergebnisliste. Sieh dir danach das geladene Handbuch auf der Website an.
 
-> **Screenshot folgt:** Die Import-Seite mit geöffnetem Reiter „App-Handbuch“, markiert sind die Auswahl „Laden in“ und der Lade-Knopf.
+![Die Import-Seite mit geöffnetem Reiter „App-Handbuch“, markiert sind die Auswahl „Laden in“ und der Lade-Knopf.](../assets/import-app-handbuch.webp)
 
 ## Ergebnis
 

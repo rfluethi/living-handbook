@@ -21,11 +21,11 @@ Diese Anleitung zeigt die praktische Prüfarbeit: einzelne Seiten bestätigen, m
 
 Für den häufigen Fall „gelesen, stimmt noch“ musst du die Seite gar nicht öffnen:
 
-1. Öffne die Seitenliste unter **Handbuch**.
+1. Öffne die Seitenliste unter **Handbuch-Seiten**.
 2. Fahre mit der Maus über eine Zeile und klicke auf **QuickEdit**.
 3. Dort stehen Prüfdatum, prüfende Person und Prüfintervall, vorausgefüllt mit den aktuellen Werten. Setze das Datum neu und speichere.
 
-> **Screenshot folgt:** Die Seitenliste mit geöffneter Schnellbearbeitung, markiert sind die drei Prüf-Felder.
+![Die Seitenliste mit geöffneter Schnellbearbeitung, markiert sind die drei Prüf-Felder.](../assets/quickedit-pruefung.webp)
 
 ## Überfällige Seiten finden
 

@@ -17,7 +17,7 @@ Welche Handbücher eine Person sieht, hängt von ihren Leserechten ab. Die Liste
 4. Trage bei **Zusätzliche CSS-Klasse(n)** exakt `has-handbook-menu` ein.
 5. Speichere.
 
-> **Screenshot folgt:** Die Seitenleiste des Navigations-Blocks mit aufgeklapptem Abschnitt „Erweitert“ und der eingetragenen Klasse `has-handbook-menu`.
+![Die Seitenleiste des Navigations-Blocks mit aufgeklapptem Abschnitt „Erweitert“ und der eingetragenen Klasse `has-handbook-menu`.](../assets/navigation-css-klasse.webp)
 
 ## Ergebnis
 

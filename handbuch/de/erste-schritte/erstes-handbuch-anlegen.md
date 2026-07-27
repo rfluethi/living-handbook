@@ -16,7 +16,7 @@ Jede Handbuch-Seite gehört zu genau einem Handbuch. Wer etwas lesen darf, wird 
 3. Setze auf derselben Seite die **Sichtbarkeit**. Es gibt drei Stufen: **Öffentlich** für alle Besucher, **Alle Mitglieder (angemeldet)** für ein internes Handbuch, oder **Eingeschränkt** auf bestimmte Benutzerrollen und Personen.
 4. Speichere.
 
-> **Screenshot folgt:** Das Formular „Handbuch anlegen“ mit Name, Beschreibung und den drei Sichtbarkeits-Stufen.
+![Das Formular „Handbuch anlegen“ mit Name, Beschreibung und den drei Sichtbarkeits-Stufen.](../assets/handbuch-anlegen.webp)
 
 ## Ergebnis
 

@@ -22,7 +22,7 @@ Der Import liest jede Markdown-Datei und baut daraus eine normale Handbuch-Seite
 4. Starte den Import und lies die Ergebnisliste. Sie meldet, was angelegt wurde und wo etwas fehlte.
 5. Prüfe die neuen Seiten und **veröffentliche** sie. Importierte Seiten sind zuerst unveröffentlichte Entwürfe. So geht nichts ungeprüft online. Einzige Ausnahme ist das App-Handbuch, es erscheint sofort.
 
-> **Screenshot folgt:** Die Import-Seite mit den Reitern (Text einfügen, ZIP-Datei, GitHub, Paket, App-Handbuch), geöffnet ist der GitHub-Reiter mit dem Adressfeld.
+![Die Import-Seite mit den Reitern (Text einfügen, ZIP-Datei, GitHub, Paket, App-Handbuch), geöffnet ist der GitHub-Reiter mit dem Adressfeld.](../assets/import-github.webp)
 
 ## Aus Ordnern werden Bereiche
 

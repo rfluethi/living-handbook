@@ -12,7 +12,7 @@ Die Sichtbarkeit wird pro Handbuch geregelt, nicht pro Seite. Diese Anleitung st
 3. Bei **Eingeschränkt**: Wähle die Rollen aus. Ergänze bei Bedarf einzelne Personen.
 4. Speichere.
 
-> **Screenshot folgt:** Die Bearbeitungsseite eines Handbuchs mit den drei Sichtbarkeits-Stufen und den Feldern für Rollen und Personen.
+![Die Bearbeitungsseite eines Handbuchs mit den drei Sichtbarkeits-Stufen und den Feldern für Rollen und Personen.](../assets/sichtbarkeit-einstellen.webp)
 
 ## Ergebnis
 
