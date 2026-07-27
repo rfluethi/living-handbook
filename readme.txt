@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.50.1
+Stable tag: 0.50.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.50.2 =
+* Imported SVG images now sideload even when the site does not allow SVG uploads: the plugin permits the SVG mime type only for the moment it stores its own already-sanitised SVG, not for user uploads in general. This is why the app handbook's diagram images did not appear.
+* An image on a handbook page is now capped at the column width, so a large screenshot no longer overflows the page.
+
 = 0.50.1 =
 * App handbook pages are now locked in the editor, like GitHub-synced pages: they are managed content that a re-load replaces, so editing them by hand would only be lost on the next load. A notice on the page says so.
 * Fixed a relative image reference with a percent-encoded path (a space as %20) not resolving to the file on disk, so such an image is now sideloaded too.
@@ -111,15 +115,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 = 0.46.0 =
 * Internal links can no longer become 404s, by two mechanisms. First, a folder import now records each page's repository path, so an internal .md link resolves to its page exactly by path, regardless of slug; this fixes links to a folder's README, whose page takes the folder name as its slug, not "readme". Second, a link that still resolves to no page is turned into plain text instead of a raw .md link: the text stays, the dead link cannot reach the browser, and the link comes back on its own once the target page exists. The import still lists every such link so a typo or missing page stays visible.
 
-= 0.45.0 =
-* Fixed internal links turning into 404s on GitHub-sourced pages. The import resolved a page's internal .md links to real pages, but every later sync re-rendered the Markdown and left the links raw again, so the first scheduled sync after an import broke every cross-link. The sync now resolves the links too, the same way the import does.
-
-= 0.44.0 =
-* The GitHub folder import now reports internal .md links that point at no page. After it wires up every link whose target exists, anything left pointing at a .md file is a dead link, a typo or a page not yet written, and the result list names the page it is on and the file it points at. This makes a large handbook with many cross-references far easier to keep whole.
-
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.50.2 =
+Imported SVG images now sideload even without site-wide SVG support, and a large image is capped at the column width. Reload the app handbook after updating. Pre-release: best on a fresh database.
 
 = 0.50.1 =
 App handbook pages are locked like GitHub pages (managed content), and a percent-encoded image reference now resolves. Reload the app handbook after updating. Pre-release: best on a fresh database.

@@ -2,6 +2,10 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.50.2 =
+* Imported SVG images now sideload even when the site does not allow SVG uploads: the plugin permits the SVG mime type only for the moment it stores its own already-sanitised SVG, not for user uploads in general. This is why the app handbook's diagram images did not appear.
+* An image on a handbook page is now capped at the column width, so a large screenshot no longer overflows the page.
+
 = 0.50.1 =
 * App handbook pages are now locked in the editor, like GitHub-synced pages: they are managed content that a re-load replaces, so editing them by hand would only be lost on the next load. A notice on the page says so.
 * Fixed a relative image reference with a percent-encoded path (a space as %20) not resolving to the file on disk, so such an image is now sideloaded too.

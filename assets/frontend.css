@@ -1000,3 +1000,11 @@
 	max-width: 100%;
 	overflow-x: auto;
 }
+
+/* An imported image (a screenshot, say) can be far larger than the column. A
+ * plain Markdown image carries no width, so cap it at the content width and keep
+ * its proportions, rather than letting it overflow. */
+.living-handbook-page :is(.wp-block-post-content, .entry-content) img {
+	max-width: 100%;
+	height: auto;
+}

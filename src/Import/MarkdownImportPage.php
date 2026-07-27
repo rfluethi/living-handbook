@@ -681,22 +681,40 @@ final class MarkdownImportPage {
 		// stored XSS in the media library. Sanitize it before storing; if it
 		// cannot be sanitized (library missing or invalid SVG), skip it rather
 		// than store an unchecked file.
-		if ( 'svg' === strtolower( (string) pathinfo( $file_name, PATHINFO_EXTENSION ) ) ) {
+		$is_svg = 'svg' === strtolower( (string) pathinfo( $file_name, PATHINFO_EXTENSION ) );
+		if ( $is_svg ) {
 			$data = self::sanitize_svg( $data );
 			if ( '' === $data ) {
 				return '';
 			}
 		}
 
+		// WordPress does not allow the SVG mime type by default, so wp_upload_bits
+		// would refuse the file. Permit it only for the moment of this write, and
+		// only for the already-sanitized SVG, so the site's own upload rules for
+		// users are not changed.
+		$allow_svg = static function ( array $mimes ): array {
+			$mimes['svg'] = 'image/svg+xml';
+			return $mimes;
+		};
+		if ( $is_svg ) {
+			add_filter( 'upload_mimes', $allow_svg );
+		}
 		$upload = wp_upload_bits( sanitize_file_name( $file_name ), null, $data );
+		if ( $is_svg ) {
+			remove_filter( 'upload_mimes', $allow_svg );
+		}
 		if ( ! empty( $upload['error'] ) ) {
 			return '';
 		}
 
-		$type          = wp_check_filetype( (string) $upload['file'] );
+		$type = wp_check_filetype( (string) $upload['file'] );
+		$mime = ( is_string( $type['type'] ) && '' !== $type['type'] )
+			? $type['type']
+			: ( $is_svg ? 'image/svg+xml' : '' );
 		$attachment_id = wp_insert_attachment(
 			array(
-				'post_mime_type' => is_string( $type['type'] ) ? $type['type'] : '',
+				'post_mime_type' => $mime,
 				'post_title'     => pathinfo( $file_name, PATHINFO_FILENAME ),
 				'post_status'    => 'inherit',
 			),
