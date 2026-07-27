@@ -2,6 +2,9 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.50.4 =
+* The bundled app handbook was expanded: the German pages now carry screenshots and diagrams, and the text stresses more clearly that a page can be tailored in look and function through the blocks and templates. Reload the app handbook to get the new version.
+
 = 0.50.3 =
 * An imported image is now attached to the page it belongs to, so the media library shows it as uploaded to that page instead of unattached. A shared image keeps the first page it landed on.
 

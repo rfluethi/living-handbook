@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.50.3
+Stable tag: 0.50.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.50.4 =
+* The bundled app handbook was expanded: the German pages now carry screenshots and diagrams, and the text stresses more clearly that a page can be tailored in look and function through the blocks and templates. Reload the app handbook to get the new version.
+
 = 0.50.3 =
 * An imported image is now attached to the page it belongs to, so the media library shows it as uploaded to that page instead of unattached. A shared image keeps the first page it landed on.
 
@@ -115,12 +118,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 = 0.47.0 =
 * The import screen now shows its notes (links that resolved to no page, or an import cut short by a limit) in a highlighted block above the page list, instead of a plain line at the end where a large import buried them.
 
-= 0.46.0 =
-* Internal links can no longer become 404s, by two mechanisms. First, a folder import now records each page's repository path, so an internal .md link resolves to its page exactly by path, regardless of slug; this fixes links to a folder's README, whose page takes the folder name as its slug, not "readme". Second, a link that still resolves to no page is turned into plain text instead of a raw .md link: the text stays, the dead link cannot reach the browser, and the link comes back on its own once the target page exists. The import still lists every such link so a typo or missing page stays visible.
-
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.50.4 =
+The bundled app handbook was expanded with images and clearer text. Reload the app handbook after updating. Pre-release: best on a fresh database.
 
 = 0.50.3 =
 Imported images are now attached to their page in the media library. Reload the app handbook after updating. Pre-release: best on a fresh database.
