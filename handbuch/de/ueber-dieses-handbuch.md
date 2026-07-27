@@ -14,6 +14,8 @@ Mit Living Handbook kann eine Website mehrere Handbücher führen, zum Beispiel 
 
 Jedes Handbuch ist gleich aufgebaut. Es besteht aus **Bereichen**, und jeder Bereich enthält **Seiten**. Die Bereiche siehst du als Kacheln auf der Einstiegsseite des Handbuchs und als Hauptpunkte in der Navigation links.
 
+Jede Handbuch-Seite ist aus **Blöcken** gebaut und folgt einem **Template**. Beides lässt sich anpassen, und darin steckt viel Freiheit: Über die Blöcke und ihre Einstellungen bestimmst du, was eine Seite kann und zeigt, über die Templates und ein paar Zeilen CSS, wie sie aussieht. So schneidest du eine Seite gezielt auf ihren Zweck zu, im Aussehen wie in der Funktion. Der Bereich [Oberfläche](oberflaeche/README.md) zeigt, wie das geht.
+
 Die Bereiche dieses Handbuchs, in Leserichtung:
 
 1. **[Schnellstart](schnellstart.md):** der ganze Weg auf einer Seite, für Erfahrene.
@@ -45,7 +47,7 @@ Du kannst dieses Handbuch auch in deine eigene WordPress-Installation holen. Ein
 <details>
 <summary>Hintergrund: Woher diese Seiten kommen</summary>
 
-Die Texte dieses Handbuchs werden auf GitHub gepflegt. GitHub ist eine Website, auf der Projekte ihre Dateien öffentlich ablegen können. Die [Dateien dieses Handbuchs](https://github.com/rfluethi/living-handbook/tree/main/handbuch/de) kann dort jede und jeder einsehen. Lädst du das Handbuch in deine Installation, bleibt es mit diesen Dateien verbunden. Wird dort etwas verbessert, erreicht dich die Verbesserung beim nächsten Laden. Wie das funktioniert, steht unter [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
+Die Texte dieses Handbuchs werden öffentlich auf GitHub geschrieben. GitHub ist eine Website, auf der Projekte ihre Dateien öffentlich ablegen können. Die [Dateien dieses Handbuchs](https://github.com/rfluethi/living-handbook/tree/main/handbuch/de) kann dort jede und jeder einsehen. Ausgeliefert wird das Handbuch aber mit dem Plugin: Lädst du es in deine Installation, kommt es aus der installierten Version, nicht aus dem Netz. Aktualisierst du das Plugin, kommt die passende Fassung mit. Wie das funktioniert, steht unter [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
 
 </details>
 

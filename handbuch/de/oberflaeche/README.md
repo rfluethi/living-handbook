@@ -1,6 +1,6 @@
 # Oberfläche
 
-Dieser Bereich erklärt, was deine Leserinnen und Leser sehen. Er zeigt die drei Arten von Handbuch-Seiten auf der Website. Er zeigt auch, wie die Handbücher ins Menü deiner Website kommen und wie du die Farben anpasst.
+Dieser Bereich erklärt, was deine Leserinnen und Leser sehen, und vor allem, wie viel davon du selbst bestimmst. Die Handbuch-Seiten sind aus Blöcken gebaut und folgen anpassbaren Templates. Über die Blöcke und ihre Einstellungen legst du die Funktion einer Seite fest, welche Bausteine sie zeigt und was sie kann; über die Templates und ein paar Zeilen CSS legst du ihr Aussehen fest. Beides passt du an, ohne das Plugin selbst zu verändern. Dieser Bereich zeigt die drei Arten von Handbuch-Seiten, wie die Handbücher ins Menü deiner Website kommen und wie du Bausteine und Farben anpasst.
 
 | Seite | Was du danach kannst |
 |---|---|
