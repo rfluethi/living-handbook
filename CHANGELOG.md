@@ -2,6 +2,9 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.50.3 =
+* An imported image is now attached to the page it belongs to, so the media library shows it as uploaded to that page instead of unattached. A shared image keeps the first page it landed on.
+
 = 0.50.2 =
 * Imported SVG images now sideload even when the site does not allow SVG uploads: the plugin permits the SVG mime type only for the moment it stores its own already-sanitised SVG, not for user uploads in general. This is why the app handbook's diagram images did not appear.
 * An image on a handbook page is now capped at the column width, so a large screenshot no longer overflows the page.

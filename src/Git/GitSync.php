@@ -941,7 +941,7 @@ final class GitSync {
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a bundled plugin file from disk, not a remote resource.
 		$markdown  = (string) file_get_contents( $abs );
-		$image_map = $this->local_image_map( $markdown, $abs, $base_dir );
+		$image_map = $this->local_image_map( $markdown, $abs, $base_dir, $post_id );
 		$this->render_markdown_into_post( $post_id, $markdown, $image_map );
 
 		return $post_id;
@@ -1042,9 +1042,10 @@ final class GitSync {
 	 * @param string $markdown Markdown source.
 	 * @param string $abs_file Absolute path of the Markdown file.
 	 * @param string $base_dir Absolute import base folder.
+	 * @param int    $post_id  The page, so its images attach to it.
 	 * @return array<string, string> File name to media URL.
 	 */
-	private function local_image_map( string $markdown, string $abs_file, string $base_dir ): array {
+	private function local_image_map( string $markdown, string $abs_file, string $base_dir, int $post_id ): array {
 		$map      = array();
 		$base_dir = rtrim( $base_dir, '/' );
 		$file_dir = dirname( $abs_file );
@@ -1066,7 +1067,7 @@ final class GitSync {
 			if ( '' === $data ) {
 				continue;
 			}
-			$url = MarkdownImportPage::sideload_image( $name, $data );
+			$url = MarkdownImportPage::sideload_image( $name, $data, $post_id );
 			if ( '' !== $url ) {
 				$map[ $name ] = $url;
 			}
@@ -1536,7 +1537,7 @@ final class GitSync {
 		// Bring the images the page references along: fetch each one from the
 		// repository and sideload it, so a relative link like ../assets/x.svg
 		// points at the media library instead of a path that 404s on the site.
-		$image_map = $this->github_image_map( $markdown, $url );
+		$image_map = $this->github_image_map( $markdown, $url, $post_id );
 
 		$this->render_markdown_into_post( $post_id, $markdown, $image_map );
 
@@ -1602,9 +1603,10 @@ final class GitSync {
 	 *
 	 * @param string $markdown   The page Markdown.
 	 * @param string $source_url The page's raw Markdown source URL.
+	 * @param int    $post_id    The page, so its images attach to it.
 	 * @return array<string, string> File name to media URL.
 	 */
-	private function github_image_map( string $markdown, string $source_url ): array {
+	private function github_image_map( string $markdown, string $source_url, int $post_id ): array {
 		$map = array();
 		foreach ( ImageRefs::extract( $markdown ) as $ref ) {
 			$name = basename( (string) preg_replace( '/[?#].*$/', '', $ref ) );
@@ -1630,7 +1632,7 @@ final class GitSync {
 			if ( '' === $data ) {
 				continue;
 			}
-			$url = MarkdownImportPage::sideload_image( $name, $data );
+			$url = MarkdownImportPage::sideload_image( $name, $data, $post_id );
 			if ( '' !== $url ) {
 				$map[ $name ] = $url;
 			}

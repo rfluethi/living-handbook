@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.50.2
+Stable tag: 0.50.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.50.3 =
+* An imported image is now attached to the page it belongs to, so the media library shows it as uploaded to that page instead of unattached. A shared image keeps the first page it landed on.
+
 = 0.50.2 =
 * Imported SVG images now sideload even when the site does not allow SVG uploads: the plugin permits the SVG mime type only for the moment it stores its own already-sanitised SVG, not for user uploads in general. This is why the app handbook's diagram images did not appear.
 * An image on a handbook page is now capped at the column width, so a large screenshot no longer overflows the page.
@@ -118,6 +121,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.50.3 =
+Imported images are now attached to their page in the media library. Reload the app handbook after updating. Pre-release: best on a fresh database.
 
 = 0.50.2 =
 Imported SVG images now sideload even without site-wide SVG support, and a large image is capped at the column width. Reload the app handbook after updating. Pre-release: best on a fresh database.

@@ -648,9 +648,13 @@ final class MarkdownImportPage {
 	 *
 	 * @param string $file_name Image file name.
 	 * @param string $data      Binary data.
+	 * @param int    $parent_id Page to attach the image to, so the media library
+	 *                          shows it as "uploaded to" that page. 0 leaves it
+	 *                          unattached. A shared image keeps the first page it
+	 *                          was attached to.
 	 * @return string Media URL, or an empty string on failure.
 	 */
-	public static function sideload_image( string $file_name, string $data ): string {
+	public static function sideload_image( string $file_name, string $data, int $parent_id = 0 ): string {
 		$hash     = md5( $data );
 		$existing = get_posts(
 			array(
@@ -673,6 +677,17 @@ final class MarkdownImportPage {
 		);
 		$found    = isset( $existing[0] ) ? (int) $existing[0] : 0;
 		if ( $found > 0 ) {
+			// Attach a reused image that is still unattached, so it stops showing
+			// as "unattached" once it lands on a page. A shared image keeps its
+			// first page.
+			if ( $parent_id > 0 && 0 === (int) wp_get_post_parent_id( $found ) ) {
+				wp_update_post(
+					array(
+						'ID'          => $found,
+						'post_parent' => $parent_id,
+					)
+				);
+			}
 			$url = wp_get_attachment_url( $found );
 			return is_string( $url ) ? $url : '';
 		}
@@ -717,8 +732,10 @@ final class MarkdownImportPage {
 				'post_mime_type' => $mime,
 				'post_title'     => pathinfo( $file_name, PATHINFO_FILENAME ),
 				'post_status'    => 'inherit',
+				'post_parent'    => $parent_id,
 			),
-			(string) $upload['file']
+			(string) $upload['file'],
+			$parent_id
 		);
 		if ( 0 === $attachment_id ) {
 			return '';
