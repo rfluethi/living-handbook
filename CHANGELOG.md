@@ -2,6 +2,9 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.51.5 =
+* More contrast on the entry and overview card lists on light themes: the card descriptions are darker and the separators clearly visible, while the titles keep the theme's link colour. The quieter secondary texts elsewhere (metadata, source notes, table of contents) are left as they were.
+
 = 0.51.4 =
 * Follow-up to the entry filter fix: on themes that force form controls to full width, the facet checkbox stretched across the column and pushed its label below. It is now pinned to a small native size, so each option is a checkbox with its label beside it.
 
