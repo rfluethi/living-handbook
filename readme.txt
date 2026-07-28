@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.51.3
+Stable tag: 0.51.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.51.4 =
+* Follow-up to the entry filter fix: on themes that force form controls to full width, the facet checkbox stretched across the column and pushed its label below. It is now pinned to a small native size, so each option is a checkbox with its label beside it.
+
 = 0.51.3 =
 * Mermaid diagrams can now be clicked to enlarge as well, in the same lightbox as the images. The enlarged diagram gets a light backing so its lines and text stay readable on the dark overlay.
 * Fixed the entry page filter list on themes that render checkboxes as block or full-width elements: the checkbox is kept inline, so its label stays on the same line instead of dropping below.
@@ -114,19 +117,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * The app handbook now ships with the plugin instead of loading from GitHub, so it always matches the installed version and no install depends on a repository staying reachable. The "App handbook" tab imports it from the bundled folder; loading again after a plugin update refreshes the pages. A fork can still point the tab at a GitHub repository through the living_handbook_app_handbook_url filter.
 * The GitHub folder import now brings images along: an image a page references by a relative path (like ../assets/x.svg) is fetched from the repository and sideloaded into the media library, so it is no longer a link that 404s on the site. The same happens on every later sync, and shared images are stored once.
 
-= 0.49.0 =
-* Public feedback: a new setting lets logged-out visitors vote "Was this helpful?" on public pages. To stay privacy-friendly it stores nothing personal, no cookie, no IP, no identifier, so the same visitor can vote again after reloading; the trade-off is no per-person limit. Off by default. On internal pages, logged-in users still vote once each regardless of this setting.
-* Feedback can be reset per page: a "Reset feedback" action in the handbook list clears a page's counters, for a page reworked after weak feedback.
-* The URL bases of a handbook page and a handbook grouping (/handbook/, /handbook-set/) can now be changed with two filters, living_handbook_post_type_slug and living_handbook_taxonomy_slug, for a site that needs a localized base. Changing them on a live site rewrites URLs and needs the permalinks flushed.
-* New handbook pages default to comments closed, so a handbook is not a comment thread unless you want one. Imported pages, the app handbook included, are created with comments off; switch them on per page in the Discussion panel.
-* Documented how to detach a GitHub-synced page and keep it in WordPress: switch its Source to "Maintained in WordPress" and the content stays, the sync stops and the editor unlocks.
-
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
 
-= 0.51.3 =
-Mermaid diagrams enlarge on click, the entry filter list is fixed on more themes, and the bundled app handbook now sits under one "Living Handbook" top page. Pre-release: best on a fresh database.
+= 0.51.4 =
+The entry filter list now stays readable on themes that stretch form controls, the Mermaid diagrams enlarge on click, and the bundled app handbook sits under one "Living Handbook" top page. Pre-release: best on a fresh database.
 
 = 0.51.1 =
 The bundled app handbook is complete in German and now available in English too. Reload the app handbook after updating. Pre-release: best on a fresh database.

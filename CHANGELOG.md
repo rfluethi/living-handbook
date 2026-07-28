@@ -2,6 +2,9 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.51.4 =
+* Follow-up to the entry filter fix: on themes that force form controls to full width, the facet checkbox stretched across the column and pushed its label below. It is now pinned to a small native size, so each option is a checkbox with its label beside it.
+
 = 0.51.3 =
 * Mermaid diagrams can now be clicked to enlarge as well, in the same lightbox as the images. The enlarged diagram gets a light backing so its lines and text stay readable on the dark overlay.
 * Fixed the entry page filter list on themes that render checkboxes as block or full-width elements: a facet's checkbox is kept inline, so its label stays on the same line instead of dropping below or breaking one letter per row.

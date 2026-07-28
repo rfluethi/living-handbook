@@ -167,19 +167,24 @@
 	cursor: pointer;
 }
 
-/* Force the checkbox back to a small inline box, next to its label. The selector
- * is deliberately specific (class + element + class = higher specificity than a
- * theme's `input[type="checkbox"]` rule), so a theme that renders checkboxes as
- * block or full-width elements cannot push the label onto its own line or squeeze
- * it to one letter per row. */
+/* Force the checkbox back to a small native box, next to its label. Some themes
+ * style form controls hard: they set `appearance: none` and stretch every input
+ * to full width, which turns the checkbox into a wide bar that pushes the label
+ * onto its own line. Restoring the native appearance and pinning a small size
+ * with !important overrides that, whatever selector the theme used. */
 .living-handbook-facet input.living-handbook-facet__cb {
+	appearance: auto;
+	-webkit-appearance: checkbox;
 	display: inline-block;
 	float: none;
-	width: auto;
-	min-width: 0;
-	height: auto;
-	margin: 0 0.4rem 0 0;
+	width: 1em !important;
+	min-width: 0 !important;
+	max-width: 1em !important;
+	height: 1em !important;
+	margin: 0 0.4rem 0 0 !important;
+	padding: 0 !important;
 	vertical-align: middle;
+	flex: none;
 }
 
 .living-handbook-reset {
