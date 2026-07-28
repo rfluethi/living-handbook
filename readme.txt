@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.51.1
+Stable tag: 0.51.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.51.3 =
+* Mermaid diagrams can now be clicked to enlarge as well, in the same lightbox as the images. The enlarged diagram gets a light backing so its lines and text stay readable on the dark overlay.
+* Fixed the entry page filter list on themes that render checkboxes as block or full-width elements: the checkbox is kept inline, so its label stays on the same line instead of dropping below.
+* The bundled app handbook now sits under a single top page, "Living Handbook", with every area and page nested beneath it, one clean tree instead of many top-level entries.
+* Stronger contrast on the entry and overview lists: separators and secondary text are darker, so the lists no longer look washed out on light themes.
+
 = 0.51.1 =
 * The bundled app handbook is now complete in German and available in English as well, translated from it. The English pages still carry the German screenshots for now; localized ones will follow.
 
@@ -118,6 +124,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.51.3 =
+Mermaid diagrams enlarge on click, the entry filter list is fixed on more themes, and the bundled app handbook now sits under one "Living Handbook" top page. Pre-release: best on a fresh database.
 
 = 0.51.1 =
 The bundled app handbook is complete in German and now available in English too. Reload the app handbook after updating. Pre-release: best on a fresh database.
@@ -256,6 +265,3 @@ Hardens the access side-channels (REST, comments, multi-handbook fail-closed), m
 
 = 0.13.0 =
 Activation now creates the handbook overview page and guides you through the first steps. The uninstall cleanup finally ships. Facet filters show sub-areas under their parent, re-imports no longer duplicate pages, and accessibility was improved. Still pre-release: best installed on a fresh database.
-
-= 0.12.0 =
-Interface polish, AJAX facet filtering, a handbook menu block, an uninstall data option, full translatability, and renamed source meta keys. Best installed on a fresh database while pre-release.

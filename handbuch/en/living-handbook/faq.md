@@ -81,7 +81,7 @@ No. It only reads the addresses you enter yourself, during an import or in a pag
 
 ## Related pages
 
-* [About this handbook](about-this-handbook.md)
+* [Living Handbook](README.md)
 * [Getting started](getting-started/README.md)
 
 ## Transport-Metadaten

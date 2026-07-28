@@ -1,4 +1,4 @@
-# Über dieses Handbuch
+# Living Handbook
 
 Dies ist das Benutzerhandbuch von Living Handbook. Es erklärt Schritt für Schritt, wie du mit dem Plugin arbeitest. Das Handbuch ist selbst mit Living Handbook gebaut. Alles, was du hier siehst, erzeugt also das Plugin: die Navigation links, die Abzeichen, die Prüfdaten und die Feedback-Frage unten.
 

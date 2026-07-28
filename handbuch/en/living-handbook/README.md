@@ -1,4 +1,4 @@
-# About this handbook
+# Living Handbook
 
 This is the user handbook for Living Handbook. It explains, step by step, how to work with the plugin. The handbook is itself built with Living Handbook. Everything you see here is produced by the plugin: the navigation on the left, the badges, the review data and the feedback prompt at the bottom.
 

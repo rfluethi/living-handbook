@@ -2,6 +2,12 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.51.3 =
+* Mermaid diagrams can now be clicked to enlarge as well, in the same lightbox as the images. The enlarged diagram gets a light backing so its lines and text stay readable on the dark overlay.
+* Fixed the entry page filter list on themes that render checkboxes as block or full-width elements: a facet's checkbox is kept inline, so its label stays on the same line instead of dropping below or breaking one letter per row.
+* The bundled app handbook now sits under a single top page, "Living Handbook", with every area and page nested beneath it, so it forms one clean tree instead of many top-level entries.
+* Stronger contrast on the entry and overview lists: card separators and secondary description text are darker, so the lists no longer look washed out on light themes.
+
 = 0.51.1 =
 * The bundled app handbook is now complete in German and available in English as well, translated from it. The English pages still carry the German screenshots for now; localized ones will follow.
 

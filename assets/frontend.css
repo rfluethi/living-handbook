@@ -33,9 +33,9 @@
 	/* Lines and secondary text are mixed from the surface and its text, so they
 	   track the surface on both light and dark themes (color-mix: modern
 	   browsers; older ones fall back to the surface colour). */
-	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
+	--lh-border: color-mix(in srgb, var(--lh-surface-text) 24%, transparent);
 	--lh-border-strong: color-mix(in srgb, var(--lh-surface-text) 48%, transparent);
-	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
+	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 76%, var(--lh-surface));
 	--lh-accent-soft: color-mix(in srgb, var(--lh-accent) 12%, var(--lh-surface));
 
 	/* Status colours and badge chips keep fixed values: the chips are small,
@@ -159,11 +159,27 @@
 	margin-bottom: 0.4rem;
 }
 
+/* A facet option is one line: the checkbox, then its label. */
 .living-handbook-facet__opt {
 	display: block;
 	clear: both;
 	margin: 0.25rem 0;
 	cursor: pointer;
+}
+
+/* Force the checkbox back to a small inline box, next to its label. The selector
+ * is deliberately specific (class + element + class = higher specificity than a
+ * theme's `input[type="checkbox"]` rule), so a theme that renders checkboxes as
+ * block or full-width elements cannot push the label onto its own line or squeeze
+ * it to one letter per row. */
+.living-handbook-facet input.living-handbook-facet__cb {
+	display: inline-block;
+	float: none;
+	width: auto;
+	min-width: 0;
+	height: auto;
+	margin: 0 0.4rem 0 0;
+	vertical-align: middle;
 }
 
 .living-handbook-reset {
@@ -1011,8 +1027,9 @@
 
 /* Click to enlarge, like the core Image block's lightbox. Only an image shown
  * smaller than its real size gets the zoom cursor (the script adds the class),
- * so small icons stay as they are. */
-.living-handbook-page :is(.wp-block-post-content, .entry-content) img.living-handbook-zoomable {
+ * so small icons stay as they are. A rendered Mermaid diagram is clickable too. */
+.living-handbook-page :is(.wp-block-post-content, .entry-content) img.living-handbook-zoomable,
+.living-handbook-page :is(.wp-block-post-content, .entry-content) .mermaid.living-handbook-zoomable {
 	cursor: zoom-in;
 }
 
@@ -1030,12 +1047,22 @@
 	cursor: zoom-out;
 }
 
-.living-handbook-lightbox img {
+.living-handbook-lightbox img,
+.living-handbook-lightbox svg {
 	max-width: 100%;
 	max-height: 100%;
 	width: auto;
 	height: auto;
 	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* An enlarged diagram gets a light backing and some room, so its dark lines and
+ * text stay readable on the dark overlay even when the diagram is transparent. */
+.living-handbook-lightbox svg {
+	background: #fff;
+	padding: 1.25rem;
+	border-radius: 6px;
+	box-sizing: border-box;
 }
 
 .living-handbook-lightbox__close {

@@ -77,7 +77,8 @@ final class FrontendRenderer {
 				'feedbackError' => __( 'Your feedback could not be sent. Please try again.', 'living-handbook' ),
 				'filterError'   => __( 'The list could not be updated. Please reload the page.', 'living-handbook' ),
 				'searchEmpty'   => __( 'No matches.', 'living-handbook' ),
-				'lightboxClose' => __( 'Close', 'living-handbook' ),
+				'lightboxClose'   => __( 'Close', 'living-handbook' ),
+				'lightboxDiagram' => __( 'Enlarged diagram', 'living-handbook' ),
 			)
 		);
 

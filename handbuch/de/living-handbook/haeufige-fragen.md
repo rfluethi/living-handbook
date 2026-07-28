@@ -81,7 +81,7 @@ Nein. Es liest nur die Adressen, die du selbst einträgst, beim Import oder in d
 
 ## Verwandte Seiten
 
-* [Über dieses Handbuch](ueber-dieses-handbuch.md)
+* [Living Handbook](README.md)
 * [Erste Schritte](erste-schritte/README.md)
 
 ## Transport-Metadaten

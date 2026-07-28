@@ -470,20 +470,16 @@
 			}
 		}
 
-		function open( img ) {
+		function buildOverlay( displayEl, ariaLabel ) {
 			lastFocus = document.activeElement;
 
 			overlay = document.createElement( 'div' );
 			overlay.className = 'living-handbook-lightbox';
 			overlay.setAttribute( 'role', 'dialog' );
 			overlay.setAttribute( 'aria-modal', 'true' );
-			if ( img.alt ) {
-				overlay.setAttribute( 'aria-label', img.alt );
+			if ( ariaLabel ) {
+				overlay.setAttribute( 'aria-label', ariaLabel );
 			}
-
-			var big = document.createElement( 'img' );
-			big.src = img.currentSrc || img.src;
-			big.alt = img.alt || '';
 
 			var btn = document.createElement( 'button' );
 			btn.type = 'button';
@@ -491,13 +487,38 @@
 			btn.setAttribute( 'aria-label', labels() );
 			btn.innerHTML = '&times;';
 
-			overlay.appendChild( big );
+			overlay.appendChild( displayEl );
 			overlay.appendChild( btn );
 			overlay.addEventListener( 'click', close );
 
 			document.body.appendChild( overlay );
 			document.addEventListener( 'keydown', onKey );
 			btn.focus();
+		}
+
+		function openImage( img ) {
+			var big = document.createElement( 'img' );
+			big.src = img.currentSrc || img.src;
+			big.alt = img.alt || '';
+			buildOverlay( big, img.alt );
+		}
+
+		// A Mermaid diagram is an inline <svg>, not an <img>. Show an enlarged
+		// clone of it: drop the diagram's own width limit and give it a large base
+		// width, so the stylesheet scales it down to fit the overlay.
+		function openMermaid( box ) {
+			var svg = box.querySelector( 'svg' );
+			if ( ! svg ) {
+				return;
+			}
+			var clone = svg.cloneNode( true );
+			clone.removeAttribute( 'style' );
+			clone.setAttribute( 'width', '1600' );
+			clone.removeAttribute( 'height' );
+			var label = ( window.livingHandbook && window.livingHandbook.lightboxDiagram )
+				? window.livingHandbook.lightboxDiagram
+				: 'Enlarged diagram';
+			buildOverlay( clone, label );
 		}
 
 		function isSvg( img ) {
@@ -526,7 +547,24 @@
 				}
 				img.addEventListener( 'click', function () {
 					if ( img.classList.contains( 'living-handbook-zoomable' ) ) {
-						open( img );
+						openImage( img );
+					}
+				} );
+			} );
+
+			// Mermaid diagrams render into a .mermaid container after this runs, so
+			// watch for the SVG to appear and mark the container clickable then.
+			scope.querySelectorAll( '.mermaid' ).forEach( function ( box ) {
+				function refresh() {
+					if ( box.querySelector( 'svg' ) ) {
+						box.classList.add( 'living-handbook-zoomable' );
+					}
+				}
+				refresh();
+				new MutationObserver( refresh ).observe( box, { childList: true, subtree: true } );
+				box.addEventListener( 'click', function () {
+					if ( box.querySelector( 'svg' ) ) {
+						openMermaid( box );
 					}
 				} );
 			} );

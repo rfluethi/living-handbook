@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-07-27T15:22:41+00:00\n"
+"POT-Creation-Date: 2026-07-27T18:08:57+00:00\n"
 "PO-Revision-Date: 2026-07-12T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -161,7 +161,7 @@ msgid "No handbooks available."
 msgstr "Keine Handbücher verfügbar."
 
 #: src/Frontend/Entry.php:69 src/Frontend/Entry.php:71
-#: src/Frontend/FrontendRenderer.php:289 src/Frontend/FrontendRenderer.php:326
+#: src/Frontend/FrontendRenderer.php:290 src/Frontend/FrontendRenderer.php:327
 #: src/Handbook/Handbooks.php:74
 msgid "Handbooks"
 msgstr "Handbücher"
@@ -260,6 +260,10 @@ msgstr "Keine Treffer."
 #: src/Frontend/FrontendRenderer.php:80
 msgid "Close"
 msgstr "Schliessen"
+
+#: src/Frontend/FrontendRenderer.php:81
+msgid "Enlarged diagram"
+msgstr "Vergrössertes Diagramm"
 
 #: src/Frontend/Navigation.php:91
 msgid "Open the handbook start page"
