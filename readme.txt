@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.7
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.51.5
+Stable tag: 0.51.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.51.6 =
+* Reverted the entry and overview list contrast changes from 0.51.3 and 0.51.5. The lists use the theme's own colours again; adjust them yourself through the Custom CSS setting (Handbook, Settings) if you want more contrast.
+
 = 0.51.5 =
 * More contrast on the entry and overview card lists on light themes: the card descriptions are darker and the separators clearly visible, while the titles keep the theme's link colour. The quieter secondary texts elsewhere (metadata, source notes, table of contents) are left as they were.
 
@@ -124,8 +127,8 @@ Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-h
 
 == Upgrade Notice ==
 
-= 0.51.5 =
-More contrast on the entry lists on light themes, the filter list stays readable on themes that stretch form controls, and the bundled app handbook sits under one "Living Handbook" top page. Pre-release: best on a fresh database.
+= 0.51.6 =
+The entry lists use the theme's colours again (tune them via the Custom CSS setting), the filter list stays readable on themes that stretch form controls, and the bundled app handbook sits under one "Living Handbook" top page. Pre-release: best on a fresh database.
 
 = 0.51.1 =
 The bundled app handbook is complete in German and now available in English too. Reload the app handbook after updating. Pre-release: best on a fresh database.

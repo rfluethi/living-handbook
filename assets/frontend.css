@@ -33,9 +33,9 @@
 	/* Lines and secondary text are mixed from the surface and its text, so they
 	   track the surface on both light and dark themes (color-mix: modern
 	   browsers; older ones fall back to the surface colour). */
-	--lh-border: color-mix(in srgb, var(--lh-surface-text) 24%, transparent);
+	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
 	--lh-border-strong: color-mix(in srgb, var(--lh-surface-text) 48%, transparent);
-	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 76%, var(--lh-surface));
+	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
 	--lh-accent-soft: color-mix(in srgb, var(--lh-accent) 12%, var(--lh-surface));
 
 	/* Status colours and badge chips keep fixed values: the chips are small,
@@ -1107,26 +1107,4 @@
 			opacity: 1;
 		}
 	}
-}
-
-/* ---------- Entry and overview list contrast ---------- */
-
-/* On a light theme the card lists can read washed out: the description sits at
- * the muted tone and the separators are faint. Give the cards more weight,
- * scoped to the entry and overview lists so the quieter muted tone used
- * elsewhere (metadata, source notes, table of contents) is left calm. The card
- * titles keep the theme's link colour. */
-.living-handbook-overview .living-handbook-card__excerpt,
-.living-handbook-entry .living-handbook-card__excerpt {
-	color: color-mix(in srgb, var(--lh-surface-text) 88%, var(--lh-surface));
-}
-
-.living-handbook-overview .living-handbook-card,
-.living-handbook-entry .living-handbook-card {
-	border-color: color-mix(in srgb, var(--lh-surface-text) 34%, transparent);
-}
-
-.living-handbook-overview--list .living-handbook-card,
-.living-handbook-entry--list .living-handbook-card {
-	border-bottom-color: color-mix(in srgb, var(--lh-surface-text) 34%, transparent);
 }

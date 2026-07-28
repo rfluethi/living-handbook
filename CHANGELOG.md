@@ -2,6 +2,9 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.51.6 =
+* Reverted the entry and overview list contrast changes from 0.51.3 and 0.51.5. The lists use the theme's own colours again; adjust them yourself through the Custom CSS setting (Handbook, Settings) if you want more contrast.
+
 = 0.51.5 =
 * More contrast on the entry and overview card lists on light themes: the card descriptions are darker and the separators clearly visible, while the titles keep the theme's link colour. The quieter secondary texts elsewhere (metadata, source notes, table of contents) are left as they were.
 
