@@ -2,20 +2,11 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
-= 0.51.6 =
-* Reverted the entry and overview list contrast changes from 0.51.3 and 0.51.5. The lists use the theme's own colours again; adjust them yourself through the Custom CSS setting (Handbook, Settings) if you want more contrast.
-
-= 0.51.5 =
-* More contrast on the entry and overview card lists on light themes: the card descriptions are darker and the separators clearly visible, while the titles keep the theme's link colour. The quieter secondary texts elsewhere (metadata, source notes, table of contents) are left as they were.
-
-= 0.51.4 =
-* Follow-up to the entry filter fix: on themes that force form controls to full width, the facet checkbox stretched across the column and pushed its label below. It is now pinned to a small native size, so each option is a checkbox with its label beside it.
-
-= 0.51.3 =
-* Mermaid diagrams can now be clicked to enlarge as well, in the same lightbox as the images. The enlarged diagram gets a light backing so its lines and text stay readable on the dark overlay.
-* Fixed the entry page filter list on themes that render checkboxes as block or full-width elements: a facet's checkbox is kept inline, so its label stays on the same line instead of dropping below or breaking one letter per row.
-* The bundled app handbook now sits under a single top page, "Living Handbook", with every area and page nested beneath it, so it forms one clean tree instead of many top-level entries.
-* Stronger contrast on the entry and overview lists: card separators and secondary description text are darker, so the lists no longer look washed out on light themes.
+= 0.52.0 =
+* Mermaid diagrams can now be clicked to enlarge in the lightbox, like the images. The enlarged diagram gets a light backing so its lines and text stay readable on the dark overlay.
+* The bundled app handbook now sits under a single top page, "Living Handbook", with every area and page nested beneath it, one clean tree instead of many top-level entries.
+* Fixed the entry filter list on themes that render checkboxes as block or full-width elements: the checkbox is kept small and native, so its label stays beside it instead of dropping below or stretching across the column.
+* During this cycle the entry list contrast was raised and then reverted, so the lists use the theme's own colours; tune them through the Custom CSS setting if you want more.
 
 = 0.51.1 =
 * The bundled app handbook is now complete in German and available in English as well, translated from it. The English pages still carry the German screenshots for now; localized ones will follow.
