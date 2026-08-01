@@ -20,12 +20,12 @@ Activation does three things for you:
 
 ## Shortcut: load the app handbook first
 
-The plugin comes with a handbook of its own: the documentation of the app, written as a Living Handbook so it doubles as a first example of one. Go to **Handbook → Import**, open the tab **App handbook** and press **Load app handbook**. It is pulled from a public GitHub repository, so you read the current documentation and see a real handbook at the same time.
+The plugin comes with a handbook of its own: the documentation of the app, written as a Living Handbook so it doubles as a first example of one. Go to **Handbook → Import**, open the tab **App handbook** and press **Load app handbook**. It ships inside the plugin, as Markdown under `handbuch/`, and is imported from there, so you read the documentation that matches your version and see a real handbook at the same time.
 
 Some details worth knowing:
 
 - It is never loaded on activation, only when you ask for it. It follows the admin language.
-- It is a GitHub folder import, so its pages stay synced with the repository: a later change on GitHub reaches your site on the next load.
+- It is a local folder import, so nothing is fetched over the network: the pages always match the installed version, and loading again after a plugin update refreshes them. A fork can point the tab at a GitHub repository instead, through the `living_handbook_app_handbook_url` filter.
 - Pick the handbook it goes into under **Load into**; create one first (for example "App handbook") and set who may read it there.
 
 The rest of this guide builds a handbook from scratch, which is what you will do for real content.

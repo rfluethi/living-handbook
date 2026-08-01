@@ -32,9 +32,11 @@ define( 'LIVING_HANDBOOK_URL', plugin_dir_url( __FILE__ ) );
 /*
  * PSR-4 style autoloader for the LivingHandbook namespace, mapped to src/.
  * The plugin's own classes need no Composer. The Markdown import and GitHub sync
- * additionally use two Composer libraries (league/commonmark, symfony/yaml); the
- * build ships them in vendor/ and MarkdownConverter loads vendor/autoload.php on
- * demand. If vendor/ is absent, only import and sync are disabled.
+ * additionally require three Composer libraries (league/commonmark, symfony/yaml,
+ * enshrined/svg-sanitize), which ship in vendor/ together with their own
+ * dependencies, all under GPL-compatible licenses (BSD-3-Clause, MIT,
+ * GPL-2.0-or-later); MarkdownConverter loads vendor/autoload.php on demand. If
+ * vendor/ is absent, only import and sync are disabled.
  */
 spl_autoload_register(
 	static function ( string $class_name ): void {

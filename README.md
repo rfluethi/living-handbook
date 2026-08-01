@@ -19,7 +19,7 @@ Active development (0.x). The plugin is usable end to end: multiple handbooks, p
 - Per-handbook navigation built from the page hierarchy: a self-contained, collapsible page tree with a Menu or Accordion display, styled by the plugin. No other plugin is required.
 - Markdown import: paste, a ZIP of `.md` files (flat or MkDocs-structured), or a GitHub file or folder URL.
 - GitHub sync: a page can be sourced from a Markdown URL, pulled on save, on demand and on a schedule, with a locked editor.
-- No external WordPress plugin dependency; the import and sync bundle two Composer libraries in `vendor/`.
+- No external WordPress plugin dependency. The import and sync require three Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize); they ship in `vendor/` together with their own dependencies, all under GPL-compatible licenses (BSD-3-Clause, MIT, GPL-2.0-or-later).
 
 ## Requirements
 

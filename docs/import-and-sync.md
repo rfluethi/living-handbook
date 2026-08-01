@@ -14,8 +14,8 @@ The sources are:
    - a file, either a `raw.githubusercontent.com` URL or a `github.com/.../blob/...` URL (the blob URL is normalised to raw automatically);
    - a folder, a `github.com/.../tree/...` URL. Every `.md` file under that folder is imported, subfolders included, and the folder structure becomes the page hierarchy (see below).
 
-4. **Bundle**: upload a bundle exported from another site running the plugin (see below). Needs the content-manager role.
-5. **App handbook**: pull the app's own handbook from GitHub in one click (see below). Needs edit rights.
+4. **Bundle**: upload a bundle exported from another site running the plugin (see below). Requires `edit_others_posts`, so an editor or above.
+5. **App handbook**: load the app's own handbook, the copy bundled with the plugin, in one click (see below). Needs edit rights.
 
 Pages that land without a handbook are invisible on the front end, because access is fail-closed.
 
@@ -54,7 +54,7 @@ When a page is updated this way it keeps its **slug and its publication status**
 
 ## Exporting a handbook
 
-Under **Handbook → Export**, a content manager can **export a handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick the **handbook** first; the second field then lists that handbook's **areas** (an area is a top-level page, and it exports together with its subpages). Leave it on *the whole handbook* to export everything. Then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. An area bundle still carries the handbook's configuration, so the target knows where the pages belong.
+Under **Handbook → Export**, anyone with `edit_others_posts` (an editor or above) can **export a handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick the **handbook** first; the second field then lists that handbook's **areas** (an area is a top-level page, and it exports together with its subpages). Leave it on *the whole handbook* to export everything. Then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. An area bundle still carries the handbook's configuration, so the target knows where the pages belong.
 
 The bundle carries the handbook's configuration (visibility and allowed roles), every page as a block-markup snapshot with its place in the hierarchy, the four vocabularies, the freshness metadata, and the referenced media. It deliberately does **not** carry the list of individually allowed people: those are e-mail addresses, a bundle is a file that gets downloaded and passed on, and the target site has a different set of users anyway. If a handbook is restricted to named people, set them again after importing. A GitHub-sourced page keeps its source URL, so on the target site it resumes syncing from the same repository. Local, site-specific data is deliberately left out: the feedback counts and the sync status belong to each site.
 
@@ -76,7 +76,7 @@ If the handbook does not exist yet it is created with visibility **members**, ev
 
 A short report at the top of the screen says how many pages were created, updated, skipped or protected, and lists anything that could not be mapped.
 
-Importing needs the content-manager role. A bundle is a file from another site, so its content is treated as external and cleaned on the way in, the same way the Markdown import and the GitHub sync are: scripts, event handlers and unsafe URLs are stripped. The cleaning runs block by block, so the block structure survives untouched. Media is cleaned as well, including SVG. That said, a bundle still brings in content someone else wrote, so it is worth reading before you publish it.
+Importing requires `edit_others_posts`, so an editor or above. A bundle is a file from another site, so its content is treated as external and cleaned on the way in, the same way the Markdown import and the GitHub sync are: scripts, event handlers and unsafe URLs are stripped. The cleaning runs block by block, so the block structure survives untouched. Media is cleaned as well, including SVG. That said, a bundle still brings in content someone else wrote, so it is worth reading before you publish it.
 
 ## The app handbook
 
@@ -84,13 +84,11 @@ The plugin comes with a handbook of its own: the documentation of the app, writt
 
 The pages are read from disk and their images sideloaded into the media library, the same way the GitHub folder import handles a repository. The content is stored as sanitised HTML, so the plugin's own blocks (the entry list, the feedback prompt, the badges) cannot travel this way; they are described in the text, not embedded. Mermaid diagrams do travel.
 
-A fork, or anyone who would rather pull the latest state straight from GitHub, points the tab at a repository through the `living_handbook_app_handbook_url` filter (see [hooks.md](hooks.md)): any tree URL it returns is imported as a GitHub folder instead of the bundled copy. The default is the bundled copy.
+A fork, or anyone who would rather pull the latest state straight from GitHub, points the tab at a repository through the `living_handbook_app_handbook_url` filter (see [hooks.md](hooks.md)): any tree URL it returns is imported as a GitHub folder instead of the bundled copy. The filter defaults to an empty string, which means the bundled copy. Only where there is nothing to load, an empty filter on a source build without the `handbuch/` folder, are the tab and the setup hint hidden, so there is never a button leading nowhere.
 
 The app handbook is **published straight away** rather than left as a draft: it is curated content, and its front-end visibility is governed by the handbook it lands in. Put it in a handbook set to "members" and only logged-in people see it; it becomes public only if you set that handbook to public. A manual GitHub import, by contrast, stays a draft, so you can review the pages before publishing.
 
 **Load into** picks the handbook the pages belong to. Create one first, for example "App handbook", and set who may read it there.
-
-The URL defaults to this plugin's own documentation repository. A fork with its own documentation points the tab elsewhere through the `living_handbook_app_handbook_url` filter (see [hooks](hooks.md)); returning an empty string hides the tab and the setup hint, so there is never a button leading nowhere.
 
 ## Transport metadata
 

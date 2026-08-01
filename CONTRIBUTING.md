@@ -71,13 +71,13 @@ To build the zip on its own:
 bash bin/build.sh
 ```
 
-The build packages the current working tree, so you can build, install and test in WordPress before committing. Only the runtime files ship (the main file, `src`, `assets`, `languages`, `README`, `LICENSE`); development files (tests, CI config, tooling) are left out. The result is `living-handbook-<version>.zip`.
+The build packages the current working tree, so you can build, install and test in WordPress before committing. Only the runtime files ship (the main file, `uninstall.php`, `composer.json`, `src`, `assets`, `blocks`, `languages`, `handbuch`, the production `vendor`, `readme.txt`, `README`, `LICENSE`); development files (tests, CI config, tooling, `docs`) are left out. The result is `living-handbook-<version>.zip`.
 
 Do not extract the zip inside the repository; that would commit a second copy of the plugin. Install it in WordPress under Plugins, Add new, Upload plugin.
 
 ## Conventions
 
-- **English is the language of the repository.** Code, comments, commit messages, pull request and issue text, `readme.txt` and the English `docs/` are written in English, so the project stays open to contributors who do not speak German. The only German files in the repository are the localisation files `languages/*-de_DE.*`. The German source of the developer docs is kept in the project's own workspace, not in this repository; the English `docs/` here is produced from it.
+- **English is the language of the repository.** Code, comments, commit messages, pull request and issue text, `readme.txt` and the English `docs/` are written in English, so the project stays open to contributors who do not speak German. The German files in the repository are the localisation files `languages/*-de_DE.*` and the German app handbook under `handbuch/de/`, whose pages and image names are German too. The German source of the developer docs is kept in the project's own workspace, not in this repository; the English `docs/` here is produced from it.
 - Target PHP 8.1 and WordPress 6.7 or newer.
 - Follow the WordPress coding standards (enforced by PHPCS).
 - All user-facing strings use the `living-handbook` text domain, and English is the source language, so the plugin is translatable into any language.

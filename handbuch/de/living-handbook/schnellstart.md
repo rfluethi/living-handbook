@@ -2,7 +2,7 @@
 
 Der ganze Weg zum fertigen Handbuch auf einer Seite. Für alle, die WordPress gut kennen und sich nur einen Überblick verschaffen wollen. Jeder Schritt verlinkt die ausführliche Anleitung.
 
-![](assets/einstiegsseite-aufbau.svg)
+![Schema der Einstiegsseite: Titel, Navigation links, Suchfeld, Bereichs-Kacheln, zuletzt aktualisierte Seiten und die Filterleiste rechts](assets/einstiegsseite-aufbau.webp)
 
 ## In sechs Schritten zum Handbuch
 

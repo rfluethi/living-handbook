@@ -38,12 +38,13 @@ The modules under `src/`:
   - `Entry.php` builds the entry page body: search, filters, area tiles, recently updated.
   - `Filters.php` builds the search and facet filters and the endpoint that returns the filtered list.
   - `Navigation.php` builds the page tree for one handbook, the collapsible sidebar.
+  - `PageTree.php` loads all published pages of one handbook in a single query and groups them by parent, so the navigation and the area tiles build their hierarchy from the same map instead of querying per branch.
   - `PageMeta.php` builds the "was this helpful?" prompt and the metadata footer.
   - `FreshnessStatus.php` works out the reviewed / due / overdue state and its label.
 - **`Blocks/`** registers the plugin's blocks. `Blocks.php` registers most of them and renders them on the server; `MermaidBlock.php` and `SourceNoteBlock.php` are two special ones (a live diagram, and a note shown only on GitHub-synced pages). The blocks call into `Frontend/` to produce their HTML.
 - **`Feedback/`** handles the "was this helpful?" votes and their counters (`Feedback.php`).
 - **`Admin/`** is the backend maintenance surface. `Maintenance.php` is the dashboard widget that lists pages whose review is overdue, and the review and feedback columns in the page list.
-- **`Import/`** brings Markdown in. `MarkdownImportPage.php` is the import screen and its endpoints; `MarkdownConverter.php` turns Markdown into HTML; `TransportBlock.php` reads the small metadata block a draft carries; `MkDocsImport.php` reads a `mkdocs.yml` to keep a project's structure; `Postprocessor.php` applies that metadata and rewrites internal links after the pages exist; `HtmlSanitizer.php` is the shared allow-list that strips anything unsafe from imported HTML. Two files in the same folder work on whole handbooks rather than single documents: `HandbookExport.php` writes a handbook, or one area of it, into a self-contained bundle, and `HandbookImport.php` reads such a bundle back in on another site. `AppHandbook.php` is a small third one: it points the import screen at the app's own handbook, which lives in a public GitHub repository and is pulled in through the ordinary GitHub folder import.
+- **`Import/`** brings Markdown in. `MarkdownImportPage.php` is the import screen and its endpoints; `MarkdownConverter.php` turns Markdown into HTML; `TransportBlock.php` reads the small metadata block a draft carries; `MkDocsImport.php` reads a `mkdocs.yml` to keep a project's structure; `Postprocessor.php` applies that metadata and rewrites internal links after the pages exist; `ImageRefs.php` collects the relative image references in a Markdown draft, both Markdown syntax and raw `<img>` tags, so the files next to the page travel with it; `HtmlSanitizer.php` is the shared allow-list that strips anything unsafe from imported HTML. Two files in the same folder work on whole handbooks rather than single documents: `HandbookExport.php` writes a handbook, or one area of it, into a self-contained bundle, and `HandbookImport.php` reads such a bundle back in on another site. `AppHandbook.php` is a small third one: it points the import screen at the app's own handbook, which ships inside the plugin as Markdown under `handbuch/` and is imported from that local folder; a fork can point it at a GitHub repository instead through the `living_handbook_app_handbook_url` filter.
 - **`Git/`** is the GitHub sync. `GitSync.php` lets a page be sourced from a Markdown URL, pulls it on save, on demand and on a schedule, stores the result safely, and locks the editor for such pages.
 - **`Setup/`** is the first-run and settings code. `Seeder.php` fills in the default vocabularies on activation; `Onboarding.php` creates the overview page and the welcome notice; `Settings.php` is the settings screen (sync frequency, uninstall behaviour).
 
@@ -84,7 +85,7 @@ There is a single, non-negotiable rule in the code: **every read of handbook con
 | A block's markup | `Blocks/Blocks.php` (server), `assets/blocks.js` (editor) |
 | The Markdown import | `Import/` (start at `MarkdownImportPage.php`) |
 | Moving a handbook between sites | `Import/HandbookExport.php`, `Import/HandbookImport.php` |
-| The app handbook | `Import/AppHandbook.php` (URL config), `Git/GitSync.php` (the import) |
+| The app handbook | `Import/AppHandbook.php` (which source is used), `Git/GitSync.php` (`import_local_folder` for the bundled copy, `import_folder` for a GitHub override) |
 | The GitHub sync and settings | `Git/GitSync.php`, `Setup/Settings.php` |
 | What runs on activation | `Plugin.php` (`activate`), `Setup/Seeder.php`, `Setup/Onboarding.php` |
 
@@ -93,4 +94,4 @@ There is a single, non-negotiable rule in the code: **every read of handbook con
 - Every class, method and function carries a doc comment; the coding-standards check (`composer lint`) fails if one is missing, so this never drifts.
 - Comments explain the reasoning, not the obvious. When a piece of code looks odd, the comment above it says why it is that way.
 - There are almost no settings on purpose: visual choices belong in the Site Editor, behaviour has a few justified options, and everything else is a hook (see [hooks.md](hooks.md)) rather than a checkbox.
-- English is the language of the repository; the German documentation lives in the team's workspace.
+- English is the language of the repository; the German source of these developer docs (`docs-de/`) lives in the team's workspace. The German app handbook is the exception: it ships in the repository, under `handbuch/de/`.

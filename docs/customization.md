@@ -26,12 +26,27 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 
 	/* Lines and secondary text are mixed from the surface and its text. */
 	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
+	--lh-border-strong: color-mix(in srgb, var(--lh-surface-text) 48%, transparent);
+	                           /* the stronger line: table head rule, quote bar, input and toggle borders */
 	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
+	--lh-accent-soft: color-mix(in srgb, var(--lh-accent) 12%, var(--lh-surface));
+	                           /* a tinted accent backdrop: page-type badge, hovered and current rows */
 
 	/* Freshness colours stay fixed. */
 	--lh-ok: #176e3c;          /* "Reviewed" */
 	--lh-due: #8a5200;         /* "Review due" */
 	--lh-overdue: #c0392b;     /* "Review overdue" (the escalation state) */
+
+	/* Badge chips keep fixed values too: small stickers that must stay legible
+	   on any surface. Each freshness chip pairs its background with the matching
+	   freshness colour above as its label. */
+	--lh-badge-text: #5f6b75;          /* label of a neutral badge */
+	--lh-badge-bg: #eef1f4;            /* background of a neutral badge */
+	--lh-badge-audience-bg: #f3eafc;   /* background of the audience badge */
+	--lh-badge-audience-text: #6b3fa0; /* label of the audience badge */
+	--lh-badge-ok-bg: #e7f6ec;         /* background of the "Reviewed" badge */
+	--lh-badge-due-bg: #fdf0e0;        /* background of the "Review due" badge */
+	--lh-badge-overdue-bg: #fdecea;    /* background of the "Review overdue" badge */
 
 	--lh-sticky-top: 2rem;     /* offset for sticky nav and TOC under a fixed header */
 	--lh-nav-top-weight: 700;  /* weight of the top navigation level */
