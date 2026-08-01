@@ -13,6 +13,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Frontend;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
@@ -156,12 +157,39 @@ final class Cards {
 	}
 
 	/**
+	 * Cache key of the rendered area cards, scoped to the current viewer.
+	 *
+	 * Public so a test can assert that two users who may see different handbooks
+	 * do not share one cache entry.
+	 *
+	 * @param int $term_id Handbook term ID.
+	 * @return string
+	 */
+	public static function areas_cache_key( int $term_id ): string {
+		// Shared cache version, bumped by Navigation::invalidate() on page and
+		// term changes.
+		$version = (int) get_option( 'living_handbook_nav_version', 0 );
+
+		// The card list is built from a query that is filtered per user, so the
+		// key has to carry who is asking. Without that, the first editor to open
+		// the page fills the cache with pages a guest may not see, and everyone
+		// gets them for the next day. Two things decide what a viewer gets: the
+		// handbooks they may read, and whether they bypass the filter altogether
+		// (edit_others_posts), which viewable_term_ids() does not express.
+		$scope = current_user_can( 'edit_others_posts' )
+			? 'editor'
+			: substr( md5( implode( ',', AccessController::viewable_term_ids( get_current_user_id() ) ) ), 0, 12 );
+
+		return 'lh_areas_' . $version . '_' . $term_id . '_' . $scope;
+	}
+
+	/**
 	 * Render the top-level pages of a handbook as area tiles.
 	 *
 	 * The whole handbook is loaded in one query (PageTree) and the child counts
 	 * are read from that map, so the rendered markup is cached per handbook and
-	 * reused until a handbook page or term changes. The cache shares the version
-	 * counter that Navigation::invalidate() bumps.
+	 * viewer, and reused until a handbook page or term changes. The cache shares
+	 * the version counter that Navigation::invalidate() bumps.
 	 *
 	 * @param int $term_id Handbook term ID.
 	 * @return string
@@ -169,8 +197,7 @@ final class Cards {
 	public static function areas( int $term_id ): string {
 		// Shared cache version, bumped by Navigation::invalidate() on page and
 		// term changes.
-		$version   = (int) get_option( 'living_handbook_nav_version', 0 );
-		$cache_key = 'lh_areas_' . $version . '_' . $term_id;
+		$cache_key = self::areas_cache_key( $term_id );
 
 		$cached = get_transient( $cache_key );
 		if ( is_string( $cached ) ) {

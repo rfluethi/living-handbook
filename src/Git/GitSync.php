@@ -1171,29 +1171,42 @@ final class GitSync {
 	 * @return void
 	 */
 	public function register_meta(): void {
-		$auth = static function (): bool {
-			return current_user_can( 'edit_posts' );
+		// Ask whether the user may edit this post, not whether they may edit
+		// posts at all; WordPress passes the object id as the third argument.
+		$auth = static function ( $allowed, $meta_key, $object_id ): bool {
+			unset( $allowed, $meta_key );
+			return current_user_can( 'edit_post', (int) $object_id );
 		};
 		register_post_meta(
 			Handbook::POST_TYPE,
 			self::META_SOURCE,
 			array(
-				'type'          => 'string',
-				'single'        => true,
-				'default'       => self::SOURCE_WORDPRESS,
-				'show_in_rest'  => true,
-				'auth_callback' => $auth,
+				'type'              => 'string',
+				'single'            => true,
+				'default'           => self::SOURCE_WORDPRESS,
+				'show_in_rest'      => true,
+				// Only the two known values; anything else would leave a page in a
+				// state neither the editor lock nor the sync knows how to read.
+				'sanitize_callback' => static function ( $value ): string {
+					return self::SOURCE_GITHUB === $value ? self::SOURCE_GITHUB : self::SOURCE_WORDPRESS;
+				},
+				'auth_callback'     => $auth,
 			)
 		);
 		register_post_meta(
 			Handbook::POST_TYPE,
 			self::META_URL,
 			array(
-				'type'          => 'string',
-				'single'        => true,
-				'default'       => '',
-				'show_in_rest'  => true,
-				'auth_callback' => $auth,
+				'type'              => 'string',
+				'single'            => true,
+				'default'           => '',
+				'show_in_rest'      => true,
+				// The host allowlist is checked again before every fetch; this only
+				// keeps the stored value a URL.
+				'sanitize_callback' => static function ( $value ): string {
+					return esc_url_raw( trim( (string) $value ) );
+				},
+				'auth_callback'     => $auth,
 			)
 		);
 	}

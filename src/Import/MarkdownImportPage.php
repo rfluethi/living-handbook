@@ -240,7 +240,9 @@ final class MarkdownImportPage {
 
 		$params = $request->get_file_params();
 		$tmp    = ( isset( $params['zip']['tmp_name'] ) && is_string( $params['zip']['tmp_name'] ) ) ? $params['zip']['tmp_name'] : '';
-		if ( '' === $tmp ) {
+		// is_uploaded_file(): the same guard the bundle import uses, so a path
+		// that did not come from a real upload cannot be read here.
+		if ( '' === $tmp || ! is_uploaded_file( $tmp ) ) {
 			return self::import_error( __( 'No ZIP file received.', 'living-handbook' ) );
 		}
 
@@ -370,6 +372,16 @@ final class MarkdownImportPage {
 		// the filter), published straight away, through its own path. It needs no
 		// URL from the browser.
 		if ( (bool) $request->get_param( 'app_handbook' ) ) {
+			// This path publishes its pages straight away, so it needs more than
+			// the route's edit_posts: a contributor may not publish. Gated like
+			// the bundle import and export, which also write a whole handbook.
+			if ( ! current_user_can( 'edit_others_posts' ) ) {
+				return new WP_Error(
+					'living_handbook_forbidden',
+					__( 'You are not allowed to load the app handbook.', 'living-handbook' ),
+					array( 'status' => 403 )
+				);
+			}
 			return AppHandbook::load( $handbook_id );
 		}
 

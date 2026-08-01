@@ -240,20 +240,21 @@ final class AccessTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A back-end AJAX read (admin-ajax.php, for example the classic editor's link
-	 * search) does not apply the coarse restriction to a user who may edit posts.
-	 * Their back-end view is unrestricted, so the link picker stays consistent
-	 * with it. This is the N3 decision, Variante A.
+	 * A back-end AJAX read (admin-ajax.php) does not apply the coarse restriction
+	 * to a user who may edit other people's posts: their back-end view is
+	 * unrestricted anyway, so back-end tools stay consistent with it.
 	 *
 	 * @return void
 	 */
-	public function test_backend_ajax_does_not_restrict_editing_user(): void {
+	public function test_backend_ajax_does_not_restrict_editor(): void {
 		$page   = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
-		$author = self::factory()->user->create( array( 'role' => 'author' ) );
+		$editor = self::factory()->user->create( array( 'role' => 'editor' ) );
 
-		$this->assertFalse( AccessController::can_view_post( $page, (int) $author ) );
+		// An editor may view every handbook anyway (edit_others_posts), so this
+		// only pins down that the AJAX path does not suddenly hide it from them.
+		$this->assertTrue( AccessController::can_view_post( $page, (int) $editor ) );
 
-		wp_set_current_user( (int) $author );
+		wp_set_current_user( (int) $editor );
 		set_current_screen( 'edit.php' );
 		add_filter( 'wp_doing_ajax', '__return_true' );
 
@@ -267,6 +268,36 @@ final class AccessTest extends WP_UnitTestCase {
 		wp_set_current_user( 0 );
 
 		$this->assertContains( $page, $ids );
+	}
+
+	/**
+	 * A back-end AJAX read does restrict a user who may only edit their own posts.
+	 *
+	 * The bypass used to cover every edit_posts user, justified with the classic
+	 * editor's link search. That justification does not hold: the link search asks
+	 * for post types registered as public, and this type is not one, so it never
+	 * lists handbook pages. The wider gate only opened a path for any other
+	 * plugin's admin-ajax handler that happens to query them.
+	 *
+	 * @return void
+	 */
+	public function test_backend_ajax_restricts_author(): void {
+		$page   = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
+		$author = self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->assertFalse( AccessController::can_view_post( $page, (int) $author ) );
+
+		wp_set_current_user( (int) $author );
+		set_current_screen( 'edit.php' );
+		add_filter( 'wp_doing_ajax', '__return_true' );
+
+		$ids = $this->handbook_ids();
+
+		remove_filter( 'wp_doing_ajax', '__return_true' );
+		set_current_screen( 'front' );
+		wp_set_current_user( 0 );
+
+		$this->assertNotContains( $page, $ids, 'An author must not see a restricted handbook page over admin-ajax.' );
 	}
 
 	/**

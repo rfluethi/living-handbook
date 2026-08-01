@@ -139,7 +139,10 @@ final class HandbookExport {
 		</div>
 		<?php
 		if ( ! empty( $handbooks ) ) {
-			$areas = wp_json_encode( $this->export_areas() );
+			// JSON_HEX_TAG matters here: page titles reach this inline script, and
+			// wp_get_inline_script_tag() does not strip a closing script tag from
+			// the body, so a title holding one would break out of the element.
+			$areas = wp_json_encode( $this->export_areas(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
 			wp_print_inline_script_tag( 'var lhExportAreas = ' . ( is_string( $areas ) ? $areas : '{}' ) . ';' . self::area_script() );
 		}
 	}
@@ -320,9 +323,13 @@ JS;
 			return '';
 		}
 
-		$path = wp_tempnam( 'lh-export' );
-		if ( '' === $path ) {
-			return '';
+		// Not wp_tempnam(): that writes into the uploads folder, which is served
+		// over HTTP, so the bundle of a restricted handbook would be downloadable
+		// by anyone guessing the name while the export runs. The system temp
+		// directory is not web-reachable; fall back if it is not writable.
+		$path = tempnam( sys_get_temp_dir(), 'lh-export' );
+		if ( ! is_string( $path ) || '' === $path ) {
+			$path = wp_tempnam( 'lh-export' );
 		}
 
 		$zip = new ZipArchive();

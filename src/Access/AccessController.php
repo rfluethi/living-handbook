@@ -80,6 +80,17 @@ final class AccessController {
 		add_filter( 'the_posts', array( $this, 'filter_posts' ), 10, 2 );
 		add_filter( 'rest_prepare_' . Handbook::POST_TYPE, array( $this, 'guard_rest_item' ), 10, 2 );
 
+		// oEmbed is a read channel of its own, and it does not go through the post
+		// query. The type is publicly_queryable, so is_post_publicly_viewable()
+		// says yes and core answers /wp-json/oembed/1.0/embed with the page title
+		// and the author's display name. WordPress 6.8 added is_post_embeddable(),
+		// which closes this for a type that is not embeddable, but the plugin
+		// supports 6.7, and a site can re-open it through the is_post_embeddable
+		// filter. Gate the lookup and the response ourselves rather than relying
+		// on the core version in use.
+		add_filter( 'oembed_request_post_id', array( $this, 'guard_oembed_request' ), 10, 2 );
+		add_filter( 'oembed_response_data', array( $this, 'guard_oembed_data' ), 10, 2 );
+
 		// Comments are a separate read channel that the post query does not
 		// cover: gate the comment queries, the comment feeds, and single comment
 		// REST reads, so comments on a handbook a user may not view do not leak.
@@ -198,17 +209,17 @@ final class AccessController {
 		if ( self::is_internal_query( $query ) ) {
 			return;
 		}
-		// admin-ajax.php always runs with is_admin() true. A front-end AJAX read
-		// must still be filtered, but back-end tools use admin-ajax too, for
-		// example the classic editor's "link to existing content" search
-		// (wp-link-ajax), which queries every public post type. A user who may
-		// edit posts is let through there so the link picker stays consistent
-		// with the back end, where editing is not restricted. Only titles and
-		// existence are exposed this way; the actual content read stays guarded
-		// by guard_singular() and can_view_post(). The comment channel keeps the
-		// stricter edit_others_posts gate (see should_filter_comments()), because
-		// comment bodies are content, not titles.
-		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_posts' ) ) ) {
+		// admin-ajax.php always runs with is_admin() true, so a front-end AJAX
+		// read would look like a back-end one. Back-end tools use admin-ajax too,
+		// and they are let through, but only for users who may edit other
+		// people's posts: the same gate the comment channel uses. An earlier
+		// version allowed every edit_posts user here, reasoning that the classic
+		// editor's link search (wp-link-ajax) needed it. It does not:
+		// WP_Editor::wp_link_query() asks for post types registered as public,
+		// and this type is not one, so it never appears there. The wider gate
+		// only opened a path for any other plugin's admin-ajax handler that
+		// happens to query handbook pages.
+		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) ) ) {
 			return;
 		}
 		if ( current_user_can( 'edit_others_posts' ) ) {
@@ -269,10 +280,10 @@ final class AccessController {
 		}
 
 		// admin-ajax.php runs with is_admin() true. A front-end AJAX read must
-		// still be filtered, but a user who may edit posts is let through on
-		// admin-ajax so back-end tools (the classic editor's link search) match
-		// the unrestricted back-end view, consistent with restrict_query().
-		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_posts' ) ) ) {
+		// still be filtered; back-end tools are let through for users who may
+		// edit other people's posts, consistent with restrict_query() and the
+		// comment channel.
+		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) ) ) {
 			return $posts;
 		}
 
@@ -289,6 +300,40 @@ final class AccessController {
 				}
 			)
 		);
+	}
+
+	/**
+	 * Hide a non-viewable handbook page from the oEmbed lookup.
+	 *
+	 * @param int|mixed $post_id Post id core resolved from the URL.
+	 * @param string    $url     The requested URL (unused).
+	 * @return int|mixed 0 when the page may not be viewed.
+	 */
+	public function guard_oembed_request( $post_id, $url ) {
+		unset( $url );
+		$id = (int) $post_id;
+		if ( $id > 0 && Handbook::POST_TYPE === get_post_type( $id ) && ! self::can_view_post( $id, get_current_user_id() ) ) {
+			return 0;
+		}
+		return $post_id;
+	}
+
+	/**
+	 * Empty the oEmbed payload of a non-viewable handbook page.
+	 *
+	 * The lookup filter above already covers the REST route; this one closes the
+	 * paths that resolve the post themselves before asking for the data.
+	 *
+	 * @param array<string, mixed>|mixed $data The oEmbed response data.
+	 * @param WP_Post|mixed              $post The post being described.
+	 * @return array<string, mixed>|mixed
+	 */
+	public function guard_oembed_data( $data, $post ) {
+		if ( $post instanceof WP_Post && Handbook::POST_TYPE === $post->post_type
+			&& ! self::can_view_post( $post->ID, get_current_user_id() ) ) {
+			return array();
+		}
+		return $data;
 	}
 
 	/**

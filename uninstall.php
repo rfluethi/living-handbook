@@ -79,8 +79,11 @@ function living_handbook_run_uninstall(): void {
 
 	// Versioned transient keys cannot be enumerated one by one, and on a
 	// persistent object cache (Redis, Memcached) the transients live in the cache
-	// rather than the options table above. A full flush on uninstall clears both.
-	wp_cache_flush();
+	// rather than the options table above. They are deliberately not flushed:
+	// wp_cache_flush() empties the cache of the entire installation, including
+	// every other plugin and, on a shared cache server, other sites. The
+	// leftovers expire within a day on their own, and they are keyed by a version
+	// counter that no longer exists, so nothing reads them again.
 
 	/**
 	 * Opt in to remove all handbook content on uninstall.

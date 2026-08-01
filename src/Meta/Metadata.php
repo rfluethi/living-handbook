@@ -54,8 +54,12 @@ final class Metadata {
 	 * @return void
 	 */
 	public function register_meta(): void {
-		$auth = static function (): bool {
-			return current_user_can( 'edit_posts' );
+		// The object id is what matters: this second line of defence has to ask
+		// whether the user may edit this post, not whether they may edit posts at
+		// all. WordPress passes the id as the third argument.
+		$auth = static function ( $allowed, $meta_key, $object_id ): bool {
+			unset( $allowed, $meta_key );
+			return current_user_can( 'edit_post', (int) $object_id );
 		};
 
 		$fields = array(
@@ -65,15 +69,28 @@ final class Metadata {
 			self::REVIEWER  => 'integer',
 			self::TOC_DEPTH => 'integer',
 		);
+
+		// The meta box validates what it saves, but a REST write goes straight to
+		// the meta and would otherwise accept any string as a review date and any
+		// number as a heading depth. Same rules as save(), enforced at the field.
+		$sanitizers = array(
+			self::UPDATED   => array( self::class, 'sanitize_date_value' ),
+			self::REVIEWED  => array( self::class, 'sanitize_date_value' ),
+			self::INTERVAL  => 'absint',
+			self::REVIEWER  => 'absint',
+			self::TOC_DEPTH => array( self::class, 'sanitize_toc_depth_value' ),
+		);
+
 		foreach ( $fields as $key => $type ) {
 			register_post_meta(
 				Handbook::POST_TYPE,
 				$key,
 				array(
-					'type'          => $type,
-					'single'        => true,
-					'show_in_rest'  => true,
-					'auth_callback' => $auth,
+					'type'              => $type,
+					'single'            => true,
+					'show_in_rest'      => true,
+					'sanitize_callback' => $sanitizers[ $key ],
+					'auth_callback'     => $auth,
 				)
 			);
 		}
@@ -82,13 +99,39 @@ final class Metadata {
 			Handbook::POST_TYPE,
 			self::AI_EXCLUDE,
 			array(
-				'type'          => 'boolean',
-				'single'        => true,
-				'default'       => false,
-				'show_in_rest'  => true,
-				'auth_callback' => $auth,
+				'type'              => 'boolean',
+				'single'            => true,
+				'default'           => false,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'rest_sanitize_boolean',
+				'auth_callback'     => $auth,
 			)
 		);
+	}
+
+	/**
+	 * Keep a date field to YYYY-MM-DD, the format the meta box and the freshness
+	 * calculation expect. Anything else becomes an empty value rather than a
+	 * string strtotime() would later guess at.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return string
+	 */
+	public static function sanitize_date_value( $value ): string {
+		$date = trim( (string) $value );
+		return 1 === preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ? $date : '';
+	}
+
+	/**
+	 * Keep the heading depth within the range the table of contents renders,
+	 * matching save(): anything above 6 falls back to 0 (use the default).
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return int
+	 */
+	public static function sanitize_toc_depth_value( $value ): int {
+		$depth = absint( $value );
+		return $depth > 6 ? 0 : $depth;
 	}
 
 	/**
