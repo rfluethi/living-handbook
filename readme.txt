@@ -27,9 +27,9 @@ Core features:
 * A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder; a folder is read with its subfolders and the folder structure becomes the page hierarchy. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
-* The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and kept on GitHub. One click on the import screen pulls it into the site, in English or German.
+* The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and shipped inside the plugin. One click on the import screen loads it into the site, in English or German, always matching the installed version; the living_handbook_app_handbook_url filter points it at your own GitHub repository instead.
 * Fully translatable (English source), with a German translation included.
-* No external WordPress plugin is required; a block theme is. The import and sync use three bundled Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
+* No external WordPress plugin is required; a block theme is. The import and sync require three Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/ together with their own dependencies, all under GPL-compatible licenses (BSD-3-Clause, MIT, GPL-2.0-or-later). Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
 
 == Installation ==
 
@@ -59,7 +59,7 @@ Only when you use the GitHub features, and only to addresses you enter yourself.
 
 = What third-party libraries does the plugin bundle? =
 
-The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also bundle three PHP libraries in vendor/: league/commonmark (BSD-3-Clause license), symfony/yaml (MIT license), and enshrined/svg-sanitize (GPL-2.0-or-later license), which cleans imported SVG images before they are stored. All bundled libraries use GPL-compatible licenses.
+The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license, whose full text ships as assets/js/mermaid.LICENSE.txt. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also require three PHP libraries, shipped in vendor/ with their own dependencies: league/commonmark (BSD-3-Clause license), symfony/yaml (MIT license), and enshrined/svg-sanitize (GPL-2.0-or-later license), which cleans imported SVG images before they are stored. All bundled libraries use GPL-compatible licenses (BSD-3-Clause, MIT, GPL-2.0-or-later).
 
 = Who can see a handbook? =
 
@@ -88,26 +88,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * The bundled app handbook now sits under a single top page, "Living Handbook", with every area and page nested beneath it, one clean tree instead of many top-level entries.
 * Fixed the entry filter list on themes that render checkboxes as block or full-width elements: the checkbox is kept small and native, so its label stays beside it instead of dropping below or stretching across the column.
 
-= 0.51.1 =
-* The bundled app handbook is now complete in German and available in English as well, translated from it. The English pages still carry the German screenshots for now; localized ones will follow.
-
 = 0.51.0 =
 * Images in handbook content can now be clicked to enlarge, in a dark overlay like the core Image block's lightbox, closed by a click, the close button or Escape. A raster image becomes clickable only when it is shown smaller than its real size, so small icons are left alone; an SVG is always clickable, since it stays sharp at any size.
 * Mermaid diagrams now render on the bundled app handbook too. The script that draws them only loaded on GitHub-synced pages, so on a locally loaded app handbook (a WordPress-source page) the diagrams stayed as code. It now loads on any handbook page whose content holds a diagram.
-
-= 0.50.4 =
-* The bundled app handbook was expanded: the German pages now carry screenshots and diagrams, and the text stresses more clearly that a page can be tailored in look and function through the blocks and templates. Reload the app handbook to get the new version.
-
-= 0.50.3 =
-* An imported image is now attached to the page it belongs to, so the media library shows it as uploaded to that page instead of unattached. A shared image keeps the first page it landed on.
-
-= 0.50.2 =
-* Imported SVG images now sideload even when the site does not allow SVG uploads: the plugin permits the SVG mime type only for the moment it stores its own already-sanitised SVG, not for user uploads in general. This is why the app handbook's diagram images did not appear.
-* An image on a handbook page is now capped at the column width, so a large screenshot no longer overflows the page.
-
-= 0.50.1 =
-* App handbook pages are now locked in the editor, like GitHub-synced pages: they are managed content that a re-load replaces, so editing them by hand would only be lost on the next load. A notice on the page says so.
-* Fixed a relative image reference with a percent-encoded path (a space as %20) not resolving to the file on disk, so such an image is now sideloaded too.
 
 = 0.50.0 =
 * The app handbook now ships with the plugin instead of loading from GitHub, so it always matches the installed version and no install depends on a repository staying reachable. The "App handbook" tab imports it from the bundled folder; loading again after a plugin update refreshes the pages. A fork can still point the tab at a GitHub repository through the living_handbook_app_handbook_url filter.
@@ -118,142 +101,4 @@ Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-h
 == Upgrade Notice ==
 
 = 0.52.0 =
-Mermaid diagrams enlarge on click, the entry filter list stays readable on themes that stretch form controls, and the bundled app handbook sits under one "Living Handbook" top page. Pre-release: best on a fresh database.
-
-= 0.51.1 =
-The bundled app handbook is complete in German and now available in English too. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.51.0 =
-Handbook content images can be clicked to enlarge, like the core lightbox. Pre-release: best on a fresh database.
-
-= 0.50.4 =
-The bundled app handbook was expanded with images and clearer text. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.50.3 =
-Imported images are now attached to their page in the media library. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.50.2 =
-Imported SVG images now sideload even without site-wide SVG support, and a large image is capped at the column width. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.50.1 =
-App handbook pages are locked like GitHub pages (managed content), and a percent-encoded image reference now resolves. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.50.0 =
-The app handbook now ships with the plugin (loaded from the bundled folder, matching your version), and the GitHub folder import brings referenced images into the media library. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.49.0 =
-Optional public "Was this helpful?" voting (privacy-friendly, no cookie or IP, off by default), a per-page feedback reset, and filters to change the handbook URL bases. Pre-release: best on a fresh database.
-
-= 0.48.0 =
-Import fixes (transport block inside code fences, MkDocs admonitions), a GitHub link on the source note, and table, navigation and code-block styling. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.47.0 =
-Import notes (unresolved links, limits) now stand out in their own block. Pre-release: best on a fresh database.
-
-= 0.46.0 =
-Internal links can no longer turn into 404s: they resolve by repository path, and any that resolve to nothing become plain text. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.45.0 =
-Fixes internal links on GitHub-synced pages breaking into 404s after the first sync. Reload the app handbook after updating. Pre-release: best on a fresh database.
-
-= 0.44.0 =
-The GitHub folder import now lists internal links that resolve to no page. Pre-release: best on a fresh database.
-
-= 0.43.0 =
-Cosmetic: the GitHub source note is now styled as a hint. Plus a docs fix. Pre-release: best on a fresh database.
-
-= 0.42.0 =
-The GitHub folder import now orders pages by their transport "Reihenfolge", and the app handbook is published on load. Pre-release: best on a fresh database.
-
-= 0.41.0 =
-The app handbook now loads from GitHub rather than shipping in the plugin, one click on the import screen. Pre-release: best on a fresh database.
-
-= 0.40.0 =
-The GitHub folder import now includes subfolders and turns the folder structure into the page hierarchy. Pre-release: best on a fresh database.
-
-= 0.39.0 =
-Adds the app's own handbook, loadable from the import screen in English or German. Nothing is created automatically. Pre-release: best on a fresh database.
-
-= 0.38.1 =
-Adds a counter-check to the new REST access tests, so they cannot pass for the wrong reason. No functional change. Pre-release: best on a fresh database.
-
-= 0.38.0 =
-An export no longer carries the e-mail addresses of individually allowed people, and the REST access separation is now covered by tests. Pre-release: best on a fresh database.
-
-= 0.37.0 =
-Security fix: imported block content is now cleaned before it is stored, closing a hole where a prepared bundle could carry active markup into the handbook. Recommended for anyone using the bundle import. Pre-release: best on a fresh database.
-
-= 0.36.0 =
-Export gets its own screen, each import source now carries its own options and button inside its tab, and the German translation of both screens is complete. Pre-release: best on a fresh database.
-
-= 0.35.0 =
-Adds tests for the bundle export and import, and fixes a matching bug they found: an import could match a page of the same slug in a different handbook. Pre-release: best on a fresh database.
-
-= 0.34.0 =
-The bundle import can now be pointed at an existing handbook instead of the one named in the bundle. Pre-release: best on a fresh database.
-
-= 0.33.0 =
-Adds bundle import: upload a bundle from another site and choose whether existing pages are skipped, updated, or duplicated. Nothing is ever deleted. Pre-release: best on a fresh database.
-
-= 0.32.0 =
-The export picker now has two dependent fields: pick the handbook, and the second field lists only that handbook's areas. Pre-release: best on a fresh database.
-
-= 0.31.0 =
-Export now also handles a single area (a top-level page and its subpages), not just a whole handbook. Pre-release: best on a fresh database.
-
-= 0.30.0 =
-Housekeeping only: removes a suppress_filters flag the Plugin Check flags. No functional change. Pre-release: best on a fresh database.
-
-= 0.29.0 =
-Adds handbook export: download a handbook as a self-contained bundle (ZIP) under Handbook, Import. The matching import follows in a later release. Pre-release: best on a fresh database.
-
-= 0.28.0 =
-The block editor loads the handbook stylesheet only on handbook pages now, not in every editor. No visible change. Pre-release: best on a fresh database.
-
-= 0.27.0 =
-The handbook list gains a filter dropdown for each vocabulary too (page type, topic, responsibility, audience), alongside the handbook and source filters. Pre-release: best on a fresh database.
-
-= 0.26.0 =
-The handbook list gains a sortable Feedback column (net votes), filter dropdowns for handbook and source, and direct links from the two list warnings to the affected pages. Pre-release: best on a fresh database.
-
-= 0.25.0 =
-Fixes the untranslated import progress messages on non-English sites, and lets editing users find handbook pages again in the classic editor's link search. Frontend visibility is unchanged. Pre-release: best on a fresh database.
-
-= 0.24.0 =
-Handbook blocks now offer an HTML anchor and an additional CSS class under Advanced, so you can link to a block or target one instance from Custom CSS. Pre-release: best on a fresh database.
-
-= 0.23.1 =
-Packaging fix: the release ZIP no longer includes stray hidden files that the plugin repository check rejected. No functional change. Pre-release: best on a fresh database.
-
-= 0.23.0 =
-F7 completed: the Mermaid and GitHub source-note blocks now also use block.json, so every handbook block shares the single-source registration. No change on the page. Pre-release: best on a fresh database.
-
-= 0.22.0 =
-The handbook blocks now use a block.json file each as the single source of their metadata, removing duplicated definitions, and gain an inserter preview. No change on the page. Pre-release: best on a fresh database.
-
-= 0.21.0 =
-The ZIP import limit is now adjustable through the living_handbook_zip_max_bytes filter, and the navigation injection uses the HTML API instead of regex for robustness. No visible change. Pre-release: best on a fresh database.
-
-= 0.20.0 =
-Code review round 3: import failures return proper HTTP errors, imported images are reused only when unchanged (matched by a content hash), and the result count matches the cards shown. Pre-release: best on a fresh database.
-
-= 0.19.0 =
-Access-control hardening: a pre-query layer restricts handbook queries to the handbooks you may view, closing side-channels through suppress_filters and admin-ajax. No visible change. Pre-release: best on a fresh database.
-
-= 0.18.0 =
-Security hardening from a code review: GitHub fetches without redirects, sanitised SVG imports, no raw input elements in imported HTML, and a fixed background-sync follow-up. Pre-release: best on a fresh database.
-
-= 0.17.0 =
-JavaScript internationalisation moves to the WordPress standard (wp_set_script_translations plus JSON language files), and the importer counts use proper plural forms. No change on an English site. Pre-release: best on a fresh database.
-
-= 0.16.0 =
-The handbook now follows your theme's colours, including dark mode. Search fields match the navigation, and you can set the review date, reviewer and interval from the page list via Quick Edit. Pre-release: best on a fresh database.
-
-= 0.15.0 =
-A clearer two-step import screen with a tabbed source switcher, an on-page Handbook search block, a Custom CSS field in the settings, a weekly default sync frequency for new installs, and a divider in the admin menu. Pre-release: best on a fresh database.
-
-= 0.14.0 =
-Hardens the access side-channels (REST, comments, multi-handbook fail-closed), moves settings to the Settings API, makes navigation self-contained, and updates terminology. New getting-started and maintenance docs. Pre-release: best on a fresh database.
-
-= 0.13.0 =
-Activation now creates the handbook overview page and guides you through the first steps. The uninstall cleanup finally ships. Facet filters show sub-areas under their parent, re-imports no longer duplicate pages, and accessibility was improved. Still pre-release: best installed on a fresh database.
+Mermaid diagrams enlarge on click, the entry filter list stays readable on themes that stretch form controls, and the bundled app handbook sits under one "Living Handbook" top page.
