@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.53.0\n"
+"Project-Id-Version: Living Handbook 0.54.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-01T16:15:40+00:00\n"
+"POT-Creation-Date: 2026-08-01T19:58:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -38,6 +38,20 @@ msgstr ""
 #. Author URI of the plugin
 #: living-handbook.php
 msgid "https://rfluethi.com"
+msgstr ""
+
+#: src/Access/AccessController.php:185
+msgid "No access to this handbook"
+msgstr ""
+
+#. translators: %s: display name of the signed-in user.
+#: src/Access/AccessController.php:188
+#, php-format
+msgid "You are signed in as %s, but your account does not have access to this handbook. Ask an administrator or the team that maintains the handbook to grant you access."
+msgstr ""
+
+#: src/Access/AccessController.php:208
+msgid "Back to the site"
 msgstr ""
 
 #: src/Admin/Maintenance.php:83
@@ -72,13 +86,13 @@ msgstr ""
 
 #: src/Admin/Maintenance.php:246
 #: src/Frontend/PageMeta.php:81
-#: src/Meta/Metadata.php:162
-#: src/Meta/Metadata.php:299
+#: src/Meta/Metadata.php:205
+#: src/Meta/Metadata.php:342
 msgid "Last reviewed"
 msgstr ""
 
 #: src/Admin/Maintenance.php:247
-#: src/Setup/Settings.php:189
+#: src/Setup/Settings.php:207
 msgid "Feedback"
 msgstr ""
 
@@ -128,19 +142,19 @@ msgid "View the source file"
 msgstr ""
 
 #. translators: %s: name of the responsible role.
-#: src/Frontend/Cards.php:68
+#: src/Frontend/Cards.php:69
 #, php-format
 msgid "Role: %s"
 msgstr ""
 
 #. translators: %s: audience name.
-#: src/Frontend/Cards.php:111
+#: src/Frontend/Cards.php:112
 #, php-format
 msgid "Audience: %s"
 msgstr ""
 
 #. translators: %d: number of subpages.
-#: src/Frontend/Cards.php:195
+#: src/Frontend/Cards.php:222
 #, php-format
 msgid "%d subpage"
 msgid_plural "%d subpages"
@@ -149,7 +163,7 @@ msgstr[1] ""
 
 #. translators: %d: number of pages in a handbook.
 #. translators: %d is a number of pages.
-#: src/Frontend/Cards.php:231
+#: src/Frontend/Cards.php:258
 #: assets/js/markdown-import.js:15
 #, php-format,js-format
 msgid "%d page"
@@ -210,7 +224,7 @@ msgid "No matches. Adjust the filters or the search."
 msgstr ""
 
 #: src/Frontend/Filters.php:549
-#: src/PostType/Handbook.php:93
+#: src/PostType/Handbook.php:96
 msgid "Handbook pages"
 msgstr ""
 
@@ -318,7 +332,7 @@ msgid "Entry page of a single handbook: navigation, search, filters, areas and r
 msgstr ""
 
 #: src/Frontend/Templates.php:65
-#: src/PostType/Handbook.php:91
+#: src/PostType/Handbook.php:94
 msgid "Handbook page"
 msgstr ""
 
@@ -407,79 +421,79 @@ msgstr ""
 msgid "App handbook page"
 msgstr ""
 
-#: src/Git/GitSync.php:1209
-#: src/Git/GitSync.php:1759
+#: src/Git/GitSync.php:1222
+#: src/Git/GitSync.php:1772
 msgid "Source"
 msgstr ""
 
-#: src/Git/GitSync.php:1231
+#: src/Git/GitSync.php:1244
 msgid "Maintained in WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:1232
+#: src/Git/GitSync.php:1245
 msgid "Synced from GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:1234
+#: src/Git/GitSync.php:1247
 msgid "Markdown source (raw or blob URL)"
 msgstr ""
 
-#: src/Git/GitSync.php:1239
+#: src/Git/GitSync.php:1252
 msgid "Sync now"
 msgstr ""
 
-#: src/Git/GitSync.php:1243
+#: src/Git/GitSync.php:1256
 msgid "Last sync:"
 msgstr ""
 
-#: src/Git/GitSync.php:1245
+#: src/Git/GitSync.php:1258
 msgid "A GitHub page is pulled when you save it, and its content editor is locked. Change the source here."
 msgstr ""
 
-#: src/Git/GitSync.php:1336
+#: src/Git/GitSync.php:1349
 msgid "This page is part of the app handbook that ships with the plugin. Its content is managed there and a re-load replaces it, so it cannot be edited here."
 msgstr ""
 
-#: src/Git/GitSync.php:1339
+#: src/Git/GitSync.php:1352
 msgid "This page is synced from GitHub. Its content is managed in the repository and cannot be edited here."
 msgstr ""
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:1378
+#: src/Git/GitSync.php:1391
 #, php-format
 msgid "Living Handbook: %d GitHub page could not be synced. Open it to see the error."
 msgid_plural "Living Handbook: %d GitHub pages could not be synced. Open them to see the error."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Git/GitSync.php:1399
+#: src/Git/GitSync.php:1412
 #: src/Setup/Onboarding.php:321
 msgid "(no title)"
 msgstr ""
 
 #. translators: %d: number of further failed pages not listed.
 #. translators: %d: number of further affected pages not listed.
-#: src/Git/GitSync.php:1409
+#: src/Git/GitSync.php:1422
 #: src/Setup/Onboarding.php:334
 #, php-format
 msgid "… and %d more."
 msgstr ""
 
-#: src/Git/GitSync.php:1435
+#: src/Git/GitSync.php:1448
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Git/GitSync.php:1512
+#: src/Git/GitSync.php:1525
 msgid "Error: CommonMark is not installed."
 msgstr ""
 
-#: src/Git/GitSync.php:1520
+#: src/Git/GitSync.php:1533
 msgid "Error: source host not allowed."
 msgstr ""
 
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
-#: src/Git/GitSync.php:1533
+#: src/Git/GitSync.php:1546
 #: assets/js/markdown-import.js:234
 #: assets/js/markdown-import.js:324
 #, php-format,js-format
@@ -487,33 +501,33 @@ msgid "Error: %s"
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:1539
+#: src/Git/GitSync.php:1552
 #, php-format
 msgid "Error: HTTP %d"
 msgstr ""
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:1557
+#: src/Git/GitSync.php:1570
 #, php-format
 msgid "OK %s"
 msgstr ""
 
-#: src/Git/GitSync.php:1775
-#: src/Git/GitSync.php:1798
-#: src/Import/MarkdownImportPage.php:900
+#: src/Git/GitSync.php:1788
+#: src/Git/GitSync.php:1811
+#: src/Import/MarkdownImportPage.php:912
 msgid "GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:1775
-#: src/Git/GitSync.php:1799
+#: src/Git/GitSync.php:1788
+#: src/Git/GitSync.php:1812
 msgid "WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:1779
+#: src/Git/GitSync.php:1792
 msgid "(sync failed)"
 msgstr ""
 
-#: src/Git/GitSync.php:1797
+#: src/Git/GitSync.php:1810
 msgid "All sources"
 msgstr ""
 
@@ -538,6 +552,7 @@ msgid "Comma-separated user logins or IDs."
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:141
+#: src/Setup/Settings.php:216
 msgid "Access"
 msgstr ""
 
@@ -576,8 +591,8 @@ msgstr ""
 
 #: src/Handbook/Handbooks.php:75
 #: src/Import/HandbookExport.php:114
-#: src/PostType/Handbook.php:90
-#: src/PostType/Handbook.php:92
+#: src/PostType/Handbook.php:93
+#: src/PostType/Handbook.php:95
 #: src/Setup/Onboarding.php:100
 msgid "Handbook"
 msgstr ""
@@ -604,7 +619,7 @@ msgid "There are no handbooks yet, so there is nothing to export."
 msgstr ""
 
 #: src/Import/HandbookExport.php:117
-#: src/Import/MarkdownImportPage.php:837
+#: src/Import/MarkdownImportPage.php:849
 msgid "— select a handbook —"
 msgstr ""
 
@@ -625,25 +640,25 @@ msgstr ""
 msgid "Export bundle"
 msgstr ""
 
-#: src/Import/HandbookExport.php:246
+#: src/Import/HandbookExport.php:249
 msgid "You are not allowed to export handbooks."
 msgstr ""
 
-#: src/Import/HandbookExport.php:268
+#: src/Import/HandbookExport.php:271
 msgid "That page is not in a handbook."
 msgstr ""
 
-#: src/Import/HandbookExport.php:280
+#: src/Import/HandbookExport.php:283
 msgid "Choose what to export."
 msgstr ""
 
-#: src/Import/HandbookExport.php:284
+#: src/Import/HandbookExport.php:287
 #: src/Import/HandbookImport.php:122
 #: src/Import/MarkdownImportPage.php:238
 msgid "ZipArchive is not available on the server."
 msgstr ""
 
-#: src/Import/HandbookExport.php:289
+#: src/Import/HandbookExport.php:292
 msgid "The export bundle could not be created."
 msgstr ""
 
@@ -710,8 +725,8 @@ msgid "Markdown import"
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:90
-#: src/Import/MarkdownImportPage.php:870
-#: src/Import/MarkdownImportPage.php:885
+#: src/Import/MarkdownImportPage.php:882
+#: src/Import/MarkdownImportPage.php:897
 msgid "Import"
 msgstr ""
 
@@ -727,236 +742,240 @@ msgstr ""
 msgid "CommonMark is not installed. Run: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:244
+#: src/Import/MarkdownImportPage.php:246
 #: assets/js/markdown-import.js:530
 msgid "No ZIP file received."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:249
+#: src/Import/MarkdownImportPage.php:251
 msgid "Could not open the ZIP file."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:256
+#: src/Import/MarkdownImportPage.php:258
 msgid "The ZIP has too many entries (maximum is 2000)."
 msgstr ""
 
 #. translators: %d: maximum uncompressed size in whole megabytes.
-#: src/Import/MarkdownImportPage.php:292
+#: src/Import/MarkdownImportPage.php:294
 #, php-format
 msgid "The ZIP is too large: the uncompressed contents exceed %d MB."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:311
+#: src/Import/MarkdownImportPage.php:313
 msgid "No .md files found in the ZIP."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:378
+#: src/Import/MarkdownImportPage.php:381
+msgid "You are not allowed to load the app handbook."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:390
 #: assets/js/markdown-import.js:543
 msgid "No GitHub URL given."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:390
+#: src/Import/MarkdownImportPage.php:402
 msgid "Could not create the page. Check the URL."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:444
+#: src/Import/MarkdownImportPage.php:456
 #: assets/js/markdown-import.js:283
 #: assets/js/markdown-import.js:318
 msgid "Imported page"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:834
+#: src/Import/MarkdownImportPage.php:846
 msgid "Target handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:844
+#: src/Import/MarkdownImportPage.php:856
 msgid "Applied to the imported page(s). A \"Handbuch\" line in the transport block overrides it."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:846
+#: src/Import/MarkdownImportPage.php:858
 msgid "No handbooks yet. Create one first under Handbook, Handbooks."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:852
+#: src/Import/MarkdownImportPage.php:864
 msgid "Page title (optional)"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:855
+#: src/Import/MarkdownImportPage.php:867
 msgid "If empty, the first heading of the document is used."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:871
+#: src/Import/MarkdownImportPage.php:883
 msgid "The Markdown library is missing. Run in the plugin folder: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:895
+#: src/Import/MarkdownImportPage.php:907
 msgid "Pick a source. Everything that source needs sits in its own tab."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:897
+#: src/Import/MarkdownImportPage.php:909
 msgid "Import source"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:898
+#: src/Import/MarkdownImportPage.php:910
 msgid "Paste text"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:899
-#: src/Import/MarkdownImportPage.php:917
+#: src/Import/MarkdownImportPage.php:911
+#: src/Import/MarkdownImportPage.php:929
 msgid "ZIP file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:902
+#: src/Import/MarkdownImportPage.php:914
 msgid "Bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:905
+#: src/Import/MarkdownImportPage.php:917
 msgid "App handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:910
+#: src/Import/MarkdownImportPage.php:922
 msgid "Paste Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:911
+#: src/Import/MarkdownImportPage.php:923
 msgid "Paste a Markdown draft here"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:913
+#: src/Import/MarkdownImportPage.php:925
 msgid "Import Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:919
+#: src/Import/MarkdownImportPage.php:931
 msgid "Flat set of .md files, or a repository export with a mkdocs.yml for a structured import."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:921
+#: src/Import/MarkdownImportPage.php:933
 msgid "Import ZIP"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:925
+#: src/Import/MarkdownImportPage.php:937
 msgid "GitHub URL"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:927
+#: src/Import/MarkdownImportPage.php:939
 msgid "Creates locked pages pulled from a public GitHub repository."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:929
+#: src/Import/MarkdownImportPage.php:941
 msgid "Import from GitHub"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:937
+#: src/Import/MarkdownImportPage.php:949
 msgid "Bundle file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:939
+#: src/Import/MarkdownImportPage.php:951
 msgid "A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:942
+#: src/Import/MarkdownImportPage.php:954
 msgid "Import into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:945
+#: src/Import/MarkdownImportPage.php:957
 msgid "— the handbook named in the bundle —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:952
+#: src/Import/MarkdownImportPage.php:964
 msgid "By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:956
-#: src/Import/MarkdownImportPage.php:959
+#: src/Import/MarkdownImportPage.php:968
+#: src/Import/MarkdownImportPage.php:971
 msgid "If a page already exists"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:972
+#: src/Import/MarkdownImportPage.php:984
 msgid "Import bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:978
+#: src/Import/MarkdownImportPage.php:990
 msgid "The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It ships with the plugin, so this loads it from the installed version, with its pages, structure and images."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:979
+#: src/Import/MarkdownImportPage.php:991
 msgid "The pages are published into the handbook you pick. Whether they are visible on the front end depends on that handbook: set it to \"members\" and only logged-in people see them. Loading again after a plugin update refreshes the pages; nothing is deleted."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:982
+#: src/Import/MarkdownImportPage.php:994
 msgid "Load into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:985
+#: src/Import/MarkdownImportPage.php:997
 msgid "— no handbook (assign later) —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:992
+#: src/Import/MarkdownImportPage.php:1004
 msgid "Pick the handbook the pages should belong to. Create one first (for example \"App handbook\") if you want them in their own, and set who may read it there."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:996
+#: src/Import/MarkdownImportPage.php:1008
 msgid "Load app handbook"
 msgstr ""
 
-#: src/Meta/Metadata.php:140
+#: src/Meta/Metadata.php:183
 msgid "Handbook maintenance"
 msgstr ""
 
-#: src/Meta/Metadata.php:166
-#: src/Meta/Metadata.php:303
+#: src/Meta/Metadata.php:209
+#: src/Meta/Metadata.php:346
 msgid "Review interval (days)"
 msgstr ""
 
-#: src/Meta/Metadata.php:170
-#: src/Meta/Metadata.php:307
+#: src/Meta/Metadata.php:213
+#: src/Meta/Metadata.php:350
 msgid "Reviewed by"
 msgstr ""
 
-#: src/Meta/Metadata.php:177
-#: src/Meta/Metadata.php:312
+#: src/Meta/Metadata.php:220
+#: src/Meta/Metadata.php:355
 msgid "none"
 msgstr ""
 
-#: src/Meta/Metadata.php:184
+#: src/Meta/Metadata.php:227
 msgid "On this page: heading depth"
 msgstr ""
 
-#: src/Meta/Metadata.php:186
+#: src/Meta/Metadata.php:229
 msgid "Use the block default"
 msgstr ""
 
 #. translators: %d: heading level, e.g. up to H2.
-#: src/Meta/Metadata.php:191
+#: src/Meta/Metadata.php:234
 #, php-format
 msgid "Up to H%d"
 msgstr ""
 
-#: src/Meta/Metadata.php:200
+#: src/Meta/Metadata.php:243
 msgid "Exclude this page from AI use"
 msgstr ""
 
-#: src/Meta/Metadata.php:203
+#: src/Meta/Metadata.php:246
 msgid "A marker only. It does not block anything by itself; it is published in the page REST data (living_handbook_status), so an AI tool or export that reads the handbook can choose to skip this page."
 msgstr ""
 
-#: src/Meta/Metadata.php:204
+#: src/Meta/Metadata.php:247
 msgid "The last updated date is set automatically on save."
 msgstr ""
 
-#: src/PostType/Handbook.php:94
+#: src/PostType/Handbook.php:97
 msgid "New pages"
 msgstr ""
 
-#: src/PostType/Handbook.php:95
+#: src/PostType/Handbook.php:98
 msgid "Add new handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:96
+#: src/PostType/Handbook.php:99
 msgid "Edit handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:97
+#: src/PostType/Handbook.php:100
 msgid "Search handbook pages"
 msgstr ""
 
@@ -1052,92 +1071,104 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: src/Setup/Settings.php:86
-#: src/Setup/Settings.php:87
-#: src/Setup/Settings.php:339
+#: src/Setup/Settings.php:95
+#: src/Setup/Settings.php:96
+#: src/Setup/Settings.php:420
 msgid "Settings"
 msgstr ""
 
-#: src/Setup/Settings.php:109
+#: src/Setup/Settings.php:118
 msgid "Add CSS that loads on the handbook pages only. It is stored with the plugin and removed when you delete the plugin, unlike CSS kept in the theme."
 msgstr ""
 
-#: src/Setup/Settings.php:110
+#: src/Setup/Settings.php:119
 msgid "Target the plugin classes and the --lh-* custom properties. For example:"
 msgstr ""
 
 #. translators: %s: link to the customization documentation.
-#: src/Setup/Settings.php:114
+#: src/Setup/Settings.php:123
 #, php-format
 msgid "The full reference of variables and class names is in the %s."
 msgstr ""
 
-#: src/Setup/Settings.php:115
+#: src/Setup/Settings.php:124
 msgid "customization documentation"
 msgstr ""
 
-#: src/Setup/Settings.php:120
-#: src/Setup/Settings.php:182
+#: src/Setup/Settings.php:129
+#: src/Setup/Settings.php:200
 msgid "Custom CSS"
 msgstr ""
 
-#: src/Setup/Settings.php:169
+#: src/Setup/Settings.php:187
 msgid "GitHub sync"
 msgstr ""
 
-#: src/Setup/Settings.php:172
+#: src/Setup/Settings.php:190
 msgid "Automatic sync"
 msgstr ""
 
-#: src/Setup/Settings.php:179
+#: src/Setup/Settings.php:197
 msgid "Appearance"
 msgstr ""
 
-#: src/Setup/Settings.php:192
+#: src/Setup/Settings.php:210
 msgid "Public feedback"
 msgstr ""
 
-#: src/Setup/Settings.php:198
+#: src/Setup/Settings.php:219
+msgid "No-access page"
+msgstr ""
+
+#: src/Setup/Settings.php:226
 msgid "Uninstall"
 msgstr ""
 
-#: src/Setup/Settings.php:201
+#: src/Setup/Settings.php:229
 msgid "When the plugin is deleted"
 msgstr ""
 
-#: src/Setup/Settings.php:266
+#: src/Setup/Settings.php:263
+msgid "Use the built-in message"
+msgstr ""
+
+#: src/Setup/Settings.php:285
+msgid "Where a signed-in visitor lands when they open a handbook they may not read. Leave this on the built-in message unless you want to explain in your own words who grants access."
+msgstr ""
+
+#: src/Setup/Settings.php:347
 msgid "CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples."
 msgstr ""
 
-#: src/Setup/Settings.php:276
+#: src/Setup/Settings.php:357
 msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
 msgstr ""
 
-#: src/Setup/Settings.php:277
+#: src/Setup/Settings.php:358
 msgid "Off by default. When on, anyone can vote on a public page. To keep it privacy-friendly, votes are not tied to a person: no cookie, no IP and nothing else personal is stored, so the same visitor can vote again after reloading. On internal pages only logged-in users vote, one vote each, regardless of this setting."
 msgstr ""
 
-#: src/Setup/Settings.php:306
+#: src/Setup/Settings.php:387
 msgid "How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits."
 msgstr ""
 
-#: src/Setup/Settings.php:310
+#: src/Setup/Settings.php:391
 msgid "Next scheduled sync:"
 msgstr ""
 
-#: src/Setup/Settings.php:312
+#: src/Setup/Settings.php:393
 msgid "No background sync scheduled."
 msgstr ""
 
-#: src/Setup/Settings.php:323
+#: src/Setup/Settings.php:404
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr ""
 
-#: src/Setup/Settings.php:324
+#: src/Setup/Settings.php:405
 msgid "Off by default: your content is kept when the plugin is deleted, only the plugin settings and caches are removed. Turn this on to remove everything the plugin created."
 msgstr ""
 
-#: src/Setup/Settings.php:325
+#: src/Setup/Settings.php:406
 msgid "This also removes templates you edited in the Site Editor."
 msgstr ""
 

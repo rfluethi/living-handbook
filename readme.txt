@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.53.0
+Stable tag: 0.54.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,14 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.54.0 =
+* A signed-in visitor who opens a handbook they may not read now gets an explanation and the status 403, instead of a bare 404 that claimed the page did not exist. The new setting Access, No-access page lets you point that at one of your own pages; left on the built-in message it works out of the box. Guests are still sent to the login and returned to the page afterwards.
+* Fixed: a contributor could load the app handbook, which publishes its pages at once, although contributors may not publish. That import now requires the same permission as the bundle import and export.
+* Fixed: the oEmbed endpoint described pages of an internal handbook to anyone, with title and author name. WordPress closes this itself from 6.8 on; the plugin now also declares the type as not embeddable and gates the endpoint. Requires at least is raised to 6.8 for that reason.
+* Fixed: the area cards of a handbook were cached without the viewer, so pages an editor may see could be served to a guest for up to a day.
+* Fixed: a link into another handbook no longer borrows the target page title as its link text, so the title of a page in a stricter handbook does not surface in an open one.
+* Hardening: stricter permission on back-end AJAX reads, safer encoding of page titles on the export screen, an upload check on the ZIP import, per-post permission on the meta fields, the export bundle is written outside the public uploads folder, uninstalling no longer flushes the whole object cache, and every field writable over the REST API is validated.
+
 = 0.53.0 =
 * Fixed: the scheduled sync skipped every handbook that is not public. Cron runs without a logged-in user, and the reader filter narrowed the maintenance lookup to public handbooks, so a members or restricted handbook was never updated, silently and without an error. Internal lookups now opt out of that filter; front-end reads stay filtered exactly as before.
 * Fixed: an internal link on a page of a non-public handbook could be degraded to plain text during a sync and written back, only to reappear on the next manual sync.
@@ -104,6 +112,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.54.0 =
+Recommended for every site with internal handbooks: closes two read channels and replaces the 404 for a denied page with a real explanation. Requires WordPress 6.8 or newer.
 
 = 0.53.0 =
 Required if you sync a members or restricted handbook from GitHub: the scheduled sync never reached those handbooks before this release.

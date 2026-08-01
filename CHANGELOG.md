@@ -2,6 +2,14 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.54.0 =
+* A signed-in visitor who opens a handbook they may not read now gets an explanation and the status 403 instead of a 404. New setting Access, No-access page; the built-in message is filterable through living_handbook_access_denied_title and _message. The singular main query is no longer narrowed on pre_get_posts, because that produced the 404 before the guard could decide.
+* Fixed: the app-handbook import publishes at once and now requires edit_others_posts, not edit_posts.
+* Fixed: oEmbed described internal pages. The type is registered with embeddable => false (honoured from WordPress 6.8) and the lookup and response are filtered. Requires at least raised to 6.8.
+* Fixed: the area-card cache is keyed per viewer.
+* Fixed: a cross-handbook link keeps the file name as its text instead of the target title.
+* Hardening: edit_others_posts on back-end AJAX reads, JSON_HEX_TAG on the export screen, is_uploaded_file on the ZIP import, auth_callback with the object id, export bundle in the system temp directory, no wp_cache_flush on uninstall, sanitize_callback on every REST-writable meta field.
+
 = 0.53.0 =
 * Fixed: the scheduled sync skipped every handbook that is not public. Cron runs without a logged-in user, and the reader filter narrowed the maintenance lookup to public handbooks, so a members or restricted handbook was never updated, silently and without an error. Internal lookups now opt out of that filter; front-end reads stay filtered exactly as before.
 * Fixed: an internal link on a page of a non-public handbook could be degraded to plain text during a sync and written back, only to reappear on the next manual sync.
