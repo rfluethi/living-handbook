@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Git;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Import\HtmlSanitizer;
 use LivingHandbook\Import\ImageRefs;
@@ -360,7 +361,7 @@ final class GitSync {
 				),
 			);
 		}
-		$found = get_posts( $args );
+		$found = get_posts( AccessController::internal( $args ) );
 		return ! empty( $found ) ? (int) $found[0] : 0;
 	}
 
@@ -818,14 +819,16 @@ final class GitSync {
 		$marker = $parsed['owner'] . '/' . $parsed['repo'] . '@' . $parsed['branch'] . ':' . $folder;
 
 		$existing = get_posts(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			AccessController::internal(
+				array(
+					'post_type'      => Handbook::POST_TYPE,
+					'post_status'    => 'any',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				)
 			)
 		);
 		if ( ! empty( $existing ) ) {
@@ -960,14 +963,16 @@ final class GitSync {
 		$marker = 'local:' . $folder;
 
 		$existing = get_posts(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			AccessController::internal(
+				array(
+					'post_type'      => Handbook::POST_TYPE,
+					'post_status'    => 'any',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				)
 			)
 		);
 		if ( ! empty( $existing ) ) {
@@ -1029,7 +1034,7 @@ final class GitSync {
 				),
 			);
 		}
-		$found = get_posts( $args );
+		$found = get_posts( AccessController::internal( $args ) );
 		return ! empty( $found ) ? (int) $found[0] : 0;
 	}
 
@@ -1448,16 +1453,18 @@ final class GitSync {
 	 */
 	public function run_sync(): void {
 		$ids = get_posts(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => -1,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'orderby'        => 'ID',
-				'order'          => 'ASC',
-				'meta_key'       => self::META_SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value'     => self::SOURCE_GITHUB, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			AccessController::internal(
+				array(
+					'post_type'      => Handbook::POST_TYPE,
+					'post_status'    => 'any',
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'orderby'        => 'ID',
+					'order'          => 'ASC',
+					'meta_key'       => self::META_SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value'     => self::SOURCE_GITHUB, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				)
 			)
 		);
 

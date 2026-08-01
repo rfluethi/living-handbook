@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Import;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -307,13 +308,15 @@ final class Postprocessor {
 			return 0;
 		}
 		$query = new WP_Query(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => 1,
-				'no_found_rows'  => true,
-				'meta_key'       => self::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value'     => $path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			AccessController::internal(
+				array(
+					'post_type'      => Handbook::POST_TYPE,
+					'post_status'    => 'any',
+					'posts_per_page' => 1,
+					'no_found_rows'  => true,
+					'meta_key'       => self::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value'     => $path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				)
 			)
 		);
 		$post  = $query->posts[0] ?? null;
@@ -335,12 +338,14 @@ final class Postprocessor {
 	 */
 	private static function find_page_by_title( string $title, int $exclude ): int {
 		$query = new WP_Query(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'any',
-				'title'          => $title,
-				'posts_per_page' => 2,
-				'no_found_rows'  => true,
+			AccessController::internal(
+				array(
+					'post_type'      => Handbook::POST_TYPE,
+					'post_status'    => 'any',
+					'title'          => $title,
+					'posts_per_page' => 2,
+					'no_found_rows'  => true,
+				)
 			)
 		);
 		foreach ( $query->posts as $post ) {
@@ -362,11 +367,13 @@ final class Postprocessor {
 			return 0;
 		}
 		$posts = get_posts(
-			array(
-				'post_type'   => Handbook::POST_TYPE,
-				'name'        => $slug,
-				'post_status' => 'any',
-				'numberposts' => 1,
+			AccessController::internal(
+				array(
+					'post_type'   => Handbook::POST_TYPE,
+					'name'        => $slug,
+					'post_status' => 'any',
+					'numberposts' => 1,
+				)
 			)
 		);
 		$post  = $posts[0] ?? null;

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Import;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
@@ -540,6 +541,9 @@ final class MarkdownImportPage {
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
 		);
+		// The re-import guard has to find pages in every handbook, also the
+		// internal ones, or a re-import creates duplicates instead of updating.
+		$base = AccessController::internal( $base );
 		if ( $handbook_id > 0 ) {
 			$base['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				array(
@@ -723,8 +727,8 @@ final class MarkdownImportPage {
 			return '';
 		}
 
-		$type = wp_check_filetype( (string) $upload['file'] );
-		$mime = ( is_string( $type['type'] ) && '' !== $type['type'] )
+		$type          = wp_check_filetype( (string) $upload['file'] );
+		$mime          = ( is_string( $type['type'] ) && '' !== $type['type'] )
 			? $type['type']
 			: ( $is_svg ? 'image/svg+xml' : '' );
 		$attachment_id = wp_insert_attachment(

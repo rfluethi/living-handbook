@@ -36,6 +36,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class AccessController {
 
 	/**
+	 * Query argument that marks an internal maintenance query.
+	 *
+	 * The read filters below protect the display path, but the plugin's own
+	 * maintenance code reads handbook pages too: the scheduled sync looks up the
+	 * pages it has to pull, the import looks up the page a source path already
+	 * created, and the post-processor resolves internal links. Those run without
+	 * a logged-in user and outside wp-admin (cron, the REST import endpoints), so
+	 * the display filters would narrow them to public handbooks and the plugin
+	 * would silently stop maintaining every internal handbook.
+	 *
+	 * A query that sets this argument to true opts out of the read filters. It is
+	 * deliberately an opt-in flag rather than a blanket exemption for cron: an
+	 * unmarked query stays filtered, so a forgotten call site fails closed, the
+	 * way it does today. The value never comes from user input; it is only set by
+	 * this plugin's own lookups, and it is not a registered public query var, so
+	 * it cannot be injected through a URL.
+	 */
+	public const INTERNAL_QUERY_ARG = 'living_handbook_internal';
+
+	/**
 	 * Per-request memo of term visibility decisions, keyed "term_id:user_id".
 	 *
 	 * A result set of one handbook shares one term, so the same decision is
@@ -130,6 +150,34 @@ final class AccessController {
 	}
 
 	/**
+	 * Mark query arguments as an internal maintenance lookup.
+	 *
+	 * Wrap the arguments of a lookup the plugin makes about its own pages, so it
+	 * is not narrowed to the handbooks the current user may read.
+	 *
+	 * @see AccessController::INTERNAL_QUERY_ARG
+	 *
+	 * @param array<string, mixed> $args Query arguments.
+	 * @return array<string, mixed>
+	 */
+	public static function internal( array $args ): array {
+		$args[ self::INTERNAL_QUERY_ARG ] = true;
+		return $args;
+	}
+
+	/**
+	 * Whether a query is one of the plugin's own maintenance lookups.
+	 *
+	 * @see AccessController::INTERNAL_QUERY_ARG
+	 *
+	 * @param WP_Query $query The query being prepared or filtered.
+	 * @return bool
+	 */
+	private static function is_internal_query( WP_Query $query ): bool {
+		return true === $query->get( self::INTERNAL_QUERY_ARG );
+	}
+
+	/**
 	 * Coarse pre-query access layer.
 	 *
 	 * Runs on pre_get_posts, so it also covers queries that set suppress_filters
@@ -145,6 +193,11 @@ final class AccessController {
 	 * @return void
 	 */
 	public function restrict_query( WP_Query $query ): void {
+		// The plugin's own maintenance lookups mark themselves and are not a
+		// content read (see INTERNAL_QUERY_ARG).
+		if ( self::is_internal_query( $query ) ) {
+			return;
+		}
 		// admin-ajax.php always runs with is_admin() true. A front-end AJAX read
 		// must still be filtered, but back-end tools use admin-ajax too, for
 		// example the classic editor's "link to existing content" search
@@ -207,7 +260,13 @@ final class AccessController {
 	 * @return WP_Post[]
 	 */
 	public function filter_posts( array $posts, WP_Query $query ): array {
-		unset( $query );
+		// The plugin's own maintenance lookups mark themselves and are not a
+		// content read (see INTERNAL_QUERY_ARG). get_posts() suppresses this
+		// filter anyway, but a plain WP_Query (the post-processor's link lookups)
+		// does reach it.
+		if ( self::is_internal_query( $query ) ) {
+			return $posts;
+		}
 
 		// admin-ajax.php runs with is_admin() true. A front-end AJAX read must
 		// still be filtered, but a user who may edit posts is let through on
