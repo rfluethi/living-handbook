@@ -298,4 +298,80 @@ final class HardeningTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'The review cycle', (string) get_post_field( 'post_content', $page_id ) );
 	}
+
+	/**
+	 * An image of an internal handbook page is not listed for a guest.
+	 *
+	 * An attachment inherits its status from its parent, and the parent is
+	 * published, so core would hand out title, alt text and file URL. The
+	 * attachment has to inherit the parent's visibility instead.
+	 *
+	 * @return void
+	 */
+	public function test_media_of_an_internal_page_is_hidden_from_a_guest(): void {
+		$page_id = $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_MEMBERS ) );
+		$image   = self::factory()->attachment->create_object(
+			array(
+				'file'           => 'salary-plan.png',
+				'post_parent'    => $page_id,
+				'post_title'     => 'Salary plan diagram',
+				'post_mime_type' => 'image/png',
+				'post_status'    => 'inherit',
+			)
+		);
+
+		wp_set_current_user( 0 );
+
+		$collection = rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/media' ) );
+		$titles     = wp_list_pluck( (array) $collection->get_data(), 'title' );
+		$rendered   = wp_list_pluck( $titles, 'rendered' );
+		$this->assertNotContains( 'Salary plan diagram', $rendered, 'The media collection must not list an image of an internal handbook.' );
+
+		$single = rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/media/' . $image ) );
+		$this->assertSame( 404, $single->get_status(), 'A single read of that image must not answer with its data.' );
+	}
+
+	/**
+	 * An image of a public handbook page stays available.
+	 *
+	 * @return void
+	 */
+	public function test_media_of_a_public_page_stays_available(): void {
+		$page_id = $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_PUBLIC ) );
+		$image   = self::factory()->attachment->create_object(
+			array(
+				'file'           => 'diagram.png',
+				'post_parent'    => $page_id,
+				'post_title'     => 'Public diagram',
+				'post_mime_type' => 'image/png',
+				'post_status'    => 'inherit',
+			)
+		);
+
+		wp_set_current_user( 0 );
+		$single = rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/media/' . $image ) );
+
+		$this->assertSame( 200, $single->get_status() );
+	}
+
+	/**
+	 * Media that belongs to no handbook page is untouched.
+	 *
+	 * @return void
+	 */
+	public function test_unrelated_media_is_untouched(): void {
+		$image = self::factory()->attachment->create_object(
+			array(
+				'file'           => 'logo.png',
+				'post_title'     => 'Site logo',
+				'post_mime_type' => 'image/png',
+				'post_status'    => 'inherit',
+			)
+		);
+
+		wp_set_current_user( 0 );
+		$single = rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/media/' . $image ) );
+
+		$this->assertSame( 200, $single->get_status() );
+	}
 }

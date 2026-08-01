@@ -44,6 +44,12 @@ The central check is filterable, for example to give a service account read acce
 
 </details>
 
+## Images and files
+
+An image that belongs to a handbook page inherits that page's access: it is not listed in the media endpoint, and someone who may not open the page cannot read its entry either.
+
+The file itself is not protected, and no plugin can protect it. WordPress keeps uploads in `wp-content/uploads`, and the web server hands that folder out directly, without asking WordPress first. Anyone with the file's address can open it. For most handbooks that is acceptable, because an address is hard to guess. If your handbook holds images that must not leave the team, ask whoever runs the server to protect the uploads folder, for example with a rule in `wp-content/uploads/.htaccess` on Apache or a `location` block on nginx.
+
 ## Related pages
 
 * [Set visibility](set-visibility.md)

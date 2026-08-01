@@ -49,6 +49,10 @@ No. The plugin works on its own; it only expects a block theme.
 
 The plugin is built for single-site installations. On a multisite network, activate and uninstall it on each site individually; network-wide activation is not supported, because the one-time setup (the vocabulary, the overview page, the rewrite rules) and the uninstall cleanup run on the current site only.
 
+= Are images in an internal handbook protected too? =
+
+Their entries are: an image attached to a handbook page inherits that page's visibility, so it is not listed in the media endpoint and cannot be read there by someone who may not open the page. The file itself is a different matter. WordPress stores uploads in wp-content/uploads, and the web server delivers that folder directly, without asking WordPress. Anyone who knows or guesses the URL of the file can open it, and no plugin can change that from inside WordPress. If your handbook contains images that must not leave the team, protect the uploads folder at the server, for example with an Apache rule in wp-content/uploads/.htaccess or an nginx location block that requires authentication.
+
 = Why are my handbook pages not visible? =
 
 Almost always one of two reasons. Either the page is not assigned to a handbook: access is granted per handbook, so a page that belongs to none belongs to nobody, and the page list warns you about it. Or the handbook itself is not visible to you: a new handbook defaults to "All members (logged in)", so logged out you see nothing.

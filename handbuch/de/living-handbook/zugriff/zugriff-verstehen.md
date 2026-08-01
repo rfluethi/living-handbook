@@ -44,6 +44,12 @@ Die zentrale Prüfung ist filterbar. So bekommt zum Beispiel ein Dienstkonto Les
 
 </details>
 
+## Bilder und Dateien
+
+Ein Bild, das zu einer Handbuch-Seite gehört, erbt deren Zugriff: Es taucht nicht in der Medien-Schnittstelle auf, und wer die Seite nicht öffnen darf, bekommt auch den Eintrag des Bildes nicht.
+
+Die Datei selbst ist nicht geschützt, und kein Plugin kann sie schützen. WordPress legt Uploads in `wp-content/uploads` ab, und dieser Ordner wird vom Webserver direkt ausgeliefert, ohne dass WordPress gefragt wird. Wer die Adresse der Datei kennt, kann sie öffnen. Für die meisten Handbücher ist das vertretbar, weil eine solche Adresse kaum zu erraten ist. Enthält dein Handbuch Bilder, die das Team nicht verlassen dürfen, lass den Upload-Ordner auf dem Server schützen, zum Beispiel mit einer Regel in `wp-content/uploads/.htaccess` bei Apache oder einem `location`-Block bei nginx.
+
 ## Verwandte Seiten
 
 * [Sichtbarkeit einstellen](sichtbarkeit-einstellen.md)

@@ -82,6 +82,15 @@ final class AccessController {
 		add_filter( 'the_posts', array( $this, 'filter_posts' ), 10, 2 );
 		add_filter( 'rest_prepare_' . Handbook::POST_TYPE, array( $this, 'guard_rest_item' ), 10, 2 );
 
+		// Media is a read channel of its own. An image imported into a handbook
+		// page is an attachment whose parent is that page, and core answers
+		// /wp/v2/media for it: an attachment inherits its status from the parent,
+		// and the parent is published, so the check passes and title, alt text and
+		// file URL are handed out. The attachment has to inherit the parent's
+		// visibility instead. Note what this cannot do: the file itself stays
+		// readable under its uploads URL, which only a server rule can prevent.
+		add_filter( 'rest_prepare_attachment', array( $this, 'guard_rest_attachment' ), 10, 2 );
+
 		// oEmbed is a read channel of its own, and it does not go through the post
 		// query. The type is publicly_queryable, so is_post_publicly_viewable()
 		// says yes and core answers /wp-json/oembed/1.0/embed with the page title
@@ -364,13 +373,44 @@ final class AccessController {
 			array_filter(
 				$posts,
 				static function ( $post ) use ( $user_id ): bool {
-					if ( ! $post instanceof WP_Post || Handbook::POST_TYPE !== $post->post_type ) {
+					if ( ! $post instanceof WP_Post ) {
 						return true;
 					}
-					return self::can_view_post( $post->ID, $user_id );
+					if ( Handbook::POST_TYPE === $post->post_type ) {
+						return self::can_view_post( $post->ID, $user_id );
+					}
+					// An attachment of a handbook page inherits that page's
+					// visibility: the media library of an internal handbook is part
+					// of its content.
+					if ( 'attachment' === $post->post_type && $post->post_parent > 0
+						&& Handbook::POST_TYPE === get_post_type( (int) $post->post_parent ) ) {
+						return self::can_view_post( (int) $post->post_parent, $user_id );
+					}
+					return true;
 				}
 			)
 		);
+	}
+
+	/**
+	 * Return a 404 for a single REST read of an attachment that belongs to a
+	 * handbook page the user may not view.
+	 *
+	 * @param mixed   $response The prepared response.
+	 * @param WP_Post $post     The attachment being prepared.
+	 * @return mixed
+	 */
+	public function guard_rest_attachment( $response, $post ) {
+		if ( ! $post instanceof WP_Post || $post->post_parent <= 0 ) {
+			return $response;
+		}
+		if ( Handbook::POST_TYPE !== get_post_type( (int) $post->post_parent ) ) {
+			return $response;
+		}
+		if ( self::can_view_post( (int) $post->post_parent, get_current_user_id() ) ) {
+			return $response;
+		}
+		return new WP_REST_Response( null, 404 );
 	}
 
 	/**
