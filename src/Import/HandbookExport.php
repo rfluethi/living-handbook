@@ -328,7 +328,7 @@ JS;
 		// by anyone guessing the name while the export runs. The system temp
 		// directory is not web-reachable; fall back if it is not writable.
 		$path = tempnam( sys_get_temp_dir(), 'lh-export' );
-		if ( ! is_string( $path ) || '' === $path ) {
+		if ( ! is_string( $path ) ) {
 			$path = wp_tempnam( 'lh-export' );
 		}
 
@@ -637,7 +637,7 @@ JS;
 		}
 
 		$path = get_attached_file( $attachment_id );
-		if ( ! is_string( $path ) || '' === $path || ! is_readable( $path ) ) {
+		if ( ! is_string( $path ) || ! is_readable( $path ) ) {
 			return '';
 		}
 		$data = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a local upload for the bundle.
