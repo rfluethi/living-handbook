@@ -14,11 +14,14 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Tests\Integration;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Frontend\Cards;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
+use LivingHandbook\Import\Postprocessor;
 use LivingHandbook\PostType\Handbook;
 use WP_REST_Request;
+use WPDieException;
 use WP_UnitTestCase;
 
 /**
@@ -178,5 +181,121 @@ final class HardeningTest extends WP_UnitTestCase {
 
 		update_post_meta( $page_id, Metadata::TOC_DEPTH, 3 );
 		$this->assertSame( 3, (int) get_post_meta( $page_id, Metadata::TOC_DEPTH, true ) );
+	}
+
+	/**
+	 * A signed-in visitor without access gets a 403 with an explanation, not a
+	 * 404: the page exists, their account is what lacks access.
+	 *
+	 * @return void
+	 */
+	public function test_denied_access_answers_403_with_a_message(): void {
+		$page_id    = $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_RESTRICTED ) );
+		$subscriber = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+
+		wp_set_current_user( (int) $subscriber );
+		$this->go_to( (string) get_permalink( $page_id ) );
+
+		$controller = new AccessController();
+
+		try {
+			$controller->guard_singular();
+			$this->fail( 'guard_singular() should have stopped the request.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'does not have access', $e->getMessage() );
+		}
+	}
+
+	/**
+	 * The message of the no-access page can be replaced by a site.
+	 *
+	 * @return void
+	 */
+	public function test_denied_access_message_is_filterable(): void {
+		$page_id    = $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_RESTRICTED ) );
+		$subscriber = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+
+		add_filter(
+			'living_handbook_access_denied_message',
+			static function (): string {
+				return 'Ask the handbook team in room 12.';
+			}
+		);
+
+		wp_set_current_user( (int) $subscriber );
+		$this->go_to( (string) get_permalink( $page_id ) );
+
+		try {
+			( new AccessController() )->guard_singular();
+			$this->fail( 'guard_singular() should have stopped the request.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'room 12', $e->getMessage() );
+		}
+	}
+
+	/**
+	 * A link into another handbook keeps the file name as its text, so the title
+	 * of a page in a stricter handbook is not pulled into this one.
+	 *
+	 * @return void
+	 */
+	public function test_cross_handbook_link_does_not_borrow_the_target_title(): void {
+		$open_term   = $this->make_handbook( Handbooks::VISIBILITY_PUBLIC );
+		$secret_term = $this->make_handbook( Handbooks::VISIBILITY_RESTRICTED );
+
+		$secret_id = $this->make_page( $secret_term, 'Salary bands 2026' );
+		wp_update_post(
+			array(
+				'ID'        => $secret_id,
+				'post_name' => 'salary-bands',
+			)
+		);
+
+		$page_id = self::factory()->post->create(
+			array(
+				'post_type'    => Handbook::POST_TYPE,
+				'post_status'  => 'publish',
+				'post_title'   => 'Onboarding',
+				'post_content' => '<p>See <a href="salary-bands.md">salary-bands.md</a> for details.</p>',
+			)
+		);
+		wp_set_object_terms( $page_id, array( $open_term ), Handbooks::TAXONOMY );
+
+		Postprocessor::convert_md_links( $page_id );
+
+		$content = (string) get_post_field( 'post_content', $page_id );
+		$this->assertStringNotContainsString( 'Salary bands 2026', $content, 'The title of a page in another handbook must not become the link text.' );
+		$this->assertStringContainsString( 'salary-bands', $content );
+	}
+
+	/**
+	 * Inside one handbook the target title is still used, that is the point of
+	 * the conversion.
+	 *
+	 * @return void
+	 */
+	public function test_link_inside_one_handbook_uses_the_target_title(): void {
+		$term      = $this->make_handbook( Handbooks::VISIBILITY_MEMBERS );
+		$target_id = $this->make_page( $term, 'The review cycle' );
+		wp_update_post(
+			array(
+				'ID'        => $target_id,
+				'post_name' => 'review-cycle',
+			)
+		);
+
+		$page_id = self::factory()->post->create(
+			array(
+				'post_type'    => Handbook::POST_TYPE,
+				'post_status'  => 'publish',
+				'post_title'   => 'Upkeep',
+				'post_content' => '<p>See <a href="review-cycle.md">review-cycle.md</a>.</p>',
+			)
+		);
+		wp_set_object_terms( $page_id, array( $term ), Handbooks::TAXONOMY );
+
+		Postprocessor::convert_md_links( $page_id );
+
+		$this->assertStringContainsString( 'The review cycle', (string) get_post_field( 'post_content', $page_id ) );
 	}
 }

@@ -1,7 +1,7 @@
 === Living Handbook ===
 Contributors: rfluethi
 Tags: handbook, documentation, knowledge base, internal, maintenance
-Requires at least: 6.7
+Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
 Stable tag: 0.53.0

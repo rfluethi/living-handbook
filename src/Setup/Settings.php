@@ -53,6 +53,15 @@ final class Settings {
 	public const OPTION_PUBLIC_FEEDBACK = 'living_handbook_public_feedback';
 
 	/**
+	 * Page shown to a logged-in user who may not read a handbook.
+	 *
+	 * 0 means the built-in message. Setting a page lets a site explain access in
+	 * its own words and design, for example with a contact form or the name of
+	 * the team that grants access.
+	 */
+	public const OPTION_DENIED_PAGE = 'living_handbook_denied_page';
+
+	/**
 	 * Whether anonymous voting on public pages is switched on.
 	 *
 	 * @return bool
@@ -165,6 +174,15 @@ final class Settings {
 				'default'           => 0,
 			)
 		);
+		register_setting(
+			self::OPTION_GROUP,
+			self::OPTION_DENIED_PAGE,
+			array(
+				'type'              => 'integer',
+				'sanitize_callback' => array( $this, 'sanitize_denied_page' ),
+				'default'           => 0,
+			)
+		);
 
 		add_settings_section( 'living_handbook_sync_section', __( 'GitHub sync', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
 		add_settings_field(
@@ -195,6 +213,16 @@ final class Settings {
 			'living_handbook_feedback_section'
 		);
 
+		add_settings_section( 'living_handbook_access_section', __( 'Access', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_field(
+			self::OPTION_DENIED_PAGE,
+			__( 'No-access page', 'living-handbook' ),
+			array( $this, 'render_denied_page_field' ),
+			self::PAGE_SLUG,
+			'living_handbook_access_section',
+			array( 'label_for' => self::OPTION_DENIED_PAGE )
+		);
+
 		add_settings_section( 'living_handbook_uninstall_section', __( 'Uninstall', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
 		add_settings_field(
 			GitSync::OPTION_UNINSTALL,
@@ -203,6 +231,59 @@ final class Settings {
 			self::PAGE_SLUG,
 			'living_handbook_uninstall_section'
 		);
+	}
+
+	/**
+	 * Keep the no-access page a published page of this site, or 0 for the
+	 * built-in message.
+	 *
+	 * @param mixed $value Submitted value.
+	 * @return int
+	 */
+	public function sanitize_denied_page( $value ): int {
+		$page_id = absint( $value );
+		if ( 0 === $page_id ) {
+			return 0;
+		}
+		return 'publish' === get_post_status( $page_id ) ? $page_id : 0;
+	}
+
+	/**
+	 * Render the no-access page selector.
+	 *
+	 * @return void
+	 */
+	public function render_denied_page_field(): void {
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- The sniff treats wp_dropdown_pages() as a printing function and flags its arguments. With echo => false it returns the markup instead, and it is escaped with wp_kses() below.
+		$dropdown = wp_dropdown_pages(
+			array(
+				'name'              => self::OPTION_DENIED_PAGE,
+				'id'                => self::OPTION_DENIED_PAGE,
+				'selected'          => (int) get_option( self::OPTION_DENIED_PAGE, 0 ),
+				'show_option_none'  => __( 'Use the built-in message', 'living-handbook' ),
+				'option_none_value' => '0',
+				'echo'              => false,
+			)
+		);
+		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo wp_kses(
+			(string) $dropdown,
+			array(
+				'select' => array(
+					'name'  => array(),
+					'id'    => array(),
+					'class' => array(),
+				),
+				'option' => array(
+					'value'    => array(),
+					'selected' => array(),
+					'class'    => array(),
+				),
+			)
+		);
+		echo '<p class="description">'
+			. esc_html__( 'Where a signed-in visitor lands when they open a handbook they may not read. Leave this on the built-in message unless you want to explain in your own words who grants access.', 'living-handbook' )
+			. '</p>';
 	}
 
 	/**

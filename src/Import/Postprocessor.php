@@ -196,11 +196,18 @@ final class Postprocessor {
 		$source_path = (string) get_post_meta( $post_id, self::META_SOURCE_PATH, true );
 		$base_dir    = '' !== $source_path ? self::dir_of( $source_path ) : '';
 		$page_title  = (string) get_the_title( $post_id );
-		$count       = 0;
-		$unresolved  = array();
-		$content     = (string) preg_replace_callback(
+
+		// Which handbooks this page belongs to. A link may well point into another
+		// handbook, and it stays a link: whether the reader may open it is decided
+		// when they click. What must not happen is that the title of a page in a
+		// stricter handbook is pulled into this one as the link text.
+		$own_handbooks = wp_get_object_terms( $post_id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
+		$own_handbooks = is_wp_error( $own_handbooks ) ? array() : array_map( 'intval', $own_handbooks );
+		$count         = 0;
+		$unresolved    = array();
+		$content       = (string) preg_replace_callback(
 			'/<a href="([^"]+\.md)"([^>]*)>(.*?)<\/a>/is',
-			static function ( array $found ) use ( &$count, &$unresolved, $source_path, $base_dir, $page_title ): string {
+			static function ( array $found ) use ( &$count, &$unresolved, $source_path, $base_dir, $page_title, $own_handbooks ): string {
 				$clean  = rawurldecode( (string) preg_replace( '/[?#].*$/', '', $found[1] ) );
 				$target = 0;
 				if ( '' !== $source_path ) {
@@ -223,8 +230,19 @@ final class Postprocessor {
 				$text  = $found[3];
 				$plain = trim( wp_strip_all_tags( $text ) );
 				if ( '' === $plain || 1 === preg_match( '/\.md$/i', $plain ) ) {
-					$title = get_the_title( $target );
-					$text  = esc_html( '' !== $title ? $title : $plain );
+					$target_handbooks = wp_get_object_terms( $target, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
+					$target_handbooks = is_wp_error( $target_handbooks ) ? array() : array_map( 'intval', $target_handbooks );
+					$same_handbook    = ! empty( array_intersect( $own_handbooks, $target_handbooks ) );
+
+					if ( $same_handbook ) {
+						$title = get_the_title( $target );
+						$text  = esc_html( '' !== $title ? $title : $plain );
+					} else {
+						// Another handbook, possibly a stricter one: use the file
+						// name the author wrote, not the target's title.
+						$name = (string) preg_replace( '/\.md$/i', '', basename( $clean ) );
+						$text = esc_html( '' !== $name ? $name : $plain );
+					}
 				}
 				return '<a href="' . esc_url( $permalink ) . '"' . $found[2] . '>' . $text . '</a>';
 			},

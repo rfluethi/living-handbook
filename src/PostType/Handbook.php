@@ -22,8 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * The type is registered with `public => false` and `publicly_queryable => true`:
  * single pages stay reachable (guarded by the Access module), but the type is
- * kept out of the XML sitemap, feeds and oEmbed so that titles and URLs of an
- * internal handbook do not leak to logged-out visitors or search engines. The
+ * kept out of the XML sitemap and feeds so that titles and URLs of an internal
+ * handbook do not leak to logged-out visitors or search engines. oEmbed needs
+ * two things: `embeddable => false`, which WordPress honours from 6.8 on, and
+ * the filters in the Access module, which cover every version and the case of a
+ * site re-enabling embedding through the is_post_embeddable filter. The
  * post type archive is disabled (`has_archive => false`): the overview is a
  * normal page holding the living-handbook/overview block, so there is no second,
  * duplicate overview at /handbook/.
@@ -103,6 +106,10 @@ final class Handbook {
 				'labels'              => $labels,
 				'public'              => false,
 				'publicly_queryable'  => true,
+				// Since WordPress 6.8 this is what keeps the type out of oEmbed. Older
+				// versions ignore the argument, which is why the Access module also
+				// filters the oEmbed lookup and response.
+				'embeddable'          => false,
 				'exclude_from_search' => true,
 				'show_ui'             => true,
 				'show_in_menu'        => true,

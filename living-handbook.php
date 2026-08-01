@@ -4,7 +4,7 @@
  * Plugin URI:        https://github.com/rfluethi/living-handbook
  * Description:       An internal team handbook for WordPress: structured page types, clear ownership, and freshness tracking so docs don't rot.
  * Version:           0.53.0
- * Requires at least: 6.7
+ * Requires at least: 6.8
  * Requires PHP:      8.1
  * Author:            Rico F. Luethi
  * Author URI:        https://rfluethi.com

@@ -15,11 +15,13 @@ namespace LivingHandbook\Access;
 
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Setup\Settings;
 use WP_Comment;
 use WP_Post;
 use WP_Query;
 use WP_REST_Response;
 use WP_Term;
+use WP_User;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -145,7 +147,17 @@ final class AccessController {
 	}
 
 	/**
-	 * Deny the current request: send guests to the login, show a 404 to others.
+	 * Deny the current request.
+	 *
+	 * A guest is sent to the login form, which returns them to the page they
+	 * asked for once they are signed in. A signed-in visitor who still may not
+	 * read the handbook gets a 403 and an explanation: the page exists, it is
+	 * their account that lacks access, and someone has to grant it. A 404 was
+	 * wrong here; it says the address is invalid and leaves people guessing.
+	 *
+	 * A site can point the "No-access page" setting at one of its own pages to
+	 * explain access in its own words, and the message and heading of the
+	 * built-in fallback can be replaced through filters.
 	 *
 	 * @return void
 	 */
@@ -154,10 +166,55 @@ final class AccessController {
 			auth_redirect();
 		}
 
-		global $wp_query;
-		$wp_query->set_404();
-		status_header( 404 );
 		nocache_headers();
+
+		$page_id = (int) get_option( Settings::OPTION_DENIED_PAGE, 0 );
+		if ( $page_id > 0 && 'publish' === get_post_status( $page_id ) ) {
+			$url = get_permalink( $page_id );
+			if ( is_string( $url ) && '' !== $url ) {
+				// A redirect cannot carry the 403, so the chosen page answers with
+				// its own status. That is the price of letting a site design this
+				// page in its theme.
+				wp_safe_redirect( $url, 302 );
+				exit;
+			}
+		}
+
+		$user = wp_get_current_user();
+
+		$title   = __( 'No access to this handbook', 'living-handbook' );
+		$message = sprintf(
+			/* translators: %s: display name of the signed-in user. */
+			__( 'You are signed in as %s, but your account does not have access to this handbook. Ask an administrator or the team that maintains the handbook to grant you access.', 'living-handbook' ),
+			$user->display_name
+		);
+
+		/**
+		 * Filter the heading of the built-in no-access page.
+		 *
+		 * @param string $title Heading.
+		 */
+		$title = (string) apply_filters( 'living_handbook_access_denied_title', $title );
+
+		/**
+		 * Filter the message of the built-in no-access page.
+		 *
+		 * @param string  $message Message shown to the signed-in visitor.
+		 * @param WP_User $user    The signed-in user.
+		 */
+		$message = (string) apply_filters( 'living_handbook_access_denied_message', $message, $user );
+
+		$body = '<h1>' . esc_html( $title ) . '</h1><p>' . esc_html( $message ) . '</p>'
+			. '<p><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Back to the site', 'living-handbook' ) . '</a></p>';
+
+		wp_die(
+			wp_kses_post( $body ),
+			esc_html( $title ),
+			array(
+				'response'  => 403,
+				'back_link' => true,
+			)
+		);
 	}
 
 	/**
@@ -207,6 +264,13 @@ final class AccessController {
 		// The plugin's own maintenance lookups mark themselves and are not a
 		// content read (see INTERNAL_QUERY_ARG).
 		if ( self::is_internal_query( $query ) ) {
+			return;
+		}
+		// A singular main query is left alone: guard_singular() decides it on
+		// template_redirect and can tell the visitor why they are not allowed in.
+		// Filtering it here would empty the query first, and WordPress would
+		// answer with a bare 404 before the guard ever runs.
+		if ( $query->is_main_query() && $query->is_singular() ) {
 			return;
 		}
 		// admin-ajax.php always runs with is_admin() true, so a front-end AJAX
@@ -276,6 +340,13 @@ final class AccessController {
 		// filter anyway, but a plain WP_Query (the post-processor's link lookups)
 		// does reach it.
 		if ( self::is_internal_query( $query ) ) {
+			return $posts;
+		}
+
+		// Same reasoning as in restrict_query(): the singular main query belongs
+		// to guard_singular(), which answers with an explanation instead of an
+		// empty result that turns into a 404.
+		if ( $query->is_main_query() && $query->is_singular() ) {
 			return $posts;
 		}
 
