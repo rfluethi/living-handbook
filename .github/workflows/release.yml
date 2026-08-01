@@ -29,7 +29,7 @@ jobs:
       - name: Check the tag matches the plugin version
         run: |
           version="$(grep -oE "Version:[[:space:]]*[0-9]+\.[0-9]+\.[0-9]+" living-handbook.php | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")"
-          tag="${GITHUB_REF_NAME#v}"
+          tag="${GITHUB_REF_NAME#[vV]}"
           if [ "$version" != "$tag" ]; then
             echo "Tag '$GITHUB_REF_NAME' does not match plugin version '$version'." >&2
             echo "Tag the release v$version (or $version) so the ZIP matches." >&2
