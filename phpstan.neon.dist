@@ -5,6 +5,7 @@ parameters:
 	level: 5
 	paths:
 		- living-handbook.php
+		- uninstall.php
 		- src
 	scanFiles:
 		- tests/phpstan/constants.php
