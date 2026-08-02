@@ -330,15 +330,19 @@ final class MarkdownImportPage {
 			}
 		}
 
+		$notes = array();
 		if ( '' !== $mkdocs_yaml && MkDocsImport::available() ) {
-			$specs = MkDocsImport::build_specs( $mkdocs_yaml, $markdown_files, $image_map, new MarkdownConverter() );
+			$specs = MkDocsImport::build_specs( $mkdocs_yaml, $markdown_files, $image_map, new MarkdownConverter(), $notes );
 			if ( ! empty( $specs ) ) {
 				return array(
 					'mode'   => 'mkdocs',
 					'pages'  => $specs,
 					'images' => count( $image_map ),
+					'notes'  => $notes,
 				);
 			}
+		} elseif ( '' !== $mkdocs_yaml ) {
+			$notes[] = __( 'The ZIP carries a mkdocs.yml, but no YAML reader is available on this server, so the files were imported flat.', 'living-handbook' );
 		}
 
 		$converter = new MarkdownConverter();
@@ -362,6 +366,7 @@ final class MarkdownImportPage {
 		return array(
 			'files'  => $out,
 			'images' => count( $image_map ),
+			'notes'  => $notes,
 		);
 	}
 

@@ -138,7 +138,7 @@
 			box.style.padding = '0.5rem 0.75rem';
 			var head = document.createElement( 'p' );
 			head.style.margin = '0 0 0.25rem';
-			head.innerHTML = '<strong>' + __( 'Some links need attention:', 'living-handbook' ) + '</strong>';
+			head.innerHTML = '<strong>' + __( 'Worth knowing about this import:', 'living-handbook' ) + '</strong>';
 			box.appendChild( head );
 			var list = document.createElement( 'ul' );
 			list.style.margin = '0';
@@ -394,6 +394,10 @@
 			var fd = new FormData();
 			fd.append( 'zip', file );
 			return wp.apiFetch( { path: lhImport.zipPath, method: 'POST', body: fd } ).then( function ( res ) {
+				// A ZIP with a mkdocs.yml that could not be read is imported flat,
+				// which looks like a successful import of the wrong thing. The
+				// server says why; show it rather than let it pass unnoticed.
+				showNotes( ( res && res.notes ) ? res.notes : [] );
 				if ( res && res.mode === 'mkdocs' ) {
 					return importMkdocs( res.pages || [], res.images || 0 );
 				}

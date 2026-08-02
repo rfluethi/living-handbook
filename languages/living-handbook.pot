@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-02T10:54:22+00:00\n"
+"POT-Creation-Date: 2026-08-02T12:45:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -344,7 +344,7 @@ msgstr ""
 #: src/Git/ArchiveSource.php:128
 #: src/Import/HandbookExport.php:287
 #: src/Import/HandbookImport.php:122
-#: src/Import/MarkdownImportPage.php:238
+#: src/Import/MarkdownImportPage.php:247
 msgid "ZipArchive is not available on the server."
 msgstr ""
 
@@ -564,7 +564,7 @@ msgstr ""
 
 #: src/Git/GitSync.php:2238
 #: src/Git/GitSync.php:2261
-#: src/Import/MarkdownImportPage.php:922
+#: src/Import/MarkdownImportPage.php:941
 msgid "GitHub"
 msgstr ""
 
@@ -669,7 +669,7 @@ msgid "There are no handbooks yet, so there is nothing to export."
 msgstr ""
 
 #: src/Import/HandbookExport.php:117
-#: src/Import/MarkdownImportPage.php:859
+#: src/Import/MarkdownImportPage.php:878
 msgid "— select a handbook —"
 msgstr ""
 
@@ -764,202 +764,222 @@ msgstr ""
 msgid "Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:89
+#: src/Import/MarkdownImportPage.php:98
 msgid "Markdown import"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:90
-#: src/Import/MarkdownImportPage.php:892
-#: src/Import/MarkdownImportPage.php:907
+#: src/Import/MarkdownImportPage.php:99
+#: src/Import/MarkdownImportPage.php:911
+#: src/Import/MarkdownImportPage.php:926
 msgid "Import"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:114
+#: src/Import/MarkdownImportPage.php:123
 msgid "How the import works"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:115
+#: src/Import/MarkdownImportPage.php:124
 msgid "Import Markdown into handbook pages. Paste a single draft or upload a ZIP of .md files: these become editable pages. If the ZIP contains a mkdocs.yml, its navigation defines the page structure, titles, and order (the ZIP must also hold the referenced files). Or give a GitHub URL: a file URL becomes one locked page, a folder (tree) URL imports every .md file in the folder as locked pages pulled from the repository. Front matter is dropped, transport metadata and the parent and order are applied, Mermaid diagrams and collapsible details become blocks, images in the ZIP are added to the media library, and internal .md links are pointed at the imported pages."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:210
+#: src/Import/MarkdownImportPage.php:219
 msgid "CommonMark is not installed. Run: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:246
-#: assets/js/markdown-import.js:555
+#: src/Import/MarkdownImportPage.php:255
+#: assets/js/markdown-import.js:559
 msgid "No ZIP file received."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:251
+#: src/Import/MarkdownImportPage.php:260
 msgid "Could not open the ZIP file."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:258
+#: src/Import/MarkdownImportPage.php:267
 msgid "The ZIP has too many entries (maximum is 2000)."
 msgstr ""
 
 #. translators: %d: maximum uncompressed size in whole megabytes.
-#: src/Import/MarkdownImportPage.php:294
+#: src/Import/MarkdownImportPage.php:303
 #, php-format
 msgid "The ZIP is too large: the uncompressed contents exceed %d MB."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:313
+#: src/Import/MarkdownImportPage.php:322
 msgid "No .md files found in the ZIP."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:381
+#: src/Import/MarkdownImportPage.php:345
+msgid "The ZIP carries a mkdocs.yml, but no YAML reader is available on this server, so the files were imported flat."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:395
 msgid "You are not allowed to load the app handbook."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:401
-#: assets/js/markdown-import.js:568
+#: src/Import/MarkdownImportPage.php:415
+#: assets/js/markdown-import.js:572
 msgid "No GitHub URL given."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:412
+#: src/Import/MarkdownImportPage.php:426
 msgid "Could not create the page. Check the URL."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:466
+#: src/Import/MarkdownImportPage.php:480
 #: assets/js/markdown-import.js:283
 #: assets/js/markdown-import.js:318
 msgid "Imported page"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:856
+#: src/Import/MarkdownImportPage.php:875
 msgid "Target handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:866
+#: src/Import/MarkdownImportPage.php:885
 msgid "Applied to the imported page(s). A \"Handbuch\" line in the transport block overrides it."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:868
+#: src/Import/MarkdownImportPage.php:887
 msgid "No handbooks yet. Create one first under Handbook, Handbooks."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:874
+#: src/Import/MarkdownImportPage.php:893
 msgid "Page title (optional)"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:877
+#: src/Import/MarkdownImportPage.php:896
 msgid "If empty, the first heading of the document is used."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:893
+#: src/Import/MarkdownImportPage.php:912
 msgid "The Markdown library is missing. Run in the plugin folder: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:917
+#: src/Import/MarkdownImportPage.php:936
 msgid "Pick a source. Everything that source needs sits in its own tab."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:919
+#: src/Import/MarkdownImportPage.php:938
 msgid "Import source"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:920
+#: src/Import/MarkdownImportPage.php:939
 msgid "Paste text"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:921
-#: src/Import/MarkdownImportPage.php:939
+#: src/Import/MarkdownImportPage.php:940
+#: src/Import/MarkdownImportPage.php:958
 msgid "ZIP file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:924
+#: src/Import/MarkdownImportPage.php:943
 msgid "Bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:927
+#: src/Import/MarkdownImportPage.php:946
 msgid "App handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:932
+#: src/Import/MarkdownImportPage.php:951
 msgid "Paste Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:933
+#: src/Import/MarkdownImportPage.php:952
 msgid "Paste a Markdown draft here"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:935
+#: src/Import/MarkdownImportPage.php:954
 msgid "Import Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:941
+#: src/Import/MarkdownImportPage.php:960
 msgid "Flat set of .md files, or a repository export with a mkdocs.yml for a structured import."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:943
+#: src/Import/MarkdownImportPage.php:962
 msgid "Import ZIP"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:947
+#: src/Import/MarkdownImportPage.php:966
 msgid "GitHub URL"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:949
+#: src/Import/MarkdownImportPage.php:968
 msgid "Creates locked pages pulled from a public GitHub repository."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:951
+#: src/Import/MarkdownImportPage.php:970
 msgid "Import from GitHub"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:959
+#: src/Import/MarkdownImportPage.php:978
 msgid "Bundle file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:961
+#: src/Import/MarkdownImportPage.php:980
 msgid "A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:964
+#: src/Import/MarkdownImportPage.php:983
 msgid "Import into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:967
+#: src/Import/MarkdownImportPage.php:986
 msgid "— the handbook named in the bundle —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:974
+#: src/Import/MarkdownImportPage.php:993
 msgid "By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:978
-#: src/Import/MarkdownImportPage.php:981
+#: src/Import/MarkdownImportPage.php:997
+#: src/Import/MarkdownImportPage.php:1000
 msgid "If a page already exists"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:994
+#: src/Import/MarkdownImportPage.php:1013
 msgid "Import bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1000
+#: src/Import/MarkdownImportPage.php:1019
 msgid "The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It ships with the plugin, so this loads it from the installed version, with its pages, structure and images."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1001
+#: src/Import/MarkdownImportPage.php:1020
 msgid "The pages are published into the handbook you pick. Whether they are visible on the front end depends on that handbook: set it to \"members\" and only logged-in people see them. Loading again after a plugin update refreshes the pages; nothing is deleted."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1004
+#: src/Import/MarkdownImportPage.php:1023
 msgid "Load into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1007
+#: src/Import/MarkdownImportPage.php:1026
 msgid "— no handbook (assign later) —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1014
+#: src/Import/MarkdownImportPage.php:1033
 msgid "Pick the handbook the pages should belong to. Create one first (for example \"App handbook\") if you want them in their own, and set who may read it there."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1018
+#: src/Import/MarkdownImportPage.php:1037
 msgid "Load app handbook"
+msgstr ""
+
+#: src/Import/MkDocsImport.php:99
+msgid "The mkdocs.yml has no nav section, so the files were imported without its structure, titles and order."
+msgstr ""
+
+#. translators: %s: the YAML parser's error message.
+#: src/Import/MkDocsImport.php:113
+#, php-format
+msgid "The mkdocs.yml could not be read as a whole (%s), which is usual for a MkDocs project with Python plugins. Its nav section was read on its own, so structure, titles and order are as configured."
+msgstr ""
+
+#. translators: %s: the YAML parser's error message.
+#: src/Import/MkDocsImport.php:126
+#, php-format
+msgid "The mkdocs.yml could not be read (%s), so the files were imported flat, with their file names as titles and without the navigation structure."
 msgstr ""
 
 #: src/Meta/Metadata.php:183
@@ -1386,7 +1406,7 @@ msgid "Done: %1$s, %2$s, %3$s."
 msgstr ""
 
 #: assets/js/markdown-import.js:141
-msgid "Some links need attention:"
+msgid "Worth knowing about this import:"
 msgstr ""
 
 #: assets/js/markdown-import.js:234
@@ -1434,13 +1454,13 @@ msgstr[1] ""
 
 #. translators: %1$d is the current page number, %2$d the total number of pages.
 #: assets/js/markdown-import.js:371
-#: assets/js/markdown-import.js:417
+#: assets/js/markdown-import.js:421
 #, js-format
 msgid "Importing page %1$d of %2$d …"
 msgstr ""
 
 #: assets/js/markdown-import.js:385
-#: assets/js/markdown-import.js:430
+#: assets/js/markdown-import.js:434
 msgid "Linking…"
 msgstr ""
 
@@ -1448,12 +1468,12 @@ msgstr ""
 msgid "Uploading ZIP…"
 msgstr ""
 
-#: assets/js/markdown-import.js:402
+#: assets/js/markdown-import.js:406
 msgid "No pages in the ZIP."
 msgstr ""
 
 #. translators: %d is the number of draft pages being created.
-#: assets/js/markdown-import.js:406
+#: assets/js/markdown-import.js:410
 #, js-format
 msgid "Creating %d draft…"
 msgid_plural "Creating %d drafts…"
@@ -1461,48 +1481,48 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: pages created so far, 2: pages still to go.
-#: assets/js/markdown-import.js:465
+#: assets/js/markdown-import.js:469
 #, js-format
 msgid "Imported %1$d pages, %2$d to go…"
 msgstr ""
 
-#: assets/js/markdown-import.js:473
+#: assets/js/markdown-import.js:477
 msgid "No Markdown pages found."
 msgstr ""
 
 #. translators: %d is the number of pages created from GitHub.
-#: assets/js/markdown-import.js:482
+#: assets/js/markdown-import.js:486
 #, js-format
 msgid "Done: created %d GitHub page."
 msgid_plural "Done: created %d GitHub pages."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:486
+#: assets/js/markdown-import.js:490
 msgid "Fetching pages from GitHub…"
 msgstr ""
 
-#: assets/js/markdown-import.js:493
+#: assets/js/markdown-import.js:497
 msgid "Loading the app handbook…"
 msgstr ""
 
-#: assets/js/markdown-import.js:501
+#: assets/js/markdown-import.js:505
 msgid "No pages were loaded."
 msgstr ""
 
 #. translators: %d is the number of pages loaded.
-#: assets/js/markdown-import.js:509
+#: assets/js/markdown-import.js:513
 #, js-format
 msgid "Done: loaded %d page."
 msgid_plural "Done: loaded %d pages."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:523
+#: assets/js/markdown-import.js:527
 msgid "wp.blocks is not loaded."
 msgstr ""
 
-#: assets/js/markdown-import.js:526
+#: assets/js/markdown-import.js:530
 msgid "No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?"
 msgstr ""
 

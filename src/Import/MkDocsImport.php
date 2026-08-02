@@ -52,22 +52,123 @@ final class MkDocsImport {
 	 * @param array<string, string> $files     Markdown files, keyed by ZIP path.
 	 * @param array<string, string> $image_map Image basenames mapped to media URLs.
 	 * @param MarkdownConverter     $converter Converter for the page bodies.
+	 * @param array<int, string>    $notes     Filled with what went wrong, if anything.
 	 * @return array<int, mixed>
 	 */
-	public static function build_specs( string $yaml, array $files, array $image_map, MarkdownConverter $converter ): array {
+	public static function build_specs( string $yaml, array $files, array $image_map, MarkdownConverter $converter, array &$notes = array() ): array {
+		$nav = self::read_nav( $yaml, $notes );
+		if ( array() === $nav ) {
+			return array();
+		}
+
+		$specs = array();
+		self::walk( $nav, '', $files, $image_map, $converter, $specs );
+		return $specs;
+	}
+
+	/**
+	 * Read the navigation out of a mkdocs.yml.
+	 *
+	 * A real mkdocs.yml is not only navigation. It configures Python plugins, and
+	 * it does so with YAML tags that only Python understands: the recommended
+	 * setup for Mermaid diagrams alone writes
+	 * "!!python/name:pymdownx.superfences.fence_code_format". A YAML parser in any
+	 * other language stops at that, which used to mean the whole file was
+	 * discarded and a documentation project was imported as a flat pile of files
+	 * with their file names as titles.
+	 *
+	 * So the file is read twice if need be. Whole, which is the normal case and
+	 * keeps anchors working; and if that fails, only the nav block, which is the
+	 * part this import actually uses and the part least likely to carry anything
+	 * exotic.
+	 *
+	 * @param string             $yaml  The mkdocs.yml contents.
+	 * @param array<int, string> $notes Filled with what went wrong, if anything.
+	 * @return array<int, mixed> The nav nodes, empty when there are none.
+	 */
+	private static function read_nav( string $yaml, array &$notes ): array {
 		$parser = Vendored::name( self::YAML );
+		$reason = '';
 
 		try {
 			$config = $parser::parse( $yaml );
+			if ( is_array( $config ) && isset( $config['nav'] ) && is_array( $config['nav'] ) ) {
+				return $config['nav'];
+			}
+			if ( is_array( $config ) && ! isset( $config['nav'] ) ) {
+				$notes[] = __( 'The mkdocs.yml has no nav section, so the files were imported without its structure, titles and order.', 'living-handbook' );
+				return array();
+			}
 		} catch ( \Throwable $e ) {
-			return array();
+			$reason = $e->getMessage();
 		}
-		if ( ! is_array( $config ) || ! isset( $config['nav'] ) || ! is_array( $config['nav'] ) ) {
-			return array();
+
+		$block = self::nav_block( $yaml );
+		if ( '' !== $block ) {
+			try {
+				$config = $parser::parse( $block );
+				if ( is_array( $config ) && isset( $config['nav'] ) && is_array( $config['nav'] ) ) {
+					$notes[] = sprintf(
+						/* translators: %s: the YAML parser's error message. */
+						__( 'The mkdocs.yml could not be read as a whole (%s), which is usual for a MkDocs project with Python plugins. Its nav section was read on its own, so structure, titles and order are as configured.', 'living-handbook' ),
+						$reason
+					);
+					return $config['nav'];
+				}
+			} catch ( \Throwable $e ) {
+				$reason = '' !== $reason ? $reason : $e->getMessage();
+			}
 		}
-		$specs = array();
-		self::walk( $config['nav'], '', $files, $image_map, $converter, $specs );
-		return $specs;
+
+		if ( '' !== $reason ) {
+			$notes[] = sprintf(
+				/* translators: %s: the YAML parser's error message. */
+				__( 'The mkdocs.yml could not be read (%s), so the files were imported flat, with their file names as titles and without the navigation structure.', 'living-handbook' ),
+				$reason
+			);
+		}
+
+		return array();
+	}
+
+	/**
+	 * Cut the top-level nav block out of a mkdocs.yml, as text.
+	 *
+	 * Everything from the "nav:" line up to the next line that starts a new
+	 * top-level key. Indented lines, blank lines and comments belong to the block.
+	 *
+	 * @param string $yaml The mkdocs.yml contents.
+	 * @return string The block, or an empty string when there is no nav.
+	 */
+	private static function nav_block( string $yaml ): string {
+		$lines = preg_split( '/\R/', $yaml );
+		if ( ! is_array( $lines ) ) {
+			return '';
+		}
+
+		$block  = array();
+		$inside = false;
+		foreach ( $lines as $line ) {
+			$line = (string) $line;
+
+			if ( ! $inside ) {
+				if ( 1 === preg_match( '/^nav:\s*(#.*)?$/', $line ) ) {
+					$inside  = true;
+					$block[] = 'nav:';
+				}
+				continue;
+			}
+
+			$trimmed = trim( $line );
+			if ( '' === $trimmed || 0 === strpos( $trimmed, '#' ) || 1 === preg_match( '/^\s/', $line ) ) {
+				$block[] = $line;
+				continue;
+			}
+
+			break;
+		}
+
+		return $inside ? implode( "\n", $block ) . "\n" : '';
 	}
 
 	/**

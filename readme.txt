@@ -89,6 +89,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 = 0.54.0 =
 * A signed-in visitor who opens a handbook they may not read now gets an explanation and the status 403, instead of a bare 404 that claimed the page did not exist. The new setting Access, No-access page lets you point that at one of your own pages; left on the built-in message it works out of the box. Guests are still sent to the login and returned to the page afterwards.
+* Fixed: importing a MkDocs project as a ZIP ignored its navigation and created a flat list of pages named after the files, as soon as mkdocs.yml configured a Python plugin, which is what the usual Mermaid setup does. The navigation is now read even then, and the import tells you when it could only read part of the file.
 * The libraries the plugin brings along for the import now live under a name of their own. If another plugin brings the same library in a different version, both keep working; before, whichever loaded first won and the import could switch itself off.
 * The German translation is complete again, and a Swiss German translation (de_CH) is now included: same wording, written the Swiss way without the sharp s.
 * A large folder import no longer stops with a blank screen or a server timeout. The import now works in passes: it imports as many pages as it can, then picks up where it left off, and the screen shows the pages as they arrive and how many are still to come. You can import a handbook of a few hundred pages in one go.
