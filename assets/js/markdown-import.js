@@ -438,28 +438,53 @@
 		}
 
 		function importGithub( url ) {
-			setStatus( __( 'Fetching pages from GitHub…', 'living-handbook' ) );
-			return wp.apiFetch( {
-				path: lhImport.githubPath,
-				method: 'POST',
-				data: { url: url, title: titleValue(), handbook: handbookId() }
-			} ).then( function ( res ) {
-				var pages = ( res && res.pages ) ? res.pages : [];
-				if ( ! pages.length ) {
-					setStatus( __( 'No Markdown pages found.', 'living-handbook' ) );
-					return;
-				}
-				pages.forEach( function ( p ) {
-					addResult( p, p.title );
+			// A large folder does not fit in one request, so the server hands back
+			// a job id when it runs out of time and this asks for the rest. Pages
+			// appear as they are created, which is also the progress display.
+			var created = 0;
+			var notes = [];
+
+			function pass( data ) {
+				return wp.apiFetch( {
+					path: lhImport.githubPath,
+					method: 'POST',
+					data: data
+				} ).then( function ( res ) {
+					var pages = ( res && res.pages ) ? res.pages : [];
+					pages.forEach( function ( p ) {
+						addResult( p, p.title );
+					} );
+					created += pages.length;
+					if ( res && res.notes ) {
+						notes = notes.concat( res.notes );
+					}
+
+					if ( res && res.job ) {
+						setStatus( sprintf(
+							// translators: 1: pages created so far, 2: pages still to go.
+							__( 'Imported %1$d pages, %2$d to go…', 'living-handbook' ),
+							created,
+							res.remaining || 0
+						) );
+						return pass( { job: res.job } );
+					}
+
+					if ( ! created ) {
+						setStatus( __( 'No Markdown pages found.', 'living-handbook' ) );
+						return;
+					}
+					// Notes report what needs attention: links that resolved to no
+					// page, or an import cut short by the file or tree limit. They go
+					// in their own highlighted block above the page list, not lost at
+					// the end of it.
+					showNotes( notes );
+					// translators: %d is the number of pages created from GitHub.
+					setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', created, 'living-handbook' ), created ) );
 				} );
-				// Notes report what needs attention: links that resolved to no
-				// page, or an import cut short by the file or tree limit. They go
-				// in their own highlighted block above the page list, not lost at
-				// the end of it.
-				showNotes( ( res && res.notes ) ? res.notes : [] );
-				// translators: %d is the number of pages created from GitHub.
-				setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', pages.length, 'living-handbook' ), pages.length ) );
-			} ).catch( function ( err ) {
+			}
+
+			setStatus( __( 'Fetching pages from GitHub…', 'living-handbook' ) );
+			return pass( { url: url, title: titleValue(), handbook: handbookId() } ).catch( function ( err ) {
 				setStatus( errorMessage( err ) );
 			} );
 		}

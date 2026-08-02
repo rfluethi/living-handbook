@@ -385,12 +385,22 @@ final class MarkdownImportPage {
 			return AppHandbook::load( $handbook_id );
 		}
 
+		$git = new GitSync();
+
+		// A folder import that ran out of time comes back with a job id, and is
+		// carried on here. The saved job knows its own URL and target, so nothing
+		// else is read from the request: an import cannot be redirected somewhere
+		// else halfway through.
+		$job = (string) preg_replace( '/[^A-Za-z0-9]/', '', (string) $request->get_param( 'job' ) );
+		if ( '' !== $job ) {
+			return $git->import_folder( '', 0, false, $job );
+		}
+
 		$url = trim( (string) $request->get_param( 'url' ) );
 		if ( '' === $url ) {
 			return self::import_error( __( 'No GitHub URL given.', 'living-handbook' ) );
 		}
 		$title = sanitize_text_field( (string) $request->get_param( 'title' ) );
-		$git   = new GitSync();
 
 		// A manual GitHub import stays a draft for review.
 		if ( false !== strpos( $url, '/tree/' ) ) {

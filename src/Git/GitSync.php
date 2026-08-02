@@ -101,6 +101,26 @@ final class GitSync {
 	private const ARCHIVE_THRESHOLD = 20;
 
 	/**
+	 * How long one pass of a folder import may take, in seconds.
+	 *
+	 * A folder import creates pages one by one, and a few hundred pages take
+	 * longer than PHP is allowed to run. Rather than racing the limit, the import
+	 * stops on its own after this many seconds, saves what is left and asks the
+	 * browser to come back for the rest.
+	 */
+	private const IMPORT_BUDGET = 20;
+
+	/**
+	 * Prefix of the transient a paused import is kept in.
+	 */
+	private const JOB_PREFIX = 'living_handbook_import_';
+
+	/**
+	 * How long a paused import waits to be continued, in seconds.
+	 */
+	private const JOB_TTL = HOUR_IN_SECONDS;
+
+	/**
 	 * The repository archive currently open for an import, if any.
 	 *
 	 * Set for the duration of one folder import. While it is set, sync_page() and
@@ -407,12 +427,80 @@ final class GitSync {
 	 * from its name, holding the area entries block, because a level that exists
 	 * in the repository but not in the handbook would break the navigation.
 	 *
+	 * A large import does not finish in one request, so it does not try to: after
+	 * IMPORT_BUDGET seconds it stops at a whole page, saves what is left and comes
+	 * back with a job id. Call it again with that id to carry on. See run_job().
+	 *
 	 * @param string $tree_url    A github.com tree URL to a folder.
 	 * @param int    $handbook_id Optional handbook term id.
 	 * @param bool   $publish     Whether newly created pages are published rather than drafted.
+	 * @param string $resume      Job id of a paused import to carry on with.
 	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
 	 */
-	public function import_folder( string $tree_url, int $handbook_id = 0, bool $publish = false ) {
+	public function import_folder( string $tree_url, int $handbook_id = 0, bool $publish = false, string $resume = '' ) {
+		if ( '' !== $resume ) {
+			$state = self::load_job( $resume );
+			if ( null === $state ) {
+				return new WP_Error(
+					'living_handbook_import',
+					__( 'This import cannot be continued: it was paused too long ago and its state is gone. Start it again, already imported pages are found and updated rather than duplicated.', 'living-handbook' ),
+					array( 'status' => 410 )
+				);
+			}
+			return $this->run_job( $state );
+		}
+
+		$state = $this->plan_job( $tree_url, $handbook_id, $publish );
+		if ( is_wp_error( $state ) ) {
+			return $state;
+		}
+
+		return $this->run_job( $state );
+	}
+
+	/**
+	 * Import a whole folder in one call, however long it takes.
+	 *
+	 * The chunked import exists for the browser, which can come back for the rest.
+	 * A caller inside PHP cannot, so this one loops until the import is done. Only
+	 * use it where the run is known to be small, for example the bundled handbook.
+	 *
+	 * @param string $tree_url    A github.com tree URL to a folder.
+	 * @param int    $handbook_id Optional handbook term id.
+	 * @param bool   $publish     Whether newly created pages are published rather than drafted.
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public function import_folder_complete( string $tree_url, int $handbook_id = 0, bool $publish = false ) {
+		$result = $this->import_folder( $tree_url, $handbook_id, $publish );
+
+		while ( is_array( $result ) && isset( $result['job'] ) ) {
+			$next = $this->import_folder( '', 0, false, (string) $result['job'] );
+			if ( is_wp_error( $next ) ) {
+				return $next;
+			}
+			$result['pages'] = array_merge( $result['pages'], $next['pages'] );
+			$result['notes'] = array_merge( $result['notes'] ?? array(), $next['notes'] ?? array() );
+			unset( $result['job'], $result['remaining'], $result['total'] );
+			if ( isset( $next['job'] ) ) {
+				$result['job'] = $next['job'];
+			}
+		}
+
+		if ( is_array( $result ) && array() === ( $result['notes'] ?? array() ) ) {
+			unset( $result['notes'] );
+		}
+		return $result;
+	}
+
+	/**
+	 * Read the repository tree and turn it into a work list.
+	 *
+	 * @param string $tree_url    A github.com tree URL to a folder.
+	 * @param int    $handbook_id Optional handbook term id.
+	 * @param bool   $publish     Whether newly created pages are published.
+	 * @return array<string, mixed>|WP_Error The job state, ready to run.
+	 */
+	private function plan_job( string $tree_url, int $handbook_id, bool $publish ) {
 		$parsed = self::parse_tree_url( $tree_url );
 		if ( null === $parsed ) {
 			return new WP_Error( 'living_handbook_import', __( 'Not a GitHub folder URL.', 'living-handbook' ), array( 'status' => 400 ) );
@@ -444,85 +532,280 @@ final class GitSync {
 		$base = rtrim( $parsed['path'], '/' );
 		$plan = self::plan_folder_import( $files, $base );
 
-		// From a certain size on, one archive download beats a request per file:
-		// see ARCHIVE_THRESHOLD. Below it the archive would mean downloading the
-		// whole repository for a handful of pages. If the download fails, the
-		// import carries on file by file, so this only ever makes it faster.
-		$archive_note = $this->open_archive_if_worthwhile( $parsed, count( $plan['files'] ) + count( $plan['folders'] ) );
+		// Folders first, shallow before deep, so a parent page always exists
+		// before the pages that hang under it. Both kinds go in one list, because
+		// an import that pauses has to remember one position, not two.
+		$queue = array();
+		foreach ( $plan['folders'] as $folder ) {
+			$queue[] = array(
+				'kind'  => 'folder',
+				'path'  => $folder['path'],
+				'index' => $folder['index'],
+			);
+		}
+		foreach ( $plan['files'] as $file ) {
+			$queue[] = array(
+				'kind'   => 'file',
+				'path'   => $file['path'],
+				'folder' => $file['folder'],
+			);
+		}
+
+		return array(
+			'parsed'    => $parsed,
+			'handbook'  => $handbook_id,
+			'publish'   => $publish,
+			'queue'     => $queue,
+			'position'  => 0,
+			'folder_id' => array( $base => 0 ),
+			'ids'       => array(),
+			'auto'      => 0,
+			'notes'     => $notes,
+			'archive'   => '',
+			'user'      => get_current_user_id(),
+		);
+	}
+
+	/**
+	 * Work through the queue until it is empty or the time budget is spent.
+	 *
+	 * @param array<string, mixed> $state Job state from plan_job() or a transient.
+	 * @return array<string, mixed> Pages created in this pass, plus a job id when
+	 *                              there is more to do.
+	 */
+	private function run_job( array $state ): array {
+		$parsed   = $state['parsed'];
+		$queue    = $state['queue'];
+		$total    = count( $queue );
+		$deadline = microtime( true ) + self::time_budget();
+		$pages    = array();
+
+		$archive_note = $this->open_archive_for_job( $state, $total - $state['position'] );
 		if ( '' !== $archive_note ) {
-			$notes[] = $archive_note;
+			$state['notes'][] = $archive_note;
 		}
 
 		try {
-			// Folders first, shallow before deep, so a parent page always exists
-			// before the pages that hang under it.
-			$pages     = array();
-			$ids       = array();
-			$folder_id = array( $base => 0 );
+			while ( $state['position'] < $total ) {
+				$item    = $queue[ $state['position'] ];
+				$post_id = $this->import_one( $item, $state );
 
-			// One rising counter for the whole import. It is only the fallback order:
-			// a page that carries a transport "Reihenfolge" keeps that, see place().
-			$auto = 0;
+				++$state['position'];
 
-			foreach ( $plan['folders'] as $folder ) {
-				if ( '' !== $folder['index'] ) {
-					// The index file's own name (index/README) is a poor slug, so the
-					// folder name is used instead.
-					$post_id = $this->create_github_page( self::raw_url( $parsed, $folder['index'] ), $handbook_id, '', $publish, basename( $folder['path'] ) );
-				} else {
-					$post_id = $this->create_folder_page( $parsed, $folder['path'], $handbook_id, $publish );
+				if ( $post_id > 0 ) {
+					$state['ids'][] = $post_id;
+					$pages[]        = self::page_result( $post_id );
 				}
-				if ( 0 === $post_id ) {
-					continue;
-				}
-				$folder_id[ $folder['path'] ] = $post_id;
-				$auto                        += 10;
-				$this->place( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ), $auto );
-				// The repository path lets internal links resolve exactly by path,
-				// regardless of the page's slug (a README's page takes the folder's).
-				if ( '' !== $folder['index'] ) {
-					update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $folder['index'] );
-				}
-				$ids[]   = $post_id;
-				$pages[] = self::page_result( $post_id );
-			}
 
-			foreach ( $plan['files'] as $file ) {
-				$post_id = $this->create_github_page( self::raw_url( $parsed, $file['path'] ), $handbook_id, '', $publish );
-				if ( 0 === $post_id ) {
-					continue;
+				// Stop on a whole page, never in the middle of one: the position is
+				// only ever saved between two pages, so continuing cannot half-import
+				// anything.
+				if ( $state['position'] < $total && microtime( true ) >= $deadline ) {
+					return $this->pause_job( $state, $pages, $total );
 				}
-				$auto += 10;
-				$this->place( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $auto );
-				update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $file['path'] );
-				$ids[]   = $post_id;
-				$pages[] = self::page_result( $post_id );
-			}
-
-			// Resolve internal links once every page of the import exists. Parents are
-			// set here from the folder structure, which is more reliable than the
-			// transport block for a repository that carries none. A link with no page
-			// is turned into text, so nothing is left to 404; the leftovers are
-			// reported so a typo or a missing page is a line here, not a click away.
-			$report = Postprocessor::finalize_report( $ids );
-			foreach ( $report['unresolved'] as $link ) {
-				$notes[] = sprintf(
-					/* translators: 1: page title the link is on, 2: link target file name. */
-					__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
-					$link['source'],
-					$link['target']
-				);
 			}
 		} finally {
-			// A failed import still has to give the downloaded archive back.
-			$this->close_archive();
+			if ( $state['position'] >= $total ) {
+				$this->close_archive();
+			}
 		}
 
+		// Resolve internal links once every page of the import exists. Parents are
+		// set here from the folder structure, which is more reliable than the
+		// transport block for a repository that carries none. A link with no page
+		// is turned into text, so nothing is left to 404; the leftovers are
+		// reported so a typo or a missing page is a line here, not a click away.
+		$report = Postprocessor::finalize_report( $state['ids'] );
+		foreach ( $report['unresolved'] as $link ) {
+			$state['notes'][] = sprintf(
+				/* translators: 1: page title the link is on, 2: link target file name. */
+				__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
+				$link['source'],
+				$link['target']
+			);
+		}
+
+		self::forget_job( $state );
+
 		$result = array( 'pages' => $pages );
-		if ( array() !== $notes ) {
-			$result['notes'] = $notes;
+		if ( array() !== $state['notes'] ) {
+			$result['notes'] = $state['notes'];
 		}
 		return $result;
+	}
+
+	/**
+	 * Create the page for one entry of the work list.
+	 *
+	 * @param array<string, string> $item  Queue entry.
+	 * @param array<string, mixed>  $state Job state, updated in place.
+	 * @return int Post id, or 0 when nothing was created.
+	 */
+	private function import_one( array $item, array &$state ): int {
+		$parsed = $state['parsed'];
+
+		if ( 'folder' === $item['kind'] ) {
+			if ( '' !== $item['index'] ) {
+				// The index file's own name (index/README) is a poor slug, so the
+				// folder name is used instead.
+				$post_id = $this->create_github_page( self::raw_url( $parsed, $item['index'] ), $state['handbook'], '', $state['publish'], basename( $item['path'] ) );
+			} else {
+				$post_id = $this->create_folder_page( $parsed, $item['path'], $state['handbook'], $state['publish'] );
+			}
+			if ( 0 === $post_id ) {
+				return 0;
+			}
+
+			$state['folder_id'][ $item['path'] ] = $post_id;
+			$state['auto']                      += 10;
+			$this->place( $post_id, self::parent_id_for( $state['folder_id'], self::dirname_of( $item['path'] ) ), $state['auto'] );
+			// The repository path lets internal links resolve exactly by path,
+			// regardless of the page's slug (a README's page takes the folder's).
+			if ( '' !== $item['index'] ) {
+				update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $item['index'] );
+			}
+			return $post_id;
+		}
+
+		$post_id = $this->create_github_page( self::raw_url( $parsed, $item['path'] ), $state['handbook'], '', $state['publish'] );
+		if ( 0 === $post_id ) {
+			return 0;
+		}
+
+		$state['auto'] += 10;
+		$this->place( $post_id, self::parent_id_for( $state['folder_id'], $item['folder'] ), $state['auto'] );
+		update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $item['path'] );
+		return $post_id;
+	}
+
+	/**
+	 * Save what is left of an import and report back what was done so far.
+	 *
+	 * The downloaded archive is kept, not deleted: the next pass reopens the same
+	 * file instead of downloading the repository again.
+	 *
+	 * @param array<string, mixed>             $state Job state.
+	 * @param array<int, array<string, mixed>> $pages Pages created in this pass.
+	 * @param int                              $total Length of the work list.
+	 * @return array<string, mixed>
+	 */
+	private function pause_job( array $state, array $pages, int $total ): array {
+		$state['archive'] = $this->detach_archive();
+
+		$job          = isset( $state['job'] ) ? (string) $state['job'] : wp_generate_password( 24, false );
+		$state['job'] = $job;
+		set_transient( self::JOB_PREFIX . $job, $state, self::JOB_TTL );
+
+		$result = array(
+			'pages'     => $pages,
+			'job'       => $job,
+			'remaining' => $total - $state['position'],
+			'total'     => $total,
+		);
+		if ( array() !== $state['notes'] ) {
+			$result['notes'] = $state['notes'];
+			// Notes travel with the first pass that produced them; the next pass
+			// starts with a clean list so the browser does not show them twice.
+			$state['notes'] = array();
+			set_transient( self::JOB_PREFIX . $job, $state, self::JOB_TTL );
+		}
+		return $result;
+	}
+
+	/**
+	 * Read a paused import back, if it is this user's and still there.
+	 *
+	 * @param string $job Job id from the browser.
+	 * @return array<string, mixed>|null
+	 */
+	private static function load_job( string $job ) {
+		$job = preg_replace( '/[^A-Za-z0-9]/', '', $job );
+		if ( ! is_string( $job ) || '' === $job ) {
+			return null;
+		}
+
+		$state = get_transient( self::JOB_PREFIX . $job );
+		if ( ! is_array( $state ) || ! isset( $state['queue'], $state['position'], $state['parsed'] ) ) {
+			return null;
+		}
+
+		// An import belongs to whoever started it. Someone else guessing the id
+		// must not be able to write pages under it.
+		if ( (int) ( $state['user'] ?? 0 ) !== get_current_user_id() ) {
+			return null;
+		}
+
+		return $state;
+	}
+
+	/**
+	 * Drop a finished import's saved state.
+	 *
+	 * @param array<string, mixed> $state Job state.
+	 * @return void
+	 */
+	private static function forget_job( array $state ): void {
+		if ( isset( $state['job'] ) && '' !== (string) $state['job'] ) {
+			delete_transient( self::JOB_PREFIX . (string) $state['job'] );
+		}
+	}
+
+	/**
+	 * How many seconds one pass of an import may take.
+	 *
+	 * Stays well inside PHP's own limit where there is one, because the pass has
+	 * to finish its current page and answer the browser after the budget is up.
+	 *
+	 * @return float
+	 */
+	private static function time_budget(): float {
+		$budget = (float) self::IMPORT_BUDGET;
+
+		$limit = (float) ini_get( 'max_execution_time' );
+		if ( $limit > 0.0 ) {
+			$budget = min( $budget, max( 5.0, $limit * 0.6 ) );
+		}
+
+		/**
+		 * Filter how long one pass of a folder import may take, in seconds.
+		 *
+		 * @param float $budget Seconds.
+		 */
+		return (float) apply_filters( 'living_handbook_import_time_budget', $budget );
+	}
+
+	/**
+	 * Open the repository archive for this pass of the import.
+	 *
+	 * A paused import carries the path of the archive it already downloaded, so
+	 * continuing costs no request at all. Without one, the archive is downloaded
+	 * when enough work is left to make it worth it.
+	 *
+	 * @param array<string, mixed> $state     Job state, updated in place.
+	 * @param int                  $remaining Pages still to import.
+	 * @return string A note for the import report, or an empty string.
+	 */
+	private function open_archive_for_job( array &$state, int $remaining ): string {
+		$parsed = $state['parsed'];
+		$kept   = (string) ( $state['archive'] ?? '' );
+
+		if ( '' !== $kept ) {
+			$archive = new ArchiveSource();
+			if ( true === $archive->open_file( $kept ) ) {
+				self::$archive      = $archive;
+				self::$archive_repo = array(
+					'owner'  => $parsed['owner'],
+					'repo'   => $parsed['repo'],
+					'branch' => $parsed['branch'],
+				);
+				return '';
+			}
+			$state['archive'] = '';
+		}
+
+		$note             = $this->open_archive_if_worthwhile( $parsed, $remaining );
+		$state['archive'] = self::$archive instanceof ArchiveSource ? self::$archive->path() : '';
+		return $note;
 	}
 
 	/**
@@ -557,6 +840,21 @@ final class GitSync {
 			'branch' => $parsed['branch'],
 		);
 		return '';
+	}
+
+	/**
+	 * Let go of the archive without deleting it, for the next pass to reopen.
+	 *
+	 * @return string Path of the kept file, empty when there is none.
+	 */
+	private function detach_archive(): string {
+		$path = '';
+		if ( self::$archive instanceof ArchiveSource ) {
+			$path = self::$archive->detach();
+		}
+		self::$archive      = null;
+		self::$archive_repo = array();
+		return $path;
 	}
 
 	/**
@@ -1595,6 +1893,11 @@ final class GitSync {
 	 * @return void
 	 */
 	public function run_sync(): void {
+		// An import that was started and then abandoned leaves its downloaded
+		// archive behind: nothing tells the plugin the browser has gone away. The
+		// scheduled run is where those are collected.
+		ArchiveSource::cleanup_stale();
+
 		$ids = get_posts(
 			AccessController::internal(
 				array(

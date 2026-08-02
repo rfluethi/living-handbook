@@ -104,7 +104,9 @@ final class AppHandbook {
 		$sync     = new GitSync();
 		$override = self::override_url();
 		if ( '' !== $override ) {
-			return $sync->import_folder( $override, $handbook_id, true );
+			// In one call: this runs from a button that expects the whole handbook
+			// back at once, and the app handbook is small enough for that.
+			return $sync->import_folder_complete( $override, $handbook_id, true );
 		}
 
 		$dir = self::local_dir();

@@ -112,6 +112,62 @@ final class ArchiveSource {
 	}
 
 	/**
+	 * Open an archive that was already downloaded.
+	 *
+	 * A large import runs in several passes, and each pass is its own request. The
+	 * downloaded file outlives the request that fetched it, so the next pass reads
+	 * the same repository without downloading it again.
+	 *
+	 * @param string $path Path of a file this class downloaded earlier.
+	 * @return true|WP_Error
+	 */
+	public function open_file( string $path ) {
+		if ( ! class_exists( 'ZipArchive' ) ) {
+			return new WP_Error(
+				'living_handbook_import',
+				__( 'ZipArchive is not available on the server.', 'living-handbook' ),
+				array( 'status' => 501 )
+			);
+		}
+		if ( '' === $path || ! is_readable( $path ) ) {
+			return new WP_Error( 'living_handbook_import', __( 'The downloaded repository archive is gone.', 'living-handbook' ), array( 'status' => 410 ) );
+		}
+
+		$this->path = $path;
+		return $this->read_entries();
+	}
+
+	/**
+	 * Where the downloaded archive lies on disk.
+	 *
+	 * @return string Empty when nothing is open.
+	 */
+	public function path(): string {
+		return $this->path;
+	}
+
+	/**
+	 * Close the archive but keep the downloaded file.
+	 *
+	 * The counterpart to open_file(): this is how a paused import hands its
+	 * download on to the pass that continues it. Whoever calls this owns the file
+	 * from then on and has to close() it in the end, otherwise it is left behind
+	 * for the cleanup to find.
+	 *
+	 * @return string Path of the kept file, empty when there is none.
+	 */
+	public function detach(): string {
+		$path = $this->path;
+		if ( $this->zip instanceof ZipArchive ) {
+			$this->zip->close();
+			$this->zip = null;
+		}
+		$this->path    = '';
+		$this->entries = array();
+		return $path;
+	}
+
+	/**
 	 * Ask the API where the archive lives, without following the redirect.
 	 *
 	 * @param string $owner  Repository owner.
@@ -371,7 +427,7 @@ final class ArchiveSource {
 		}
 
 		$index = $this->entries[ $path ];
-		$stat = $this->zip->statIndex( $index );
+		$stat  = $this->zip->statIndex( $index );
 		if ( ! is_array( $stat ) || (int) $stat['size'] > self::MAX_FILE_BYTES ) {
 			return null;
 		}
@@ -388,6 +444,38 @@ final class ArchiveSource {
 	 */
 	public function has( string $path ): bool {
 		return isset( $this->entries[ $path ] );
+	}
+
+	/**
+	 * Delete archives left behind by imports that were never finished.
+	 *
+	 * A paused import keeps its download for the next pass. If that pass never
+	 * comes, because the browser tab was closed, the file would stay for good.
+	 * Anything older than the time a paused import may wait is nobody's any more.
+	 *
+	 * @param int $older_than Age in seconds from which a file is collected.
+	 * @return int How many files were deleted.
+	 */
+	public static function cleanup_stale( int $older_than = 7200 ): int {
+		$pattern = rtrim( sys_get_temp_dir(), '/\\' ) . '/lh-archive*';
+		$found   = glob( $pattern );
+		if ( ! is_array( $found ) ) {
+			return 0;
+		}
+
+		$cutoff  = time() - max( 600, $older_than );
+		$deleted = 0;
+		foreach ( $found as $file ) {
+			if ( ! is_file( $file ) ) {
+				continue;
+			}
+			$age = (int) @filemtime( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- A file that vanished between glob and here is simply skipped.
+			if ( $age > 0 && $age < $cutoff ) {
+				wp_delete_file( $file );
+				++$deleted;
+			}
+		}
+		return $deleted;
 	}
 
 	/**
