@@ -28,7 +28,7 @@ Core features:
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder; a folder is read with its subfolders and the folder structure becomes the page hierarchy. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
 * The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and shipped inside the plugin. One click on the import screen loads it into the site, in English or German, always matching the installed version; the living_handbook_app_handbook_url filter points it at your own GitHub repository instead.
-* Fully translatable (English source), with a German translation included.
+* Fully translatable (English source), with a German and a Swiss German translation included.
 * No external WordPress plugin is required; a block theme is. The import and sync require three Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/ together with their own dependencies, all under GPL-compatible licenses (BSD-3-Clause, MIT, GPL-2.0-or-later). Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
 
 == Installation ==
@@ -89,6 +89,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 = 0.54.0 =
 * A signed-in visitor who opens a handbook they may not read now gets an explanation and the status 403, instead of a bare 404 that claimed the page did not exist. The new setting Access, No-access page lets you point that at one of your own pages; left on the built-in message it works out of the box. Guests are still sent to the login and returned to the page afterwards.
+* The German translation is complete again, and a Swiss German translation (de_CH) is now included: same wording, written the Swiss way without the sharp s.
 * A large folder import no longer stops with a blank screen or a server timeout. The import now works in passes: it imports as many pages as it can, then picks up where it left off, and the screen shows the pages as they arrive and how many are still to come. You can import a handbook of a few hundred pages in one go.
 * A large folder import now downloads the repository once instead of asking GitHub for every single file. From about twenty pages on that is one request instead of hundreds, so importing a whole handbook no longer runs into GitHub's hourly limit and stops halfway. Small imports work exactly as before, and if the download fails the import carries on file by file and says so in its report.
 * Fixed: a contributor could load the app handbook, which publishes its pages at once, although contributors may not publish. That import now requires the same permission as the bundle import and export.

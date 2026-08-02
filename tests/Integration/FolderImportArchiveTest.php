@@ -81,14 +81,38 @@ final class FolderImportArchiveTest extends WP_UnitTestCase {
 			$this->files[ sprintf( 'handbuch/de/page-%02d.md', $i ) ] = sprintf( "# Page %02d\n\nBody of page %02d.\n", $i, $i );
 		}
 
-		$path = (string) tempnam( sys_get_temp_dir(), 'lh-repo-archive' );
-		$zip  = new ZipArchive();
-		$zip->open( $path, ZipArchive::CREATE | ZipArchive::OVERWRITE );
+		$this->rebuild_archive();
+	}
+
+	/**
+	 * Write the current file list into the archive the fake host serves.
+	 *
+	 * @return void
+	 */
+	private function rebuild_archive(): void {
+		if ( '' === $this->archive ) {
+			$this->archive = (string) tempnam( sys_get_temp_dir(), 'lh-repo-archive' );
+		}
+
+		$zip = new ZipArchive();
+		$zip->open( $this->archive, ZipArchive::CREATE | ZipArchive::OVERWRITE );
 		foreach ( $this->files as $relative => $contents ) {
 			$zip->addFromString( 'example-repo-abc123/' . $relative, $contents );
 		}
 		$zip->close();
-		$this->archive = $path;
+	}
+
+	/**
+	 * Create a handbook and sign in as someone who may import.
+	 *
+	 * @param string $name Handbook name.
+	 * @return int Term id.
+	 */
+	private function handbook( string $name ): int {
+		$term = wp_insert_term( $name, Handbooks::TAXONOMY );
+		$this->assertIsArray( $term );
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		return (int) $term['term_id'];
 	}
 
 	/**
@@ -293,6 +317,44 @@ final class FolderImportArchiveTest extends WP_UnitTestCase {
 		$this->assertCount( 25, $result['pages'], 'The import has to finish without the archive.' );
 		$this->assertSame( 25, $this->raw_requests() );
 		$this->assertNotEmpty( $result['notes'] ?? array(), 'The report should say why the import was slow.' );
+	}
+
+	/**
+	 * Images come out of the archive too, not over HTTP.
+	 *
+	 * Images are the larger half of an import's request count, so this is where
+	 * the archive pays off most. The page still has to end up pointing at a
+	 * sideloaded copy, exactly as it does on the per-file path.
+	 *
+	 * @return void
+	 */
+	public function test_images_are_read_from_the_archive(): void {
+		$this->make_repository( 25 );
+
+		// One page references an image that lives beside it in the repository.
+		$png = base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- A one pixel PNG for the test archive, not obfuscation.
+		$this->files['handbuch/de/page-01.md']      = "# Page 01\n\n![Plan](assets/plan.png)\n";
+		$this->files['handbuch/de/assets/plan.png'] = (string) $png;
+		$this->rebuild_archive();
+		$this->serve_repository();
+
+		$result = ( new GitSync() )->import_folder( 'https://github.com/example/repo/tree/main/handbuch/de', $this->handbook( 'Image handbook' ), false );
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 0, $this->raw_requests(), 'The image must not be fetched over HTTP either.' );
+
+		$first   = (int) $result['pages'][0]['id'];
+		$content = (string) get_post_field( 'post_content', $first );
+		$this->assertStringNotContainsString( 'raw.githubusercontent.com', $content, 'The page must not keep pointing at GitHub.' );
+		$this->assertMatchesRegularExpression( '#<img[^>]+src="[^"]*plan[^"]*\.png"#', $content, 'The page should show the sideloaded image.' );
+
+		$attachments = get_children(
+			array(
+				'post_parent' => $first,
+				'post_type'   => 'attachment',
+			)
+		);
+		$this->assertCount( 1, $attachments, 'The image should be in the media library, attached to the page.' );
 	}
 
 	/**
