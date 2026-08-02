@@ -67,6 +67,19 @@ jobs:
           coverage: none
           tools: composer
 
+      # The checks above run on the plugin's minimum PHP, 8.1, because that is
+      # what they are for. PHP-Scoper does not run there: its phar requires 8.2
+      # or newer. So the build tooling gets its own PHP, after the gate and
+      # before the build. Composer still resolves for 8.1, that is pinned in
+      # composer.json under config.platform, so the shipped vendor is the same
+      # either way.
+      - name: PHP for the build tooling
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer
+
       # The build moves the bundled libraries into the plugin's own namespace,
       # so it needs PHP-Scoper. The version is pinned: a build tool that changes
       # under a release is a release that cannot be reproduced. It must be 0.18.19
