@@ -86,7 +86,10 @@ final class FrontendRenderer {
 				'filterError'     => __( 'The list could not be updated. Please reload the page.', 'living-handbook' ),
 				'searchEmpty'     => __( 'No matches.', 'living-handbook' ),
 				'lightboxClose'   => __( 'Close', 'living-handbook' ),
+				'lightboxOpen'    => __( 'Enlarge', 'living-handbook' ),
 				'lightboxDiagram' => __( 'Enlarged diagram', 'living-handbook' ),
+				/* translators: %d: number of matching pages in the page search. */
+				'searchCount'     => __( '%d matching pages', 'living-handbook' ),
 			)
 		);
 

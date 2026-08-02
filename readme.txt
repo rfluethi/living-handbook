@@ -88,6 +88,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Changelog ==
 
 = 0.56.0 =
+* Accessibility: images and diagrams can now be enlarged with the keyboard, not only with the mouse, and the enlarged view keeps the focus until you close it. The search on a handbook page can be walked with the arrow keys, and screen readers are told how many pages a search or filter found instead of having the whole list read out after every keystroke.
 * The handbook styles and scripts now arrive wherever a handbook block is placed, including in a header, a footer or another template part. Before, a block outside a handbook page could end up unstyled and without its interactive parts. Pages without a handbook block load nothing extra.
 
 = 0.55.0 =

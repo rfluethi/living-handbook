@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-02T12:59:44+00:00\n"
+"POT-Creation-Date: 2026-08-02T15:13:50+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 # Block category
 #. Plugin Name of the plugin
-#: living-handbook.php src/Blocks/Blocks.php:94
+#: living-handbook.php src/Blocks/Blocks.php:93
 msgid "Living Handbook"
 msgstr "Living Handbook"
 
@@ -125,16 +125,16 @@ msgstr "Alle Prüfstatus"
 msgid "Never reviewed"
 msgstr "Nie geprüft"
 
-#: src/Blocks/Blocks.php:198 src/Blocks/Blocks.php:199 assets/blocks.js:133
+#: src/Blocks/Blocks.php:173 src/Blocks/Blocks.php:174 assets/blocks.js:133
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
 # Search and filters
-#: src/Blocks/Blocks.php:246 src/Frontend/Filters.php:257
+#: src/Blocks/Blocks.php:225 src/Frontend/Filters.php:257
 msgid "Search this handbook"
 msgstr "Dieses Handbuch durchsuchen"
 
-#: src/Blocks/Blocks.php:247 src/Frontend/Filters.php:258
+#: src/Blocks/Blocks.php:226 src/Frontend/Filters.php:258
 msgid "Search this handbook …"
 msgstr "Dieses Handbuch durchsuchen …"
 
@@ -183,24 +183,24 @@ msgid "No handbooks available."
 msgstr "Keine Handbücher verfügbar."
 
 #: src/Frontend/Entry.php:69 src/Frontend/Entry.php:71
-#: src/Frontend/FrontendRenderer.php:290 src/Frontend/FrontendRenderer.php:327
+#: src/Frontend/FrontendRenderer.php:330 src/Frontend/FrontendRenderer.php:367
 #: src/Handbook/Handbooks.php:74
 msgid "Handbooks"
 msgstr "Handbücher"
 
-#: src/Frontend/Entry.php:133
+#: src/Frontend/Entry.php:139
 msgid "Areas"
 msgstr "Bereiche"
 
-#: src/Frontend/Entry.php:138
+#: src/Frontend/Entry.php:144
 msgid "Recently updated"
 msgstr "Zuletzt aktualisiert"
 
-#: src/Frontend/Entry.php:142
+#: src/Frontend/Entry.php:148
 msgid "This handbook has no pages yet."
 msgstr "Dieses Handbuch hat noch keine Seiten."
 
-#: src/Frontend/Entry.php:147
+#: src/Frontend/Entry.php:153
 msgid "Log in to see more."
 msgstr "Melde dich an, um mehr zu sehen."
 
@@ -251,41 +251,51 @@ msgid "Audience"
 msgstr "Zielgruppe"
 
 # Freshness
-#: src/Frontend/FreshnessStatus.php:68
+#: src/Frontend/FreshnessStatus.php:87
 msgid "Reviewed"
 msgstr "Geprüft"
 
-#: src/Frontend/FreshnessStatus.php:70
+#: src/Frontend/FreshnessStatus.php:89
 msgid "Review due"
 msgstr "Prüfung fällig"
 
-#: src/Frontend/FreshnessStatus.php:72
+#: src/Frontend/FreshnessStatus.php:91
 msgid "Review overdue"
 msgstr "Prüfung überfällig"
 
-#: src/Frontend/FrontendRenderer.php:76
+#: src/Frontend/FrontendRenderer.php:84
 msgid "Thanks for your feedback."
 msgstr "Danke für dein Feedback."
 
-#: src/Frontend/FrontendRenderer.php:77
+#: src/Frontend/FrontendRenderer.php:85
 msgid "Your feedback could not be sent. Please try again."
 msgstr "Dein Feedback konnte nicht gesendet werden. Bitte versuche es erneut."
 
-#: src/Frontend/FrontendRenderer.php:78
+#: src/Frontend/FrontendRenderer.php:86
 msgid "The list could not be updated. Please reload the page."
 msgstr "Die Liste konnte nicht aktualisiert werden. Bitte lade die Seite neu."
 
-#: src/Frontend/FrontendRenderer.php:79
+#: src/Frontend/FrontendRenderer.php:87
 msgid "No matches."
 msgstr "Keine Treffer."
 
-#: src/Frontend/FrontendRenderer.php:80
+#: src/Frontend/FrontendRenderer.php:88
 msgid "Close"
 msgstr "Schliessen"
 
-#: src/Frontend/FrontendRenderer.php:81
+#: src/Frontend/FrontendRenderer.php:89
+msgid "Enlarge"
+msgstr "Vergrössern"
+
+#: src/Frontend/FrontendRenderer.php:90
 msgid "Enlarged diagram"
 msgstr "Vergrössertes Diagramm"
+
+#. translators: %d: number of matching pages in the page search.
+#: src/Frontend/FrontendRenderer.php:92
+#, php-format
+msgid "%d matching pages"
+msgstr "%d passende Seiten"
 
 #: src/Frontend/Navigation.php:91
 msgid "Open the handbook start page"
@@ -353,7 +363,7 @@ msgstr ""
 
 #: src/Git/ArchiveSource.php:96 src/Git/ArchiveSource.php:128
 #: src/Import/HandbookExport.php:287 src/Import/HandbookImport.php:122
-#: src/Import/MarkdownImportPage.php:247
+#: src/Import/MarkdownImportPage.php:249 src/Import/MarkdownImportPage.php:334
 msgid "ZipArchive is not available on the server."
 msgstr "ZipArchive ist auf dem Server nicht verfügbar."
 
@@ -618,7 +628,7 @@ msgid "OK %s"
 msgstr "OK %s"
 
 #: src/Git/GitSync.php:2238 src/Git/GitSync.php:2261
-#: src/Import/MarkdownImportPage.php:941
+#: src/Import/MarkdownImportPage.php:973
 msgid "GitHub"
 msgstr "GitHub"
 
@@ -723,7 +733,7 @@ msgstr ""
 msgid "There are no handbooks yet, so there is nothing to export."
 msgstr "Es gibt noch keine Handbücher, also nichts zu exportieren."
 
-#: src/Import/HandbookExport.php:117 src/Import/MarkdownImportPage.php:878
+#: src/Import/HandbookExport.php:117 src/Import/MarkdownImportPage.php:910
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
@@ -847,8 +857,8 @@ msgstr ""
 msgid "Markdown import"
 msgstr "Markdown-Import"
 
-#: src/Import/MarkdownImportPage.php:99 src/Import/MarkdownImportPage.php:911
-#: src/Import/MarkdownImportPage.php:926
+#: src/Import/MarkdownImportPage.php:99 src/Import/MarkdownImportPage.php:943
+#: src/Import/MarkdownImportPage.php:958
 msgid "Import"
 msgstr "Import"
 
@@ -888,29 +898,29 @@ msgstr ""
 "CommonMark ist nicht installiert. Ausführen: composer require "
 "league/commonmark"
 
-#: src/Import/MarkdownImportPage.php:255 assets/js/markdown-import.js:559
-msgid "No ZIP file received."
-msgstr "Keine ZIP-Datei empfangen."
-
-#: src/Import/MarkdownImportPage.php:260
+#: src/Import/MarkdownImportPage.php:254
 msgid "Could not open the ZIP file."
 msgstr "ZIP-Datei konnte nicht geöffnet werden."
 
-#: src/Import/MarkdownImportPage.php:267
+#: src/Import/MarkdownImportPage.php:261
 msgid "The ZIP has too many entries (maximum is 2000)."
 msgstr "Das ZIP hat zu viele Einträge (maximal 2000)."
 
 #. translators: %d: maximum uncompressed size in whole megabytes.
-#: src/Import/MarkdownImportPage.php:303
+#: src/Import/MarkdownImportPage.php:297
 #, php-format
 msgid "The ZIP is too large: the uncompressed contents exceed %d MB."
 msgstr "Das ZIP ist zu gross: der entpackte Inhalt überschreitet %d MB."
 
-#: src/Import/MarkdownImportPage.php:322
+#: src/Import/MarkdownImportPage.php:342 assets/js/markdown-import.js:559
+msgid "No ZIP file received."
+msgstr "Keine ZIP-Datei empfangen."
+
+#: src/Import/MarkdownImportPage.php:354
 msgid "No .md files found in the ZIP."
 msgstr "Keine .md-Dateien im ZIP gefunden."
 
-#: src/Import/MarkdownImportPage.php:345
+#: src/Import/MarkdownImportPage.php:377
 msgid ""
 "The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its "
 "structure could not be applied. The files were imported with their file "
@@ -920,28 +930,28 @@ msgstr ""
 "deshalb konnte ihre Struktur nicht übernommen werden. Die Dateien wurden mit"
 " ihren Dateinamen als Seitentitel importiert."
 
-#: src/Import/MarkdownImportPage.php:395
+#: src/Import/MarkdownImportPage.php:427
 msgid "You are not allowed to load the app handbook."
 msgstr "Du darfst das App-Handbuch nicht laden."
 
-#: src/Import/MarkdownImportPage.php:415 assets/js/markdown-import.js:572
+#: src/Import/MarkdownImportPage.php:447 assets/js/markdown-import.js:572
 msgid "No GitHub URL given."
 msgstr "Keine GitHub-URL angegeben."
 
-#: src/Import/MarkdownImportPage.php:426
+#: src/Import/MarkdownImportPage.php:458
 msgid "Could not create the page. Check the URL."
 msgstr "Seite konnte nicht erstellt werden. Prüfe die URL."
 
-#: src/Import/MarkdownImportPage.php:480 assets/js/markdown-import.js:283
+#: src/Import/MarkdownImportPage.php:512 assets/js/markdown-import.js:283
 #: assets/js/markdown-import.js:318
 msgid "Imported page"
 msgstr "Importierte Seite"
 
-#: src/Import/MarkdownImportPage.php:875
+#: src/Import/MarkdownImportPage.php:907
 msgid "Target handbook"
 msgstr "Ziel-Handbuch"
 
-#: src/Import/MarkdownImportPage.php:885
+#: src/Import/MarkdownImportPage.php:917
 msgid ""
 "Applied to the imported page(s). A \"Handbuch\" line in the transport block "
 "overrides it."
@@ -949,20 +959,20 @@ msgstr ""
 "Gilt für die importierte(n) Seite(n). Eine «Handbuch»-Zeile im Transport-"
 "Block hat Vorrang."
 
-#: src/Import/MarkdownImportPage.php:887
+#: src/Import/MarkdownImportPage.php:919
 msgid "No handbooks yet. Create one first under Handbook, Handbooks."
 msgstr ""
 "Noch keine Handbücher. Lege zuerst eines unter Handbuch, Handbücher an."
 
-#: src/Import/MarkdownImportPage.php:893
+#: src/Import/MarkdownImportPage.php:925
 msgid "Page title (optional)"
 msgstr "Seitentitel (optional)"
 
-#: src/Import/MarkdownImportPage.php:896
+#: src/Import/MarkdownImportPage.php:928
 msgid "If empty, the first heading of the document is used."
 msgstr "Wenn leer, wird die erste Überschrift des Dokuments verwendet."
 
-#: src/Import/MarkdownImportPage.php:912
+#: src/Import/MarkdownImportPage.php:944
 msgid ""
 "The Markdown library is missing. Run in the plugin folder: composer require "
 "league/commonmark"
@@ -971,44 +981,44 @@ msgstr ""
 "league/commonmark"
 
 # Import screen: source tabs.
-#: src/Import/MarkdownImportPage.php:936
+#: src/Import/MarkdownImportPage.php:968
 msgid "Pick a source. Everything that source needs sits in its own tab."
 msgstr ""
 "Wähle eine Quelle. Alles, was diese Quelle braucht, steht in ihrem Reiter."
 
-#: src/Import/MarkdownImportPage.php:938
+#: src/Import/MarkdownImportPage.php:970
 msgid "Import source"
 msgstr "Importquelle"
 
-#: src/Import/MarkdownImportPage.php:939
+#: src/Import/MarkdownImportPage.php:971
 msgid "Paste text"
 msgstr "Text einfügen"
 
-#: src/Import/MarkdownImportPage.php:940 src/Import/MarkdownImportPage.php:958
+#: src/Import/MarkdownImportPage.php:972 src/Import/MarkdownImportPage.php:990
 msgid "ZIP file"
 msgstr "ZIP-Datei"
 
-#: src/Import/MarkdownImportPage.php:943
+#: src/Import/MarkdownImportPage.php:975
 msgid "Bundle"
 msgstr "Bündel"
 
-#: src/Import/MarkdownImportPage.php:946
+#: src/Import/MarkdownImportPage.php:978
 msgid "App handbook"
 msgstr "App-Handbuch"
 
-#: src/Import/MarkdownImportPage.php:951
+#: src/Import/MarkdownImportPage.php:983
 msgid "Paste Markdown"
 msgstr "Markdown einfügen"
 
-#: src/Import/MarkdownImportPage.php:952
+#: src/Import/MarkdownImportPage.php:984
 msgid "Paste a Markdown draft here"
 msgstr "Hier einen Markdown-Entwurf einfügen"
 
-#: src/Import/MarkdownImportPage.php:954
+#: src/Import/MarkdownImportPage.php:986
 msgid "Import Markdown"
 msgstr "Markdown importieren"
 
-#: src/Import/MarkdownImportPage.php:960
+#: src/Import/MarkdownImportPage.php:992
 msgid ""
 "Flat set of .md files, or a repository export with a mkdocs.yml for a "
 "structured import."
@@ -1016,29 +1026,29 @@ msgstr ""
 "Flacher Satz von .md-Dateien, oder ein Repository-Export mit einer "
 "mkdocs.yml für einen strukturierten Import."
 
-#: src/Import/MarkdownImportPage.php:962
+#: src/Import/MarkdownImportPage.php:994
 msgid "Import ZIP"
 msgstr "ZIP importieren"
 
-#: src/Import/MarkdownImportPage.php:966
+#: src/Import/MarkdownImportPage.php:998
 msgid "GitHub URL"
 msgstr "GitHub-URL"
 
-#: src/Import/MarkdownImportPage.php:968
+#: src/Import/MarkdownImportPage.php:1000
 msgid "Creates locked pages pulled from a public GitHub repository."
 msgstr ""
 "Legt gesperrte Seiten an, die aus einem öffentlichen GitHub-Repository "
 "gezogen werden."
 
-#: src/Import/MarkdownImportPage.php:970
+#: src/Import/MarkdownImportPage.php:1002
 msgid "Import from GitHub"
 msgstr "Aus GitHub importieren"
 
-#: src/Import/MarkdownImportPage.php:978
+#: src/Import/MarkdownImportPage.php:1010
 msgid "Bundle file"
 msgstr "Bündel-Datei"
 
-#: src/Import/MarkdownImportPage.php:980
+#: src/Import/MarkdownImportPage.php:1012
 msgid ""
 "A bundle exported from another site running the plugin. Nothing is ever "
 "deleted, and a page marked as protected is never overwritten."
@@ -1047,15 +1057,15 @@ msgstr ""
 "wird nie etwas gelöscht, und eine als geschützt markierte Seite wird nie "
 "überschrieben."
 
-#: src/Import/MarkdownImportPage.php:983
+#: src/Import/MarkdownImportPage.php:1015
 msgid "Import into"
 msgstr "Importieren nach"
 
-#: src/Import/MarkdownImportPage.php:986
+#: src/Import/MarkdownImportPage.php:1018
 msgid "— the handbook named in the bundle —"
 msgstr "— das im Bündel genannte Handbuch —"
 
-#: src/Import/MarkdownImportPage.php:993
+#: src/Import/MarkdownImportPage.php:1025
 msgid ""
 "By default the bundle goes into its own handbook, which is created here if "
 "it does not exist yet. Pick an existing handbook to put the pages there "
@@ -1066,16 +1076,16 @@ msgstr ""
 "stattdessen dort abzulegen; dessen Zugriffs-Konfiguration bleibt "
 "unverändert."
 
-#: src/Import/MarkdownImportPage.php:997
-#: src/Import/MarkdownImportPage.php:1000
+#: src/Import/MarkdownImportPage.php:1029
+#: src/Import/MarkdownImportPage.php:1032
 msgid "If a page already exists"
 msgstr "Wenn eine Seite schon existiert"
 
-#: src/Import/MarkdownImportPage.php:1013
+#: src/Import/MarkdownImportPage.php:1045
 msgid "Import bundle"
 msgstr "Bündel importieren"
 
-#: src/Import/MarkdownImportPage.php:1019
+#: src/Import/MarkdownImportPage.php:1051
 msgid ""
 "The plugin brings a handbook of its own: the documentation of the app, "
 "written as a Living Handbook. It ships with the plugin, so this loads it "
@@ -1086,7 +1096,7 @@ msgstr ""
 "lädt es also aus der installierten Version, mit seinen Seiten, seiner "
 "Struktur und seinen Bildern."
 
-#: src/Import/MarkdownImportPage.php:1020
+#: src/Import/MarkdownImportPage.php:1052
 msgid ""
 "The pages are published into the handbook you pick. Whether they are visible"
 " on the front end depends on that handbook: set it to \"members\" and only "
@@ -1098,15 +1108,15 @@ msgstr ""
 "«Mitglieder», sehen sie nur Angemeldete. Ein erneutes Laden nach einem "
 "Plugin-Update frischt die Seiten auf; nichts wird gelöscht."
 
-#: src/Import/MarkdownImportPage.php:1023
+#: src/Import/MarkdownImportPage.php:1055
 msgid "Load into"
 msgstr "Laden in"
 
-#: src/Import/MarkdownImportPage.php:1026
+#: src/Import/MarkdownImportPage.php:1058
 msgid "— no handbook (assign later) —"
 msgstr "— kein Handbuch (später zuweisen) —"
 
-#: src/Import/MarkdownImportPage.php:1033
+#: src/Import/MarkdownImportPage.php:1065
 msgid ""
 "Pick the handbook the pages should belong to. Create one first (for example "
 "\"App handbook\") if you want them in their own, and set who may read it "
@@ -1116,7 +1126,7 @@ msgstr ""
 "(zum Beispiel \"App-Handbuch\"), wenn du sie in einem eigenen willst, und "
 "stelle dort ein, wer es lesen darf."
 
-#: src/Import/MarkdownImportPage.php:1037
+#: src/Import/MarkdownImportPage.php:1069
 msgid "Load app handbook"
 msgstr "App-Handbuch laden"
 

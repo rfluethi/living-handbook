@@ -64,6 +64,18 @@
 		main.insertBefore( p, main.firstChild );
 	}
 
+	// Say what the list says, in one sentence. The server already renders the
+	// count ("%d pages found") and the empty message, both translated, so the
+	// status line repeats that text rather than inventing a second wording.
+	function announceCount( entry, main ) {
+		var status = entry.querySelector( '.living-handbook-entry__status' );
+		if ( ! status ) {
+			return;
+		}
+		var said = main.querySelector( '.living-handbook-empty' ) || main.querySelector( '.living-handbook-count' );
+		status.textContent = said ? said.textContent : '';
+	}
+
 	function ajaxFilter( entry ) {
 		if ( ! canAjax() ) {
 			return;
@@ -107,6 +119,7 @@
 			if ( data && typeof data.html === 'string' ) {
 				main.innerHTML = data.html;
 			}
+			announceCount( entry, main );
 			main.removeAttribute( 'aria-busy' );
 			entry.lhController = null;
 			updateUrl( params );
@@ -214,9 +227,17 @@
 		}
 		var controller = null;
 
+		var status = box.querySelector( '[role="status"]' );
+
+		function say( text ) {
+			if ( status ) {
+				status.textContent = text;
+			}
+		}
+
 		function hide() {
 			results.hidden = true;
-			input.setAttribute( 'aria-expanded', 'false' );
+			say( '' );
 		}
 
 		function render( items ) {
@@ -224,22 +245,46 @@
 			if ( ! items.length ) {
 				var empty = document.createElement( 'li' );
 				empty.className = 'living-handbook-page-search__empty';
-				empty.setAttribute( 'role', 'presentation' );
 				empty.textContent = window.livingHandbook.searchEmpty || 'No matches.';
 				results.appendChild( empty );
+				say( empty.textContent );
 			} else {
 				items.forEach( function ( item ) {
 					var li = document.createElement( 'li' );
-					li.setAttribute( 'role', 'option' );
 					var a = document.createElement( 'a' );
 					a.href = item.url;
 					a.textContent = item.title;
 					li.appendChild( a );
 					results.appendChild( li );
 				} );
+				// One short sentence, not the whole list: the list itself is right
+				// there to be walked with the arrow keys.
+				say( ( window.livingHandbook.searchCount || '%d matches' ).replace( '%d', items.length ) );
 			}
 			results.hidden = false;
-			input.setAttribute( 'aria-expanded', 'true' );
+		}
+
+		// Walk the results with the arrow keys, from the input into the list and
+		// back out at the top. The results are links, so Enter needs no handler.
+		function links() {
+			return Array.prototype.slice.call( results.querySelectorAll( 'a' ) );
+		}
+
+		function move( from, step ) {
+			var all = links();
+			if ( ! all.length ) {
+				return;
+			}
+			var index = all.indexOf( from );
+			var next = ( -1 === index ) ? ( step > 0 ? 0 : all.length - 1 ) : index + step;
+			if ( next < 0 ) {
+				input.focus();
+				return;
+			}
+			if ( next >= all.length ) {
+				next = all.length - 1;
+			}
+			all[ next ].focus();
 		}
 
 		function run() {
@@ -283,6 +328,35 @@
 		input.addEventListener( 'keydown', function ( event ) {
 			if ( 'Escape' === event.key ) {
 				input.value = '';
+				hide();
+				return;
+			}
+			if ( 'ArrowDown' === event.key && ! results.hidden ) {
+				event.preventDefault();
+				move( null, 1 );
+			}
+		} );
+
+		results.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key ) {
+				hide();
+				input.focus();
+				return;
+			}
+			if ( 'ArrowDown' === event.key ) {
+				event.preventDefault();
+				move( event.target, 1 );
+			}
+			if ( 'ArrowUp' === event.key ) {
+				event.preventDefault();
+				move( event.target, -1 );
+			}
+		} );
+
+		// Leaving the field and the list altogether closes it, so a stale list
+		// does not sit under the next thing the visitor does.
+		box.addEventListener( 'focusout', function ( event ) {
+			if ( ! box.contains( event.relatedTarget ) ) {
 				hide();
 			}
 		} );
@@ -467,6 +541,16 @@
 		function onKey( e ) {
 			if ( 'Escape' === e.key || 'Esc' === e.key ) {
 				close();
+				return;
+			}
+			// aria-modal says the rest of the page is not there, so Tab must not
+			// walk out of the overlay. The close button is the only thing in it.
+			if ( 'Tab' === e.key && overlay ) {
+				e.preventDefault();
+				var btn = overlay.querySelector( '.living-handbook-lightbox__close' );
+				if ( btn ) {
+					btn.focus();
+				}
 			}
 		}
 
@@ -489,7 +573,14 @@
 
 			overlay.appendChild( displayEl );
 			overlay.appendChild( btn );
-			overlay.addEventListener( 'click', close );
+
+			// Close on the backdrop and on the button, not on the picture itself:
+			// clicking what you just enlarged should not make it disappear.
+			overlay.addEventListener( 'click', function ( event ) {
+				if ( event.target === overlay || btn.contains( event.target ) ) {
+					close();
+				}
+			} );
 
 			document.body.appendChild( overlay );
 			document.addEventListener( 'keydown', onKey );
@@ -526,13 +617,53 @@
 			return /\.svg$/i.test( src );
 		}
 
+		// A click handler on an <img> or a <div> is reachable with a mouse and with
+		// nothing else. Wrapping the thing in a real button brings focus, Enter,
+		// Space and the announcement along, and costs one element.
+		function enlargeLabel() {
+			return ( window.livingHandbook && window.livingHandbook.lightboxOpen )
+				? window.livingHandbook.lightboxOpen
+				: 'Enlarge';
+		}
+
+		function wrapInButton( el, onOpen, label ) {
+			if ( el.parentNode && el.parentNode.classList
+				&& el.parentNode.classList.contains( 'living-handbook-zoom' ) ) {
+				return el.parentNode;
+			}
+			var button = document.createElement( 'button' );
+			button.type = 'button';
+			button.className = 'living-handbook-zoom';
+			button.setAttribute( 'aria-label', label );
+			el.parentNode.insertBefore( button, el );
+			button.appendChild( el );
+			button.addEventListener( 'click', onOpen );
+			return button;
+		}
+
+		function unwrap( el ) {
+			var button = el.parentNode;
+			if ( button && button.classList && button.classList.contains( 'living-handbook-zoom' ) ) {
+				button.parentNode.insertBefore( el, button );
+				button.parentNode.removeChild( button );
+			}
+		}
+
 		function markZoomable( img ) {
 			// An SVG is vector, so always let it enlarge for detail; a raster only
 			// when it is shown smaller than its real size.
 			if ( isSvg( img ) || ( img.naturalWidth && img.clientWidth && img.naturalWidth > img.clientWidth + 4 ) ) {
 				img.classList.add( 'living-handbook-zoomable' );
+				wrapInButton(
+					img,
+					function () {
+						openImage( img );
+					},
+					img.alt ? enlargeLabel() + ': ' + img.alt : enlargeLabel()
+				);
 			} else {
 				img.classList.remove( 'living-handbook-zoomable' );
+				unwrap( img );
 			}
 		}
 
@@ -545,11 +676,6 @@
 						markZoomable( img );
 					} );
 				}
-				img.addEventListener( 'click', function () {
-					if ( img.classList.contains( 'living-handbook-zoomable' ) ) {
-						openImage( img );
-					}
-				} );
 			} );
 
 			// Mermaid diagrams render into a .mermaid container after this runs, so
@@ -558,15 +684,17 @@
 				function refresh() {
 					if ( box.querySelector( 'svg' ) ) {
 						box.classList.add( 'living-handbook-zoomable' );
+						wrapInButton(
+							box,
+							function () {
+								openMermaid( box );
+							},
+							enlargeLabel()
+						);
 					}
 				}
 				refresh();
 				new MutationObserver( refresh ).observe( box, { childList: true, subtree: true } );
-				box.addEventListener( 'click', function () {
-					if ( box.querySelector( 'svg' ) ) {
-						openMermaid( box );
-					}
-				} );
 			} );
 		} );
 	}

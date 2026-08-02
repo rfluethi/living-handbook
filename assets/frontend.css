@@ -1038,6 +1038,28 @@
 	cursor: zoom-in;
 }
 
+/* The zoom trigger is a real button, so it has to look like the picture it
+   wraps and not like a button: no chrome, no box of its own, and the focus
+   outline stays, because that is the point of it being a button. */
+.living-handbook-zoom {
+	display: block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	font: inherit;
+	color: inherit;
+	cursor: zoom-in;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.living-handbook-zoom > img,
+.living-handbook-zoom > .mermaid {
+	display: block;
+	max-width: 100%;
+}
+
 .living-handbook-lightbox {
 	position: fixed;
 	inset: 0;

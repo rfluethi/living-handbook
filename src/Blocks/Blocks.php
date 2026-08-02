@@ -206,12 +206,19 @@ final class Blocks {
 		if ( $term_id <= 0 ) {
 			return '';
 		}
+		// A plain list of links, not an ARIA combobox. The results are pages, and
+		// a link is what a visitor expects of a page: middle click, open in a new
+		// tab, copy the address. A combobox would have to take that away, and the
+		// markup promised the pattern without implementing it. Arrow keys walk the
+		// list, Escape closes it, and a status line says how many matches there
+		// are, which is what the pattern was announcing in the first place.
 		$id   = wp_unique_id( 'living-handbook-search-' );
 		$html = sprintf(
 			'<div class="living-handbook-page-search" data-term-id="%1$s">'
 			. '<label class="living-handbook-visually-hidden" for="%2$s">%3$s</label>'
-			. '<input type="search" id="%2$s" class="living-handbook-page-search__input" autocomplete="off" placeholder="%4$s" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="%2$s-results">'
-			. '<ul id="%2$s-results" class="living-handbook-page-search__results" role="listbox" hidden></ul>'
+			. '<input type="search" id="%2$s" class="living-handbook-page-search__input" autocomplete="off" placeholder="%4$s" aria-describedby="%2$s-status">'
+			. '<p id="%2$s-status" class="living-handbook-visually-hidden" role="status"></p>'
+			. '<ul id="%2$s-results" class="living-handbook-page-search__results" hidden></ul>'
 			. '</div>',
 			esc_attr( (string) $term_id ),
 			esc_attr( $id ),

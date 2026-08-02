@@ -95,7 +95,13 @@ final class Entry {
 		$modifier = 'list' === $display ? ' living-handbook-entry--list' : '';
 		$out      = '<div class="living-handbook-entry' . $modifier . '" data-term-id="' . esc_attr( (string) $term->term_id ) . '">';
 		$out     .= Filters::search_form( $term );
-		$out     .= '<div class="living-handbook-layout"><div class="living-handbook-main" aria-live="polite">';
+		// A status line, not a live list. The main column holds up to two dozen
+		// cards, and announcing all of them after every keystroke is unusable. The
+		// status line sits outside the column, so replacing the list does not
+		// replace the region that announces it, and it carries the one sentence
+		// the list already shows: how many pages were found.
+		$out     .= '<p class="living-handbook-visually-hidden living-handbook-entry__status" role="status"></p>';
+		$out     .= '<div class="living-handbook-layout"><div class="living-handbook-main">';
 		$out     .= self::main_body( $term, $selections, $search, $paged );
 		$out     .= '</div><aside class="living-handbook-aside">' . Filters::facets( $term ) . '</aside></div>';
 		return $out . '</div>';
