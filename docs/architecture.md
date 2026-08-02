@@ -26,7 +26,7 @@ A concise, developer-facing summary of the shipped design. For a gentler, plain-
 ## Principles
 
 - No external WordPress plugin dependencies. A block theme is expected; no other plugin is required.
-- Composer runtime dependencies only as a deliberate exception for the import and sync module: league/commonmark (Markdown, BSD-3-Clause), symfony/yaml (reading `mkdocs.yml`, MIT), and enshrined/svg-sanitize (sanitising imported SVG images, GPL-2.0-or-later), all open source and free. The build ships them in `vendor/`. mermaid.js is bundled in `assets/js/` for the diagram block (MIT).
+- Composer runtime dependencies only as a deliberate exception for the import and sync module: league/commonmark (Markdown, BSD-3-Clause), symfony/yaml (reading `mkdocs.yml`, MIT), and enshrined/svg-sanitize (sanitising imported SVG images, GPL-2.0-or-later), all open source and free. The build ships them in `vendor/`, moved into `LivingHandbook\Vendor\` by PHP-Scoper so they cannot collide with a copy another plugin loads; `Support\Vendored` resolves the names, because a development checkout has them unprefixed. mermaid.js is bundled in `assets/js/` for the diagram block (MIT).
 - Standard WordPress interfaces (REST, hooks) behind the access check.
 - Configuration follows "decisions, not options": visual choices belong in the Site Editor, behaviour options are few and justified, everything else is a hook.
 - English is the language of the repository. The German translation lives in `languages/` and the German app handbook in `handbuch/de/`; the German source of the developer docs stays in the team's vault.

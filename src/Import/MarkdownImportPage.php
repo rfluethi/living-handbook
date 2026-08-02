@@ -13,6 +13,7 @@ use LivingHandbook\Access\AccessController;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Support\Vendored;
 use WP_Error;
 use WP_Post;
 use WP_REST_Request;
@@ -50,6 +51,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * prepared archive cannot exhaust the server's memory.
  */
 final class MarkdownImportPage {
+
+	/**
+	 * The SVG sanitizer, as its library names it.
+	 *
+	 * A string rather than an import: a release build moves the library into its
+	 * own namespace, so the name is resolved at runtime. See Vendored.
+	 */
+	private const SVG_SANITIZER = 'enshrined\\svgSanitize\\Sanitizer';
 
 	public const MENU_SLUG = 'living-handbook-import';
 
@@ -787,16 +796,21 @@ final class MarkdownImportPage {
 	 * @return string Sanitized SVG, or an empty string when it cannot be sanitized.
 	 */
 	private static function sanitize_svg( string $data ): string {
-		if ( ! class_exists( \enshrined\svgSanitize\Sanitizer::class ) ) {
-			$autoload = LIVING_HANDBOOK_DIR . 'vendor/autoload.php';
-			if ( is_readable( $autoload ) ) {
-				require_once $autoload;
-			}
+		if ( ! Vendored::exists( self::SVG_SANITIZER ) ) {
+			Vendored::load();
 		}
-		if ( ! class_exists( \enshrined\svgSanitize\Sanitizer::class ) ) {
+		if ( ! Vendored::exists( self::SVG_SANITIZER ) ) {
 			return '';
 		}
-		$sanitizer = new \enshrined\svgSanitize\Sanitizer();
+
+		$class = Vendored::name( self::SVG_SANITIZER );
+
+		/**
+		 * The library class, under whichever name this installation has it.
+		 *
+		 * @var \enshrined\svgSanitize\Sanitizer $sanitizer
+		 */
+		$sanitizer = new $class();
 		$clean     = $sanitizer->sanitize( $data );
 		return is_string( $clean ) ? $clean : '';
 	}

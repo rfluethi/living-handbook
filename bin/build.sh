@@ -6,7 +6,9 @@
 # the readme and LICENSE, plus the production Composer dependencies (vendor/,
 # without dev packages) that the import and GitHub sync need. composer.json
 # ships alongside vendor/, because Plugin Check flags a vendor directory without
-# it. Development files (tests, tooling, CI config, docs) are left out. Hidden
+# it. Those dependencies are moved into the plugin's own namespace on the way in,
+# so they cannot collide with the same library in another plugin; that step needs
+# PHP-Scoper and is checked afterwards, see below. Development files (tests, tooling, CI config, docs) are left out. Hidden
 # files are stripped: macOS drops .DS_Store into every folder it displays, and
 # Plugin Check rejects hidden files outright. The archive is prefixed with
 # living-handbook/ so it unpacks into the correct plugin folder. Nothing is read
@@ -52,6 +54,55 @@ cp -R vendor "$dest"/
 if [ -f readme.txt ]; then cp readme.txt "$dest"/; fi
 if [ -f README.md ]; then cp README.md "$dest"/; fi
 if [ -f LICENSE ]; then cp LICENSE "$dest"/; fi
+
+# Move the bundled libraries into a namespace of their own, so a second plugin
+# shipping the same library in another version cannot decide which copy this one
+# uses. Only the staged vendor/ is prefixed, never src/ and never the working
+# tree: see scoper.inc.php for why, and src/Support/Vendored.php for how the
+# plugin finds the libraries afterwards. LH_SKIP_SCOPER=1 builds without it, for
+# a quick local test; such a zip must not be released.
+if [ "${LH_SKIP_SCOPER:-0}" = "1" ]; then
+	echo "!! LH_SKIP_SCOPER=1: the bundled libraries keep their global names."
+	echo "!! Fine for a local test, not shippable."
+else
+	scoper=""
+	if command -v php-scoper >/dev/null 2>&1; then
+		scoper="php-scoper"
+	elif [ -f "${root}/tools/php-scoper.phar" ]; then
+		scoper="php ${root}/tools/php-scoper.phar"
+	else
+		echo "php-scoper not found. A release must not ship libraries under their" >&2
+		echo "global names: another plugin with the same library in a different" >&2
+		echo "version would decide which copy the import uses." >&2
+		echo "Install it (https://github.com/humbug/php-scoper), or put the phar in" >&2
+		echo "tools/php-scoper.phar. To build without it anyway, set LH_SKIP_SCOPER=1." >&2
+		exit 1
+	fi
+
+	$scoper add-prefix "${dest}/vendor" --output-dir="${stage}/vendor-scoped" \
+		--config="${root}/scoper.inc.php" --force --quiet
+	rm -rf "${dest}/vendor"
+	mv "${stage}/vendor-scoped" "${dest}/vendor"
+
+	# The classes moved, the rules that say where they live did not. Composer
+	# drops a class from the classmap when it does not match its package's PSR-4
+	# rule, so a stale rule turns a scoped tree into an autoloader that finds
+	# almost nothing, without an error anywhere. Move the rules first.
+	php "${root}/bin/prefix-autoload-rules.php" "$dest" 'LivingHandbook\Vendor'
+
+	# The autoloader has to be rebuilt from the prefixed files: Composer reads the
+	# class names out of the files themselves, so an authoritative classmap comes
+	# out carrying the new names. The lock file is only there for this step and
+	# does not ship.
+	cp composer.lock "$dest"/ 2>/dev/null || true
+	composer dump-autoload --classmap-authoritative --no-dev --no-interaction --quiet --working-dir="$dest"
+	rm -f "${dest}/composer.lock"
+
+	# A prefix that quietly did not take would produce a zip that looks right and
+	# collides exactly as before, so the build proves it took and that the
+	# libraries still work under the new name.
+	php "${root}/bin/verify-vendor-prefix.php" "$dest"
+fi
 
 # Strip every hidden file. Plugin Check rejects them outright: macOS scatters
 # .DS_Store and ._* resource forks, and a network or FUSE mount (Nextcloud)

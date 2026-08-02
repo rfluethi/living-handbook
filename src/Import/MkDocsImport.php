@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Import;
 
+use LivingHandbook\Support\Vendored;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -27,12 +29,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class MkDocsImport {
 
 	/**
+	 * The YAML parser, as its library names it.
+	 *
+	 * A string rather than an import: a release build moves the library into its
+	 * own namespace, so the name is resolved at runtime. See Vendored.
+	 */
+	private const YAML = 'Symfony\\Component\\Yaml\\Yaml';
+
+	/**
 	 * Whether a YAML parser is available.
 	 *
 	 * @return bool
 	 */
 	public static function available(): bool {
-		return class_exists( 'Symfony\\Component\\Yaml\\Yaml' );
+		return Vendored::exists( self::YAML );
 	}
 
 	/**
@@ -45,8 +55,10 @@ final class MkDocsImport {
 	 * @return array<int, mixed>
 	 */
 	public static function build_specs( string $yaml, array $files, array $image_map, MarkdownConverter $converter ): array {
+		$parser = Vendored::name( self::YAML );
+
 		try {
-			$config = \Symfony\Component\Yaml\Yaml::parse( $yaml );
+			$config = $parser::parse( $yaml );
 		} catch ( \Throwable $e ) {
 			return array();
 		}

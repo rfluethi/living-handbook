@@ -13,6 +13,9 @@ living-handbook-*.zip
 .phpunit.result.cache
 .phpcs.cache
 
+# Build tooling kept locally, not in the repository (see bin/build.sh)
+/tools/
+
 # Local WordPress test library
 /wordpress/
 /tmp/

@@ -71,6 +71,8 @@ To build the zip on its own:
 bash bin/build.sh
 ```
 
+The build needs [PHP-Scoper](https://github.com/humbug/php-scoper): it moves the bundled Composer libraries into `LivingHandbook\Vendor\`, so a second plugin shipping the same library in a different version cannot decide which copy this one uses. Put the phar in `tools/php-scoper.phar` (ignored by git) or install it on your PATH; use 0.18.19 or newer, older releases quietly leave the PHP files unprefixed on PHP 8.5. The build refuses to run without it; `LH_SKIP_SCOPER=1 bash bin/build.sh` builds anyway for a quick local test, and such a zip must not be released. After prefixing, the build proves the prefix took and the libraries still work, with `bin/verify-vendor-prefix.php`.
+
 The build packages the current working tree, so you can build, install and test in WordPress before committing. Only the runtime files ship (the main file, `uninstall.php`, `composer.json`, `src`, `assets`, `blocks`, `languages`, `handbuch`, the production `vendor`, `readme.txt`, `README`, `LICENSE`); development files (tests, CI config, tooling, `docs`) are left out. The result is `living-handbook-<version>.zip`.
 
 Do not extract the zip inside the repository; that would commit a second copy of the plugin. Install it in WordPress under Plugins, Add new, Upload plugin.

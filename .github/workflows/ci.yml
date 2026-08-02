@@ -24,9 +24,11 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
       # uninstall.php deletes user content and is the most destructive file in
-      # the plugin, so it belongs in both the lint and the analysis pass.
+      # the plugin, so it belongs in both the lint and the analysis pass. bin/
+      # and scoper.inc.php are build tooling: a syntax error there breaks the
+      # release, which is the worst moment to find out.
       - name: PHP lint
-        run: find living-handbook.php uninstall.php src -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+        run: find living-handbook.php uninstall.php scoper.inc.php src bin -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
       - name: PHPCS
         run: composer lint
       - name: PHPStan

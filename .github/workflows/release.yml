@@ -54,8 +54,18 @@ jobs:
       - name: Unit tests
         run: vendor/bin/phpunit --testsuite unit
 
-      # bin/build.sh installs the production dependencies and produces
-      # living-handbook-<version>.zip with only the files that ship.
+      # The build moves the bundled libraries into the plugin's own namespace,
+      # so it needs PHP-Scoper. The version is pinned: a build tool that changes
+      # under a release is a release that cannot be reproduced.
+      - name: Install PHP-Scoper
+        run: |
+          mkdir -p tools
+          curl -sSfL -o tools/php-scoper.phar \
+            https://github.com/humbug/php-scoper/releases/download/0.18.19/php-scoper.phar
+          php tools/php-scoper.phar --version
+
+      # bin/build.sh installs the production dependencies, prefixes them and
+      # produces living-handbook-<version>.zip with only the files that ship.
       - name: Build the plugin ZIP
         run: bash bin/build.sh
 

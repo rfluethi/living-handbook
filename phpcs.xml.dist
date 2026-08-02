@@ -29,6 +29,8 @@
 	     file-name sniff does not apply to the src/ classes. -->
 	<rule ref="WordPress.Files.FileName">
 		<exclude-pattern>/src/*</exclude-pattern>
+		<!-- PHP-Scoper looks for a file of exactly this name. -->
+		<exclude-pattern>/scoper.inc.php</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.WP.I18n">

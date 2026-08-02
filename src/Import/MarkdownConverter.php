@@ -9,8 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Import;
 
-use League\CommonMark\GithubFlavoredMarkdownConverter;
-use League\CommonMark\Output\RenderedContentInterface;
+use LivingHandbook\Support\Vendored;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -30,26 +29,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class MarkdownConverter {
 
 	/**
+	 * The Markdown library's converter, as the library itself names it.
+	 *
+	 * Written as a string, not as an import: a release build moves the library
+	 * into its own namespace, so the name is resolved at runtime. See Vendored.
+	 */
+	private const CONVERTER = 'League\\CommonMark\\GithubFlavoredMarkdownConverter';
+
+	/**
+	 * The result interface of the library's 2.x API, used to tell it from 1.x.
+	 */
+	private const RENDERED = 'League\\CommonMark\\Output\\RenderedContentInterface';
+
+	/**
 	 * Whether the Markdown library is installed.
 	 *
 	 * @return bool
 	 */
 	public static function available(): bool {
-		$autoload = LIVING_HANDBOOK_DIR . 'vendor/autoload.php';
-		if ( is_readable( $autoload ) ) {
-			require_once $autoload;
-		}
-		if ( ! class_exists( GithubFlavoredMarkdownConverter::class ) ) {
+		Vendored::load();
+
+		$converter = Vendored::name( self::CONVERTER );
+		if ( ! class_exists( $converter ) ) {
 			return false;
 		}
 
-		// The class alone is not enough. Composer dependencies ship unprefixed, so
+		// The class alone is not enough. A release build has its own prefixed copy
+		// and is safe, but a development checkout ships the library unprefixed, so
 		// another plugin may have loaded CommonMark first: in version 1.x the same
 		// class exists but converts through convertToHtml() and returns a plain
 		// string, and calling convert()->getContent() on it is a fatal error.
 		// Check for the 2.x API instead of trusting the name.
-		return method_exists( GithubFlavoredMarkdownConverter::class, 'convert' )
-			&& interface_exists( RenderedContentInterface::class );
+		return method_exists( $converter, 'convert' )
+			&& interface_exists( Vendored::name( self::RENDERED ) );
 	}
 
 	/**
@@ -155,7 +167,14 @@ final class MarkdownConverter {
 	 * @return string
 	 */
 	private function to_html( string $markdown ): string {
-		$converter = new GithubFlavoredMarkdownConverter(
+		$class = Vendored::name( self::CONVERTER );
+
+		/**
+		 * The library class, under whichever name this installation has it.
+		 *
+		 * @var \League\CommonMark\GithubFlavoredMarkdownConverter $converter
+		 */
+		$converter = new $class(
 			array(
 				'html_input'         => 'allow',
 				'allow_unsafe_links' => false,
