@@ -96,7 +96,7 @@ final class MkDocsImport {
 				return $config['nav'];
 			}
 			if ( is_array( $config ) && ! isset( $config['nav'] ) ) {
-				$notes[] = __( 'The mkdocs.yml has no nav section, so the files were imported without its structure, titles and order.', 'living-handbook' );
+				$notes[] = __( 'The mkdocs.yml has no nav section. The files were imported without structure: their file names became the page titles.', 'living-handbook' );
 				return array();
 			}
 		} catch ( \Throwable $e ) {
@@ -108,11 +108,11 @@ final class MkDocsImport {
 			try {
 				$config = $parser::parse( $block );
 				if ( is_array( $config ) && isset( $config['nav'] ) && is_array( $config['nav'] ) ) {
-					$notes[] = sprintf(
-						/* translators: %s: the YAML parser's error message. */
-						__( 'The mkdocs.yml could not be read as a whole (%s), which is usual for a MkDocs project with Python plugins. Its nav section was read on its own, so structure, titles and order are as configured.', 'living-handbook' ),
-						$reason
-					);
+					// Nothing to report: the navigation is in, which is all this
+					// import wanted from the file. That the plugin configuration
+					// around it stayed unread is the importer's business, not the
+					// reader's, and a warning on a successful import only teaches
+					// people to ignore warnings.
 					return $config['nav'];
 				}
 			} catch ( \Throwable $e ) {
@@ -121,9 +121,12 @@ final class MkDocsImport {
 		}
 
 		if ( '' !== $reason ) {
+			// Here the detail earns its place: the structure did not arrive, and
+			// whoever wants it has to fix the file. Plain sentence first, parser
+			// wording last.
 			$notes[] = sprintf(
-				/* translators: %s: the YAML parser's error message. */
-				__( 'The mkdocs.yml could not be read (%s), so the files were imported flat, with their file names as titles and without the navigation structure.', 'living-handbook' ),
+				/* translators: %s: the YAML parser's error message, in English. */
+				__( 'The structure from the mkdocs.yml could not be applied: the file has an error. The files were imported without structure, their file names became the page titles. The reader reports: %s', 'living-handbook' ),
 				$reason
 			);
 		}

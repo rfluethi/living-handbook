@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-02T12:45:49+00:00\n"
+"POT-Creation-Date: 2026-08-02T12:59:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -810,7 +810,7 @@ msgid "No .md files found in the ZIP."
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:345
-msgid "The ZIP carries a mkdocs.yml, but no YAML reader is available on this server, so the files were imported flat."
+msgid "The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its structure could not be applied. The files were imported with their file names as page titles."
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:395
@@ -967,19 +967,13 @@ msgid "Load app handbook"
 msgstr ""
 
 #: src/Import/MkDocsImport.php:99
-msgid "The mkdocs.yml has no nav section, so the files were imported without its structure, titles and order."
+msgid "The mkdocs.yml has no nav section. The files were imported without structure: their file names became the page titles."
 msgstr ""
 
-#. translators: %s: the YAML parser's error message.
-#: src/Import/MkDocsImport.php:113
+#. translators: %s: the YAML parser's error message, in English.
+#: src/Import/MkDocsImport.php:129
 #, php-format
-msgid "The mkdocs.yml could not be read as a whole (%s), which is usual for a MkDocs project with Python plugins. Its nav section was read on its own, so structure, titles and order are as configured."
-msgstr ""
-
-#. translators: %s: the YAML parser's error message.
-#: src/Import/MkDocsImport.php:126
-#, php-format
-msgid "The mkdocs.yml could not be read (%s), so the files were imported flat, with their file names as titles and without the navigation structure."
+msgid "The structure from the mkdocs.yml could not be applied: the file has an error. The files were imported without structure, their file names became the page titles. The reader reports: %s"
 msgstr ""
 
 #: src/Meta/Metadata.php:183

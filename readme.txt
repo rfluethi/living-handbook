@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.54.0
+Stable tag: 0.55.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,13 +87,16 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
-= 0.54.0 =
-* A signed-in visitor who opens a handbook they may not read now gets an explanation and the status 403, instead of a bare 404 that claimed the page did not exist. The new setting Access, No-access page lets you point that at one of your own pages; left on the built-in message it works out of the box. Guests are still sent to the login and returned to the page afterwards.
-* Fixed: importing a MkDocs project as a ZIP ignored its navigation and created a flat list of pages named after the files, as soon as mkdocs.yml configured a Python plugin, which is what the usual Mermaid setup does. The navigation is now read even then, and the import tells you when it could only read part of the file.
-* The libraries the plugin brings along for the import now live under a name of their own. If another plugin brings the same library in a different version, both keep working; before, whichever loaded first won and the import could switch itself off.
-* The German translation is complete again, and a Swiss German translation (de_CH) is now included: same wording, written the Swiss way without the sharp s.
+= 0.55.0 =
 * A large folder import no longer stops with a blank screen or a server timeout. The import now works in passes: it imports as many pages as it can, then picks up where it left off, and the screen shows the pages as they arrive and how many are still to come. You can import a handbook of a few hundred pages in one go.
 * A large folder import now downloads the repository once instead of asking GitHub for every single file. From about twenty pages on that is one request instead of hundreds, so importing a whole handbook no longer runs into GitHub's hourly limit and stops halfway. Small imports work exactly as before, and if the download fails the import carries on file by file and says so in its report.
+* Fixed: importing a MkDocs project as a ZIP ignored its navigation and created a flat list of pages named after the files, as soon as mkdocs.yml configured a Python plugin, which is what the usual Mermaid setup does. The navigation is now read even then, and the import tells you when it could only read part of the file.
+* Fixed: the media endpoint listed images from internal handbooks to anyone, with their title, alt text and file address. An image now inherits the visibility of the handbook page it belongs to. Protecting the image file itself is still a matter for your web server, see the FAQ.
+* The German translation is complete again, and a Swiss German translation (de_CH) is now included: same wording, written the Swiss way without the sharp s.
+* The libraries the plugin brings along for the import now live under a name of their own. If another plugin brings the same library in a different version, both keep working; before, whichever loaded first won and the import could switch itself off.
+
+= 0.54.0 =
+* A signed-in visitor who opens a handbook they may not read now gets an explanation and the status 403, instead of a bare 404 that claimed the page did not exist. The new setting Access, No-access page lets you point that at one of your own pages; left on the built-in message it works out of the box. Guests are still sent to the login and returned to the page afterwards.
 * Fixed: a contributor could load the app handbook, which publishes its pages at once, although contributors may not publish. That import now requires the same permission as the bundle import and export.
 * Fixed: the oEmbed endpoint described pages of an internal handbook to anyone, with title and author name. WordPress closes this itself from 6.8 on; the plugin now also declares the type as not embeddable and gates the endpoint. Requires at least is raised to 6.8 for that reason.
 * Fixed: the area cards of a handbook were cached without the viewer, so pages an editor may see could be served to a guest for up to a day.
@@ -121,6 +124,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.55.0 =
+Recommended if you import from GitHub or MkDocs, and for every site with internal handbooks: large imports no longer die at the server's time limit, a MkDocs navigation is kept, and the media endpoint no longer describes images from handbooks you may not read.
 
 = 0.54.0 =
 Recommended for every site with internal handbooks: closes two read channels and replaces the 404 for a denied page with a real explanation. Requires WordPress 6.8 or newer.

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-02T12:45:49+00:00\n"
+"POT-Creation-Date: 2026-08-02T12:59:44+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -912,11 +912,13 @@ msgstr "Keine .md-Dateien im ZIP gefunden."
 
 #: src/Import/MarkdownImportPage.php:345
 msgid ""
-"The ZIP carries a mkdocs.yml, but no YAML reader is available on this "
-"server, so the files were imported flat."
+"The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its "
+"structure could not be applied. The files were imported with their file "
+"names as page titles."
 msgstr ""
-"Das ZIP enthält eine mkdocs.yml, auf diesem Server steht aber kein YAML-"
-"Leser zur Verfügung, deshalb wurden die Dateien flach importiert."
+"Das ZIP enthält eine mkdocs.yml, dieser Server hat aber keinen YAML-Leser, "
+"deshalb konnte ihre Struktur nicht übernommen werden. Die Dateien wurden mit"
+" ihren Dateinamen als Seitentitel importiert."
 
 #: src/Import/MarkdownImportPage.php:395
 msgid "You are not allowed to load the app handbook."
@@ -1120,35 +1122,23 @@ msgstr "App-Handbuch laden"
 
 #: src/Import/MkDocsImport.php:99
 msgid ""
-"The mkdocs.yml has no nav section, so the files were imported without its "
-"structure, titles and order."
+"The mkdocs.yml has no nav section. The files were imported without "
+"structure: their file names became the page titles."
 msgstr ""
-"Die mkdocs.yml enthält keinen nav-Abschnitt, deshalb wurden die Dateien ohne"
-" deren Struktur, Titel und Reihenfolge importiert."
+"Die mkdocs.yml enthält keinen nav-Abschnitt. Die Dateien wurden ohne "
+"Struktur importiert, ihre Dateinamen wurden zu den Seitentiteln."
 
-#. translators: %s: the YAML parser's error message.
-#: src/Import/MkDocsImport.php:113
+#. translators: %s: the YAML parser's error message, in English.
+#: src/Import/MkDocsImport.php:129
 #, php-format
 msgid ""
-"The mkdocs.yml could not be read as a whole (%s), which is usual for a "
-"MkDocs project with Python plugins. Its nav section was read on its own, so "
-"structure, titles and order are as configured."
+"The structure from the mkdocs.yml could not be applied: the file has an "
+"error. The files were imported without structure, their file names became "
+"the page titles. The reader reports: %s"
 msgstr ""
-"Die mkdocs.yml konnte nicht als Ganzes gelesen werden (%s), was bei einem "
-"MkDocs-Projekt mit Python-Erweiterungen normal ist. Ihr nav-Abschnitt wurde "
-"für sich gelesen, Struktur, Titel und Reihenfolge sind deshalb wie "
-"konfiguriert."
-
-#. translators: %s: the YAML parser's error message.
-#: src/Import/MkDocsImport.php:126
-#, php-format
-msgid ""
-"The mkdocs.yml could not be read (%s), so the files were imported flat, with"
-" their file names as titles and without the navigation structure."
-msgstr ""
-"Die mkdocs.yml konnte nicht gelesen werden (%s), deshalb wurden die Dateien "
-"flach importiert, mit ihren Dateinamen als Titel und ohne die "
-"Navigationsstruktur."
+"Die Struktur aus der mkdocs.yml konnte nicht übernommen werden, die Datei "
+"hat einen Fehler. Die Dateien wurden ohne Struktur importiert, ihre "
+"Dateinamen wurden zu den Seitentiteln. Der Leser meldet: %s"
 
 # Maintenance meta box
 #: src/Meta/Metadata.php:183
@@ -1970,6 +1960,40 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer"
 " Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#~ msgid ""
+#~ "The ZIP carries a mkdocs.yml, but no YAML reader is available on this "
+#~ "server, so the files were imported flat."
+#~ msgstr ""
+#~ "Das ZIP enthält eine mkdocs.yml, auf diesem Server steht aber kein YAML-"
+#~ "Leser zur Verfügung, deshalb wurden die Dateien flach importiert."
+
+#~ msgid ""
+#~ "The mkdocs.yml has no nav section, so the files were imported without its "
+#~ "structure, titles and order."
+#~ msgstr ""
+#~ "Die mkdocs.yml enthält keinen nav-Abschnitt, deshalb wurden die Dateien ohne"
+#~ " deren Struktur, Titel und Reihenfolge importiert."
+
+#, php-format
+#~ msgid ""
+#~ "The mkdocs.yml could not be read as a whole (%s), which is usual for a "
+#~ "MkDocs project with Python plugins. Its nav section was read on its own, so "
+#~ "structure, titles and order are as configured."
+#~ msgstr ""
+#~ "Die mkdocs.yml konnte nicht als Ganzes gelesen werden (%s), was bei einem "
+#~ "MkDocs-Projekt mit Python-Erweiterungen normal ist. Ihr nav-Abschnitt wurde "
+#~ "für sich gelesen, Struktur, Titel und Reihenfolge sind deshalb wie "
+#~ "konfiguriert."
+
+#, php-format
+#~ msgid ""
+#~ "The mkdocs.yml could not be read (%s), so the files were imported flat, with"
+#~ " their file names as titles and without the navigation structure."
+#~ msgstr ""
+#~ "Die mkdocs.yml konnte nicht gelesen werden (%s), deshalb wurden die Dateien "
+#~ "flach importiert, mit ihren Dateinamen als Titel und ohne die "
+#~ "Navigationsstruktur."
 
 #~ msgid "Some links need attention:"
 #~ msgstr "Einige Links brauchen Aufmerksamkeit:"

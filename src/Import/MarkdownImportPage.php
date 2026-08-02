@@ -342,7 +342,7 @@ final class MarkdownImportPage {
 				);
 			}
 		} elseif ( '' !== $mkdocs_yaml ) {
-			$notes[] = __( 'The ZIP carries a mkdocs.yml, but no YAML reader is available on this server, so the files were imported flat.', 'living-handbook' );
+			$notes[] = __( 'The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its structure could not be applied. The files were imported with their file names as page titles.', 'living-handbook' );
 		}
 
 		$converter = new MarkdownConverter();
