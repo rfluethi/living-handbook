@@ -8,6 +8,9 @@
 	"description": "Handbook badges: page type, topic and audience of the current page.",
 	"keywords": [ "handbook", "living handbook", "documentation" ],
 	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-blocks",
+	"viewScript": "living-handbook",
+	"style": "living-handbook",
 	"example": {},
 	"supports": {
 		"html": false,

@@ -8,6 +8,7 @@
 	"textdomain": "living-handbook",
 	"editorScript": "living-handbook-mermaid-block",
 	"viewScript": "living-handbook-mermaid-view",
+	"style": "living-handbook",
 	"example": {
 		"attributes": {
 			"code": "graph TD;\n  A[Start] --> B{Decision};\n  B -->|Yes| C[Result];\n  B -->|No| A;"

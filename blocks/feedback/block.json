@@ -8,6 +8,9 @@
 	"description": "Handbook feedback: the \"Was this helpful?\" prompt for the current page.",
 	"keywords": [ "handbook", "living handbook", "documentation" ],
 	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-blocks",
+	"viewScript": "living-handbook",
+	"style": "living-handbook",
 	"example": {},
 	"supports": {
 		"html": false,

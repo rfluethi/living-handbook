@@ -8,6 +8,9 @@
 	"description": "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type.",
 	"keywords": [ "handbook", "living handbook", "documentation" ],
 	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-blocks",
+	"viewScript": "living-handbook",
+	"style": "living-handbook",
 	"example": {},
 	"supports": {
 		"html": false,

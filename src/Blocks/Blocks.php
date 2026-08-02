@@ -41,7 +41,6 @@ final class Blocks {
 	 */
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_blocks' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_editor' ) );
 		add_filter( 'block_categories_all', array( $this, 'block_category' ) );
 
 		// Invalidate the cached per-handbook navigation markup when a handbook
@@ -98,28 +97,6 @@ final class Blocks {
 	}
 
 	/**
-	 * Enqueue the hand-written editor script that registers the blocks, and load
-	 * its JavaScript translations the WordPress way.
-	 *
-	 * The block scripts use wp.i18n.__ and _n for their labels. Their
-	 * translations are loaded with wp_set_script_translations(), which reads the
-	 * per-script JSON files that the build generates from the .po with
-	 * `wp i18n make-json` into the languages folder.
-	 *
-	 * @return void
-	 */
-	public function enqueue_editor(): void {
-		wp_enqueue_script(
-			'living-handbook-blocks',
-			LIVING_HANDBOOK_URL . 'assets/blocks.js',
-			array( 'wp-blocks', 'wp-element', 'wp-server-side-render', 'wp-i18n', 'wp-block-editor', 'wp-components' ),
-			LIVING_HANDBOOK_VERSION,
-			true
-		);
-		wp_set_script_translations( 'living-handbook-blocks', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
-	}
-
-	/**
 	 * Render the overview block (the handbook chooser).
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
@@ -143,16 +120,14 @@ final class Blocks {
 	/**
 	 * Render the handbook menu block (accessible handbooks as a list).
 	 *
-	 * The block can sit in a header shown on every page, so the stylesheet and
-	 * the frontend script (for the mobile toggle) are enqueued here rather than
-	 * only on handbook views.
+	 * The block can sit in a header shown on every page. Its stylesheet and the
+	 * frontend script come with it through block.json, so they arrive there too,
+	 * without this class knowing where "there" is.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
 	 */
 	public function render_menu( array $attributes = array() ): string {
-		wp_enqueue_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
-		wp_enqueue_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
 		return self::with_block_attributes( Entry::render_menu(), $attributes );
 	}
 
@@ -231,9 +206,6 @@ final class Blocks {
 		if ( $term_id <= 0 ) {
 			return '';
 		}
-		wp_enqueue_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
-		wp_enqueue_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
-
 		$id   = wp_unique_id( 'living-handbook-search-' );
 		$html = sprintf(
 			'<div class="living-handbook-page-search" data-term-id="%1$s">'

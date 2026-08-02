@@ -8,6 +8,9 @@
 	"description": "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings.",
 	"keywords": [ "handbook", "living handbook", "documentation" ],
 	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-blocks",
+	"viewScript": "living-handbook",
+	"style": "living-handbook",
 	"example": {},
 	"attributes": {
 		"showPeople": {

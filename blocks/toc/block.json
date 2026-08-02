@@ -8,6 +8,9 @@
 	"description": "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings.",
 	"keywords": [ "handbook", "living handbook", "documentation" ],
 	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-blocks",
+	"viewScript": "living-handbook",
+	"style": "living-handbook",
 	"example": {},
 	"attributes": {
 		"variant": {

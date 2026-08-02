@@ -8,6 +8,9 @@
 	"description": "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.",
 	"keywords": [ "handbook", "living handbook", "documentation" ],
 	"textdomain": "living-handbook",
+	"editorScript": "living-handbook-blocks",
+	"viewScript": "living-handbook",
+	"style": "living-handbook",
 	"example": {},
 	"attributes": {
 		"display": {

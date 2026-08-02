@@ -8,6 +8,7 @@
 	"description": "Shows a note on pages synced from GitHub; renders nothing on other pages.",
 	"textdomain": "living-handbook",
 	"editorScript": "living-handbook-git-source-note-block",
+	"style": "living-handbook",
 	"example": {},
 	"supports": {
 		"anchor": true

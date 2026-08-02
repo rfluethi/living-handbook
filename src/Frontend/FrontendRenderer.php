@@ -45,6 +45,7 @@ final class FrontendRenderer {
 	 * @return void
 	 */
 	public function register(): void {
+		add_action( 'init', array( $this, 'register_assets' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
 		add_action( 'enqueue_block_assets', array( $this, 'enqueue_editor_preview' ) );
 		add_filter( 'body_class', array( $this, 'body_class' ) );
@@ -53,18 +54,25 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Enqueue the stylesheet and script on every handbook view.
+	 * Register the front-end stylesheet and script, once, with their data.
+	 *
+	 * Registering is not enqueueing: nothing is loaded here. The handles exist so
+	 * that both ways of asking for them lead to the same file. Every block names
+	 * them in its block.json, which is what makes WordPress load them exactly
+	 * where a block is rendered, template parts included, and enqueue() below
+	 * adds them on handbook views, where the templates need them without a block
+	 * being involved.
 	 *
 	 * @return void
 	 */
-	public function enqueue(): void {
-		if ( ! self::is_handbook_view() ) {
-			return;
-		}
+	public function register_assets(): void {
+		wp_register_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
+		wp_register_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
 
-		wp_enqueue_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
-
-		wp_enqueue_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
+		// The data belongs to the handle, not to one place that enqueues it. A
+		// block can pull the script in from a template part on a page this class
+		// never looks at, and the script is useless without its endpoints and
+		// labels.
 		wp_localize_script(
 			'living-handbook',
 			'livingHandbook',
@@ -81,6 +89,35 @@ final class FrontendRenderer {
 				'lightboxDiagram' => __( 'Enlarged diagram', 'living-handbook' ),
 			)
 		);
+
+		// The editor bundle is named by every block's editorScript, so WordPress
+		// loads it for the block types rather than on every editor screen.
+		wp_register_script(
+			'living-handbook-blocks',
+			LIVING_HANDBOOK_URL . 'assets/blocks.js',
+			array( 'wp-blocks', 'wp-element', 'wp-server-side-render', 'wp-i18n', 'wp-block-editor', 'wp-components' ),
+			LIVING_HANDBOOK_VERSION,
+			true
+		);
+		wp_set_script_translations( 'living-handbook-blocks', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
+	}
+
+	/**
+	 * Enqueue the stylesheet and script on every handbook view.
+	 *
+	 * The blocks bring the same two handles along themselves, through their
+	 * block.json, wherever they are rendered. This covers what is not a block:
+	 * the handbook templates, the archive, the term archive.
+	 *
+	 * @return void
+	 */
+	public function enqueue(): void {
+		if ( ! self::is_handbook_view() ) {
+			return;
+		}
+
+		wp_enqueue_style( 'living-handbook' );
+		wp_enqueue_script( 'living-handbook' );
 
 		// A site can style the handbook with the plugin's own Custom CSS field, so
 		// the customisation lives with the plugin and is removed on uninstall,

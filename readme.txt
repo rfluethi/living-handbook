@@ -87,6 +87,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.56.0 =
+* The handbook styles and scripts now arrive wherever a handbook block is placed, including in a header, a footer or another template part. Before, a block outside a handbook page could end up unstyled and without its interactive parts. Pages without a handbook block load nothing extra.
+
 = 0.55.0 =
 * A large folder import no longer stops with a blank screen or a server timeout. The import now works in passes: it imports as many pages as it can, then picks up where it left off, and the screen shows the pages as they arrive and how many are still to come. You can import a handbook of a few hundred pages in one go.
 * A large folder import now downloads the repository once instead of asking GitHub for every single file. From about twenty pages on that is one request instead of hundreds, so importing a whole handbook no longer runs into GitHub's hourly limit and stops halfway. Small imports work exactly as before, and if the download fails the import carries on file by file and says so in its report.
