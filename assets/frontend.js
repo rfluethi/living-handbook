@@ -626,14 +626,17 @@
 				: 'Enlarge';
 		}
 
-		function wrapInButton( el, onOpen, label ) {
+		function wrapInButton( el, onOpen, label, modifier ) {
 			if ( el.parentNode && el.parentNode.classList
 				&& el.parentNode.classList.contains( 'living-handbook-zoom' ) ) {
 				return el.parentNode;
 			}
 			var button = document.createElement( 'button' );
 			button.type = 'button';
-			button.className = 'living-handbook-zoom';
+			// A diagram is drawn to the width it is given, an image brings its own.
+			// The trigger has to behave accordingly, or the diagram collapses to
+			// the button's shrink-to-fit width.
+			button.className = 'living-handbook-zoom' + ( modifier ? ' ' + modifier : '' );
 			button.setAttribute( 'aria-label', label );
 			el.parentNode.insertBefore( button, el );
 			button.appendChild( el );
@@ -689,7 +692,8 @@
 							function () {
 								openMermaid( box );
 							},
-							enlargeLabel()
+							enlargeLabel(),
+							'living-handbook-zoom--diagram'
 						);
 					}
 				}

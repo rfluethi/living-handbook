@@ -1060,6 +1060,14 @@
 	max-width: 100%;
 }
 
+/* A diagram is drawn to the width it is given, so its trigger has to take the
+   full column. An image brings its own width, so its trigger shrinks to fit and
+   the focus ring sits around the picture instead of around the column. */
+.living-handbook-zoom--diagram,
+.living-handbook-zoom--diagram > .mermaid {
+	width: 100%;
+}
+
 .living-handbook-lightbox {
 	position: fixed;
 	inset: 0;

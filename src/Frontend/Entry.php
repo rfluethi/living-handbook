@@ -100,10 +100,10 @@ final class Entry {
 		// status line sits outside the column, so replacing the list does not
 		// replace the region that announces it, and it carries the one sentence
 		// the list already shows: how many pages were found.
-		$out     .= '<p class="living-handbook-visually-hidden living-handbook-entry__status" role="status"></p>';
-		$out     .= '<div class="living-handbook-layout"><div class="living-handbook-main">';
-		$out     .= self::main_body( $term, $selections, $search, $paged );
-		$out     .= '</div><aside class="living-handbook-aside">' . Filters::facets( $term ) . '</aside></div>';
+		$out .= '<p class="living-handbook-visually-hidden living-handbook-entry__status" role="status"></p>';
+		$out .= '<div class="living-handbook-layout"><div class="living-handbook-main">';
+		$out .= self::main_body( $term, $selections, $search, $paged );
+		$out .= '</div><aside class="living-handbook-aside">' . Filters::facets( $term ) . '</aside></div>';
 		return $out . '</div>';
 	}
 
