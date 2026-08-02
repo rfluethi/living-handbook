@@ -15,6 +15,8 @@ jobs:
   build:
     name: Build and attach the plugin ZIP
     runs-on: ubuntu-latest
+    # A prerelease is a deliberate try-out and does not get a built ZIP.
+    if: ${{ !github.event.release.prerelease }}
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +38,21 @@ jobs:
             exit 1
           fi
           echo "Tag and version agree on $version."
+
+      # A release must not be built from code that would fail CI. The checks
+      # are the same ones ci.yml runs; running them here as well means a release
+      # can never be published from a red commit, however the tag was created.
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: PHPCS
+        run: composer lint
+
+      - name: PHPStan
+        run: composer analyze
+
+      - name: Unit tests
+        run: vendor/bin/phpunit --testsuite unit
 
       # bin/build.sh installs the production dependencies and produces
       # living-handbook-<version>.zip with only the files that ship.

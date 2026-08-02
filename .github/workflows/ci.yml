@@ -5,6 +5,11 @@ on:
     branches: [ main ]
   pull_request:
 
+# A new push supersedes a running check of the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   static:
     name: Lint and static analysis
@@ -18,8 +23,10 @@ jobs:
           tools: composer
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
+      # uninstall.php deletes user content and is the most destructive file in
+      # the plugin, so it belongs in both the lint and the analysis pass.
       - name: PHP lint
-        run: find living-handbook.php src -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+        run: find living-handbook.php uninstall.php src -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
       - name: PHPCS
         run: composer lint
       - name: PHPStan
@@ -30,7 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [ '8.1', '8.2', '8.3' ]
+        # 8.1 is the declared minimum, 8.4 is what current hosts ship.
+        php: [ '8.1', '8.2', '8.3', '8.4' ]
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
@@ -42,8 +50,3 @@ jobs:
         run: composer install --no-interaction --prefer-dist
       - name: Unit tests
         run: vendor/bin/phpunit --testsuite unit
-
-  # The integration job (WordPress test suite plus MySQL, running the
-  # activation smoke test) is added together with the first real module, once
-  # there is a post type and capabilities to assert. The test harness
-  # (tests/bootstrap.php, tests/Integration) is already in place.

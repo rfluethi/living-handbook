@@ -6,9 +6,13 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   integration:
-    name: Integration tests (wp-phpunit + MySQL)
+    name: Integration tests (WordPress ${{ matrix.wordpress }})
     runs-on: ubuntu-latest
 
     services:
@@ -24,6 +28,14 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # The declared minimum and the current release. Testing only against
+        # trunk meant "Requires at least" was never actually verified, and an
+        # unrelated core change could turn the build red.
+        wordpress: [ '6.8', 'latest' ]
 
     steps:
       - name: Checkout
@@ -44,7 +56,12 @@ jobs:
       # checkout is needed for ABSPATH. This mirrors the local recipe in
       # CONTRIBUTING.md.
       - name: Download WordPress core
-        run: git clone --depth=1 https://github.com/WordPress/WordPress.git /tmp/wordpress
+        run: |
+          if [ "${{ matrix.wordpress }}" = "latest" ]; then
+            git clone --depth=1 https://github.com/WordPress/WordPress.git /tmp/wordpress
+          else
+            git clone --depth=1 --branch "${{ matrix.wordpress }}" https://github.com/WordPress/WordPress.git /tmp/wordpress
+          fi
 
       - name: Write wp-tests-config
         run: |

@@ -1,10 +1,11 @@
 <?php
 /**
- * Activation smoke test.
+ * Activation test.
  *
- * This is the centrepiece of the test strategy: it proves the plugin loads
- * and activates without error. It grows as modules are added (content type,
- * taxonomies, capabilities, menu generation).
+ * Proves that the plugin loads, that activation runs, and that it leaves behind
+ * what getting-started promises: the seeded vocabulary, the overview page and a
+ * stored database version. It used to assert true after calling activate(),
+ * which only caught a fatal error.
  *
  * @package LivingHandbook
  */
@@ -13,7 +14,10 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Tests\Integration;
 
+use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Plugin;
+use LivingHandbook\Setup\Onboarding;
+use LivingHandbook\Taxonomy\Taxonomies;
 use WP_UnitTestCase;
 
 /**
@@ -32,12 +36,62 @@ final class ActivationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Activation runs without throwing.
+	 * Activation stores the plugin version, so the upgrade routing has something
+	 * to compare against.
 	 *
 	 * @return void
 	 */
-	public function test_activation_does_not_error(): void {
+	public function test_activation_stores_the_database_version(): void {
+		delete_option( Plugin::DB_VERSION_OPTION );
+
 		Plugin::activate();
-		$this->assertTrue( true );
+
+		$this->assertSame( LIVING_HANDBOOK_VERSION, get_option( Plugin::DB_VERSION_OPTION ) );
+	}
+
+	/**
+	 * Activation seeds the vocabulary, so a fresh site can classify pages right
+	 * away instead of starting with empty taxonomies.
+	 *
+	 * Topics are deliberately not seeded: they are the one vocabulary that is
+	 * specific to each team's handbook, so a generic default would be in the way.
+	 *
+	 * @return void
+	 */
+	public function test_activation_seeds_the_vocabulary(): void {
+		Plugin::activate();
+
+		foreach ( array( Taxonomies::PAGE_TYPE, Taxonomies::ROLE, Taxonomies::AUDIENCE, Handbooks::TAXONOMY ) as $taxonomy ) {
+			$terms = get_terms(
+				array(
+					'taxonomy'   => $taxonomy,
+					'hide_empty' => false,
+					'fields'     => 'ids',
+				)
+			);
+			$this->assertIsArray( $terms );
+			$this->assertNotEmpty( $terms, $taxonomy . ' should be seeded on activation.' );
+		}
+	}
+
+	/**
+	 * Activation creates the overview page and remembers it, so the setup notice
+	 * can link to it and the uninstall can clean it up.
+	 *
+	 * @return void
+	 */
+	public function test_activation_creates_the_overview_page(): void {
+		delete_option( Onboarding::OPTION_OVERVIEW_PAGE );
+
+		Plugin::activate();
+
+		$page_id = (int) get_option( Onboarding::OPTION_OVERVIEW_PAGE, 0 );
+		$this->assertGreaterThan( 0, $page_id, 'Activation should create the overview page.' );
+		$this->assertSame( 'page', get_post_type( $page_id ) );
+		$this->assertStringContainsString(
+			'living-handbook/overview',
+			(string) get_post_field( 'post_content', $page_id ),
+			'The overview page should hold the overview block.'
+		);
 	}
 }

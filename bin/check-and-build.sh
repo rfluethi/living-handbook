@@ -53,12 +53,26 @@ if command -v wp >/dev/null 2>&1; then
 	wp i18n make-json languages/ --no-purge
 	wp i18n make-php languages/
 else
-	echo "wp-cli not found; skipping translation generation. The committed files are used as is."
-	echo "Install wp-cli (and gettext) so the .pot, .po, JS JSON and .l10n.php are generated from source automatically."
+	echo "wp-cli not found. A release must not ship translation files that were" >&2
+	echo "not regenerated from source: the .pot would miss new strings and the" >&2
+	echo "German .po would silently fall behind. Install wp-cli (and gettext)," >&2
+	echo "or run bin/build.sh directly if you knowingly want a zip without it." >&2
+	exit 1
 fi
 
 echo "==> Build"
 bash bin/build.sh
+
+version="$(grep -oE "Version:[[:space:]]*[0-9]+\.[0-9]+\.[0-9]+" living-handbook.php | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")"
+zip="living-handbook-${version}.zip"
+
+echo "==> Plugin Check (wordpress.org guidelines)"
+if wp plugin list >/dev/null 2>&1 && wp plugin check --help >/dev/null 2>&1; then
+	wp plugin check "$zip" || echo "Plugin Check reported findings; see above." >&2
+else
+	echo "wp plugin check is not available (needs a WordPress install and the"
+	echo "plugin-check plugin). Skipped: run it before submitting to wordpress.org."
+fi
 
 echo ""
 echo "All checks passed. The zip is ready to install in WordPress."

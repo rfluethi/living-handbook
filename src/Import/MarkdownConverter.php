@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Import;
 
 use League\CommonMark\GithubFlavoredMarkdownConverter;
+use League\CommonMark\Output\RenderedContentInterface;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -38,7 +39,17 @@ final class MarkdownConverter {
 		if ( is_readable( $autoload ) ) {
 			require_once $autoload;
 		}
-		return class_exists( GithubFlavoredMarkdownConverter::class );
+		if ( ! class_exists( GithubFlavoredMarkdownConverter::class ) ) {
+			return false;
+		}
+
+		// The class alone is not enough. Composer dependencies ship unprefixed, so
+		// another plugin may have loaded CommonMark first: in version 1.x the same
+		// class exists but converts through convertToHtml() and returns a plain
+		// string, and calling convert()->getContent() on it is a fatal error.
+		// Check for the 2.x API instead of trusting the name.
+		return method_exists( GithubFlavoredMarkdownConverter::class, 'convert' )
+			&& interface_exists( RenderedContentInterface::class );
 	}
 
 	/**
