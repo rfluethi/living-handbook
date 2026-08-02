@@ -34,8 +34,28 @@ final class FreshnessStatus {
 	 * @return string One of the class constants.
 	 */
 	public static function for_post( int $post_id ): string {
-		$reviewed = (string) get_post_meta( $post_id, Metadata::REVIEWED, true );
-		$interval = (int) get_post_meta( $post_id, Metadata::INTERVAL, true );
+		return self::status(
+			(string) get_post_meta( $post_id, Metadata::REVIEWED, true ),
+			(int) get_post_meta( $post_id, Metadata::INTERVAL, true ),
+			time()
+		);
+	}
+
+	/**
+	 * The rule itself, without WordPress and without the clock.
+	 *
+	 * Freshness tracking is what this plugin is for, so the rule that decides
+	 * whether a page counts as reviewed, due or overdue is worth having in one
+	 * place that can be asked directly. Taking "now" as an argument is what makes
+	 * the boundaries testable: a page is due the moment the interval has passed,
+	 * not a day later.
+	 *
+	 * @param string $reviewed Date of the last review, as stored (Y-m-d).
+	 * @param int    $interval Review interval in days.
+	 * @param int    $now      The moment to judge against, as a Unix timestamp.
+	 * @return string One of the class constants.
+	 */
+	public static function status( string $reviewed, int $interval, int $now ): string {
 		if ( '' === $reviewed || $interval <= 0 ) {
 			return self::NONE;
 		}
@@ -46,7 +66,6 @@ final class FreshnessStatus {
 			return self::NONE;
 		}
 
-		$now = time();
 		if ( false !== $escalate && $escalate < $now ) {
 			return self::OVERDUE;
 		}

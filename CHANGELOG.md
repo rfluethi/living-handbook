@@ -3,6 +3,7 @@
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
 = 0.56.0 =
+* Internal: the freshness rule and the page tree are covered by tests, fifteen of them. FreshnessStatus gains status(), the rule without WordPress and without the clock, so the boundaries can be pinned: on the due date a page still counts as reviewed, a second later it is due, and at twice the interval it escalates. A missing or unreadable date says nothing rather than "fine". PageTree is pinned on grouping by parent, ordering by menu order then title, publish only, one handbook at a time, and on the thing that matters most: it is read through the ordinary query, so a guest gets nothing out of a members handbook.
 * Internal: MarkdownImportPage is covered by tests, twelve of them. The ZIP reading is extracted into read_zip() so its bounds can be tested without a real upload (entry count, per-file and total size, hidden and __MACOSX entries, a file that is not an archive), and the page-writing endpoint is pinned on the decisions that cost content: a re-import matches by source path and updates instead of duplicating, a different path is a different page, a pasted draft never overwrites anything, a slug match stays inside its handbook, a re-import keeps the publication status, the written content is sanitized on this path too, and a contributor cannot take over a page another author published.
 
 = 0.55.0 =
