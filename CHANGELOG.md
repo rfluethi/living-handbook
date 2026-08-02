@@ -2,6 +2,9 @@
 
 Full version history of Living Handbook. The plugin readme keeps only the most recent entries.
 
+= 0.56.0 =
+* Internal: MarkdownImportPage is covered by tests, twelve of them. The ZIP reading is extracted into read_zip() so its bounds can be tested without a real upload (entry count, per-file and total size, hidden and __MACOSX entries, a file that is not an archive), and the page-writing endpoint is pinned on the decisions that cost content: a re-import matches by source path and updates instead of duplicating, a different path is a different page, a pasted draft never overwrites anything, a slug match stays inside its handbook, a re-import keeps the publication status, the written content is sanitized on this path too, and a contributor cannot take over a page another author published.
+
 = 0.55.0 =
 * A folder import no longer has to finish inside one request. After IMPORT_BUDGET seconds (20, capped at 60 percent of max_execution_time, filter living_handbook_import_time_budget) it stops between two pages, saves the rest of its work list in a transient and answers with a job id; the import screen asks again with that id until the queue is empty. Links are resolved once at the end, over every page of the run. A paused import keeps its archive download and reopens the same file, so the repository is fetched once for the whole import, not once per pass. A job belongs to the user who started it, and an archive nobody came back for is collected on the next scheduled sync.
 * A folder import of 20 pages or more (ARCHIVE_THRESHOLD) reads the files from one repository archive download instead of one request per Markdown file and per image. The file list still comes from the tree API, so a small import keeps the per-file path and does not fetch the whole repository for a handful of pages. A failed archive download is not fatal: the import falls back to single requests and notes why it is slow.

@@ -233,30 +233,24 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * REST callback: unpack a ZIP. With a mkdocs.yml it returns the nav-ordered
-	 * page specs; otherwise it returns each Markdown file as a flat page.
+	 * Read the importable entries out of a ZIP, within bounds.
 	 *
-	 * @param WP_REST_Request $request Request.
-	 * @return array<string, mixed>|WP_Error
+	 * Public and static so the bounds can be tested on their own. The callback
+	 * around it starts with is_uploaded_file(), which by design only says yes to
+	 * a real HTTP upload, so the reading would otherwise be unreachable from a
+	 * test, and the bounds are the part worth pinning: they are what stands
+	 * between a prepared archive and the server's memory.
+	 *
+	 * @param string $path Path of the ZIP on disk.
+	 * @return array{markdown: array<string, string>, images: array<string, string>, mkdocs: string}|WP_Error
 	 */
-	public function import_zip_callback( WP_REST_Request $request ) {
-		if ( ! MarkdownConverter::available() ) {
-			return self::no_commonmark();
-		}
+	public static function read_zip( string $path ) {
 		if ( ! class_exists( 'ZipArchive' ) ) {
 			return self::import_error( __( 'ZipArchive is not available on the server.', 'living-handbook' ), 501 );
 		}
 
-		$params = $request->get_file_params();
-		$tmp    = ( isset( $params['zip']['tmp_name'] ) && is_string( $params['zip']['tmp_name'] ) ) ? $params['zip']['tmp_name'] : '';
-		// is_uploaded_file(): the same guard the bundle import uses, so a path
-		// that did not come from a real upload cannot be read here.
-		if ( '' === $tmp || ! is_uploaded_file( $tmp ) ) {
-			return self::import_error( __( 'No ZIP file received.', 'living-handbook' ) );
-		}
-
 		$zip = new ZipArchive();
-		if ( true !== $zip->open( $tmp ) ) {
+		if ( true !== $zip->open( $path ) ) {
 			return self::import_error( __( 'Could not open the ZIP file.', 'living-handbook' ) );
 		}
 
@@ -317,6 +311,44 @@ final class MarkdownImportPage {
 			}
 		}
 		$zip->close();
+
+		return array(
+			'markdown' => $markdown_files,
+			'images'   => $image_files,
+			'mkdocs'   => $mkdocs_yaml,
+		);
+	}
+
+	/**
+	 * REST callback: unpack a ZIP. With a mkdocs.yml it returns the nav-ordered
+	 * page specs; otherwise it returns each Markdown file as a flat page.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public function import_zip_callback( WP_REST_Request $request ) {
+		if ( ! MarkdownConverter::available() ) {
+			return self::no_commonmark();
+		}
+		if ( ! class_exists( 'ZipArchive' ) ) {
+			return self::import_error( __( 'ZipArchive is not available on the server.', 'living-handbook' ), 501 );
+		}
+
+		$params = $request->get_file_params();
+		$tmp    = ( isset( $params['zip']['tmp_name'] ) && is_string( $params['zip']['tmp_name'] ) ) ? $params['zip']['tmp_name'] : '';
+		// is_uploaded_file(): the same guard the bundle import uses, so a path
+		// that did not come from a real upload cannot be read here.
+		if ( '' === $tmp || ! is_uploaded_file( $tmp ) ) {
+			return self::import_error( __( 'No ZIP file received.', 'living-handbook' ) );
+		}
+
+		$read = self::read_zip( $tmp );
+		if ( is_wp_error( $read ) ) {
+			return $read;
+		}
+		$markdown_files = $read['markdown'];
+		$image_files    = $read['images'];
+		$mkdocs_yaml    = $read['mkdocs'];
 
 		if ( empty( $markdown_files ) ) {
 			return self::import_error( __( 'No .md files found in the ZIP.', 'living-handbook' ) );
