@@ -90,6 +90,33 @@ final class GitSync {
 	 */
 	private const MAX_FOLDER_FILES = 200;
 
+	/**
+	 * From how many files on a folder import switches to the repository archive.
+	 *
+	 * Below this, fetching each file is the cheaper way: the archive is the whole
+	 * repository, so a handful of pages would mean downloading everything else
+	 * too. Above it, the request count is what hurts, and one download beats a
+	 * hundred (see ArchiveSource).
+	 */
+	private const ARCHIVE_THRESHOLD = 20;
+
+	/**
+	 * The repository archive currently open for an import, if any.
+	 *
+	 * Set for the duration of one folder import. While it is set, sync_page() and
+	 * the image map read from it instead of fetching each file over HTTP.
+	 *
+	 * @var ArchiveSource|null
+	 */
+	private static ?ArchiveSource $archive = null;
+
+	/**
+	 * Owner, repo and branch the open archive belongs to.
+	 *
+	 * @var array<string, string>
+	 */
+	private static array $archive_repo = array();
+
 	private const CRON_HOOK = 'living_handbook_git_sync';
 
 	public const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
@@ -417,64 +444,78 @@ final class GitSync {
 		$base = rtrim( $parsed['path'], '/' );
 		$plan = self::plan_folder_import( $files, $base );
 
-		// Folders first, shallow before deep, so a parent page always exists
-		// before the pages that hang under it.
-		$pages     = array();
-		$ids       = array();
-		$folder_id = array( $base => 0 );
-
-		// One rising counter for the whole import. It is only the fallback order:
-		// a page that carries a transport "Reihenfolge" keeps that, see place().
-		$auto = 0;
-
-		foreach ( $plan['folders'] as $folder ) {
-			if ( '' !== $folder['index'] ) {
-				// The index file's own name (index/README) is a poor slug, so the
-				// folder name is used instead.
-				$post_id = $this->create_github_page( self::raw_url( $parsed, $folder['index'] ), $handbook_id, '', $publish, basename( $folder['path'] ) );
-			} else {
-				$post_id = $this->create_folder_page( $parsed, $folder['path'], $handbook_id, $publish );
-			}
-			if ( 0 === $post_id ) {
-				continue;
-			}
-			$folder_id[ $folder['path'] ] = $post_id;
-			$auto                        += 10;
-			$this->place( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ), $auto );
-			// The repository path lets internal links resolve exactly by path,
-			// regardless of the page's slug (a README's page takes the folder's).
-			if ( '' !== $folder['index'] ) {
-				update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $folder['index'] );
-			}
-			$ids[]   = $post_id;
-			$pages[] = self::page_result( $post_id );
+		// From a certain size on, one archive download beats a request per file:
+		// see ARCHIVE_THRESHOLD. Below it the archive would mean downloading the
+		// whole repository for a handful of pages. If the download fails, the
+		// import carries on file by file, so this only ever makes it faster.
+		$archive_note = $this->open_archive_if_worthwhile( $parsed, count( $plan['files'] ) + count( $plan['folders'] ) );
+		if ( '' !== $archive_note ) {
+			$notes[] = $archive_note;
 		}
 
-		foreach ( $plan['files'] as $file ) {
-			$post_id = $this->create_github_page( self::raw_url( $parsed, $file['path'] ), $handbook_id, '', $publish );
-			if ( 0 === $post_id ) {
-				continue;
-			}
-			$auto += 10;
-			$this->place( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $auto );
-			update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $file['path'] );
-			$ids[]   = $post_id;
-			$pages[] = self::page_result( $post_id );
-		}
+		try {
+			// Folders first, shallow before deep, so a parent page always exists
+			// before the pages that hang under it.
+			$pages     = array();
+			$ids       = array();
+			$folder_id = array( $base => 0 );
 
-		// Resolve internal links once every page of the import exists. Parents are
-		// set here from the folder structure, which is more reliable than the
-		// transport block for a repository that carries none. A link with no page
-		// is turned into text, so nothing is left to 404; the leftovers are
-		// reported so a typo or a missing page is a line here, not a click away.
-		$report = Postprocessor::finalize_report( $ids );
-		foreach ( $report['unresolved'] as $link ) {
-			$notes[] = sprintf(
-				/* translators: 1: page title the link is on, 2: link target file name. */
-				__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
-				$link['source'],
-				$link['target']
-			);
+			// One rising counter for the whole import. It is only the fallback order:
+			// a page that carries a transport "Reihenfolge" keeps that, see place().
+			$auto = 0;
+
+			foreach ( $plan['folders'] as $folder ) {
+				if ( '' !== $folder['index'] ) {
+					// The index file's own name (index/README) is a poor slug, so the
+					// folder name is used instead.
+					$post_id = $this->create_github_page( self::raw_url( $parsed, $folder['index'] ), $handbook_id, '', $publish, basename( $folder['path'] ) );
+				} else {
+					$post_id = $this->create_folder_page( $parsed, $folder['path'], $handbook_id, $publish );
+				}
+				if ( 0 === $post_id ) {
+					continue;
+				}
+				$folder_id[ $folder['path'] ] = $post_id;
+				$auto                        += 10;
+				$this->place( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ), $auto );
+				// The repository path lets internal links resolve exactly by path,
+				// regardless of the page's slug (a README's page takes the folder's).
+				if ( '' !== $folder['index'] ) {
+					update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $folder['index'] );
+				}
+				$ids[]   = $post_id;
+				$pages[] = self::page_result( $post_id );
+			}
+
+			foreach ( $plan['files'] as $file ) {
+				$post_id = $this->create_github_page( self::raw_url( $parsed, $file['path'] ), $handbook_id, '', $publish );
+				if ( 0 === $post_id ) {
+					continue;
+				}
+				$auto += 10;
+				$this->place( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $auto );
+				update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $file['path'] );
+				$ids[]   = $post_id;
+				$pages[] = self::page_result( $post_id );
+			}
+
+			// Resolve internal links once every page of the import exists. Parents are
+			// set here from the folder structure, which is more reliable than the
+			// transport block for a repository that carries none. A link with no page
+			// is turned into text, so nothing is left to 404; the leftovers are
+			// reported so a typo or a missing page is a line here, not a click away.
+			$report = Postprocessor::finalize_report( $ids );
+			foreach ( $report['unresolved'] as $link ) {
+				$notes[] = sprintf(
+					/* translators: 1: page title the link is on, 2: link target file name. */
+					__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
+					$link['source'],
+					$link['target']
+				);
+			}
+		} finally {
+			// A failed import still has to give the downloaded archive back.
+			$this->close_archive();
 		}
 
 		$result = array( 'pages' => $pages );
@@ -482,6 +523,53 @@ final class GitSync {
 			$result['notes'] = $notes;
 		}
 		return $result;
+	}
+
+	/**
+	 * Open the repository archive when the import is large enough to profit.
+	 *
+	 * Failure is not fatal: the import falls back to fetching each file, which is
+	 * what it did before. The note explains that, so a slow run is not a mystery.
+	 *
+	 * @param array<string, string> $parsed Owner, repo, branch and path.
+	 * @param int                   $count  Number of pages the import will create.
+	 * @return string A note for the import report, or an empty string.
+	 */
+	private function open_archive_if_worthwhile( array $parsed, int $count ): string {
+		if ( $count < self::ARCHIVE_THRESHOLD ) {
+			return '';
+		}
+
+		$archive = new ArchiveSource();
+		$opened  = $archive->open( $parsed['owner'], $parsed['repo'], $parsed['branch'] );
+		if ( is_wp_error( $opened ) ) {
+			return sprintf(
+				/* translators: %s: reason the repository archive could not be downloaded. */
+				__( 'The repository archive could not be downloaded (%s), so every file is fetched on its own. That is slower and may hit the GitHub rate limit.', 'living-handbook' ),
+				$opened->get_error_message()
+			);
+		}
+
+		self::$archive      = $archive;
+		self::$archive_repo = array(
+			'owner'  => $parsed['owner'],
+			'repo'   => $parsed['repo'],
+			'branch' => $parsed['branch'],
+		);
+		return '';
+	}
+
+	/**
+	 * Close the repository archive and delete the downloaded file.
+	 *
+	 * @return void
+	 */
+	private function close_archive(): void {
+		if ( self::$archive instanceof ArchiveSource ) {
+			self::$archive->close();
+		}
+		self::$archive      = null;
+		self::$archive_repo = array();
 	}
 
 	/**
@@ -768,6 +856,48 @@ final class GitSync {
 	private static function dirname_of( string $path ): string {
 		$cut = strrpos( $path, '/' );
 		return false === $cut ? '' : substr( $path, 0, $cut );
+	}
+
+	/**
+	 * Read a repository file from the open archive, if it holds it.
+	 *
+	 * Takes the raw URL the import would otherwise fetch and answers from the
+	 * archive when it belongs to the same repository, branch and path. Returns
+	 * null whenever anything does not match, so the caller falls back to the
+	 * HTTP request and the import works with or without an archive.
+	 *
+	 * @param string $raw_url A raw.githubusercontent.com URL.
+	 * @return string|null File contents, or null when the archive cannot serve it.
+	 */
+	private static function archive_contents( string $raw_url ): ?string {
+		if ( ! self::$archive instanceof ArchiveSource || array() === self::$archive_repo ) {
+			return null;
+		}
+
+		$path = wp_parse_url( $raw_url, PHP_URL_PATH );
+		if ( ! is_string( $path ) || '' === $path ) {
+			return null;
+		}
+		$host = wp_parse_url( $raw_url, PHP_URL_HOST );
+		if ( 'raw.githubusercontent.com' !== strtolower( (string) $host ) ) {
+			return null;
+		}
+
+		$segments = array_map( 'rawurldecode', explode( '/', ltrim( $path, '/' ) ) );
+		if ( count( $segments ) < 4 ) {
+			return null;
+		}
+		$owner  = array_shift( $segments );
+		$repo   = array_shift( $segments );
+		$branch = array_shift( $segments );
+
+		if ( ( self::$archive_repo['owner'] ?? '' ) !== $owner
+			|| ( self::$archive_repo['repo'] ?? '' ) !== $repo
+			|| ( self::$archive_repo['branch'] ?? '' ) !== $branch ) {
+			return null;
+		}
+
+		return self::$archive->contents( implode( '/', $segments ) );
 	}
 
 	/**
@@ -1533,26 +1663,35 @@ final class GitSync {
 			$this->set_sync_error( $post_id, __( 'Error: source host not allowed.', 'living-handbook' ) );
 			return;
 		}
-		$response = wp_safe_remote_get(
-			$url,
-			array(
-				'timeout'             => 15,
-				'redirection'         => 0,
-				'limit_response_size' => 5 * MB_IN_BYTES,
-			)
-		);
-		if ( is_wp_error( $response ) ) {
-			/* translators: %s: error message from the HTTP request. */
-			$this->set_sync_error( $post_id, sprintf( __( 'Error: %s', 'living-handbook' ), $response->get_error_message() ) );
-			return;
+
+		// During a folder import the whole repository is already downloaded, so
+		// the file is read from the archive instead of fetched again. The host
+		// check above still applies: the archive only answers for the repository
+		// the import is running on.
+		$markdown = self::archive_contents( $url );
+
+		if ( null === $markdown ) {
+			$response = wp_safe_remote_get(
+				$url,
+				array(
+					'timeout'             => 15,
+					'redirection'         => 0,
+					'limit_response_size' => 5 * MB_IN_BYTES,
+				)
+			);
+			if ( is_wp_error( $response ) ) {
+				/* translators: %s: error message from the HTTP request. */
+				$this->set_sync_error( $post_id, sprintf( __( 'Error: %s', 'living-handbook' ), $response->get_error_message() ) );
+				return;
+			}
+			$code = (int) wp_remote_retrieve_response_code( $response );
+			if ( 200 !== $code ) {
+				/* translators: %d: HTTP status code. */
+				$this->set_sync_error( $post_id, sprintf( __( 'Error: HTTP %d', 'living-handbook' ), $code ) );
+				return;
+			}
+			$markdown = (string) wp_remote_retrieve_body( $response );
 		}
-		$code = (int) wp_remote_retrieve_response_code( $response );
-		if ( 200 !== $code ) {
-			/* translators: %d: HTTP status code. */
-			$this->set_sync_error( $post_id, sprintf( __( 'Error: HTTP %d', 'living-handbook' ), $code ) );
-			return;
-		}
-		$markdown = (string) wp_remote_retrieve_body( $response );
 
 		// Bring the images the page references along: fetch each one from the
 		// repository and sideload it, so a relative link like ../assets/x.svg
@@ -1637,18 +1776,26 @@ final class GitSync {
 			if ( '' === $image_url || ! self::is_allowed_source( $image_url ) ) {
 				continue;
 			}
-			$response = wp_safe_remote_get(
-				$image_url,
-				array(
-					'timeout'             => 15,
-					'redirection'         => 0,
-					'limit_response_size' => 5 * MB_IN_BYTES,
-				)
-			);
-			if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
-				continue;
+			// From the archive during a folder import, over HTTP otherwise. Images
+			// are the larger half of the request count: a page with ten images is
+			// eleven requests, and the archive turns all of them into none.
+			$data = self::archive_contents( $image_url );
+
+			if ( null === $data ) {
+				$response = wp_safe_remote_get(
+					$image_url,
+					array(
+						'timeout'             => 15,
+						'redirection'         => 0,
+						'limit_response_size' => 5 * MB_IN_BYTES,
+					)
+				);
+				if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+					continue;
+				}
+				$data = (string) wp_remote_retrieve_body( $response );
 			}
-			$data = (string) wp_remote_retrieve_body( $response );
+
 			if ( '' === $data ) {
 				continue;
 			}

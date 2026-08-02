@@ -4,6 +4,7 @@ Full version history of Living Handbook. The plugin readme keeps only the most r
 
 = 0.54.0 =
 * A signed-in visitor who opens a handbook they may not read now gets an explanation and the status 403 instead of a 404. New setting Access, No-access page; the built-in message is filterable through living_handbook_access_denied_title and _message. The singular main query is no longer narrowed on pre_get_posts, because that produced the 404 before the guard could decide.
+* A folder import of 20 pages or more (ARCHIVE_THRESHOLD) reads the files from one repository archive download instead of one request per Markdown file and per image. The file list still comes from the tree API, so a small import keeps the per-file path and does not fetch the whole repository for a handful of pages. A failed archive download is not fatal: the import falls back to single requests and notes why it is slow.
 * Fixed: the app-handbook import publishes at once and now requires edit_others_posts, not edit_posts.
 * Fixed: oEmbed described internal pages. The type is registered with embeddable => false (honoured from WordPress 6.8) and the lookup and response are filtered. Requires at least raised to 6.8.
 * Fixed: the area-card cache is keyed per viewer.
