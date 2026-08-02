@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LIVING_HANDBOOK_VERSION', '0.54.0' );
+define( 'LIVING_HANDBOOK_VERSION', '0.55.0' );
 define( 'LIVING_HANDBOOK_FILE', __FILE__ );
 define( 'LIVING_HANDBOOK_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LIVING_HANDBOOK_URL', plugin_dir_url( __FILE__ ) );

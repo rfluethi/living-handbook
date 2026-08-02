@@ -102,13 +102,19 @@ function living_handbook_run_uninstall(): void {
 	$handbooks->register_taxonomy();
 	( new LivingHandbook\Taxonomy\Taxonomies() )->register_taxonomies();
 
+	// Marked internal, like every maintenance lookup in the plugin: the reader
+	// filter narrows a query to the handbooks the current user may see, and an
+	// uninstall has no user. Without this, a context that has the plugin's hooks
+	// registered would delete only the public handbooks and report success.
 	$handbook_ids = get_posts(
-		array(
-			'post_type'      => 'handbook',
-			'post_status'    => 'any',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
+		LivingHandbook\Access\AccessController::internal(
+			array(
+				'post_type'      => 'handbook',
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			)
 		)
 	);
 	foreach ( $handbook_ids as $handbook_id ) {
@@ -148,19 +154,21 @@ function living_handbook_run_uninstall(): void {
 	// They are stored as wp_template / wp_template_part posts assigned to this
 	// plugin's theme identifier via the wp_theme taxonomy.
 	$template_ids = get_posts(
-		array(
-			'post_type'      => array( 'wp_template', 'wp_template_part' ),
-			'post_status'    => 'any',
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
-			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-				array(
-					'taxonomy' => 'wp_theme',
-					'field'    => 'name',
-					'terms'    => 'living-handbook',
+		LivingHandbook\Access\AccessController::internal(
+			array(
+				'post_type'      => array( 'wp_template', 'wp_template_part' ),
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					array(
+						'taxonomy' => 'wp_theme',
+						'field'    => 'name',
+						'terms'    => 'living-handbook',
+					),
 				),
-			),
+			)
 		)
 	);
 	foreach ( $template_ids as $template_id ) {
