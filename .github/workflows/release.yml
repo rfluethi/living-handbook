@@ -18,7 +18,7 @@ jobs:
     # A prerelease is a deliberate try-out and does not get a built ZIP.
     if: ${{ !github.event.release.prerelease }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:

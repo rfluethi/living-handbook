@@ -15,7 +15,7 @@ jobs:
     name: Lint and static analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
@@ -40,7 +40,7 @@ jobs:
         # 8.1 is the declared minimum, 8.4 is what current hosts ship.
         php: [ '8.1', '8.2', '8.3', '8.4' ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
