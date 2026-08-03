@@ -94,7 +94,7 @@ final class Templates {
 			. '<!-- wp:term-description /-->'
 			. '<!-- wp:columns {"align":"wide"} --><div class="wp-block-columns alignwide">'
 			. '<!-- wp:column {"width":"22%"} --><div class="wp-block-column" style="flex-basis:22%">'
-			. '<!-- wp:living-handbook/navigation /-->'
+			. '<!-- wp:living-handbook/navigation {"variant":"accordion"} /-->'
 			. '</div><!-- /wp:column -->'
 			. '<!-- wp:column {"width":"78%"} --><div class="wp-block-column" style="flex-basis:78%">'
 			. '<!-- wp:living-handbook/entry /-->'
@@ -110,21 +110,28 @@ final class Templates {
 	 * @return string
 	 */
 	private static function single_content(): string {
-		// A separator block sits between the feedback prompt and the metadata
-		// footer. It is a static block, so the divider is always there, whether or
-		// not the feedback prompt renders (a guest without public feedback gets no
-		// prompt). Styled through the living-handbook-divider class.
-		$center = '<!-- wp:living-handbook/badges /-->'
-			. '<!-- wp:post-title {"level":1} /-->'
+		// The page itself comes first: title, then content. Everything about the
+		// page follows it, in one block at the foot: the feedback prompt, then the
+		// source note, the badges and the metadata footer.
+		//
+		// The two separator blocks are static, so the dividers are there whether or
+		// not their neighbours render: a guest without public feedback gets no
+		// prompt, and a page maintained in WordPress gets no source note. Styled
+		// through the living-handbook-divider class.
+		$center = '<!-- wp:post-title {"level":1} /-->'
 			. '<!-- wp:living-handbook/toc {"variant":"mobile"} /-->'
 			. '<!-- wp:post-content /-->'
 			. '<!-- wp:living-handbook/feedback /-->'
+			. '<!-- wp:separator {"className":"living-handbook-divider"} --><hr class="wp-block-separator has-alpha-channel-opacity living-handbook-divider"/><!-- /wp:separator -->'
+			. '<!-- wp:living-handbook/git-source-note /-->'
+			. '<!-- wp:living-handbook/badges /-->'
 			. '<!-- wp:separator {"className":"living-handbook-divider"} --><hr class="wp-block-separator has-alpha-channel-opacity living-handbook-divider"/><!-- /wp:separator -->'
 			. '<!-- wp:living-handbook/pagemeta /-->';
 
 		$columns = '<!-- wp:columns {"align":"wide"} --><div class="wp-block-columns alignwide">'
 			. '<!-- wp:column {"width":"22%"} --><div class="wp-block-column" style="flex-basis:22%">'
-			. '<!-- wp:living-handbook/navigation /-->'
+			. '<!-- wp:living-handbook/navigation {"variant":"accordion"} /-->'
+			. '<!-- wp:living-handbook/search /-->'
 			. '</div><!-- /wp:column -->'
 			. '<!-- wp:column {"width":"54%"} --><div class="wp-block-column" style="flex-basis:54%">'
 			. $center
