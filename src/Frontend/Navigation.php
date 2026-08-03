@@ -161,9 +161,7 @@ final class Navigation {
 		if ( $post_id <= 0 ) {
 			return '';
 		}
-		$terms   = wp_get_object_terms( $post_id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
-		$term_id = ( ! is_wp_error( $terms ) && ! empty( $terms ) ) ? (int) $terms[0] : 0;
-		return self::render( $term_id, $variant );
+		return self::render( Handbooks::for_post( $post_id ), $variant );
 	}
 
 	/**

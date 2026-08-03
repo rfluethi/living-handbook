@@ -307,8 +307,7 @@ final class Blocks {
 			if ( false === $post_id ) {
 				return 0;
 			}
-			$terms = wp_get_object_terms( (int) $post_id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
-			return ( ! is_wp_error( $terms ) && ! empty( $terms ) ) ? (int) $terms[0] : 0;
+			return Handbooks::for_post( (int) $post_id );
 		}
 		if ( is_tax( Handbooks::TAXONOMY ) ) {
 			$term = get_queried_object();

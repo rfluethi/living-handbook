@@ -265,8 +265,7 @@ JS;
 			// is taken from that page, so its configuration still travels.
 			$post = get_post( $area_id );
 			if ( $post instanceof WP_Post && Handbook::POST_TYPE === $post->post_type ) {
-				$terms = wp_get_object_terms( $area_id, Handbooks::TAXONOMY );
-				$found = ( is_array( $terms ) && isset( $terms[0] ) && $terms[0] instanceof WP_Term ) ? $terms[0] : null;
+				$found = get_term( Handbooks::for_post( $area_id ), Handbooks::TAXONOMY );
 				if ( ! $found instanceof WP_Term ) {
 					wp_die( esc_html__( 'That page is not in a handbook.', 'living-handbook' ), '', array( 'response' => 400 ) );
 				}

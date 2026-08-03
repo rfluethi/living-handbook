@@ -88,6 +88,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Changelog ==
 
 = 0.56.0 =
+* Fixed: a page could be put into two handbooks at once, and then showed the navigation of the wrong one. A page belongs to one handbook; choosing another one now moves it there instead of adding a second. Pages that are already in two stay as they are until you save them again, and are shown consistently in the meantime.
 * Fixed: the two custom fields that record where a page comes from were editable by hand in the Custom Fields box, where changing them silently stopped a page from syncing, or handed a hand-written page to the next sync. They are now internal fields, like the rest of the plugin's bookkeeping. Existing pages are renamed automatically when the plugin updates; nothing needs doing.
 * An import that runs into GitHub's hourly request limit now stops cleanly and tells you when you can continue, instead of carrying on and marking every remaining page with an error. Start the import again afterwards: pages that already exist are updated, not duplicated.
 * Fixed: after an import, links between pages could be missing. A link to a page that had not been imported yet was turned into plain text and stayed that way. Whether a link survived depended on the order in which the pages happened to be imported. Links are now decided once the whole import is there, and the import screen shows that step instead of appearing to hang after the last page. Import a handbook again to repair its links.

@@ -12,6 +12,7 @@ namespace LivingHandbook\Handbook;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
 use WP_REST_Response;
+use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -19,9 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Registers the `handbook_set` grouping taxonomy (shown as "Handbooks"). Each
- * handbook page belongs to exactly one handbook. Every handbook carries a
- * frontend access configuration (visibility plus optional roles and users); the
- * Access module enforces it.
+ * handbook page belongs to exactly one handbook, and that is enforced here, in
+ * enforce_single(), rather than left as a sentence in a comment. Which handbook
+ * a page belongs to is answered in one place, for_post(). Every handbook carries
+ * a frontend access configuration (visibility plus optional roles and users);
+ * the Access module enforces it.
  *
  * The taxonomy is registered hierarchical so the block editor shows a selectable
  * list of the existing handbooks, and publicly queryable so that each handbook
@@ -47,6 +50,13 @@ final class Handbooks {
 	public const VISIBILITY_RESTRICTED = 'restricted';
 
 	/**
+	 * Guard so that the enforcement's own write does not trigger it again.
+	 *
+	 * @var bool
+	 */
+	private static bool $enforcing = false;
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -58,6 +68,131 @@ final class Handbooks {
 		// Keep the REST list of handbooks out of anonymous reach.
 		add_filter( 'rest_' . self::TAXONOMY . '_query', array( $this, 'restrict_rest_query' ), 10, 2 );
 		add_filter( 'rest_prepare_' . self::TAXONOMY, array( $this, 'restrict_rest_item' ), 10, 2 );
+
+		// One handbook per page, enforced instead of assumed. See enforce_single().
+		add_action( 'set_object_terms', array( $this, 'enforce_single' ), 10, 6 );
+	}
+
+	/**
+	 * The handbook a page belongs to, as a term id, or 0.
+	 *
+	 * The one definition of "the handbook of this page". Three places carried
+	 * their own copy of the same expression, and they did not agree with each
+	 * other: wp_get_object_terms() orders by name, so a page that ended up in two
+	 * handbooks got whichever sorted first, and renaming a handbook moved pages
+	 * from one navigation tree into another. A page carries one handbook, see
+	 * enforce_single(); where an older assignment still holds more than one, the
+	 * lowest term id wins, because that answer does not change when someone edits
+	 * a name.
+	 *
+	 * Read through get_the_terms(), so a result set that has primed the object
+	 * term cache is not asked again page by page.
+	 *
+	 * @param int $post_id Page id.
+	 * @return int Term id, or 0 when the page belongs to no handbook.
+	 */
+	public static function for_post( int $post_id ): int {
+		if ( $post_id <= 0 ) {
+			return 0;
+		}
+
+		$terms = get_the_terms( $post_id, self::TAXONOMY );
+		if ( is_wp_error( $terms ) || ! is_array( $terms ) ) {
+			return 0;
+		}
+
+		$ids = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term ) {
+				$ids[] = (int) $term->term_id;
+			}
+		}
+
+		return array() === $ids ? 0 : min( $ids );
+	}
+
+	/**
+	 * Keep a handbook page in exactly one handbook.
+	 *
+	 * The data model says one handbook per page, and everything built on it
+	 * assumes exactly that: the navigation shows one tree, a page has one entry
+	 * page, an export carries the configuration of one handbook. The block editor
+	 * renders a hierarchical taxonomy as a list of checkboxes and lets you tick
+	 * two, and nothing stopped it. The result was not an error message but
+	 * something worse: a page whose navigation showed a tree the page is not in.
+	 *
+	 * So the rule is enforced where the terms are written, and only for handbook
+	 * pages. Of several handbooks the one just added wins, because ticking a
+	 * second box is the deliberate act; when several arrive at once, the lowest
+	 * term id decides, the same rule for_post() reads by.
+	 *
+	 * Access is deliberately not relaxed: can_view_post() still requires every
+	 * handbook of a page to allow the reader, so an assignment made before this
+	 * existed stays fail-closed until the page is saved again.
+	 *
+	 * @param int    $object_id  Object id.
+	 * @param mixed  $terms      Terms as submitted (unused).
+	 * @param mixed  $tt_ids     Term taxonomy ids now assigned.
+	 * @param string $taxonomy   Taxonomy.
+	 * @param bool   $append     Whether the terms were appended to the existing ones.
+	 * @param mixed  $old_tt_ids Term taxonomy ids before this write.
+	 * @return void
+	 */
+	public function enforce_single( $object_id, $terms, $tt_ids, $taxonomy, $append, $old_tt_ids ): void {
+		unset( $terms );
+
+		if ( self::$enforcing || self::TAXONOMY !== $taxonomy ) {
+			return;
+		}
+
+		$tt_ids = array_map( 'intval', (array) $tt_ids );
+
+		// Appending writes only the appended terms, so the count of this call says
+		// nothing about how many the page now has. Every other case does.
+		if ( ! $append && count( $tt_ids ) < 2 ) {
+			return;
+		}
+
+		$object_id = (int) $object_id;
+		if ( Handbook::POST_TYPE !== get_post_type( $object_id ) ) {
+			return;
+		}
+
+		$current = wp_get_object_terms( $object_id, $taxonomy, array( 'fields' => 'ids' ) );
+		$current = is_wp_error( $current ) ? array() : array_map( 'intval', $current );
+		if ( count( $current ) < 2 ) {
+			return;
+		}
+
+		// The terms of this call are the deliberate act and win over what was
+		// there before; among equals the lowest term id decides.
+		$added = array_values( array_diff( $tt_ids, array_map( 'intval', (array) $old_tt_ids ) ) );
+		$keep  = array() !== $added ? self::lowest_term_id( $added ) : min( $current );
+		if ( $keep <= 0 ) {
+			return;
+		}
+
+		self::$enforcing = true;
+		wp_set_object_terms( $object_id, array( $keep ), $taxonomy, false );
+		self::$enforcing = false;
+	}
+
+	/**
+	 * The lowest term id behind a list of term taxonomy ids.
+	 *
+	 * @param int[] $tt_ids Term taxonomy ids.
+	 * @return int Term id, or 0.
+	 */
+	private static function lowest_term_id( array $tt_ids ): int {
+		$ids = array();
+		foreach ( $tt_ids as $tt_id ) {
+			$term = get_term_by( 'term_taxonomy_id', (int) $tt_id, self::TAXONOMY );
+			if ( $term instanceof WP_Term ) {
+				$ids[] = (int) $term->term_id;
+			}
+		}
+
+		return array() === $ids ? 0 : min( $ids );
 	}
 
 	/**
