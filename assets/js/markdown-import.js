@@ -463,6 +463,19 @@
 						notes = notes.concat( res.notes );
 					}
 
+					// GitHub's hourly limit is used up. Asking again right away only
+					// spends another refusal, so the loop stops here and the note
+					// says what was imported and when it can be continued.
+					if ( res && res.retry_after ) {
+						showNotes( notes );
+						setStatus( sprintf(
+							// translators: %d is the number of pages created so far.
+							_n( 'Stopped after %d page.', 'Stopped after %d pages.', created, 'living-handbook' ),
+							created
+						) );
+						return;
+					}
+
 					if ( res && res.job ) {
 						// An import runs in two phases: the pages first, then their
 						// internal links, which can only be resolved once every page

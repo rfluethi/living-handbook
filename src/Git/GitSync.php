@@ -121,6 +121,21 @@ final class GitSync {
 	private const JOB_TTL = HOUR_IN_SECONDS;
 
 	/**
+	 * When GitHub's request quota comes back, as a Unix timestamp, or 0.
+	 *
+	 * GitHub answers every API request with how many requests are left in the
+	 * hour and when the count resets. An import that runs into that limit used to
+	 * carry on and write an error onto every remaining page, which leaves a
+	 * half-imported handbook that looks finished. The limit is now read from the
+	 * answers, and the import stops on a whole page and says when it can be
+	 * continued. The headers come from api.github.com; the raw file host and the
+	 * archive download have their own, opaque limits and do not report them.
+	 *
+	 * @var int
+	 */
+	private static int $rate_limit_reset = 0;
+
+	/**
 	 * Whether pages are currently being created by a multi-page import.
 	 *
 	 * While that is true, a link whose target does not exist yet is left as it
@@ -586,6 +601,10 @@ final class GitSync {
 	 *                              there is more to do.
 	 */
 	private function run_job( array $state ): array {
+		// What GitHub said about the quota in an earlier pass is stale by now, and
+		// the answers of this pass are what count.
+		self::$rate_limit_reset = 0;
+
 		$parsed   = $state['parsed'];
 		$queue    = $state['queue'];
 		$total    = count( $queue );
@@ -610,6 +629,14 @@ final class GitSync {
 					if ( $post_id > 0 ) {
 						$state['ids'][] = $post_id;
 						$pages[]        = self::page_result( $post_id );
+					}
+
+					// GitHub refusing further requests is not a reason to carry on and
+					// write an error onto every remaining page. Stop here, keep what
+					// exists, and say when the import can be continued.
+					if ( self::rate_limited() ) {
+						$state['notes'][] = self::rate_limit_note( $state['position'], $total );
+						return $this->pause_job( $state, $pages, $total, 'pages', self::$rate_limit_reset );
 					}
 
 					// Stop on a whole page, never in the middle of one: the position is
@@ -750,9 +777,10 @@ final class GitSync {
 	 * @param array<int, array<string, mixed>> $pages Pages created in this pass.
 	 * @param int                              $total Length of the work list of this phase.
 	 * @param string                           $phase 'pages' while importing, 'links' while resolving.
+	 * @param int                              $retry_at Unix time before which it makes no sense to continue, or 0.
 	 * @return array<string, mixed>
 	 */
-	private function pause_job( array $state, array $pages, int $total, string $phase = 'pages' ): array {
+	private function pause_job( array $state, array $pages, int $total, string $phase = 'pages', int $retry_at = 0 ): array {
 		$state['archive'] = $this->detach_archive();
 
 		$job          = isset( $state['job'] ) ? (string) $state['job'] : wp_generate_password( 24, false );
@@ -770,6 +798,11 @@ final class GitSync {
 			'remaining' => max( 0, $remaining ),
 			'total'     => $total,
 		);
+		// Asking again before this has passed only spends another refusal, so the
+		// browser is told to stop rather than to keep knocking.
+		if ( $retry_at > time() ) {
+			$result['retry_after'] = $retry_at - time();
+		}
 		if ( array() !== $state['notes'] ) {
 			$result['notes'] = $state['notes'];
 			// Notes travel with the first pass that produced them; the next pass
@@ -1035,6 +1068,66 @@ final class GitSync {
 	}
 
 	/**
+	 * Remember what a GitHub answer says about the remaining request quota.
+	 *
+	 * Called after every request to GitHub. A response without the headers (the
+	 * raw file host, the archive download) says nothing and changes nothing.
+	 *
+	 * @param array<string, mixed>|WP_Error $response Response from wp_safe_remote_get().
+	 * @return void
+	 */
+	private static function note_rate_limit( $response ): void {
+		if ( is_wp_error( $response ) ) {
+			return;
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( 429 === $code ) {
+			$after                  = (int) wp_remote_retrieve_header( $response, 'retry-after' );
+			self::$rate_limit_reset = time() + ( $after > 0 ? $after : MINUTE_IN_SECONDS );
+			return;
+		}
+
+		$remaining = (string) wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' );
+		if ( '' === $remaining ) {
+			return;
+		}
+		if ( (int) $remaining > 0 ) {
+			self::$rate_limit_reset = 0;
+			return;
+		}
+
+		$reset                  = (int) wp_remote_retrieve_header( $response, 'x-ratelimit-reset' );
+		self::$rate_limit_reset = $reset > time() ? $reset : time() + HOUR_IN_SECONDS;
+	}
+
+	/**
+	 * Whether GitHub is currently refusing further requests.
+	 *
+	 * @return bool
+	 */
+	private static function rate_limited(): bool {
+		return self::$rate_limit_reset > time();
+	}
+
+	/**
+	 * The note an import leaves when it stops because the quota is used up.
+	 *
+	 * @param int $done  Pages imported so far.
+	 * @param int $total Pages in the work list.
+	 * @return string
+	 */
+	private static function rate_limit_note( int $done, int $total ): string {
+		return sprintf(
+			/* translators: 1: pages imported so far, 2: total pages, 3: local time the limit resets. */
+			__( 'GitHub\'s hourly request limit is used up. The import stopped after %1$d of %2$d pages, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated.', 'living-handbook' ),
+			$done,
+			$total,
+			wp_date( (string) get_option( 'time_format', 'H:i' ), self::$rate_limit_reset )
+		);
+	}
+
+	/**
 	 * Read the repository tree in one request.
 	 *
 	 * @param array{owner:string, repo:string, branch:string, path:string} $parsed Parsed tree URL.
@@ -1056,14 +1149,24 @@ final class GitSync {
 				),
 			)
 		);
+		self::note_rate_limit( $response );
+
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( 'living_handbook_import', $response->get_error_message(), array( 'status' => 502 ) );
 		}
 
 		$code = (int) wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $code ) {
-			if ( 403 === $code && '0' === (string) wp_remote_retrieve_header( $response, 'x-ratelimit-remaining' ) ) {
-				return new WP_Error( 'living_handbook_import', __( 'GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later.', 'living-handbook' ), array( 'status' => 429 ) );
+			if ( self::rate_limited() && in_array( $code, array( 403, 429 ), true ) ) {
+				return new WP_Error(
+					'living_handbook_import',
+					sprintf(
+						/* translators: %s: local time the GitHub request limit resets. */
+						__( 'GitHub\'s hourly request limit is used up. It allows 60 requests an hour without a login, and comes back at %s.', 'living-handbook' ),
+						wp_date( (string) get_option( 'time_format', 'H:i' ), self::$rate_limit_reset )
+					),
+					array( 'status' => 429 )
+				);
 			}
 			/* translators: %d: HTTP status code returned by the GitHub API. */
 			return new WP_Error( 'living_handbook_import', sprintf( __( 'GitHub API HTTP %d', 'living-handbook' ), $code ), array( 'status' => 502 ) );
@@ -2056,6 +2159,8 @@ final class GitSync {
 					'limit_response_size' => 5 * MB_IN_BYTES,
 				)
 			);
+			self::note_rate_limit( $response );
+
 			if ( is_wp_error( $response ) ) {
 				/* translators: %s: error message from the HTTP request. */
 				$this->set_sync_error( $post_id, sprintf( __( 'Error: %s', 'living-handbook' ), $response->get_error_message() ) );
@@ -2169,6 +2274,7 @@ final class GitSync {
 						'limit_response_size' => 5 * MB_IN_BYTES,
 					)
 				);
+				self::note_rate_limit( $response );
 				if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 					continue;
 				}

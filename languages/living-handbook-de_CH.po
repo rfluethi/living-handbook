@@ -2235,3 +2235,21 @@ msgstr ""
 
 #~ msgid "Import, tab App handbook"
 #~ msgstr "Import, Reiter App-Handbuch"
+
+#. translators: 1: pages imported so far, 2: total pages, 3: local time the limit resets.
+#: src/Git/GitSync.php:1123
+msgid "GitHub's hourly request limit is used up. The import stopped after %1$d of %2$d pages, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated."
+msgstr "Das Stundenkontingent an Anfragen bei GitHub ist aufgebraucht. Der Import stoppte nach %1$d von %2$d Seiten, nichts ist verloren. Starte ihn ab %3$s neu: bereits vorhandene Seiten werden aktualisiert, nicht doppelt angelegt."
+
+#. translators: %s: local time the GitHub request limit resets.
+#: src/Git/GitSync.php:1165
+msgid "GitHub's hourly request limit is used up. It allows 60 requests an hour without a login, and comes back at %s."
+msgstr "Das Stundenkontingent an Anfragen bei GitHub ist aufgebraucht. Ohne Anmeldung sind 60 Anfragen pro Stunde erlaubt, ab %s geht es weiter."
+
+#. translators: %d is the number of pages created so far.
+#: assets/js/markdown-import.js:479
+msgid "Stopped after %d page."
+msgid_plural "Stopped after %d pages."
+msgstr[0] "Nach %d Seite gestoppt."
+msgstr[1] "Nach %d Seiten gestoppt."
+

@@ -319,6 +319,77 @@ final class FolderImportChunkedTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * When GitHub stops answering, the import stops too.
+	 *
+	 * Sixty requests an hour is what an unauthenticated import gets. Running into
+	 * that used to mean the import carried on and wrote an error onto every
+	 * remaining page, which leaves a handbook that looks imported and is not. It
+	 * now stops on a whole page, says what it managed and when the limit resets,
+	 * and does not ask again.
+	 *
+	 * @return void
+	 */
+	public function test_an_import_stops_when_the_request_limit_is_reached(): void {
+		$this->make_repository( 5 );
+
+		// From the second file on, GitHub answers the way it does when the hour's
+		// quota is gone. This runs after the filter that serves the files and
+		// replaces its answer, which is why it has the higher priority.
+		$served = 0;
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( &$served ) {
+				unset( $args );
+				// Anything this does not answer keeps the answer it already has:
+				// returning false here would throw the served file away.
+				if ( false === strpos( (string) $url, 'raw.githubusercontent.com' ) ) {
+					return $preempt;
+				}
+				++$served;
+				if ( $served < 2 ) {
+					return $preempt;
+				}
+				return array(
+					'headers'  => array(
+						'x-ratelimit-remaining' => '0',
+						'x-ratelimit-reset'     => (string) ( time() + 900 ),
+					),
+					'body'     => '',
+					'response' => array(
+						'code'    => 403,
+						'message' => 'Forbidden',
+					),
+					'cookies'  => array(),
+					'filename' => null,
+				);
+			},
+			11,
+			3
+		);
+		$this->serve_repository();
+
+		$git    = new GitSync();
+		$result = $git->import_folder( 'https://github.com/example/repo/tree/main/handbuch/de', $this->handbook( 'Limited handbook' ), false );
+
+		$this->assertIsArray( $result );
+		$this->assertArrayHasKey( 'retry_after', $result, 'The import has to say that asking again now is pointless.' );
+		$this->assertGreaterThan( 0, $result['retry_after'] );
+		$this->assertLessThanOrEqual( 900, $result['retry_after'] );
+		$this->assertArrayHasKey( 'notes', $result, 'And it has to say what happened.' );
+		$this->assertStringContainsString( 'GitHub', implode( ' ', $result['notes'] ) );
+
+		$imported = get_posts(
+			array(
+				'post_type'      => 'handbook',
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+			)
+		);
+		$this->assertLessThan( 5, count( $imported ), 'It must not carry on creating the rest.' );
+	}
+
+	/**
 	 * The pages are the same whether the import is cut into passes or not.
 	 *
 	 * @return void
