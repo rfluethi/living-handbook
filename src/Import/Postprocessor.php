@@ -153,26 +153,70 @@ final class Postprocessor {
 			);
 		}
 
-		self::load_index();
-		// The pages of the run are read again here, page by page, and each one is
-		// asked for its handbook. Both come from the caches this fills.
-		_prime_post_caches( $numeric, true, true );
+		self::begin_run( $numeric );
 
 		try {
 			foreach ( $numeric as $id ) {
-				self::resolve_parent( $id );
-				$result     = self::convert_md_links( $id );
+				$result     = self::finalize_one( $id );
 				$converted += $result['converted'];
 				$unresolved = array_merge( $unresolved, $result['unresolved'] );
 			}
 		} finally {
-			self::forget_index();
+			self::end_run();
 		}
 
 		return array(
 			'converted'  => $converted,
 			'unresolved' => $unresolved,
 		);
+	}
+
+	/**
+	 * Open a finalize run: load the lookup tables and warm the caches for the
+	 * pages that are about to be worked through.
+	 *
+	 * An import that does not finish in one request finalizes in passes too, so
+	 * this is public: the pass opens a run, works until its time is up, and
+	 * closes it again. Whoever opens a run must close it, hence the try/finally
+	 * at every call site.
+	 *
+	 * @param int[] $ids Pages this pass will work through.
+	 * @return void
+	 */
+	public static function begin_run( array $ids = array() ): void {
+		self::load_index();
+
+		if ( array() !== $ids ) {
+			// Every page is read again below, and each one is asked for its
+			// handbook. Both come from the caches this fills.
+			_prime_post_caches( $ids, true, true );
+		}
+	}
+
+	/**
+	 * Close a finalize run.
+	 *
+	 * @return void
+	 */
+	public static function end_run(): void {
+		self::forget_index();
+	}
+
+	/**
+	 * Finalize one page: set its parent from the import, then convert its links.
+	 *
+	 * @param int $post_id Post id.
+	 * @return array{converted: int, unresolved: array<int, array{source: string, target: string}>}
+	 */
+	public static function finalize_one( int $post_id ): array {
+		if ( $post_id <= 0 ) {
+			return array(
+				'converted'  => 0,
+				'unresolved' => array(),
+			);
+		}
+		self::resolve_parent( $post_id );
+		return self::convert_md_links( $post_id );
 	}
 
 	/**
@@ -188,10 +232,11 @@ final class Postprocessor {
 	private static function load_index(): void {
 		global $wpdb;
 
-		$statuses = get_post_stati( array( 'exclude_from_search' => false ) );
-		if ( array() === $statuses ) {
-			$statuses = array( 'publish' );
-		}
+		// What WP_Query means by post_status "any": everything except the statuses
+		// excluded from search, which is where trash and auto-draft sit. Drafts
+		// are not among them, and must not be: an import that does not publish at
+		// once creates drafts, and their links have to resolve too.
+		$excluded = get_post_stati( array( 'exclude_from_search' => true ) );
 		// A maintenance read over one post type, deliberately not a WP_Query: the
 		// point of these tables is to replace thousands of them. The status filter
 		// is applied below rather than in the statement, so the SQL stays a fixed
@@ -216,9 +261,7 @@ final class Postprocessor {
 			'title' => array(),
 		);
 		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
-			// The same statuses WP_Query means by "any": everything except the
-			// ones excluded from search, which is where trash and auto-draft sit.
-			if ( ! in_array( (string) $row->post_status, $statuses, true ) ) {
+			if ( in_array( (string) $row->post_status, $excluded, true ) ) {
 				continue;
 			}
 			$id   = (int) $row->ID;
@@ -330,10 +373,18 @@ final class Postprocessor {
 	 * and has to run this again: without it, the first scheduled sync after an
 	 * import would turn every resolved cross-link back into a raw .md link.
 	 *
-	 * @param int $post_id Post id.
+	 * $defuse is false while an import is still creating pages. A page imported
+	 * before its link target exists would otherwise have that link turned into
+	 * plain text for good, and the closing pass, whose whole purpose is to
+	 * resolve links once every page is there, would find nothing left to resolve.
+	 * With $defuse false an unresolved link is left exactly as it is, and the
+	 * closing pass decides.
+	 *
+	 * @param int  $post_id Post id.
+	 * @param bool $defuse  Whether a link with no page becomes plain text.
 	 * @return array{converted: int, unresolved: array<int, array{source: string, target: string}>}
 	 */
-	public static function convert_md_links( int $post_id ): array {
+	public static function convert_md_links( int $post_id, bool $defuse = true ): array {
 		$post = get_post( $post_id );
 		if ( ! $post instanceof WP_Post ) {
 			return array(
@@ -354,7 +405,7 @@ final class Postprocessor {
 		$unresolved    = array();
 		$content       = (string) preg_replace_callback(
 			'/<a href="([^"]+\.md)"([^>]*)>(.*?)<\/a>/is',
-			static function ( array $found ) use ( &$count, &$unresolved, $source_path, $base_dir, $page_title, $own_handbooks ): string {
+			static function ( array $found ) use ( &$count, &$unresolved, $source_path, $base_dir, $page_title, $own_handbooks, $defuse ): string {
 				$clean  = rawurldecode( (string) preg_replace( '/[?#].*$/', '', $found[1] ) );
 				$target = 0;
 				if ( '' !== $source_path ) {
@@ -365,6 +416,11 @@ final class Postprocessor {
 				}
 				$permalink = $target > 0 ? get_permalink( $target ) : false;
 				if ( 0 === $target || ! is_string( $permalink ) ) {
+					if ( ! $defuse ) {
+						// Still importing: the target may be created in a moment.
+						// Leave the link alone and let the closing pass judge it.
+						return $found[0];
+					}
 					// No page: drop the anchor, keep the text. Never leave a raw
 					// .md link that would 404 in the browser.
 					$unresolved[] = array(

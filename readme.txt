@@ -88,6 +88,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Changelog ==
 
 = 0.56.0 =
+* Fixed: after an import, links between pages could be missing. A link to a page that had not been imported yet was turned into plain text and stayed that way. Whether a link survived depended on the order in which the pages happened to be imported. Links are now decided once the whole import is there, and the import screen shows that step instead of appearing to hang after the last page. Import a handbook again to repair its links.
 * Large handbooks are much faster. Every handbook view used to cost the server about one database query per page in the handbook, so a handbook of 2000 pages needed around 2000 queries to show one page, and now needs about 20. Who may read what is unchanged.
 * Accessibility: images and diagrams can now be enlarged with the keyboard, not only with the mouse, and the enlarged view keeps the focus until you close it. The search on a handbook page can be walked with the arrow keys, and screen readers are told how many pages a search or filter found instead of having the whole list read out after every keystroke.
 * The handbook styles and scripts now arrive wherever a handbook block is placed, including in a header, a footer or another template part. Before, a block outside a handbook page could end up unstyled and without its interactive parts. Pages without a handbook block load nothing extra.

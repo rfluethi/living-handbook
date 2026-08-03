@@ -121,6 +121,17 @@ final class GitSync {
 	private const JOB_TTL = HOUR_IN_SECONDS;
 
 	/**
+	 * Whether pages are currently being created by a multi-page import.
+	 *
+	 * While that is true, a link whose target does not exist yet is left as it
+	 * is instead of being turned into text: the target may be further down the
+	 * work list. The closing pass, which runs when every page is there, decides.
+	 *
+	 * @var bool
+	 */
+	private static bool $defer_links = false;
+
+	/**
 	 * The repository archive currently open for an import, if any.
 	 *
 	 * Set for the duration of one folder import. While it is set, sync_page() and
@@ -557,6 +568,7 @@ final class GitSync {
 			'publish'   => $publish,
 			'queue'     => $queue,
 			'position'  => 0,
+			'final'     => 0,
 			'folder_id' => array( $base => 0 ),
 			'ids'       => array(),
 			'auto'      => 0,
@@ -580,49 +592,43 @@ final class GitSync {
 		$deadline = microtime( true ) + self::time_budget();
 		$pages    = array();
 
-		$archive_note = $this->open_archive_for_job( $state, $total - $state['position'] );
-		if ( '' !== $archive_note ) {
-			$state['notes'][] = $archive_note;
-		}
+		if ( $state['position'] < $total ) {
+			$archive_note = $this->open_archive_for_job( $state, $total - $state['position'] );
+			if ( '' !== $archive_note ) {
+				$state['notes'][] = $archive_note;
+			}
 
-		try {
-			while ( $state['position'] < $total ) {
-				$item    = $queue[ $state['position'] ];
-				$post_id = $this->import_one( $item, $state );
+			self::$defer_links = true;
 
-				++$state['position'];
+			try {
+				while ( $state['position'] < $total ) {
+					$item    = $queue[ $state['position'] ];
+					$post_id = $this->import_one( $item, $state );
 
-				if ( $post_id > 0 ) {
-					$state['ids'][] = $post_id;
-					$pages[]        = self::page_result( $post_id );
+					++$state['position'];
+
+					if ( $post_id > 0 ) {
+						$state['ids'][] = $post_id;
+						$pages[]        = self::page_result( $post_id );
+					}
+
+					// Stop on a whole page, never in the middle of one: the position is
+					// only ever saved between two pages, so continuing cannot half-import
+					// anything.
+					if ( microtime( true ) >= $deadline ) {
+						return $this->pause_job( $state, $pages, $total );
+					}
 				}
-
-				// Stop on a whole page, never in the middle of one: the position is
-				// only ever saved between two pages, so continuing cannot half-import
-				// anything.
-				if ( $state['position'] < $total && microtime( true ) >= $deadline ) {
-					return $this->pause_job( $state, $pages, $total );
+			} finally {
+				self::$defer_links = false;
+				if ( $state['position'] >= $total ) {
+					$this->close_archive();
 				}
 			}
-		} finally {
-			if ( $state['position'] >= $total ) {
-				$this->close_archive();
-			}
 		}
 
-		// Resolve internal links once every page of the import exists. Parents are
-		// set here from the folder structure, which is more reliable than the
-		// transport block for a repository that carries none. A link with no page
-		// is turned into text, so nothing is left to 404; the leftovers are
-		// reported so a typo or a missing page is a line here, not a click away.
-		$report = Postprocessor::finalize_report( $state['ids'] );
-		foreach ( $report['unresolved'] as $link ) {
-			$state['notes'][] = sprintf(
-				/* translators: 1: page title the link is on, 2: link target file name. */
-				__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
-				$link['source'],
-				$link['target']
-			);
+		if ( ! $this->finalize_job( $state, $deadline ) ) {
+			return $this->pause_job( $state, $pages, count( $state['ids'] ), 'links' );
 		}
 
 		self::forget_job( $state );
@@ -632,6 +638,62 @@ final class GitSync {
 			$result['notes'] = $state['notes'];
 		}
 		return $result;
+	}
+
+	/**
+	 * Resolve parents and internal links for the pages of this import.
+	 *
+	 * This runs after the last page exists, because a link can only be resolved
+	 * once its target is there. It is the second phase of the same job, not a
+	 * closing flourish: on a handbook of a couple of thousand pages it is tens of
+	 * seconds of work, and it used to run in the same request that had just spent
+	 * the whole import budget. That request was the one that had to finish, or
+	 * the links stayed raw. So it pauses between two pages exactly like the
+	 * import does, and the browser comes back for the rest.
+	 *
+	 * Parents are set here from the folder structure, which is more reliable than
+	 * the transport block for a repository that carries none. A link with no page
+	 * is turned into text, so nothing is left to 404; the leftovers are reported
+	 * so a typo or a missing page is a line in the report, not a click away.
+	 *
+	 * @param array<string, mixed> $state    Job state, updated in place.
+	 * @param float                $deadline When this pass has to stop.
+	 * @return bool True when every page is done, false when it paused.
+	 */
+	private function finalize_job( array &$state, float $deadline ): bool {
+		$ids            = array_values( array_map( 'intval', (array) $state['ids'] ) );
+		$count          = count( $ids );
+		$state['final'] = (int) ( $state['final'] ?? 0 );
+
+		if ( $state['final'] >= $count ) {
+			return true;
+		}
+
+		Postprocessor::begin_run( array_slice( $ids, $state['final'] ) );
+
+		try {
+			while ( $state['final'] < $count ) {
+				$report = Postprocessor::finalize_one( $ids[ $state['final'] ] );
+				++$state['final'];
+
+				foreach ( $report['unresolved'] as $link ) {
+					$state['notes'][] = sprintf(
+						/* translators: 1: page title the link is on, 2: link target file name. */
+						__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
+						$link['source'],
+						$link['target']
+					);
+				}
+
+				if ( $state['final'] < $count && microtime( true ) >= $deadline ) {
+					return false;
+				}
+			}
+		} finally {
+			Postprocessor::end_run();
+		}
+
+		return true;
 	}
 
 	/**
@@ -686,20 +748,26 @@ final class GitSync {
 	 *
 	 * @param array<string, mixed>             $state Job state.
 	 * @param array<int, array<string, mixed>> $pages Pages created in this pass.
-	 * @param int                              $total Length of the work list.
+	 * @param int                              $total Length of the work list of this phase.
+	 * @param string                           $phase 'pages' while importing, 'links' while resolving.
 	 * @return array<string, mixed>
 	 */
-	private function pause_job( array $state, array $pages, int $total ): array {
+	private function pause_job( array $state, array $pages, int $total, string $phase = 'pages' ): array {
 		$state['archive'] = $this->detach_archive();
 
 		$job          = isset( $state['job'] ) ? (string) $state['job'] : wp_generate_password( 24, false );
 		$state['job'] = $job;
 		set_transient( self::JOB_PREFIX . $job, $state, self::JOB_TTL );
 
+		$remaining = 'links' === $phase
+			? $total - (int) ( $state['final'] ?? 0 )
+			: $total - (int) $state['position'];
+
 		$result = array(
 			'pages'     => $pages,
 			'job'       => $job,
-			'remaining' => $total - $state['position'],
+			'phase'     => $phase,
+			'remaining' => max( 0, $remaining ),
 			'total'     => $total,
 		);
 		if ( array() !== $state['notes'] ) {
@@ -912,6 +980,10 @@ final class GitSync {
 		$folder_id = array( '' => 0 );
 		$auto      = 0;
 
+		// Pages are created here and their links resolved below, once every page
+		// of the handbook exists. See self::$defer_links.
+		self::$defer_links = true;
+
 		foreach ( $plan['folders'] as $folder ) {
 			if ( '' !== $folder['index'] ) {
 				$post_id = $this->create_local_page( $dir, $folder['index'], $handbook_id, $publish, basename( $folder['path'] ) );
@@ -942,6 +1014,8 @@ final class GitSync {
 			$ids[]   = $post_id;
 			$pages[] = self::page_result( $post_id );
 		}
+
+		self::$defer_links = false;
 
 		$report = Postprocessor::finalize_report( $ids );
 		foreach ( $report['unresolved'] as $link ) {
@@ -2048,9 +2122,11 @@ final class GitSync {
 		wp_update_post( $update );
 		Postprocessor::apply_transport( $post_id, (array) $result['transport'] );
 		// Re-rendering brings the internal .md links back raw, so resolve them to
-		// their pages again. A folder import resolves once more at the end, when
-		// every page of the import exists.
-		Postprocessor::convert_md_links( $post_id );
+		// their pages again. While an import is still creating pages, a link with
+		// no target is left alone rather than turned into text: its page may be
+		// two entries further down the work list, and the closing pass is what
+		// decides. See Postprocessor::convert_md_links().
+		Postprocessor::convert_md_links( $post_id, ! self::$defer_links );
 		self::$is_syncing = false;
 	}
 

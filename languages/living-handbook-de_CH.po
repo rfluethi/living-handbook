@@ -1749,6 +1749,11 @@ msgid_plural "Creating %d drafts…"
 msgstr[0] "Erstelle %d Entwurf …"
 msgstr[1] "Erstelle %d Entwürfe …"
 
+#. translators: 1: pages created so far, 2: pages whose links still have to be checked.
+#: assets/js/markdown-import.js:471
+msgid "Imported %1$d pages, checking the links on %2$d…"
+msgstr "%1$d Seiten importiert, Links auf %2$d werden geprüft…"
+
 #. translators: 1: pages created so far, 2: pages still to go.
 #: assets/js/markdown-import.js:469
 msgid "Imported %1$d pages, %2$d to go…"

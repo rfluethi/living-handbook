@@ -464,12 +464,24 @@
 					}
 
 					if ( res && res.job ) {
-						setStatus( sprintf(
-							// translators: 1: pages created so far, 2: pages still to go.
-							__( 'Imported %1$d pages, %2$d to go…', 'living-handbook' ),
-							created,
-							res.remaining || 0
-						) );
+						// An import runs in two phases: the pages first, then their
+						// internal links, which can only be resolved once every page
+						// exists. Both pause when their time is up, so both report.
+						if ( 'links' === res.phase ) {
+							setStatus( sprintf(
+								// translators: 1: pages created so far, 2: pages whose links still have to be checked.
+								__( 'Imported %1$d pages, checking the links on %2$d…', 'living-handbook' ),
+								created,
+								res.remaining || 0
+							) );
+						} else {
+							setStatus( sprintf(
+								// translators: 1: pages created so far, 2: pages still to go.
+								__( 'Imported %1$d pages, %2$d to go…', 'living-handbook' ),
+								created,
+								res.remaining || 0
+							) );
+						}
 						return pass( { job: res.job } );
 					}
 

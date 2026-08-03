@@ -89,12 +89,20 @@ final class FolderImportChunkedTest extends WP_UnitTestCase {
 	/**
 	 * Build a fake repository with the given number of Markdown pages.
 	 *
-	 * @param int $count How many pages under handbuch/de.
+	 * @param int  $count  How many pages under handbuch/de.
+	 * @param bool $linked Whether the pages link to each other.
 	 * @return void
 	 */
-	private function make_repository( int $count ): void {
+	private function make_repository( int $count, bool $linked = false ): void {
 		for ( $i = 1; $i <= $count; $i++ ) {
-			$this->files[ sprintf( 'handbuch/de/page-%02d.md', $i ) ] = sprintf( "# Page %02d\n\nBody of page %02d.\n", $i, $i );
+			$body = sprintf( "# Page %02d\n\nBody of page %02d.\n", $i, $i );
+			if ( $linked ) {
+				// Every page links to the next one, the last one back to the first,
+				// so no page can resolve its link at the moment it is created.
+				$next  = $i < $count ? $i + 1 : 1;
+				$body .= sprintf( "\nSee [page-%02d.md](page-%02d.md).\n", $next, $next );
+			}
+			$this->files[ sprintf( 'handbuch/de/page-%02d.md', $i ) ] = $body;
 		}
 
 		$path = (string) tempnam( sys_get_temp_dir(), 'lh-repo-chunked' );
@@ -251,6 +259,63 @@ final class FolderImportChunkedTest extends WP_UnitTestCase {
 		$this->assertSame( $titles, array_unique( $titles ) );
 		$this->assertContains( 'Page 01', $titles );
 		$this->assertContains( 'Page 06', $titles );
+	}
+
+	/**
+	 * Resolving the links is the second phase of the same job, and it pauses too.
+	 *
+	 * It used to run in one go at the end of the last pass, in the request that
+	 * had just spent the whole import budget. On a large handbook that is the
+	 * request that runs into the server's time limit, and it is the one that must
+	 * not: without it the pages keep links that lead nowhere.
+	 *
+	 * The second half of the test is the reason the first half matters: a page
+	 * created before its link target existed must end up with a working link.
+	 *
+	 * @return void
+	 */
+	public function test_the_links_are_resolved_across_passes(): void {
+		$this->make_repository( 4, true );
+		$this->serve_repository();
+		$this->stop_after_every_page();
+
+		$git    = new GitSync();
+		$result = $git->import_folder( 'https://github.com/example/repo/tree/main/handbuch/de', $this->handbook( 'Linked handbook' ), false );
+		$this->assertIsArray( $result );
+
+		$phases = array( (string) ( $result['phase'] ?? '' ) );
+		$job    = isset( $result['job'] ) ? (string) $result['job'] : '';
+		$passes = 1;
+
+		while ( '' !== $job ) {
+			$next = $git->import_folder( '', 0, false, $job );
+			$this->assertIsArray( $next, 'Continuing an import must not fail.' );
+			$phases[] = (string) ( $next['phase'] ?? '' );
+			$job      = isset( $next['job'] ) ? (string) $next['job'] : '';
+			++$passes;
+			$this->assertLessThan( 30, $passes, 'The import has to end.' );
+		}
+
+		$this->assertContains( 'links', $phases, 'The link phase has to report itself, so the screen can say what it is doing.' );
+		$this->assertGreaterThan(
+			1,
+			count( array_keys( $phases, 'links', true ) ),
+			'It has to pause between pages like the import does.'
+		);
+
+		$pages = get_posts(
+			array(
+				'post_type'      => 'handbook',
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'title'          => 'Page 01',
+			)
+		);
+		$this->assertCount( 1, $pages, 'Page 01 exists exactly once.' );
+
+		$content = (string) $pages[0]->post_content;
+		$this->assertStringNotContainsString( 'page-02.md', $content, 'No raw .md link may be left behind.' );
+		$this->assertStringContainsString( '<a href="http', $content, 'The link has to point at the imported page.' );
 	}
 
 	/**
