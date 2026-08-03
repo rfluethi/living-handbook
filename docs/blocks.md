@@ -70,7 +70,7 @@ Two more caveats. The injection reproduces the markup of the core Navigation blo
 
 ![](_attachments/handbook-navigation-en.png)
 
-The page tree of the current handbook, rendered as a self-contained, collapsible list styled by the plugin. No other plugin is required. The whole block is a native `<details>` element: its title is the handbook name and toggles the entire navigation open or closed, like the table of contents, and it behaves the same on desktop and on narrow screens (where it starts collapsed). A small arrow next to the title links to the handbook's start page. The tree is scoped to the current handbook, so it never lists pages of another one; the assembled markup is cached per handbook and rebuilt when a page or handbook changes, and the current page is marked automatically.
+The page tree of the current handbook, rendered as a self-contained, collapsible list styled by the plugin. No other plugin is required. The whole block is a native `<details>` element: its title is the handbook name and toggles the entire navigation open or closed, like the table of contents, and it behaves the same on desktop and on narrow screens (where it starts collapsed). A small arrow next to the title links to the handbook's start page. The tree is scoped to the current handbook, so it never lists pages of another one, it is built fresh on every request, and the current page is marked automatically.
 
 **Settings:** *Display* chooses between **Menu** (the whole tree is shown at once, nothing collapses) and **Accordion** (each branch with children collapses; the branch leading to the current page starts open, the rest closed, and a toggle on the left of a branch opens or closes it).
 
@@ -147,6 +147,10 @@ Three causes account for almost every "the block is empty" report:
 - **The page has no handbook.** Access is deliberately fail-closed: a handbook page that is not assigned to a handbook is invisible on the front end. Assign it in the editor sidebar.
 - **The handbook is not visible to you.** A new handbook defaults to "All members (logged in)", so logged out you see nothing. Change it on the handbook itself (Handbook → Handbooks → edit).
 - **The block is in the wrong context.** Most blocks only render on a single page or an entry page. See "Renders on" above.
+
+## Where the styles and scripts come from
+
+Every block names its own assets in its `block.json`: `style` and `viewScript` point at the shared front-end handles, `editorScript` at the editor bundle. WordPress then loads the handbook stylesheet and script exactly where a block is rendered, and a page with none of the plugin's blocks loads nothing extra. This matters for blocks placed outside a handbook page, in a header, a footer or another template part: deciding from the current query whether a page "looks like" a handbook view cannot see those, and such a block used to render unstyled and without its script. The two shared handles are registered once, on `init`, with their REST endpoints and translated labels attached to the handle rather than to one call site.
 
 ## Styling the blocks
 

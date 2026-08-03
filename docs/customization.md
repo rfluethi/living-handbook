@@ -146,6 +146,8 @@ The default styles include a few rules that exist for accessibility. If you over
 
 - **Focus rings.** Every interactive element gets a visible outline on `:focus-visible`. Themes often strip the browser default; the plugin restores it. If you restyle it, keep an outline that is clearly visible against your background.
 - **Reduced motion.** Card hover motion and the loading fade are switched off under `prefers-reduced-motion: reduce`, and the table of contents then jumps instead of scrolling smoothly. If you add your own animations, wrap them in the same media query.
+- **The enlarge button.** An image or a diagram that can be enlarged sits inside a real `<button class="living-handbook-zoom">`, so it can be reached and triggered with the keyboard and announces what it does. A diagram's button takes the full column width, because a diagram is drawn to the width it is given and would otherwise collapse. If you restyle the button, do not turn it back into a plain element, and leave the width of `.living-handbook-zoom--diagram` alone.
+- **The touch targets.** The small controls keep a minimum height of 24 pixels (WCAG 2.5.8). Making them smaller makes them hard to hit on a touchscreen and for anyone with an unsteady hand.
 
 ```css
 @media (prefers-reduced-motion: reduce) {

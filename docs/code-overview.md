@@ -88,6 +88,8 @@ There is a single, non-negotiable rule in the code: **every read of handbook con
 | The app handbook | `Import/AppHandbook.php` (which source is used), `Git/GitSync.php` (`import_local_folder` for the bundled copy, `import_folder` for a GitHub override) |
 | The GitHub sync and settings | `Git/GitSync.php`, `Setup/Settings.php` |
 | What runs on activation | `Plugin.php` (`activate`), `Setup/Seeder.php`, `Setup/Onboarding.php` |
+| What runs after an update | `Plugin.php` (`maybe_upgrade`, `rename_meta_keys`) |
+| How fast a page is, and why | `bin/seed-performance.php`, `bin/measure-performance.php`, the `*QueryCostTest` files under `tests/Integration/` |
 
 ## How the code documents itself
 
