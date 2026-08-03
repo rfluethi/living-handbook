@@ -1,6 +1,6 @@
 # Die Einstellungen
 
-Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat drei Abschnitte.
+Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat vier Abschnitte.
 
 ## GitHub-Sync
 
@@ -31,6 +31,6 @@ Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → E
 * Thema: Überblick
 * Zielgruppe: Technik
 * Reihenfolge: 8
-* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Abgleich, eigenes CSS und das Verhalten beim Deinstallieren.
+* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Abgleich, eigenes CSS, öffentliches Feedback und das Verhalten beim Deinstallieren.
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

@@ -84,7 +84,7 @@ Ein Suchfeld, das schon beim Tippen passende Seiten des Handbuchs vorschlägt. W
 
 ![Icon des Blocks „Handbuch-Feedback“](../assets/bloecke-feedback.webp)
 
-Stellt die Frage „War das hilfreich?“ mit Ja und Nein. Wirkt nur auf Einzelseiten und nur für angemeldete Personen.
+Stellt die Frage „War das hilfreich?“ mit Ja und Nein. Wirkt nur auf Einzelseiten. Standardmäßig sehen nur angemeldete Personen die Schaltflächen; öffentliches Feedback lässt sich in [den Einstellungen](../die-einstellungen.md) einschalten.
 
 ### Handbuch-Seiten-Meta
 

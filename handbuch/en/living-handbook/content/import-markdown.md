@@ -33,6 +33,8 @@ Each area needs a start page. The import solves that like this:
 * If the folder holds a file called `index.md` or `README.md`, that file becomes the area's start page. The other pages of the folder are placed under it.
 * If there is no such file, the import creates the start page itself. It automatically shows a list of all pages in the area.
 
+A large folder import does not fit into a single request, so it works in passes: it imports as many pages as it manages in the time available and then carries on by itself. The pages appear in the result list as they arrive. Right at the end it checks the links between the pages, because a link can only be resolved once its target page exists. While the message "checking the links on …" is running, the import is not finished. Leave the window open until the closing message appears.
+
 ## The data sheet at the end of a file: transport metadata
 
 Every handbook page carries details such as page type, audience or review date. In WordPress you enter them into fields. A Markdown file has no such fields. That is why every file may carry a short data sheet at the end. It is called **transport metadata**. The import reads it, fills the page's fields with it, and removes it from the text.
@@ -42,7 +44,7 @@ The data sheet starts with a level-two heading that reads exactly "Transport-Met
 ```markdown
 * Seitentyp: Guide
 * Verantwortliche Rolle: Handbook editors
-* Thema: Content
+* Thema: Application
 * Zielgruppe: All members, Tech
 * Eltern-Seite: Overview
 * Reihenfolge: 3
@@ -69,7 +71,7 @@ A second import of the same source creates no copies. It updates the existing pa
 <summary>Pitfalls: Limits of the import</summary>
 
 * **At most 200 files per folder import.** If the limit is reached, the result list says so. Import the remaining subfolders separately afterwards.
-* **GitHub throttles after about 60 requests per hour.** A very large import can hit that limit. The import reports it. Wait an hour and try again.
+* **GitHub throttles after about 60 requests per hour.** A very large import can hit that limit. It then stops on a whole page and reports how many pages it managed and from when it can continue. Nothing is lost: simply start the import again afterwards, pages that already exist are updated, not duplicated. From about twenty files on, the import downloads the project once as an archive instead of fetching every file separately, so the limit is usually not reached at all.
 * **Private GitHub projects** cannot be fetched directly. Download the files there as a ZIP and import the ZIP file.
 * **ZIP limits:** at most 2000 files, 5 MB per file, 100 MB uncompressed.
 

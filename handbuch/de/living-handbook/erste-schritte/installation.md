@@ -31,7 +31,7 @@ Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **H
 <details>
 <summary>Stolpersteine: Wenn etwas nicht klappt</summary>
 
-* **Die Handbuch-Seiten sehen kaputt oder unformatiert aus:** Dein Theme ist vermutlich kein Block-Theme. Prüfe das unter **Design**. Fehlt dort der Eintrag **Website-Editor**, ist das Theme klassisch.
+* **Die Handbuch-Seiten sehen kaputt oder unformatiert aus:** Dein Theme ist vermutlich kein Block-Theme. Prüfe das unter **Design**. Fehlt dort der Eintrag **Editor**, ist das Theme klassisch.
 * **Handbuch-Adressen liefern „Seite nicht gefunden“:** Öffne einmal **Einstellungen → Permalinks**. Das erneuert die Adress-Regeln.
 * **Du arbeitest mit dem Quellcode statt mit der fertigen ZIP-Datei:** Dann sind zusätzliche Schritte nötig. Sie stehen in der [Entwickler-Dokumentation auf GitHub](https://github.com/rfluethi/living-handbook#development).
 

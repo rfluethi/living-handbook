@@ -5,7 +5,7 @@ How to get the plugin ready to use. The path runs from the ZIP file to the first
 <details>
 <summary>Requirements: What your website needs</summary>
 
-* **WordPress 6.7 or newer, with a block theme.** A block theme is a newer kind of WordPress design that is edited entirely in the Site Editor. Twenty Twenty-Five is one example. With an older, classic theme the handbook pages will not display properly.
+* **WordPress 6.7 or newer, with a block theme.** A block theme is a newer kind of WordPress design that is edited entirely in the site editor. Twenty Twenty-Five, which ships with WordPress, is one example. With an older, classic theme the handbook pages will not display properly.
 * **PHP 8.1 or newer.** Your website's PHP version is listed under **Tools → Site Health → Info**.
 * **A single WordPress site.** If you run a network of several sites (multisite), activate the plugin per site, not network-wide.
 

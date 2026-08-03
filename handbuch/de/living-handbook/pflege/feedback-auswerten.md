@@ -5,7 +5,7 @@ Unter jeder Seite steht die Frage „War das hilfreich?“ mit Ja und Nein. Dies
 <details>
 <summary>Konzept: Wie gezählt wird</summary>
 
-Standardmäßig stimmen nur angemeldete Personen ab, die die Seite lesen dürfen, mit einer Stimme pro Person und Seite. In den [Einstellungen](../die-einstellungen.md) lässt sich öffentliches Feedback einschalten. Dann stimmen auch abgemeldete Besucherinnen und Besucher auf öffentlichen Seiten ab. Solche Stimmen werden datenschonend keiner Person zugeordnet, kein Cookie, keine IP; dort gibt es deshalb keine Begrenzung auf eine Stimme.
+Standardmäßig stimmen nur angemeldete Personen ab, die die Seite lesen dürfen, mit einer Stimme pro Person und Seite. In den [Einstellungen](../die-einstellungen.md) lässt sich öffentliches Feedback einschalten. Dann stimmen auch abgemeldete Besucherinnen und Besucher auf öffentlichen Seiten ab. Solche Stimmen werden datenschonend keiner Person zugeordnet, kein Cookie, keine IP; dort gibt es deshalb keine Begrenzung auf eine Stimme. Auf internen Seiten stimmen unabhängig davon nur angemeldete Personen ab, je eine Stimme.
 
 </details>
 

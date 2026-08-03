@@ -33,11 +33,13 @@ Jeder Bereich braucht dabei eine Startseite. Der Import löst das so:
 * Liegt im Ordner eine Datei namens `index.md` oder `README.md`, wird sie die Startseite des Bereichs. Die übrigen Seiten des Ordners werden ihr untergeordnet.
 * Liegt dort keine solche Datei, erzeugt der Import die Startseite selbst. Sie zeigt automatisch eine Liste aller Seiten des Bereichs.
 
+Ein großer Ordner-Import passt nicht in einen einzigen Aufruf, darum arbeitet er in Etappen: Er importiert so viele Seiten, wie er in der zur Verfügung stehenden Zeit schafft, und macht dann von selbst weiter. Die Seiten erscheinen dabei laufend in der Ergebnisliste. Ganz am Schluss prüft er die Links zwischen den Seiten, denn ein Link lässt sich erst auflösen, wenn seine Zielseite existiert. Solange die Meldung „Links auf … werden geprüft“ läuft, ist der Import noch nicht fertig. Lass das Fenster offen, bis die Abschlussmeldung erscheint.
+
 ## Der Steckbrief am Dateiende: Transport-Metadaten
 
 Zu jeder Handbuch-Seite gehören Angaben wie Seitentyp, Zielgruppe oder Prüfdatum. In WordPress trägst du sie in Felder ein. Eine Markdown-Datei hat diese Felder nicht. Darum darf jede Datei am Ende einen kurzen Steckbrief tragen. Er heißt **Transport-Metadaten**. Der Import liest ihn, füllt damit die Felder der Seite und entfernt ihn aus dem Text.
 
-Der Steckbrief beginnt mit einer Überschrift der zweiten Ebene, die genau „Transport-Metadaten“ lautet. Ab dieser Überschrift zählt alles bis zum Dateiende als Steckbrief. Darunter steht eine Liste; jede Zeile ist freiwillig:
+Der Steckbrief beginnt mit einer Überschrift der zweiten Ebene, die genau „Transport-Metadaten“ lautet. Diese Bezeichnung ist deutsch und fest vorgegeben, in welcher Sprache das Handbuch auch geschrieben ist; der Import erkennt nur genau diese Überschrift. Ab dieser Überschrift zählt alles bis zum Dateiende als Steckbrief. Darunter steht eine Liste; jede Zeile ist freiwillig:
 
 ```markdown
 * Seitentyp: Anleitung
@@ -50,6 +52,8 @@ Der Steckbrief beginnt mit einer Überschrift der zweiten Ebene, die genau „Tr
 * Letzte Prüfung: 2026-07-08
 * Prüfintervall: 90 Tage
 ```
+
+Auch die Bezeichnungen der Zeilen sind deutsch und fest vorgegeben. Was dahinter steht, gehört dir: Begriffe in der Sprache deines Handbuchs, der Seitentitel der Eltern-Seite, dein Textauszug.
 
 **Wichtig:** Ab Plugin-Version 0.43 darf die Überschrift „Transport-Metadaten“ auch in Beispielen und Codeblöcken vorkommen. Der Import überspringt Codeblöcke und nimmt das letzte Vorkommen außerhalb davon. Ältere Versionen trennen dagegen am ersten Auftreten; dort schneidet ein zweites Vorkommen den Rest der Seite ab. Deshalb fehlt die Überschrift im Beispiel oben.
 
@@ -67,7 +71,7 @@ Ein zweiter Import derselben Quelle legt keine Kopien an. Er aktualisiert die be
 <summary>Stolpersteine: Grenzen des Imports</summary>
 
 * **Höchstens 200 Dateien pro Ordner-Import.** Wird die Grenze erreicht, sagt es die Ergebnisliste. Importiere die restlichen Unterordner danach einzeln.
-* **GitHub bremst nach etwa 60 Abrufen pro Stunde.** Ein sehr großer Import kann diese Grenze erreichen. Der Import meldet es. Warte dann eine Stunde und versuche es erneut.
+* **GitHub bremst nach etwa 60 Abrufen pro Stunde.** Ein sehr großer Import kann diese Grenze erreichen. Er hält dann auf einer ganzen Seite an und meldet, wie viele Seiten er geschafft hat und ab wann es weitergeht. Verloren geht nichts: Starte den Import danach einfach noch einmal, vorhandene Seiten werden aktualisiert und nicht verdoppelt. Ab etwa zwanzig Dateien lädt der Import das Projekt ohnehin einmal als Archiv, statt jede Datei einzeln abzurufen; dann wird die Grenze meist gar nicht erreicht.
 * **Nicht öffentliche GitHub-Projekte** lassen sich nicht direkt abrufen. Lade die Dateien dort als ZIP herunter und importiere die ZIP-Datei.
 * **ZIP-Grenzen:** höchstens 2000 Dateien, 5 MB pro Datei, 100 MB entpackt.
 

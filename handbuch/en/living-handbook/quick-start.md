@@ -2,6 +2,8 @@
 
 The whole path to a finished handbook on one page. For everyone who knows WordPress well and just wants an overview. Every step links to the detailed guide.
 
+![Diagram of the entry page: title, navigation on the left, search field, area tiles, recently updated pages and the filter bar on the right](assets/einstiegsseite-aufbau.webp)
+
 ## Six steps to a handbook
 
 1. **Install:** Upload the plugin ZIP and activate it. Requirements: WordPress 6.7 with a block theme, PHP 8.1. Details: [Installation](getting-started/installation.md).
