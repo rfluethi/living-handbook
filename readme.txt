@@ -133,6 +133,9 @@ Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-h
 
 == Upgrade Notice ==
 
+= 0.56.0 =
+Recommended for every site, and especially for large handbooks: a handbook view costs a fraction of the database queries it used to, an import no longer loses links to pages it has not created yet, and an import that runs into GitHub's hourly limit stops cleanly instead of marking every remaining page with an error. Two internal custom fields are renamed automatically on update; nothing needs doing. Import an affected handbook again to repair its links.
+
 = 0.55.0 =
 Recommended if you import from GitHub or MkDocs, and for every site with internal handbooks: large imports no longer die at the server's time limit, a MkDocs navigation is kept, and the media endpoint no longer describes images from handbooks you may not read.
 
