@@ -31,13 +31,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Feedback {
 
-	public const YES = '_living_handbook_feedback_yes';
-	public const NO  = '_living_handbook_feedback_no';
+	/**
+	 * The vote counters, under the plugin's protected prefix like everything it
+	 * writes about a page rather than for it. They were _living_handbook_ before,
+	 * a third spelling next to living_handbook_ and _lh_.
+	 */
+	public const YES = '_lh_feedback_yes';
+	public const NO  = '_lh_feedback_no';
 
 	/**
 	 * Meta key holding the list of user IDs that already voted on a page.
 	 */
-	public const VOTERS = '_living_handbook_feedback_voters';
+	public const VOTERS = '_lh_feedback_voters';
 
 	/**
 	 * Hook registration into WordPress.

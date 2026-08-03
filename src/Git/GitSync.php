@@ -51,8 +51,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class GitSync {
 
-	public const META_SOURCE = 'living_handbook_source';
-	public const META_URL    = 'living_handbook_markdown_source';
+	/**
+	 * Where a page is maintained, and where its Markdown comes from.
+	 *
+	 * Protected keys (a leading underscore), like everything the plugin writes
+	 * about a page rather than for it. They used to be plain
+	 * living_handbook_source and living_handbook_markdown_source, which put them
+	 * in the Custom Fields box of every handbook page: changing "github" to
+	 * "wordpress" there silently stopped the sync, and setting it the other way
+	 * round handed a hand-written page to the next sync. The values are still
+	 * readable and writable over the REST API, where the auth callback asks for
+	 * edit_post, because the editor needs them.
+	 */
+	public const META_SOURCE = '_lh_source';
+	public const META_URL    = '_lh_source_url';
 
 	public const SOURCE_WORDPRESS = 'wordpress';
 	public const SOURCE_GITHUB    = 'github';
