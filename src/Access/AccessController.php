@@ -369,6 +369,13 @@ final class AccessController {
 
 		$user_id = get_current_user_id();
 
+		// Read the handbook membership of the whole result set in one query
+		// instead of one per row. Without this, filtering a set costs a query per
+		// post, which a navigation tree over a few thousand pages turns into a few
+		// thousand queries. can_view_post() reads through the same cache, so
+		// priming it here is what makes the decision a cache hit.
+		self::prime_post_terms( $posts );
+
 		return array_values(
 			array_filter(
 				$posts,
@@ -622,11 +629,50 @@ final class AccessController {
 	}
 
 	/**
+	 * Fill the caches the per-post access decision reads from, for the whole
+	 * result set at once.
+	 *
+	 * The_posts runs before WP_Query fills its own caches, so at this point the
+	 * post objects we are handed are not in the post cache and their handbook
+	 * membership is not in the term cache. Deciding access post by post then
+	 * costs two queries per row, which a navigation tree over a few thousand
+	 * pages turns into a few thousand queries. Both caches are filled here in
+	 * one go; WordPress fills them again a few lines later, and finds them warm.
+	 *
+	 * @param WP_Post[] $posts Posts about to be filtered.
+	 * @return void
+	 */
+	private static function prime_post_terms( array $posts ): void {
+		$objects = array_values( array_filter( $posts, static fn( $post ) => $post instanceof WP_Post ) );
+		if ( count( $objects ) < 2 ) {
+			return;
+		}
+
+		update_post_caches( $objects, Handbook::POST_TYPE, true, false );
+
+		// An attachment is judged by its parent page, which is not part of this
+		// result set and so was not primed above.
+		$parents = array();
+		foreach ( $objects as $post ) {
+			if ( 'attachment' === $post->post_type && $post->post_parent > 0 ) {
+				$parents[] = (int) $post->post_parent;
+			}
+		}
+		if ( $parents ) {
+			_prime_post_caches( array_values( array_unique( $parents ) ), true, false );
+		}
+	}
+
+	/**
 	 * Whether a user may view a handbook page.
 	 *
 	 * A page may belong to more than one handbook. Access is combined
 	 * fail-closed: the page is viewable only when every handbook it belongs to
 	 * allows the user, and a page without any handbook is not viewable.
+	 *
+	 * The membership is read with get_the_terms(), which goes through the object
+	 * term cache; wp_get_object_terms() would query every time. See
+	 * prime_post_terms(), which fills that cache for a whole result set at once.
 	 *
 	 * @param int $post_id Post ID.
 	 * @param int $user_id User ID (0 for a guest).
@@ -636,13 +682,13 @@ final class AccessController {
 		if ( user_can( $user_id, 'edit_others_posts' ) ) {
 			$allowed = true;
 		} else {
-			$terms = wp_get_object_terms( $post_id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
-			if ( is_wp_error( $terms ) || empty( $terms ) ) {
+			$terms = get_the_terms( $post_id, Handbooks::TAXONOMY );
+			if ( is_wp_error( $terms ) || ! is_array( $terms ) || empty( $terms ) ) {
 				$allowed = false;
 			} else {
 				$allowed = true;
-				foreach ( $terms as $term_id ) {
-					if ( ! self::can_view_term( (int) $term_id, $user_id ) ) {
+				foreach ( $terms as $term ) {
+					if ( ! $term instanceof WP_Term || ! self::can_view_term( $term->term_id, $user_id ) ) {
 						$allowed = false;
 						break;
 					}

@@ -57,6 +57,21 @@ The integration tests run against a real WordPress test environment. They need a
 
 `tests/bootstrap.php` reads `WP_TESTS_CONFIG_FILE_PATH` and defines the matching constant, so the config file above is the single place that describes your local database and WordPress path.
 
+## Measuring performance
+
+Performance work without a measurement is guessing, and the costs that matter only appear on a handbook that is actually large. Two scripts do that, in a development site with WP-CLI (Local ships it):
+
+```bash
+wp eval-file wp-content/plugins/living-handbook/bin/seed-performance.php
+wp eval-file wp-content/plugins/living-handbook/bin/measure-performance.php
+```
+
+The first creates a public handbook "Performance-Test" with 2000 pages (`LH_SEED_PAGES` changes the count, `LH_SEED_RESET=1` clears a previous run first). The second renders the handbook entry page, one single page, and the navigation tree on its own, from the plugin's own block templates with the theme's header and footer removed, and reports for each: the number of queries, the wall time, the time spent in the database, and every query that ran more than once. That last list is the point of the whole exercise. A query that repeats a few hundred times is an N+1, and it names itself.
+
+Every view is measured twice, once with an empty object cache and once straight after. Cold is what a site without a persistent object cache pays on every request, and is the number that has to get smaller; warm shows what caching already saves. The measurement runs as a logged-out visitor, because anything slow for a guest is slow for everyone.
+
+Do not seed into a site whose content you want to keep: the test data is a real handbook with real pages.
+
 ## Building an installable zip
 
 To run every check and, if they all pass, build the zip in one step:
