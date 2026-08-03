@@ -66,13 +66,13 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Setup\Settings::OPTION_CUSTOM_CSS );
 	delete_option( LivingHandbook\Setup\Settings::OPTION_PUBLIC_FEEDBACK );
 
-	// Always: remove the navigation and area caches (transients keyed by version).
+	// Always: remove the area cards cache (transients keyed by version and by
+	// viewer). There is no lh_nav_ prefix to clean up. The navigation is built
+	// fresh on every request, see Navigation::CACHE_VERSION_OPTION.
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 	$wpdb->query(
 		"DELETE FROM {$wpdb->options}
-		 WHERE option_name LIKE '\\_transient\\_lh\\_nav\\_%'
-		    OR option_name LIKE '\\_transient\\_timeout\\_lh\\_nav\\_%'
-		    OR option_name LIKE '\\_transient\\_lh\\_areas\\_%'
+		 WHERE option_name LIKE '\\_transient\\_lh\\_areas\\_%'
 		    OR option_name LIKE '\\_transient\\_timeout\\_lh\\_areas\\_%'"
 	);
 	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange

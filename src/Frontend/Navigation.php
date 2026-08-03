@@ -42,9 +42,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Navigation {
 
 	/**
-	 * Option holding the cache version; kept so the hook wiring stays valid and
-	 * a future cache can key off it. The current renderer builds fresh, so the
-	 * value is only bumped, not read.
+	 * Option holding the shared cache version of the frontend.
+	 *
+	 * The name says navigation for historical reasons; what reads it is the area
+	 * cards cache in Cards::areas_cache_key(). The navigation itself is not
+	 * cached, and deliberately so: its markup carries the current page and its
+	 * open branches, so an entry would be needed per page and per viewer, and on
+	 * a large handbook that is a cache that never hits and never stops growing.
+	 * What the navigation costs is the query behind it, not the markup: measured
+	 * on 2000 pages, 327 of 470 milliseconds are the query, and that cost is
+	 * shared with everything else that reads the handbook.
 	 */
 	public const CACHE_VERSION_OPTION = 'living_handbook_nav_version';
 
@@ -119,8 +126,9 @@ final class Navigation {
 	}
 
 	/**
-	 * Invalidate any cached navigation. The renderer builds fresh, so this only
-	 * bumps the version counter, kept for the hook wiring and a future cache.
+	 * Bump the shared cache version, which retires every cached area card list
+	 * at once. Hooked to the events that change a handbook: saving, deleting or
+	 * restoring a page, and changes to the handbook terms.
 	 *
 	 * @return void
 	 */

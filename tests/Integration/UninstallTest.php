@@ -191,7 +191,6 @@ final class UninstallTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_the_cache_cleanup_only_takes_the_plugins_own_transients(): void {
-		set_transient( 'lh_nav_7_abc', 'nav', HOUR_IN_SECONDS );
 		set_transient( 'lh_areas_7_abc', 'areas', HOUR_IN_SECONDS );
 		set_transient( 'other_plugin_cache', 'keep me', HOUR_IN_SECONDS );
 		set_transient( 'lh_something_else', 'keep me too', HOUR_IN_SECONDS );
@@ -201,9 +200,8 @@ final class UninstallTest extends WP_UnitTestCase {
 
 		// The cleanup is raw SQL, so the check is raw too: the object cache of this
 		// process still holds what the query deleted underneath it.
-		$this->assertFalse( $this->option_row( '_transient_lh_nav_7_abc' ), 'The navigation cache is the plugin own.' );
-		$this->assertFalse( $this->option_row( '_transient_timeout_lh_nav_7_abc' ), 'Its timeout row goes with it.' );
-		$this->assertFalse( $this->option_row( '_transient_lh_areas_7_abc' ) );
+		$this->assertFalse( $this->option_row( '_transient_lh_areas_7_abc' ), 'The area cards cache is the plugin own.' );
+		$this->assertFalse( $this->option_row( '_transient_timeout_lh_areas_7_abc' ), 'Its timeout row goes with it.' );
 		$this->assertSame( 'keep me', $this->option_row( '_transient_other_plugin_cache' ), 'Another plugin cache must survive.' );
 		$this->assertSame( 'keep me too', $this->option_row( '_transient_lh_something_else' ), 'The pattern must not widen to every lh_ key.' );
 		$this->assertSame( 'keep me as well', $this->option_row( 'unrelated_option' ) );

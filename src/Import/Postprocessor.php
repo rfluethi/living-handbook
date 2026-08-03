@@ -37,6 +37,21 @@ final class Postprocessor {
 	public const META_SOURCE_PATH = '_lh_source_path';
 
 	/**
+	 * Lookup tables for one finalize pass, or null when none is loaded.
+	 *
+	 * Resolving a link asks for a page by source path, by slug or by title. Each
+	 * of those was a query, so a run of a few hundred pages with a handful of
+	 * links each ran into thousands of them, in the one request that has to
+	 * finish. The tables answer the same three questions from one query over the
+	 * handbook. They are only loaded during finalize_report(); a single page
+	 * converted on its own keeps asking the database, where one query beats
+	 * reading the whole handbook.
+	 *
+	 * @var array{path: array<string, int>, slug: array<string, int>, title: array<string, int[]>}|null
+	 */
+	private static ?array $index = null;
+
+	/**
 	 * Apply the transport values to a page.
 	 *
 	 * @param int                  $post_id            Post id.
@@ -123,20 +138,153 @@ final class Postprocessor {
 	public static function finalize_report( array $ids ): array {
 		$converted  = 0;
 		$unresolved = array();
+
+		$numeric = array();
 		foreach ( $ids as $id ) {
 			$id = (int) $id;
-			if ( 0 === $id ) {
-				continue;
+			if ( 0 !== $id ) {
+				$numeric[] = $id;
 			}
-			self::resolve_parent( $id );
-			$result     = self::convert_md_links( $id );
-			$converted += $result['converted'];
-			$unresolved = array_merge( $unresolved, $result['unresolved'] );
 		}
+		if ( array() === $numeric ) {
+			return array(
+				'converted'  => 0,
+				'unresolved' => array(),
+			);
+		}
+
+		self::load_index();
+		// The pages of the run are read again here, page by page, and each one is
+		// asked for its handbook. Both come from the caches this fills.
+		_prime_post_caches( $numeric, true, true );
+
+		try {
+			foreach ( $numeric as $id ) {
+				self::resolve_parent( $id );
+				$result     = self::convert_md_links( $id );
+				$converted += $result['converted'];
+				$unresolved = array_merge( $unresolved, $result['unresolved'] );
+			}
+		} finally {
+			self::forget_index();
+		}
+
 		return array(
 			'converted'  => $converted,
 			'unresolved' => $unresolved,
 		);
+	}
+
+	/**
+	 * Read the handbook into the lookup tables, in one query.
+	 *
+	 * The tables answer what the per-link lookups used to ask the database for:
+	 * a page by its source path, by its slug, and by its title. Order matches
+	 * what those lookups returned, newest first, so a duplicate slug or title
+	 * resolves to the same page as before.
+	 *
+	 * @return void
+	 */
+	private static function load_index(): void {
+		global $wpdb;
+
+		$statuses = get_post_stati( array( 'exclude_from_search' => false ) );
+		if ( array() === $statuses ) {
+			$statuses = array( 'publish' );
+		}
+		// A maintenance read over one post type, deliberately not a WP_Query: the
+		// point of these tables is to replace thousands of them. The status filter
+		// is applied below rather than in the statement, so the SQL stays a fixed
+		// string with two placeholders.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.ID, p.post_title, p.post_name, p.post_status, m.meta_value AS source_path
+				 FROM {$wpdb->posts} p
+				 LEFT JOIN {$wpdb->postmeta} m ON m.post_id = p.ID AND m.meta_key = %s
+				 WHERE p.post_type = %s
+				 ORDER BY p.post_date DESC, p.ID DESC",
+				self::META_SOURCE_PATH,
+				Handbook::POST_TYPE
+			)
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		$index = array(
+			'path'  => array(),
+			'slug'  => array(),
+			'title' => array(),
+		);
+		foreach ( is_array( $rows ) ? $rows : array() as $row ) {
+			// The same statuses WP_Query means by "any": everything except the
+			// ones excluded from search, which is where trash and auto-draft sit.
+			if ( ! in_array( (string) $row->post_status, $statuses, true ) ) {
+				continue;
+			}
+			$id   = (int) $row->ID;
+			$path = (string) ( $row->source_path ?? '' );
+			$slug = (string) $row->post_name;
+			// Newest wins, exactly as the single queries ordered it, so the first
+			// row for a key is the one that counts.
+			if ( '' !== $path && ! isset( $index['path'][ $path ] ) ) {
+				$index['path'][ $path ] = $id;
+			}
+			if ( '' !== $slug && ! isset( $index['slug'][ $slug ] ) ) {
+				$index['slug'][ $slug ] = $id;
+			}
+			// Titles are compared the way the database compares them, without
+			// regard to case. Two entries are enough: the caller only needs one
+			// that is not the page asking.
+			$title = self::title_key( (string) $row->post_title );
+			if ( '' !== $title && count( $index['title'][ $title ] ?? array() ) < 2 ) {
+				$index['title'][ $title ][] = $id;
+			}
+		}
+
+		self::$index = $index;
+	}
+
+	/**
+	 * Drop the lookup tables.
+	 *
+	 * @return void
+	 */
+	private static function forget_index(): void {
+		self::$index = null;
+	}
+
+	/**
+	 * The handbooks a page belongs to.
+	 *
+	 * Read through the object term cache (get_the_terms), not around it
+	 * (wp_get_object_terms), so that a run which primed that cache does not ask
+	 * the database once per page and once more per link.
+	 *
+	 * @param int $post_id Post id.
+	 * @return int[]
+	 */
+	private static function handbook_ids( int $post_id ): array {
+		$terms = get_the_terms( $post_id, Handbooks::TAXONOMY );
+		if ( is_wp_error( $terms ) || ! is_array( $terms ) ) {
+			return array();
+		}
+		$ids = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term ) {
+				$ids[] = (int) $term->term_id;
+			}
+		}
+		return $ids;
+	}
+
+	/**
+	 * The key a title is stored and looked up under.
+	 *
+	 * @param string $title Title.
+	 * @return string
+	 */
+	private static function title_key( string $title ): string {
+		return function_exists( 'mb_strtolower' ) ? mb_strtolower( $title, 'UTF-8' ) : strtolower( $title );
 	}
 
 	/**
@@ -201,8 +349,7 @@ final class Postprocessor {
 		// handbook, and it stays a link: whether the reader may open it is decided
 		// when they click. What must not happen is that the title of a page in a
 		// stricter handbook is pulled into this one as the link text.
-		$own_handbooks = wp_get_object_terms( $post_id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
-		$own_handbooks = is_wp_error( $own_handbooks ) ? array() : array_map( 'intval', $own_handbooks );
+		$own_handbooks = self::handbook_ids( $post_id );
 		$count         = 0;
 		$unresolved    = array();
 		$content       = (string) preg_replace_callback(
@@ -230,8 +377,7 @@ final class Postprocessor {
 				$text  = $found[3];
 				$plain = trim( wp_strip_all_tags( $text ) );
 				if ( '' === $plain || 1 === preg_match( '/\.md$/i', $plain ) ) {
-					$target_handbooks = wp_get_object_terms( $target, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
-					$target_handbooks = is_wp_error( $target_handbooks ) ? array() : array_map( 'intval', $target_handbooks );
+					$target_handbooks = self::handbook_ids( $target );
 					$same_handbook    = ! empty( array_intersect( $own_handbooks, $target_handbooks ) );
 
 					if ( $same_handbook ) {
@@ -325,6 +471,9 @@ final class Postprocessor {
 		if ( '' === $path ) {
 			return 0;
 		}
+		if ( null !== self::$index ) {
+			return self::$index['path'][ $path ] ?? 0;
+		}
 		$query = new WP_Query(
 			AccessController::internal(
 				array(
@@ -355,6 +504,14 @@ final class Postprocessor {
 	 * @return int Post id, or 0.
 	 */
 	private static function find_page_by_title( string $title, int $exclude ): int {
+		if ( null !== self::$index ) {
+			foreach ( self::$index['title'][ self::title_key( $title ) ] ?? array() as $candidate ) {
+				if ( $candidate !== $exclude ) {
+					return $candidate;
+				}
+			}
+			return 0;
+		}
 		$query = new WP_Query(
 			AccessController::internal(
 				array(
@@ -383,6 +540,9 @@ final class Postprocessor {
 	private static function find_page_by_slug( string $slug ): int {
 		if ( '' === $slug ) {
 			return 0;
+		}
+		if ( null !== self::$index ) {
+			return self::$index['slug'][ $slug ] ?? 0;
 		}
 		$posts = get_posts(
 			AccessController::internal(

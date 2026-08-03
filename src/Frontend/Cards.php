@@ -168,7 +168,7 @@ final class Cards {
 	public static function areas_cache_key( int $term_id ): string {
 		// Shared cache version, bumped by Navigation::invalidate() on page and
 		// term changes.
-		$version = (int) get_option( 'living_handbook_nav_version', 0 );
+		$version = (int) get_option( Navigation::CACHE_VERSION_OPTION, 0 );
 
 		// The card list is built from a query that is filtered per user, so the
 		// key has to carry who is asking. Without that, the first editor to open
