@@ -1,6 +1,6 @@
 # Die Einstellungen
 
-Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat fünf Abschnitte.
+Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat fünf Reiter. Gespeichert wird immer nur der Reiter, den du gerade siehst, die übrigen bleiben unberührt.
 
 ## GitHub-Sync
 
@@ -10,7 +10,9 @@ Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → E
 
 **Schriftgröße:** Ein Prozentwert für die Schrift, die das Plugin selbst setzt: Navigation, Inhaltsverzeichnis, Abzeichen, Kacheln und die Metadaten-Fußzeile. Der Text einer Seite bleibt unberührt, der gehört deinem Theme. 100 Prozent sind 16 Pixel, die Größe, für die das Plugin gestaltet ist. Setzt dein Theme größere Schrift, wirkt das Handbuch daneben klein; dann hilft ein Wert um 120 bis 130 Prozent. Alle Größen verschieben sich gemeinsam, ihr Verhältnis zueinander bleibt erhalten.
 
-**Acht Farbfelder:** Fläche, Text auf der Fläche, Akzent, Abzeichen-Fläche, Abzeichen-Text und die drei Prüfstatus-Farben. Leer heißt: das Theme entscheidet. So wird das Plugin ausgeliefert, und so ist es gedacht. Fülle ein Feld nur dort aus, wo dein Theme daneben liegt, etwa weil seine Farbwerte nicht zu dem passen, was es tatsächlich anzeigt, oder weil der Kontrast zu schwach ist. Die Farbauswahl bietet dir die Palette deines Themes an, und mit **Löschen** kommst du zum Theme zurück. Die Schriftfarbe auf farbig gefüllten Knöpfen musst du nicht wählen: Das Plugin nimmt Schwarz oder Weiß, je nachdem, was auf deiner Akzentfarbe besser lesbar ist.
+**Zehn Farbfelder:** Fläche, Text auf der Fläche, Akzent, je Fläche und Text für das Schlagwort- und das Zielgruppen-Abzeichen, dazu die drei Prüfstatus-Farben. Leer heißt: das Theme entscheidet. So wird das Plugin ausgeliefert, und so ist es gedacht. Fülle ein Feld nur dort aus, wo dein Theme daneben liegt, etwa weil seine Farbwerte nicht zu dem passen, was es tatsächlich anzeigt, oder weil der Kontrast zu schwach ist. Die Farbauswahl bietet dir die Palette deines Themes an, und mit **Löschen** kommst du zum Theme zurück. Die Schriftfarbe auf farbig gefüllten Knöpfen musst du nicht wählen: Das Plugin nimmt Schwarz oder Weiß, je nachdem, was auf deiner Akzentfarbe besser lesbar ist.
+
+Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht farblich unterscheidbar: Der **Seitentyp** nimmt die Akzentfarbe, das **Schlagwort** und die **Zielgruppe** je ihr eigenes Paar. Wenn du also nur die Schlagwort-Fläche änderst, färbt sich genau ein Abzeichen, das ist kein Fehler. Den Seitentyp änderst du über den Akzent.
 
 **Eigenes CSS:** Gestaltungsregeln, die nur auf den Handbuch-Seiten laden. Sie werden mit dem Plugin gespeichert und beim Löschen des Plugins mit entfernt. Eigenes CSS gewinnt gegen die Farbfelder darüber, du kannst also beides mischen. Wie du damit die Farben änderst, zeigt [Gestaltung anpassen](oberflaeche/gestaltung-anpassen.md). Beispiele stehen direkt auf der Einstellungs-Seite im Reiter **Hilfe** oben rechts.
 

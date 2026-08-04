@@ -16,6 +16,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Frontend\Appearance;
+use LivingHandbook\Setup\Settings;
 use WP_UnitTestCase;
 
 /**
@@ -182,6 +183,85 @@ final class AppearanceTest extends WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'var(--lh-user-on-accent,', $css );
 		$this->assertStringContainsString( 'calc(var(--lh-base, 1rem)', $css );
+	}
+
+	/**
+	 * Every tab has a settings group of its own.
+	 *
+	 * This is the one that would cost data. options.php walks the group of the
+	 * submitted form and calls update_option() for every option in it, with null
+	 * for the ones the form did not send. With one group across five tabs,
+	 * saving the Appearance tab would empty the sync schedule, the feedback
+	 * switch, the no-access page and the uninstall choice, and nothing would say
+	 * so.
+	 *
+	 * @return void
+	 */
+	public function test_each_tab_keeps_its_options_to_itself(): void {
+		global $new_allowed_options;
+
+		// Called directly rather than through admin_init: the point is what this
+		// class registers, and the rest of admin_init sends headers.
+		( new Settings() )->register_settings();
+
+		$this->assertNotEmpty( $new_allowed_options, 'No settings group is registered at all.' );
+
+		$seen = array();
+		foreach ( array_keys( Settings::tabs() ) as $tab ) {
+			$group = Settings::group( $tab );
+			$this->assertArrayHasKey( $group, $new_allowed_options, $tab );
+
+			foreach ( $new_allowed_options[ $group ] as $option ) {
+				$this->assertArrayNotHasKey( $option, $seen, $option . ' is in two tabs.' );
+				$seen[ $option ] = $tab;
+			}
+		}
+
+		// And every option the plugin registers really sits in one of them, so a
+		// new setting cannot quietly land in a group no form ever submits.
+		foreach ( array( Appearance::OPTION_COLORS, Appearance::OPTION_BASE_SIZE, Settings::OPTION_CUSTOM_CSS, Settings::OPTION_PUBLIC_FEEDBACK, Settings::OPTION_DENIED_PAGE ) as $option ) {
+			$this->assertArrayHasKey( $option, $seen, $option . ' belongs to no tab.' );
+		}
+
+		$this->assertSame( 'appearance', $seen[ Appearance::OPTION_COLORS ] );
+		$this->assertSame( 'access', $seen[ Settings::OPTION_DENIED_PAGE ] );
+	}
+
+	/**
+	 * An unknown tab falls back to the first one rather than rendering an empty
+	 * form whose save would write nothing.
+	 *
+	 * @return void
+	 */
+	public function test_an_unknown_tab_falls_back_to_the_first(): void {
+		$_GET['tab'] = 'gibt-es-nicht';
+		$this->assertSame( 'sync', Settings::current_tab() );
+
+		$_GET['tab'] = 'access';
+		$this->assertSame( 'access', Settings::current_tab() );
+
+		unset( $_GET['tab'] );
+		$this->assertSame( 'sync', Settings::current_tab() );
+	}
+
+	/**
+	 * The page-type badge is not a field, it takes the accent. Someone will
+	 * eventually wonder why setting the topic badge colours only one of the
+	 * three chips; this is the answer, in a form that fails if it changes.
+	 *
+	 * @return void
+	 */
+	public function test_the_three_badge_kinds_take_three_different_colours(): void {
+		$css = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/frontend.css' );
+
+		$this->assertMatchesRegularExpression( '/\.living-handbook-badge--type\s*\{[^}]*--lh-accent-soft/', $css );
+		$this->assertMatchesRegularExpression( '/\.living-handbook-badge--audience\s*\{[^}]*--lh-badge-audience-bg/', $css );
+		$this->assertMatchesRegularExpression( '/\.living-handbook-badge\s*\{[^}]*--lh-badge-bg/', $css );
+
+		$fields = array_keys( Appearance::fields() );
+		$this->assertContains( 'badge-bg', $fields );
+		$this->assertContains( 'badge-audience-bg', $fields );
+		$this->assertNotContains( 'badge-type-bg', $fields, 'The page type follows the accent on purpose.' );
 	}
 
 	/**

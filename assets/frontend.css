@@ -52,8 +52,8 @@
 	--lh-overdue: var(--lh-user-overdue, #c0392b);     /* "Review overdue" (escalation) */
 	--lh-badge-text: var(--lh-user-badge-text, #5f6b75);  /* neutral chip label; fixed, not the surface muted */
 	--lh-badge-bg: var(--lh-user-badge-bg, #eef1f4);
-	--lh-badge-audience-bg: #f3eafc;
-	--lh-badge-audience-text: #6b3fa0;
+	--lh-badge-audience-bg: var(--lh-user-badge-audience-bg, #f3eafc);
+	--lh-badge-audience-text: var(--lh-user-badge-audience-text, #6b3fa0);
 	--lh-badge-ok-bg: #e7f6ec;
 	--lh-badge-due-bg: #fdf0e0;
 	--lh-badge-overdue-bg: #fdecea;

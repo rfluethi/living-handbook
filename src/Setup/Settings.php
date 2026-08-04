@@ -28,9 +28,63 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Settings {
 
 	/**
-	 * The settings group the fields register into.
+	 * The settings group prefix. Every tab registers into a group of its own,
+	 * and that is not cosmetic: options.php walks the group of the submitted
+	 * form and calls update_option() for every option in it, with null for the
+	 * ones the form did not send (wp-admin/options.php, the loop over
+	 * $allowed_options). One group across five tabs would therefore empty the
+	 * four tabs that were not on screen, on every save.
 	 */
 	private const OPTION_GROUP = 'living_handbook_settings';
+
+	/**
+	 * The tabs, in the order they are shown: slug => label callback key. The
+	 * first one is the default.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function tabs(): array {
+		return array(
+			'sync'       => __( 'GitHub sync', 'living-handbook' ),
+			'appearance' => __( 'Appearance', 'living-handbook' ),
+			'feedback'   => __( 'Feedback', 'living-handbook' ),
+			'access'     => __( 'Access', 'living-handbook' ),
+			'uninstall'  => __( 'Uninstall', 'living-handbook' ),
+		);
+	}
+
+	/**
+	 * The settings group of one tab.
+	 *
+	 * @param string $tab Tab slug.
+	 * @return string
+	 */
+	public static function group( string $tab ): string {
+		return self::OPTION_GROUP . '_' . $tab;
+	}
+
+	/**
+	 * The section and field page of one tab.
+	 *
+	 * @param string $tab Tab slug.
+	 * @return string
+	 */
+	private static function tab_page( string $tab ): string {
+		return self::PAGE_SLUG . '_' . $tab;
+	}
+
+	/**
+	 * The tab currently being shown, defaulting to the first one.
+	 *
+	 * @return string
+	 */
+	public static function current_tab(): string {
+		$tabs = self::tabs();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reading which tab to display, not acting on it; the value is checked against the known tabs.
+		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+
+		return isset( $tabs[ $tab ] ) ? $tab : (string) array_key_first( $tabs );
+	}
 
 	/**
 	 * The settings page slug (kept equal to the previous page so the submenu
@@ -191,7 +245,7 @@ final class Settings {
 	 */
 	public function register_settings(): void {
 		register_setting(
-			self::OPTION_GROUP,
+			self::group( 'sync' ),
 			GitSync::OPTION_SCHEDULE,
 			array(
 				'type'              => 'string',
@@ -200,7 +254,7 @@ final class Settings {
 			)
 		);
 		register_setting(
-			self::OPTION_GROUP,
+			self::group( 'uninstall' ),
 			GitSync::OPTION_UNINSTALL,
 			array(
 				'type'              => 'integer',
@@ -209,7 +263,7 @@ final class Settings {
 			)
 		);
 		register_setting(
-			self::OPTION_GROUP,
+			self::group( 'appearance' ),
 			self::OPTION_CUSTOM_CSS,
 			array(
 				'type'              => 'string',
@@ -218,7 +272,7 @@ final class Settings {
 			)
 		);
 		register_setting(
-			self::OPTION_GROUP,
+			self::group( 'feedback' ),
 			self::OPTION_PUBLIC_FEEDBACK,
 			array(
 				'type'              => 'integer',
@@ -227,7 +281,7 @@ final class Settings {
 			)
 		);
 		register_setting(
-			self::OPTION_GROUP,
+			self::group( 'access' ),
 			self::OPTION_DENIED_PAGE,
 			array(
 				'type'              => 'integer',
@@ -236,7 +290,7 @@ final class Settings {
 			)
 		);
 		register_setting(
-			self::OPTION_GROUP,
+			self::group( 'appearance' ),
 			Appearance::OPTION_COLORS,
 			array(
 				'type'              => 'array',
@@ -245,7 +299,7 @@ final class Settings {
 			)
 		);
 		register_setting(
-			self::OPTION_GROUP,
+			self::group( 'appearance' ),
 			Appearance::OPTION_BASE_SIZE,
 			array(
 				'type'              => 'integer',
@@ -254,23 +308,23 @@ final class Settings {
 			)
 		);
 
-		add_settings_section( 'living_handbook_sync_section', __( 'GitHub sync', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_section( 'living_handbook_sync_section', '', '__return_null', self::tab_page( 'sync' ) );
 		add_settings_field(
 			GitSync::OPTION_SCHEDULE,
 			__( 'Automatic sync', 'living-handbook' ),
 			array( $this, 'render_schedule_field' ),
-			self::PAGE_SLUG,
+			self::tab_page( 'sync' ),
 			'living_handbook_sync_section',
 			array( 'label_for' => GitSync::OPTION_SCHEDULE )
 		);
 
-		add_settings_section( 'living_handbook_appearance_section', __( 'Appearance', 'living-handbook' ), array( $this, 'render_appearance_intro' ), self::PAGE_SLUG );
+		add_settings_section( 'living_handbook_appearance_section', '', array( $this, 'render_appearance_intro' ), self::tab_page( 'appearance' ) );
 
 		add_settings_field(
 			Appearance::OPTION_BASE_SIZE,
 			__( 'Text size', 'living-handbook' ),
 			array( $this, 'render_base_size_field' ),
-			self::PAGE_SLUG,
+			self::tab_page( 'appearance' ),
 			'living_handbook_appearance_section',
 			array( 'label_for' => Appearance::OPTION_BASE_SIZE )
 		);
@@ -280,7 +334,7 @@ final class Settings {
 				Appearance::OPTION_COLORS . '_' . $key,
 				$field['label'],
 				array( $this, 'render_color_field' ),
-				self::PAGE_SLUG,
+				self::tab_page( 'appearance' ),
 				'living_handbook_appearance_section',
 				array(
 					'label_for'   => Appearance::OPTION_COLORS . '_' . $key,
@@ -294,36 +348,36 @@ final class Settings {
 			self::OPTION_CUSTOM_CSS,
 			__( 'Custom CSS', 'living-handbook' ),
 			array( $this, 'render_css_field' ),
-			self::PAGE_SLUG,
+			self::tab_page( 'appearance' ),
 			'living_handbook_appearance_section',
 			array( 'label_for' => self::OPTION_CUSTOM_CSS )
 		);
 
-		add_settings_section( 'living_handbook_feedback_section', __( 'Feedback', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_section( 'living_handbook_feedback_section', '', '__return_null', self::tab_page( 'feedback' ) );
 		add_settings_field(
 			self::OPTION_PUBLIC_FEEDBACK,
 			__( 'Public feedback', 'living-handbook' ),
 			array( $this, 'render_public_feedback_field' ),
-			self::PAGE_SLUG,
+			self::tab_page( 'feedback' ),
 			'living_handbook_feedback_section'
 		);
 
-		add_settings_section( 'living_handbook_access_section', __( 'Access', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_section( 'living_handbook_access_section', '', '__return_null', self::tab_page( 'access' ) );
 		add_settings_field(
 			self::OPTION_DENIED_PAGE,
 			__( 'No-access page', 'living-handbook' ),
 			array( $this, 'render_denied_page_field' ),
-			self::PAGE_SLUG,
+			self::tab_page( 'access' ),
 			'living_handbook_access_section',
 			array( 'label_for' => self::OPTION_DENIED_PAGE )
 		);
 
-		add_settings_section( 'living_handbook_uninstall_section', __( 'Uninstall', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_section( 'living_handbook_uninstall_section', '', '__return_null', self::tab_page( 'uninstall' ) );
 		add_settings_field(
 			GitSync::OPTION_UNINSTALL,
 			__( 'When the plugin is deleted', 'living-handbook' ),
 			array( $this, 'render_uninstall_field' ),
-			self::PAGE_SLUG,
+			self::tab_page( 'uninstall' ),
 			'living_handbook_uninstall_section'
 		);
 	}
@@ -572,18 +626,44 @@ final class Settings {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
+		$current = self::current_tab();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Settings', 'living-handbook' ); ?></h1>
+			<nav class="nav-tab-wrapper wp-clearfix" aria-label="<?php esc_attr_e( 'Settings sections', 'living-handbook' ); ?>">
+				<?php foreach ( self::tabs() as $slug => $label ) : ?>
+					<a href="<?php echo esc_url( self::tab_url( $slug ) ); ?>" class="nav-tab<?php echo $slug === $current ? ' nav-tab-active' : ''; ?>"<?php echo $slug === $current ? ' aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a>
+				<?php endforeach; ?>
+			</nav>
 			<?php settings_errors(); ?>
 			<form method="post" action="options.php">
 				<?php
-				settings_fields( self::OPTION_GROUP );
-				do_settings_sections( self::PAGE_SLUG );
+				// The group is this tab's own. One group across the tabs would
+				// empty every option that is not on screen, because options.php
+				// writes null for the ones the form did not send.
+				settings_fields( self::group( $current ) );
+				do_settings_sections( self::tab_page( $current ) );
 				submit_button();
 				?>
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * The address of one tab.
+	 *
+	 * @param string $tab Tab slug.
+	 * @return string
+	 */
+	public static function tab_url( string $tab ): string {
+		return add_query_arg(
+			array(
+				'post_type' => Handbook::POST_TYPE,
+				'page'      => self::PAGE_SLUG,
+				'tab'       => $tab,
+			),
+			admin_url( 'edit.php' )
+		);
 	}
 }

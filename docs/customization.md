@@ -6,7 +6,18 @@ Put your rules in the plugin's own **Custom CSS** field under **Handbook → Set
 
 ## Without writing CSS
 
-**Handbook → Settings → Appearance** has the eight colours that matter and one text size, for the case a theme gets it wrong: a theme whose presets do not match what it actually paints, or one whose contrast is too low to read. The fields are `--lh-surface`, `--lh-surface-text`, `--lh-accent`, `--lh-badge-bg`, `--lh-badge-text` and the three freshness colours. The colour picker offers your theme's own palette as swatches. The text on an accent-filled control (`--lh-on-accent`) is not a field: it is chosen from the accent, black or white, whichever has the higher contrast.
+**Handbook → Settings → Appearance** has the ten colours that matter and one text size, for the case a theme gets it wrong: a theme whose presets do not match what it actually paints, or one whose contrast is too low to read. The colour picker offers your theme's own palette as swatches.
+
+Two colours are deliberately not fields. The text on an accent-filled control (`--lh-on-accent`) is derived from the accent, black or white, whichever has the higher contrast. And the page-type badge takes the accent itself (`--lh-accent-soft` on `--lh-accent`), which is why setting the topic badge colours only one of the three chips under a page: they are told apart by colour on purpose.
+
+| Field | Variable | Where it lands |
+| --- | --- | --- |
+| Surface | `--lh-surface` | cards, navigation, table of contents, filter bar, search field |
+| Text on the surface | `--lh-surface-text` | the text on them; lines and secondary text are mixed from it |
+| Accent | `--lh-accent` | links, current page, filled controls, **and the page-type badge** |
+| Topic badge background / text | `--lh-badge-bg`, `--lh-badge-text` | the topic chip only |
+| Audience badge background / text | `--lh-badge-audience-bg`, `--lh-badge-audience-text` | the "Audience: …" chip only |
+| Reviewed / due / overdue | `--lh-ok`, `--lh-due`, `--lh-overdue` | the three freshness chips and their dots |
 
 An empty field means the theme decides, which is the shipped state and the design of the plugin. Nothing is printed for it. What is set is printed as `--lh-user-*` on `:root`, and the stylesheet reads each variable as `var(--lh-user-x, <theme preset>, <fallback>)`. That gives three levels, in this order:
 

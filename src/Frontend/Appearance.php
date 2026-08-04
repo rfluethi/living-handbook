@@ -7,7 +7,12 @@
  * This is the escape hatch for the case the theme gets it wrong, which is a
  * real case: a theme whose presets do not match what it actually paints, or one
  * whose contrast is too low to read. Rather than send people to the Custom CSS
- * field with a list of variable names, the eight values that matter are fields.
+ * field with a list of variable names, the ten values that matter are fields.
+ *
+ * Not every colour of the plugin is one: the page-type badge takes the accent
+ * on purpose, so the three badge kinds stay told apart, and the three freshness
+ * chips take their backgrounds from their own colours. A field for every value
+ * would be a list of variable names again, only slower.
  *
  * How it fits together: the stylesheet declares its defaults as
  * var(--lh-user-x, <theme preset>, <fallback>), and what is set here is printed
@@ -61,35 +66,43 @@ final class Appearance {
 	 */
 	public static function fields(): array {
 		return array(
-			'surface'      => array(
+			'surface'             => array(
 				'label'       => __( 'Surface', 'living-handbook' ),
 				'description' => __( 'Background of cards, navigation, table of contents, filter bar and search field.', 'living-handbook' ),
 			),
-			'surface-text' => array(
+			'surface-text'        => array(
 				'label'       => __( 'Text on the surface', 'living-handbook' ),
 				'description' => __( 'The text on those surfaces. Lines and secondary text are mixed from this colour, so they follow it.', 'living-handbook' ),
 			),
-			'accent'       => array(
+			'accent'              => array(
 				'label'       => __( 'Accent', 'living-handbook' ),
-				'description' => __( 'Links, the current page in the navigation, filled controls. The text on a filled control is chosen automatically, black or white, whichever reads better.', 'living-handbook' ),
+				'description' => __( 'Links, the current page in the navigation, filled controls, and the page-type badge. The text on a filled control is chosen automatically, black or white, whichever reads better.', 'living-handbook' ),
 			),
-			'badge-bg'     => array(
-				'label'       => __( 'Badge background', 'living-handbook' ),
-				'description' => __( 'The small labels under a page: page type, topic, audience.', 'living-handbook' ),
+			'badge-bg'            => array(
+				'label'       => __( 'Topic badge background', 'living-handbook' ),
+				'description' => __( 'A page carries up to three of these small labels, told apart by colour on purpose: the page type takes the accent above, the topic this pair, the audience the pair below.', 'living-handbook' ),
 			),
-			'badge-text'   => array(
-				'label'       => __( 'Badge text', 'living-handbook' ),
-				'description' => __( 'The text in those labels.', 'living-handbook' ),
+			'badge-text'          => array(
+				'label'       => __( 'Topic badge text', 'living-handbook' ),
+				'description' => __( 'The text of the topic label.', 'living-handbook' ),
 			),
-			'ok'           => array(
+			'badge-audience-bg'   => array(
+				'label'       => __( 'Audience badge background', 'living-handbook' ),
+				'description' => __( 'The label that reads "Audience: …".', 'living-handbook' ),
+			),
+			'badge-audience-text' => array(
+				'label'       => __( 'Audience badge text', 'living-handbook' ),
+				'description' => __( 'The text of the audience label.', 'living-handbook' ),
+			),
+			'ok'                  => array(
 				'label'       => __( 'Reviewed', 'living-handbook' ),
 				'description' => __( 'The first of the three review states.', 'living-handbook' ),
 			),
-			'due'          => array(
+			'due'                 => array(
 				'label'       => __( 'Review due', 'living-handbook' ),
 				'description' => __( 'The second of the three review states.', 'living-handbook' ),
 			),
-			'overdue'      => array(
+			'overdue'             => array(
 				'label'       => __( 'Review overdue', 'living-handbook' ),
 				'description' => __( 'The third of the three review states. Keep the three clearly different from each other, and not by hue alone.', 'living-handbook' ),
 			),

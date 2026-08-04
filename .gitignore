@@ -23,7 +23,9 @@ living-handbook-*.zip
 # Compiled translations
 /languages/*.mo
 
-# Leftovers of a patch run (patch -F3 writes these next to the file)
+# Patches waiting to be applied, and the leftovers of a patch run
+# (patch -F3 writes .orig and .rej next to the file)
+*.patch
 *.orig
 *.rej
 
