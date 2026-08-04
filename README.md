@@ -23,7 +23,7 @@ Active development (0.x). The plugin is usable end to end: multiple handbooks, p
 
 ## Requirements
 
-- WordPress 6.7 or newer, with a block theme
+- WordPress 6.8 or newer, with a block theme
 - PHP 8.1 or newer
 
 Living Handbook is built for single-site installations; network activation on multisite is not supported.

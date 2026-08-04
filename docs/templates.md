@@ -1,6 +1,6 @@
 # Templates
 
-Living Handbook registers block templates (WordPress 6.7 and newer, block themes only). They slot into the template hierarchy automatically and use the active theme's header and footer, so the handbook fits the rest of your site. You can open and edit them in the Site Editor under **Appearance → Editor → Templates**.
+Living Handbook registers block templates (WordPress 6.8 and newer, block themes only). They slot into the template hierarchy automatically and use the active theme's header and footer, so the handbook fits the rest of your site. You can open and edit them in the Site Editor under **Appearance → Editor → Templates**.
 
 Two of them do the work:
 

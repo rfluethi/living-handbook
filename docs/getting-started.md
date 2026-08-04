@@ -4,7 +4,7 @@ From a fresh install to your first page that visitors can actually see. This wal
 
 ## Before you start
 
-- **WordPress 6.7 or newer, with a block theme.** The entry page, the single page and the navigation are built from block templates, so a classic theme will not render them.
+- **WordPress 6.8 or newer, with a block theme.** The entry page, the single page and the navigation are built from block templates, so a classic theme will not render them.
 - **PHP 8.1 or newer.**
 - **A single-site install.** Living Handbook is built for one site; network activation on multisite is not supported. On a network, activate it per site.
 
