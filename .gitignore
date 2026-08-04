@@ -23,6 +23,10 @@ living-handbook-*.zip
 # Compiled translations
 /languages/*.mo
 
+# Leftovers of a patch run (patch -F3 writes these next to the file)
+*.orig
+*.rej
+
 # Editor and OS
 .idea/
 .vscode/

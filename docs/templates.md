@@ -18,21 +18,25 @@ A note on editing: once you save changes to one of these templates in the Site E
 Applies to each handbook's entry page. Its layout:
 
 - the handbook title (`core/query-title`) and its description (`core/term-description`),
-- a two-column row: the handbook navigation (`living-handbook/navigation`) in a narrow left column, and the entry block (`living-handbook/entry`, with search, filters, areas and recently updated pages) in the wide right column.
+- a two-column row: the handbook navigation (`living-handbook/navigation`, set to *Accordion*) in a narrow left column, and the entry block (`living-handbook/entry`, with search, filters, areas and recently updated pages) in the wide right column.
 
 ## Handbook page
 
-Applies to a single handbook page. A three-column layout:
+Applies to a single handbook page. A three-column layout, 22 / 54 / 22 percent:
 
-- **Left (narrow):** the handbook navigation (`living-handbook/navigation`).
-- **Centre (wide):** the badges (`living-handbook/badges`), the title (`core/post-title`), the mobile table of contents (`living-handbook/toc` set to *mobile*, shown above the content on small screens), the content (`core/post-content`), the feedback prompt (`living-handbook/feedback`) and the metadata footer (`living-handbook/pagemeta`).
+- **Left (narrow):** the handbook navigation (`living-handbook/navigation`, set to *Accordion*) and below it the handbook search (`living-handbook/search`).
+- **Centre (wide):** the title (`core/post-title`), the mobile table of contents (`living-handbook/toc` set to *mobile*, shown above the content on small screens) and the content (`core/post-content`). Then everything about the page, at the foot: the feedback prompt (`living-handbook/feedback`), a divider, the source note (`living-handbook/git-source-note`), the badges (`living-handbook/badges`), a second divider and the metadata footer (`living-handbook/pagemeta`).
 - **Right (narrow):** the desktop table of contents (`living-handbook/toc`, sticky, shown on wide screens).
+
+The two dividers are static `core/separator` blocks carrying the class `living-handbook-divider`. They are static on purpose: two of their neighbours render nothing in some cases, a guest without public feedback gets no prompt and a page maintained in WordPress gets no source note, and the foot should look the same either way.
 
 The two tables of contents are the same block with a different **Placement** setting; CSS shows only the one that fits the current screen width, so you do not have to choose.
 
 ## Rearranging
 
 These are ordinary block templates, so you can rearrange them in the Site Editor: move the navigation to the right, drop the desktop table of contents, widen the content, and so on. The blocks are self-contained and render wherever you place them, as long as they stay in their intended context (see "Renders on" in [blocks.md](blocks.md)).
+
+Where the shipped versions come from: `src/Frontend/Templates.php`, as block markup in `entry_content()` and `single_content()`. That is the layout a fresh installation gets and the one **Clear customizations** returns to, so changing it there changes the starting point for every site that has not edited the template itself. `BlockTemplatesTest` guards the markup, because nothing else does: an unknown block name renders as nothing and a broken block comment swallows the rest of the template, both without a word at runtime.
 
 ## Removing the templates again
 

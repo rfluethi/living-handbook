@@ -27,7 +27,9 @@ Die Suche und die Filter grenzen die Seitenliste ein, ohne die Seite neu zu lade
 
 ## Die Einzelseite
 
-![Schema der Einzelseite: Navigation links, in der Mitte Abzeichen, Titel, Inhalt, Feedback-Frage und Metadaten-Fußzeile, rechts das Inhaltsverzeichnis](../assets/einzelseite-aufbau.webp)
+![Schema der Einzelseite: Navigation und Suchfeld links, in der Mitte Titel, Inhalt, Feedback-Frage, Herkunftshinweis, Abzeichen und Metadaten-Fußzeile, rechts das Inhaltsverzeichnis](../assets/einzelseite-aufbau.webp)
+
+Die Seite selbst kommt zuerst: Titel, dann Inhalt. Alles, was über die Seite Auskunft gibt, steht darunter am Fuß: die Feedback-Frage, bei GitHub-Seiten der Herkunftshinweis, die Abzeichen und die Metadaten-Fußzeile. Die Suche des Handbuchs steht links unter der Navigation.
 
 Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Beim Lesen markiert es den aktuellen Abschnitt. Auf schmalen Bildschirmen erscheint es stattdessen über dem Inhalt. Die Metadaten-Fußzeile zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle. Dazu kommt das [Prüfstatus-Abzeichen](../pflege/der-pruefzyklus.md).
 

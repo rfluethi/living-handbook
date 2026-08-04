@@ -27,7 +27,9 @@ The search and the filters narrow the page list down without reloading the page.
 
 ## The single page
 
-![Layout sketch of the single page: navigation on the left, in the middle badges, title, content, feedback prompt and page-details footer, on the right the table of contents](../assets/einzelseite-aufbau.webp)
+![Layout sketch of the single page: navigation and search field on the left, in the middle title, content, feedback prompt, source note, badges and page-details footer, on the right the table of contents](../assets/einzelseite-aufbau.webp)
+
+The page itself comes first: title, then content. Everything that tells you about the page follows underneath: the feedback prompt, the source note on GitHub-backed pages, the badges and the page-details footer. The handbook search sits on the left, under the navigation.
 
 The table of contents on the right builds itself from the page's headings. While you read, it highlights the current section. On narrow screens it appears above the content instead. The footer shows Created, Last updated, Last reviewed and the responsible role. Next to it sits the [review-status badge](../upkeep/the-review-cycle.md).
 

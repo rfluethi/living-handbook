@@ -88,6 +88,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 == Changelog ==
 
 = 0.56.0 =
+* The page layouts the plugin brings along are rearranged. On a handbook page the title and the text come first, and everything about the page follows underneath: the feedback question, where the page comes from, the badges and the page details. The handbook search now sits in the left column under the navigation, and the navigation arrives collapsed, which is what a handbook with many levels needs in a narrow column. If you have edited one of these layouts in the Site Editor, your version stays; Design, Editor, Templates, Clear customizations brings the plugin's back.
 * Fixed: a page could be put into two handbooks at once, and then showed the navigation of the wrong one. A page belongs to one handbook; choosing another one now moves it there instead of adding a second. Pages that are already in two stay as they are until you save them again, and are shown consistently in the meantime.
 * Fixed: the two custom fields that record where a page comes from were editable by hand in the Custom Fields box, where changing them silently stopped a page from syncing, or handed a hand-written page to the next sync. They are now internal fields, like the rest of the plugin's bookkeeping. Existing pages are renamed automatically when the plugin updates; nothing needs doing.
 * An import that runs into GitHub's hourly request limit now stops cleanly and tells you when you can continue, instead of carrying on and marking every remaining page with an error. Start the import again afterwards: pages that already exist are updated, not duplicated.
@@ -135,7 +136,7 @@ Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-h
 == Upgrade Notice ==
 
 = 0.56.0 =
-Recommended for every site, and especially for large handbooks: a handbook view costs a fraction of the database queries it used to, an import no longer loses links to pages it has not created yet, and an import that runs into GitHub's hourly limit stops cleanly instead of marking every remaining page with an error. Two internal custom fields are renamed automatically on update; nothing needs doing. Import an affected handbook again to repair its links.
+Recommended for every site, and especially for large handbooks: a handbook view costs a fraction of the database queries it used to, an import no longer loses links to pages it has not created yet, and an import that runs into GitHub's hourly limit stops cleanly instead of marking every remaining page with an error. Two internal custom fields are renamed automatically on update; nothing needs doing. Import an affected handbook again to repair its links. The page layouts the plugin brings along are rearranged; a layout you have edited yourself in the Site Editor keeps your version.
 
 = 0.55.0 =
 Recommended if you import from GitHub or MkDocs, and for every site with internal handbooks: large imports no longer die at the server's time limit, a MkDocs navigation is kept, and the media endpoint no longer describes images from handbooks you may not read.
