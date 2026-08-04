@@ -4,6 +4,24 @@ The plugin ships default styles and exposes CSS custom properties, so you can ad
 
 Put your rules in the plugin's own **Custom CSS** field under **Handbook → Settings**: it is added on the handbook pages only, stored with the plugin, and removed when you delete the plugin. Alternatively use the Site Editor under **Styles → Additional CSS** or your theme's stylesheet, but note that CSS kept in the theme stays behind after the plugin is gone.
 
+## Without writing CSS
+
+**Handbook → Settings → Appearance** has the eight colours that matter and one text size, for the case a theme gets it wrong: a theme whose presets do not match what it actually paints, or one whose contrast is too low to read. The fields are `--lh-surface`, `--lh-surface-text`, `--lh-accent`, `--lh-badge-bg`, `--lh-badge-text` and the three freshness colours. The colour picker offers your theme's own palette as swatches. The text on an accent-filled control (`--lh-on-accent`) is not a field: it is chosen from the accent, black or white, whichever has the higher contrast.
+
+An empty field means the theme decides, which is the shipped state and the design of the plugin. Nothing is printed for it. What is set is printed as `--lh-user-*` on `:root`, and the stylesheet reads each variable as `var(--lh-user-x, <theme preset>, <fallback>)`. That gives three levels, in this order:
+
+1. the plugin's defaults, which follow the theme's presets,
+2. the settings fields, which win over the defaults without a specificity fight,
+3. CSS you write, which wins over both, because it names `--lh-x` directly and is printed last.
+
+**Text size** is a percentage. Every font size in the stylesheet is a multiple of `--lh-base`, which is deliberately undeclared and therefore falls back to `1rem`, so 100 percent is exactly what the plugin shipped with. The setting prints `--lh-base` on `:root`: 125 percent is `1.25rem`, so 16 px becomes 20 px and every size moves with it, keeping the proportions they were tuned in. This matters on a theme whose own text is not 16 px, because the plugin sizes in `rem` and therefore ignores the theme's text size, and can look small beside it. You can also set `--lh-base` yourself, in any unit:
+
+```css
+body { --lh-base: 20px; }
+```
+
+The size deliberately does not touch the text of a page itself. That is your theme's, and the plugin has no business resizing it.
+
 ## Colours and a few sizes
 
 The custom properties are declared on the plugin's frontend wrappers. The quickest way to restyle everything is to override them:
@@ -19,10 +37,11 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 .living-handbook-feedback,
 .living-handbook-badge {
 	/* Surface, text and accent default to your theme's colour presets. */
-	--lh-surface: var(--wp--preset--color--base, #fff);
-	--lh-surface-text: var(--wp--preset--color--contrast, #1d2327);
-	--lh-accent: var(--wp--preset--color--accent, #2c5f8a);
-	--lh-on-accent: #fff;      /* text on an accent-filled button */
+	--lh-surface: var(--lh-user-surface, var(--wp--preset--color--base, #fff));
+	--lh-surface-text: var(--lh-user-surface-text, var(--wp--preset--color--contrast, #1d2327));
+	--lh-accent: var(--lh-user-accent, var(--wp--preset--color--accent, #2c5f8a));
+	--lh-on-accent: var(--lh-user-on-accent, #fff);
+	                           /* text on an accent-filled button; the settings derive it */
 
 	/* Lines and secondary text are mixed from the surface and its text. */
 	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
@@ -33,15 +52,17 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 	                           /* a tinted accent backdrop: page-type badge, hovered and current rows */
 
 	/* Freshness colours stay fixed. */
-	--lh-ok: #176e3c;          /* "Reviewed" */
-	--lh-due: #8a5200;         /* "Review due" */
-	--lh-overdue: #c0392b;     /* "Review overdue" (the escalation state) */
+	--lh-ok: var(--lh-user-ok, #176e3c);          /* "Reviewed" */
+	--lh-due: var(--lh-user-due, #8a5200);        /* "Review due" */
+	--lh-overdue: var(--lh-user-overdue, #c0392b); /* "Review overdue" (the escalation state) */
 
 	/* Badge chips keep fixed values too: small stickers that must stay legible
 	   on any surface. Each freshness chip pairs its background with the matching
 	   freshness colour above as its label. */
-	--lh-badge-text: #5f6b75;          /* label of a neutral badge */
-	--lh-badge-bg: #eef1f4;            /* background of a neutral badge */
+	--lh-badge-text: var(--lh-user-badge-text, #5f6b75);
+	                                   /* label of a neutral badge */
+	--lh-badge-bg: var(--lh-user-badge-bg, #eef1f4);
+	                                   /* background of a neutral badge */
 	--lh-badge-audience-bg: #f3eafc;   /* background of the audience badge */
 	--lh-badge-audience-text: #6b3fa0; /* label of the audience badge */
 	--lh-badge-ok-bg: #e7f6ec;         /* background of the "Reviewed" badge */
@@ -49,6 +70,8 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 	--lh-badge-overdue-bg: #fdecea;    /* background of the "Review overdue" badge */
 
 	--lh-sticky-top: 2rem;     /* offset for sticky nav and TOC under a fixed header */
+	/* --lh-base is not declared here: every font size reads it as
+	   var(--lh-base, 1rem). Set it on body to scale the handbook's own text. */
 	--lh-nav-top-weight: 700;  /* weight of the top navigation level */
 }
 ```

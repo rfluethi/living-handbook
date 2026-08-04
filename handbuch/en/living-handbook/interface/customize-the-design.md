@@ -1,6 +1,10 @@
 # Customize the design
 
-The handbook pages take font, spacing and colours from your theme. Usually you do not have to do anything. This guide shows how to change the colours deliberately anyway. You need a few lines of CSS for it. CSS is the language websites are styled with. You can also simply copy the example below and swap the colour values.
+The handbook pages take font, spacing and colours from your theme. Usually you do not have to do anything.
+
+If you want to change something anyway, there are two ways. The eight colours that matter most and the text size need no CSS: they are fields under **Handbook → Settings → Appearance**, see [The settings](../the-settings.md). Everything else goes through CSS, which is what this page is about. CSS is the language websites are styled with. You can also simply copy the example below and swap the colour values.
+
+The two mix: custom CSS wins over the fields, and the fields win over the plugin's defaults.
 
 <details>
 <summary>Concept: Why recolouring works this way</summary>

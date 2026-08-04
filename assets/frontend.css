@@ -2,6 +2,13 @@
  * Living Handbook: default frontend styles, following the prototype design.
  * Colours are set through custom properties so you can adapt them to your
  * theme in theme.json or Additional CSS. See docs/customization.md.
+ *
+ * Every font size in this file is a multiple of --lh-base, which is deliberately
+ * not declared here: undeclared it falls back to 1rem, exactly the sizes this
+ * file had before. Handbook, Settings, Appearance prints it on :root, and CSS
+ * written by hand can set it anywhere, for example on body to follow a theme
+ * whose own text is not 16px. One value moves all of them together and keeps
+ * their proportions, which is the point: they were tuned against each other.
  */
 
 .living-handbook-overview,
@@ -25,10 +32,10 @@
 	   variation the visitor picks, turns the cards, navigation and TOC dark on
 	   their own. The hex values are fallbacks for themes that expose no such
 	   presets (many classic themes); there the plugin stays light. */
-	--lh-surface: var(--wp--preset--color--base, #fff);
-	--lh-surface-text: var(--wp--preset--color--contrast, #1d2327);
-	--lh-accent: var(--wp--preset--color--accent, var(--wp--preset--color--primary, #2c5f8a));
-	--lh-on-accent: #fff;      /* text on an accent-filled control */
+	--lh-surface: var(--lh-user-surface, var(--wp--preset--color--base, #fff));
+	--lh-surface-text: var(--lh-user-surface-text, var(--wp--preset--color--contrast, #1d2327));
+	--lh-accent: var(--lh-user-accent, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #2c5f8a)));
+	--lh-on-accent: var(--lh-user-on-accent, #fff);      /* text on an accent-filled control */
 
 	/* Lines and secondary text are mixed from the surface and its text, so they
 	   track the surface on both light and dark themes (color-mix: modern
@@ -40,11 +47,11 @@
 
 	/* Status colours and badge chips keep fixed values: the chips are small,
 	   self-contained labels that stay legible as light stickers on any surface. */
-	--lh-ok: #176e3c;          /* "Reviewed" */
-	--lh-due: #8a5200;         /* "Review due" */
-	--lh-overdue: #c0392b;     /* "Review overdue" (escalation) */
-	--lh-badge-text: #5f6b75;  /* neutral chip label; fixed, not the surface muted */
-	--lh-badge-bg: #eef1f4;
+	--lh-ok: var(--lh-user-ok, #176e3c);          /* "Reviewed" */
+	--lh-due: var(--lh-user-due, #8a5200);         /* "Review due" */
+	--lh-overdue: var(--lh-user-overdue, #c0392b);     /* "Review overdue" (escalation) */
+	--lh-badge-text: var(--lh-user-badge-text, #5f6b75);  /* neutral chip label; fixed, not the surface muted */
+	--lh-badge-bg: var(--lh-user-badge-bg, #eef1f4);
 	--lh-badge-audience-bg: #f3eafc;
 	--lh-badge-audience-text: #6b3fa0;
 	--lh-badge-ok-bg: #e7f6ec;
@@ -80,7 +87,7 @@
 .living-handbook-start__search .living-handbook-search__input {
 	flex: 1;
 	padding: 0.85rem 1rem;
-	font-size: 1.05rem;
+	font-size: calc(var(--lh-base, 1rem) * 1.05);
 	background: var(--lh-surface);
 	color: var(--lh-surface-text);
 	border: 1px solid var(--lh-border);
@@ -110,7 +117,7 @@
 }
 
 .living-handbook-entry__h {
-	font-size: 1.1rem;
+	font-size: calc(var(--lh-base, 1rem) * 1.1);
 	margin: 1.5rem 0 0.75rem;
 }
 
@@ -120,14 +127,14 @@
 
 .living-handbook-count {
 	color: var(--lh-muted);
-	font-size: 0.85rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.85);
 	margin: 0 0 0.75rem;
 }
 
 /* Filter sidebar */
 
 .living-handbook-aside {
-	font-size: 0.9rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.9);
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 	padding: 0.75rem 0.9rem;
@@ -193,7 +200,7 @@
 	border-radius: 6px;
 	padding: 0.4rem 0.7rem;
 	cursor: pointer;
-	font-size: 0.82rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.82);
 	color: inherit;
 	text-decoration: none;
 	display: inline-block;
@@ -238,25 +245,25 @@
 }
 
 .living-handbook-card__title {
-	font-size: 1.05rem;
+	font-size: calc(var(--lh-base, 1rem) * 1.05);
 	margin: 0.5rem 0 0.4rem;
 	color: var(--lh-accent);
 }
 
 .living-handbook-card--area .living-handbook-card__title,
 .living-handbook-card--book .living-handbook-card__title {
-	font-size: 1.15rem;
+	font-size: calc(var(--lh-base, 1rem) * 1.15);
 	margin-top: 0;
 }
 
 .living-handbook-card__excerpt {
-	font-size: 0.85rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.85);
 	color: var(--lh-muted);
 	margin: 0 0 0.6rem;
 }
 
 .living-handbook-card__meta {
-	font-size: 0.78rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.78);
 	color: var(--lh-muted);
 	display: flex;
 	align-items: center;
@@ -310,7 +317,7 @@
  * so only the current path is open. */
 
 .living-handbook-nav {
-	font-size: 0.9rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.9);
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 	padding: 0.9rem 1rem;
@@ -443,7 +450,7 @@
 /* On-this-page table of contents (collapsible box) */
 
 .living-handbook-toc {
-	font-size: 0.84rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.84);
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
 	padding: 0.6rem 0.9rem;
@@ -462,7 +469,7 @@
 
 .living-handbook-toc__summary {
 	cursor: pointer;
-	font-size: 0.72rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.72);
 	font-weight: 700;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
@@ -533,11 +540,11 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.3rem;
-	font-size: 0.85rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.85);
 }
 
 .living-handbook-metagrid__label {
-	font-size: 0.7rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.7);
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	color: var(--lh-muted);
@@ -560,7 +567,7 @@
 }
 
 .living-handbook-person__name {
-	font-size: 0.82rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.82);
 	color: var(--lh-muted);
 }
 
@@ -570,7 +577,7 @@
 	display: inline-block;
 	border-radius: 999px;
 	padding: 0.15rem 0.5rem;
-	font-size: 0.72rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.72);
 	font-weight: 600;
 	background: var(--lh-badge-bg);
 	color: var(--lh-badge-text);
@@ -609,7 +616,7 @@
 	align-items: center;
 	gap: 0.4rem;
 	flex-wrap: wrap;
-	font-size: 0.8rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.8);
 	color: var(--lh-muted);
 }
 
@@ -620,7 +627,7 @@
 	border-radius: 5px;
 	padding: 0.1rem 0.55rem;
 	cursor: pointer;
-	font-size: 0.78rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.78);
 }
 
 .living-handbook-feedback button:hover {
@@ -694,7 +701,7 @@
 
 .living-handbook-overview--list .living-handbook-card__title,
 .living-handbook-entry--list .living-handbook-card__title {
-	font-size: 1rem;
+	font-size: calc(var(--lh-base, 1rem) * 1);
 	margin: 0 0 0.1rem;
 }
 
@@ -850,7 +857,7 @@
 
 .living-handbook-figure__caption {
 	margin-top: 0.4rem;
-	font-size: 0.85rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.85);
 	color: var(--lh-muted, #5f6b75);
 	text-align: center;
 }
@@ -881,7 +888,7 @@
 	width: 100%;
 	box-sizing: border-box;
 	padding: 0.85rem 1rem;
-	font-size: 1.05rem;
+	font-size: calc(var(--lh-base, 1rem) * 1.05);
 	background: var(--lh-surface, #fff);
 	color: var(--lh-surface-text, #1d2327);
 	border: 1px solid var(--lh-border, #e2e6ea);
@@ -976,7 +983,7 @@
  * subtle accent bar, so a reader takes it as a note about the page rather than
  * part of the content. */
 .lh-source-note {
-	font-size: 0.82rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.82);
 	color: var(--lh-muted);
 	padding: 0.4rem 0.75rem;
 	border-inline-start: 3px solid var(--lh-border-strong);
@@ -1111,7 +1118,7 @@
 	border-radius: 50%;
 	background: rgba(0, 0, 0, 0.55);
 	color: #fff;
-	font-size: 1.6rem;
+	font-size: calc(var(--lh-base, 1rem) * 1.6);
 	line-height: 1;
 	cursor: pointer;
 }

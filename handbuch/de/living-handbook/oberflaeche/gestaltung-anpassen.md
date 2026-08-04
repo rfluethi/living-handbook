@@ -1,6 +1,10 @@
 # Gestaltung anpassen
 
-Die Handbuch-Seiten übernehmen Schrift, Abstände und Farben von deinem Theme. Meist musst du also gar nichts tun. Diese Anleitung zeigt, wie du die Farben trotzdem gezielt änderst. Dafür brauchst du ein paar Zeilen CSS. CSS ist die Sprache, mit der Websites gestaltet werden. Du kannst das Beispiel unten aber auch einfach kopieren und die Farbwerte austauschen.
+Die Handbuch-Seiten übernehmen Schrift, Abstände und Farben von deinem Theme. Meist musst du also gar nichts tun.
+
+Willst du trotzdem etwas ändern, gibt es zwei Wege. Für die wichtigsten acht Farben und die Schriftgröße brauchst du kein CSS: Sie stehen als Felder unter **Handbuch → Einstellungen → Darstellung**, siehe [Die Einstellungen](../die-einstellungen.md). Alles Weitere geht über CSS, und darum geht es auf dieser Seite. CSS ist die Sprache, mit der Websites gestaltet werden. Du kannst das Beispiel unten auch einfach kopieren und die Farbwerte austauschen.
+
+Beides zusammen ist erlaubt: Eigenes CSS gewinnt gegen die Felder, und die Felder gewinnen gegen die Voreinstellungen des Plugins.
 
 <details>
 <summary>Konzept: Warum das Umfärben so gelöst ist</summary>

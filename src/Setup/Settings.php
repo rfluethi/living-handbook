@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Setup;
 
+use LivingHandbook\Frontend\Appearance;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
 
@@ -62,6 +63,14 @@ final class Settings {
 	public const OPTION_DENIED_PAGE = 'living_handbook_denied_page';
 
 	/**
+	 * The screen the colour picker assets belong on, so they load there and
+	 * nowhere else.
+	 *
+	 * @var string
+	 */
+	private string $color_picker_hook = '';
+
+	/**
 	 * Whether anonymous voting on public pages is switched on.
 	 *
 	 * @return bool
@@ -78,6 +87,7 @@ final class Settings {
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_page' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		// Re-apply the cron schedule whenever the frequency option changes or is
 		// first written.
 		add_action( 'update_option_' . GitSync::OPTION_SCHEDULE, array( $this, 'reschedule' ) );
@@ -100,7 +110,49 @@ final class Settings {
 		);
 		if ( is_string( $hook ) && '' !== $hook ) {
 			add_action( 'load-' . $hook, array( $this, 'register_help' ) );
+			add_action( 'admin_print_footer_scripts-' . $hook, array( $this, 'print_color_picker_script' ) );
+			$this->color_picker_hook = $hook;
 		}
+	}
+
+	/**
+	 * Load the colour picker WordPress already ships on the settings screen.
+	 *
+	 * @param string $hook Current admin screen.
+	 * @return void
+	 */
+	public function enqueue_assets( string $hook ): void {
+		if ( '' === $this->color_picker_hook || $hook !== $this->color_picker_hook ) {
+			return;
+		}
+
+		wp_enqueue_style( 'wp-color-picker' );
+		wp_enqueue_script( 'wp-color-picker' );
+	}
+
+	/**
+	 * Turn the colour fields into pickers, with the theme's own palette as the
+	 * swatches underneath.
+	 *
+	 * Written as a footer script rather than a file because it is four lines and
+	 * carries the palette with it. Without JavaScript the fields stay plain text
+	 * inputs that accept a hex colour, which is why they are text inputs in the
+	 * markup: a type="color" input has no empty state, and empty is what "the
+	 * theme decides" looks like.
+	 *
+	 * @return void
+	 */
+	public function print_color_picker_script(): void {
+		if ( ! wp_script_is( 'wp-color-picker', 'enqueued' ) ) {
+			return;
+		}
+
+		$palette = array_keys( Appearance::theme_palette() );
+
+		printf(
+			'<script>jQuery(function($){$(".living-handbook-color").wpColorPicker({palettes:%s});});</script>',
+			wp_json_encode( array_values( $palette ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every entry passed sanitize_hex_color(), and wp_json_encode() escapes the result for a script context.
+		);
 	}
 
 	/**
@@ -183,6 +235,24 @@ final class Settings {
 				'default'           => 0,
 			)
 		);
+		register_setting(
+			self::OPTION_GROUP,
+			Appearance::OPTION_COLORS,
+			array(
+				'type'              => 'array',
+				'sanitize_callback' => array( Appearance::class, 'sanitize_colors' ),
+				'default'           => array(),
+			)
+		);
+		register_setting(
+			self::OPTION_GROUP,
+			Appearance::OPTION_BASE_SIZE,
+			array(
+				'type'              => 'integer',
+				'sanitize_callback' => array( Appearance::class, 'sanitize_size' ),
+				'default'           => 100,
+			)
+		);
 
 		add_settings_section( 'living_handbook_sync_section', __( 'GitHub sync', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
 		add_settings_field(
@@ -194,7 +264,32 @@ final class Settings {
 			array( 'label_for' => GitSync::OPTION_SCHEDULE )
 		);
 
-		add_settings_section( 'living_handbook_appearance_section', __( 'Appearance', 'living-handbook' ), '__return_null', self::PAGE_SLUG );
+		add_settings_section( 'living_handbook_appearance_section', __( 'Appearance', 'living-handbook' ), array( $this, 'render_appearance_intro' ), self::PAGE_SLUG );
+
+		add_settings_field(
+			Appearance::OPTION_BASE_SIZE,
+			__( 'Text size', 'living-handbook' ),
+			array( $this, 'render_base_size_field' ),
+			self::PAGE_SLUG,
+			'living_handbook_appearance_section',
+			array( 'label_for' => Appearance::OPTION_BASE_SIZE )
+		);
+
+		foreach ( Appearance::fields() as $key => $field ) {
+			add_settings_field(
+				Appearance::OPTION_COLORS . '_' . $key,
+				$field['label'],
+				array( $this, 'render_color_field' ),
+				self::PAGE_SLUG,
+				'living_handbook_appearance_section',
+				array(
+					'label_for'   => Appearance::OPTION_COLORS . '_' . $key,
+					'key'         => $key,
+					'description' => $field['description'],
+				)
+			);
+		}
+
 		add_settings_field(
 			self::OPTION_CUSTOM_CSS,
 			__( 'Custom CSS', 'living-handbook' ),
@@ -330,6 +425,68 @@ final class Settings {
 	public function sanitize_css( $value ): string {
 		$value = is_string( $value ) ? $value : '';
 		return trim( str_replace( '<', '', $value ) );
+	}
+
+	/**
+	 * Explain what the appearance fields are for before showing them.
+	 *
+	 * @return void
+	 */
+	public function render_appearance_intro(): void {
+		echo '<p class="description" style="max-width:46em">'
+			. esc_html__( 'Leave the colour fields empty and the handbook follows your theme, which is what it is built to do. Fill one in only where the theme gets it wrong. The swatches under each picker are your theme\'s own palette.', 'living-handbook' )
+			. '</p>';
+	}
+
+	/**
+	 * Render the text size field.
+	 *
+	 * A number in percent rather than a slider: it works without JavaScript, it
+	 * says what it does, and the same value can be typed again on the next site.
+	 *
+	 * @return void
+	 */
+	public function render_base_size_field(): void {
+		printf(
+			'<input type="number" id="%1$s" name="%1$s" value="%2$d" min="%3$d" max="%4$d" step="5" class="small-text"> %5$s',
+			esc_attr( Appearance::OPTION_BASE_SIZE ),
+			(int) Appearance::base_size(),
+			(int) Appearance::SIZE_MIN,
+			(int) Appearance::SIZE_MAX,
+			esc_html__( 'percent', 'living-handbook' )
+		);
+		echo '<p class="description">'
+			. esc_html__( 'The size of the handbook\'s own text: navigation, table of contents, badges, cards and the page details. It does not touch the text of a page itself, which belongs to your theme. 100 percent is 16 pixels, the size the plugin was designed at. Raise it if your theme sets larger text than that and the handbook looks small beside it.', 'living-handbook' )
+			. '</p>';
+	}
+
+	/**
+	 * Render one colour field.
+	 *
+	 * @param array<string, mixed> $args Field arguments, carrying the colour key.
+	 * @return void
+	 */
+	public function render_color_field( array $args ): void {
+		$key = isset( $args['key'] ) && is_string( $args['key'] ) ? $args['key'] : '';
+		if ( '' === $key ) {
+			return;
+		}
+
+		$colors = Appearance::colors();
+		$value  = isset( $colors[ $key ] ) ? $colors[ $key ] : '';
+
+		printf(
+			'<input type="text" id="%1$s" name="%2$s[%3$s]" value="%4$s" class="living-handbook-color regular-text" placeholder="%5$s" data-default-color="">',
+			esc_attr( Appearance::OPTION_COLORS . '_' . $key ),
+			esc_attr( Appearance::OPTION_COLORS ),
+			esc_attr( $key ),
+			esc_attr( $value ),
+			esc_attr__( 'Empty: the theme decides', 'living-handbook' )
+		);
+
+		if ( isset( $args['description'] ) && is_string( $args['description'] ) ) {
+			echo '<p class="description">' . esc_html( $args['description'] ) . '</p>';
+		}
 	}
 
 	/**

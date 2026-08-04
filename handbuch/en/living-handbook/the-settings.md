@@ -1,6 +1,6 @@
 # The settings
 
-Every option of the plugin at a glance. You find them under **Handbook → Settings**; the screen there has four sections.
+Every option of the plugin at a glance. You find them under **Handbook → Settings**; the screen there has five sections.
 
 ## GitHub sync
 
@@ -8,11 +8,19 @@ Every option of the plugin at a glance. You find them under **Handbook → Setti
 
 ## Appearance
 
-**Custom CSS:** Styling rules that load on the handbook pages only. They are stored with the plugin and removed when you delete the plugin. How to change the colours with them is shown in [Customize the design](interface/customize-the-design.md). Examples sit right on the settings screen, in the **Help** tab at the top right.
+**Text size:** A percentage for the text the plugin sets itself: navigation, table of contents, badges, cards and the page-details footer. The text of a page is untouched, that one belongs to your theme. 100 percent is 16 pixels, the size the plugin is designed at. If your theme sets larger text, the handbook looks small beside it; a value around 120 to 130 percent helps then. All sizes move together, so their proportions stay.
+
+**Eight colour fields:** surface, text on the surface, accent, badge background, badge text and the three review-status colours. Empty means the theme decides. That is how the plugin ships and how it is meant to work. Fill a field in only where your theme gets it wrong, because its colour values do not match what it actually paints, or because the contrast is too low. The colour picker offers your theme's own palette, and **Clear** takes you back to the theme. You do not choose the text colour on filled buttons: the plugin takes black or white, whichever reads better on your accent colour.
+
+**Custom CSS:** Styling rules that load on the handbook pages only. They are stored with the plugin and removed when you delete the plugin. Custom CSS wins over the colour fields above, so you can mix the two. How to change the colours with them is shown in [Customize the design](interface/customize-the-design.md). Examples sit right on the settings screen, in the **Help** tab at the top right.
 
 ## Feedback
 
 **Public feedback:** Off by default. When on, logged-out visitors also see the question "Was this helpful?" on public pages and can vote. To protect privacy, such a vote is linked to no person: no cookie, no IP address, nothing personal. In return there is no one-vote limit there; the same person can vote again after reloading. On internal pages, independently of this, only logged-in people vote, one vote each. How you read and reset the votes is under [Reading feedback](upkeep/reading-feedback.md).
+
+## Access
+
+**No-access page:** Where a signed-in person lands who opens a handbook they may not read. The default is the built-in message. Choose a page of your own here if you want to explain in your own words who grants access, with a contact form for instance. Logged-out visitors still go to the login screen and on to the address they asked for.
 
 ## Uninstall
 
@@ -31,6 +39,6 @@ Every option of the plugin at a glance. You find them under **Handbook → Setti
 * Thema: Overview
 * Zielgruppe: Tech
 * Reihenfolge: 8
-* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, custom CSS, public feedback and the uninstall behaviour.
+* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, text size, colours and custom CSS, public feedback, the no-access page and the uninstall behaviour.
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

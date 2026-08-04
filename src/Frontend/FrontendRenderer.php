@@ -69,6 +69,26 @@ final class FrontendRenderer {
 		wp_register_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
 		wp_register_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
 
+		// What a site sets in Settings, then what it wrote by hand, both attached
+		// to the handle rather than to one place that enqueues it: a block can
+		// pull the stylesheet in from a template part, a header or a footer, and
+		// there the handbook would otherwise be styled by the defaults while the
+		// same block on a handbook page is not. The order matters and is the
+		// order of intent: the settings win over the plugin's defaults, and CSS
+		// written by hand wins over the settings, because it names the --lh-
+		// variables directly and is printed last.
+		$appearance = Appearance::css();
+		if ( '' !== $appearance ) {
+			wp_add_inline_style( 'living-handbook', $appearance );
+		}
+
+		// The Custom CSS field keeps the customisation with the plugin, so it is
+		// removed on uninstall, unlike CSS kept in the theme.
+		$custom_css = trim( (string) get_option( Settings::OPTION_CUSTOM_CSS, '' ) );
+		if ( '' !== $custom_css ) {
+			wp_add_inline_style( 'living-handbook', $custom_css );
+		}
+
 		// The data belongs to the handle, not to one place that enqueues it. A
 		// block can pull the script in from a template part on a page this class
 		// never looks at, and the script is useless without its endpoints and
@@ -121,14 +141,6 @@ final class FrontendRenderer {
 
 		wp_enqueue_style( 'living-handbook' );
 		wp_enqueue_script( 'living-handbook' );
-
-		// A site can style the handbook with the plugin's own Custom CSS field, so
-		// the customisation lives with the plugin and is removed on uninstall,
-		// unlike CSS kept in the theme. It is added after the plugin stylesheet.
-		$custom_css = trim( (string) get_option( Settings::OPTION_CUSTOM_CSS, '' ) );
-		if ( '' !== $custom_css ) {
-			wp_add_inline_style( 'living-handbook', $custom_css );
-		}
 	}
 
 	/**
