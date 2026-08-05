@@ -406,6 +406,12 @@
 	padding: 0;
 }
 
+/* Every level is indented the same way, the first one included: the title row
+   is the root of the tree, so the pages below it are its children and are set
+   in by one step like any other level. Before this the first level sat flush
+   with the title, which made the handbook name look like a label above a list
+   rather than the top of it. */
+.living-handbook-nav__list,
 .living-handbook-nav__sublist {
 	margin: 0.1rem 0 0.2rem 0.15rem;
 	padding-inline-start: 0.7rem;

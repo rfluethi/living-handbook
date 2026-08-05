@@ -11,6 +11,7 @@ namespace LivingHandbook;
 
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Admin\Maintenance;
+use LivingHandbook\Admin\MoveToHandbook;
 use LivingHandbook\Blocks\Blocks;
 use LivingHandbook\Blocks\MermaidBlock;
 use LivingHandbook\Blocks\SourceNoteBlock;
@@ -91,6 +92,7 @@ final class Plugin {
 		( new Templates() )->register();
 		( new Filters() )->register();
 		( new Maintenance() )->register();
+		( new MoveToHandbook() )->register();
 		( new MarkdownImportPage() )->register();
 		( new HandbookExport() )->register();
 		( new HandbookImport() )->register();

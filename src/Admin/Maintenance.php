@@ -49,7 +49,7 @@ final class Maintenance {
 		add_action( 'restrict_manage_posts', array( $this, 'taxonomy_filter_dropdowns' ) );
 		// Priority 25 so the status filter renders after the source dropdown (20),
 		// matching the columns: source, then the review status of "Last reviewed".
-		add_action( 'restrict_manage_posts', array( $this, 'status_filter_dropdown' ), 25 );
+		add_action( 'restrict_manage_posts', array( $this, 'status_filter_dropdown' ), 15 );
 		add_action( 'pre_get_posts', array( $this, 'filter_by_status' ), 15 );
 		add_filter( 'post_row_actions', array( $this, 'feedback_reset_action' ), 10, 2 );
 		add_action( 'admin_post_' . self::RESET_ACTION, array( $this, 'handle_feedback_reset' ) );
@@ -427,14 +427,18 @@ final class Maintenance {
 			return;
 		}
 
-		// Order matches the list columns: the four vocabularies, then the handbook.
-		// The source filter follows, rendered by GitSync at a later priority.
+		// The filters run in the order of the columns they filter, so the eye can
+		// go straight down from a filter to what it narrows. WordPress prints its
+		// own date dropdown before this hook and cannot be reordered, so the date
+		// stays first; everything after it follows the columns: handbook, then the
+		// four vocabularies, then the review status, then the source (the last two
+		// are added at later priorities, by this class and by GitSync).
 		$taxonomies = array(
+			Handbooks::TAXONOMY,
 			Taxonomies::PAGE_TYPE,
 			Taxonomies::TOPIC,
 			Taxonomies::ROLE,
 			Taxonomies::AUDIENCE,
-			Handbooks::TAXONOMY,
 		);
 
 		foreach ( $taxonomies as $taxonomy ) {

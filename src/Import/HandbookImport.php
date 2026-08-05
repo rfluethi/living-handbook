@@ -61,6 +61,28 @@ final class HandbookImport {
 	public const META_BUNDLE_KEY = '_lh_bundle_key';
 
 	/**
+	 * Whether this run creates ordinary WordPress pages instead of handbook
+	 * pages.
+	 *
+	 * A bundle carries finished block markup, a hierarchy and its images, and
+	 * none of that is specific to the handbook post type: the same file can just
+	 * as well become a tree of ordinary pages. What does not come along is
+	 * everything the handbook adds around a page, and it is worth naming rather
+	 * than discovering: no handbook, so no access rule and no navigation, no
+	 * table of contents, no badges, no feedback and no source note, because those
+	 * live in the handbook template and in blocks that check their context. The
+	 * text, its images and its diagrams do come along.
+	 *
+	 * Pages created this way are always drafts, whatever the bundle says. A
+	 * bundle from an internal handbook would otherwise be published by the act of
+	 * importing it, which is the one mistake in this direction that cannot be
+	 * taken back.
+	 *
+	 * @var bool
+	 */
+	private bool $as_pages = false;
+
+	/**
 	 * Meta that pins a page as never-overwrite, regardless of the run rule.
 	 */
 	public const META_PROTECTED = '_lh_import_protected';
@@ -133,6 +155,9 @@ final class HandbookImport {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
 		$chosen = isset( $_POST['handbook'] ) ? absint( wp_unslash( $_POST['handbook'] ) ) : 0;
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
+		$as_pages = isset( $_POST['as_pages'] ) && '1' === (string) wp_unslash( $_POST['as_pages'] );
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a file upload, validated below.
 		$tmp = isset( $_FILES['bundle']['tmp_name'] ) ? sanitize_text_field( wp_unslash( $_FILES['bundle']['tmp_name'] ) ) : '';
 		if ( '' === $tmp || ! is_uploaded_file( $tmp ) ) {
@@ -156,7 +181,7 @@ final class HandbookImport {
 			$this->finish( array( 'error' => __( 'This file is not a Living Handbook bundle.', 'living-handbook' ) ) );
 		}
 
-		$report = $this->import_bundle( $manifest, $zip, $rule, $chosen );
+		$report = $this->import_bundle( $manifest, $zip, $rule, $chosen, $as_pages );
 		$zip->close();
 		$this->finish( $report );
 	}
@@ -188,16 +213,18 @@ final class HandbookImport {
 	 * @param ZipArchive           $zip      The open bundle.
 	 * @param string               $rule     Run rule.
 	 * @param int                  $chosen   Chosen target handbook term ID, or 0 for the bundle's own.
+	 * @param bool                 $as_pages Create ordinary WordPress pages instead of handbook pages.
 	 * @return array<string, mixed>
 	 */
-	private function import_bundle( array $manifest, ZipArchive $zip, string $rule, int $chosen = 0 ): array {
+	private function import_bundle( array $manifest, ZipArchive $zip, string $rule, int $chosen = 0, bool $as_pages = false ): array {
 		return $this->import_manifest(
 			$manifest,
 			static function ( string $file ) use ( $zip ) {
 				return $zip->getFromName( $file );
 			},
 			$rule,
-			$chosen
+			$chosen,
+			$as_pages
 		);
 	}
 
@@ -210,9 +237,12 @@ final class HandbookImport {
 	 * @param callable             $media_reader Returns the bytes of a bundle file, or false.
 	 * @param string               $rule         Run rule.
 	 * @param int                  $chosen       Chosen target handbook term ID, or 0 for the bundle's own.
+	 * @param bool                 $as_pages     Create ordinary WordPress pages instead of handbook pages.
 	 * @return array<string, mixed>
 	 */
-	public function import_manifest( array $manifest, callable $media_reader, string $rule, int $chosen = 0 ): array {
+	public function import_manifest( array $manifest, callable $media_reader, string $rule, int $chosen = 0, bool $as_pages = false ): array {
+		$this->as_pages = $as_pages;
+
 		$report = array(
 			'created'   => 0,
 			'updated'   => 0,
@@ -221,9 +251,14 @@ final class HandbookImport {
 			'notes'     => array(),
 		);
 
-		$term_id = $this->resolve_handbook( $manifest, $report, $chosen );
-		if ( 0 === $term_id ) {
-			return array( 'error' => __( 'The bundle names no handbook.', 'living-handbook' ) );
+		$term_id = 0;
+		if ( $as_pages ) {
+			$report['notes'][] = __( 'The bundle was imported as ordinary WordPress pages, as drafts. They carry no handbook, so no access rule, no navigation, no table of contents, no badges and no review data; the text, the images and the diagrams are there.', 'living-handbook' );
+		} else {
+			$term_id = $this->resolve_handbook( $manifest, $report, $chosen );
+			if ( 0 === $term_id ) {
+				return array( 'error' => __( 'The bundle names no handbook.', 'living-handbook' ) );
+			}
 		}
 
 		$media_map = $this->import_media( $manifest, $media_reader );
@@ -396,7 +431,7 @@ final class HandbookImport {
 		$parent_id  = ( '' !== $parent_key && isset( $key_to_id[ $parent_key ] ) ) ? $key_to_id[ $parent_key ] : 0;
 
 		$data = array(
-			'post_type'    => Handbook::POST_TYPE,
+			'post_type'    => $this->as_pages ? 'page' : Handbook::POST_TYPE,
 			'post_title'   => isset( $page['title'] ) ? sanitize_text_field( (string) $page['title'] ) : $slug,
 			'post_content' => (string) wp_slash( $content ),
 			'post_parent'  => $parent_id,
@@ -407,8 +442,12 @@ final class HandbookImport {
 		if ( $is_new ) {
 			$status              = isset( $page['status'] ) ? (string) $page['status'] : 'draft';
 			$data['post_status'] = in_array( $status, self::STATUSES, true ) ? $status : 'draft';
-			$data['post_name']   = $slug;
-			$result              = wp_insert_post( $data, true );
+			if ( $this->as_pages ) {
+				// Always a draft, whatever the bundle says. See $as_pages.
+				$data['post_status'] = 'draft';
+			}
+			$data['post_name'] = $slug;
+			$result            = wp_insert_post( $data, true );
 		} else {
 			$data['ID'] = $existing;
 			$result     = wp_update_post( $data, true );
@@ -427,11 +466,19 @@ final class HandbookImport {
 			++$report['updated'];
 		}
 
-		wp_set_object_terms( $post_id, array( $term_id ), Handbooks::TAXONOMY, false );
-		$this->apply_terms( $post_id, isset( $page['terms'] ) && is_array( $page['terms'] ) ? $page['terms'] : array() );
-
 		update_post_meta( $post_id, self::META_ORIGIN, $origin );
 		update_post_meta( $post_id, self::META_BUNDLE_KEY, $key );
+
+		if ( $this->as_pages ) {
+			// An ordinary page carries none of what follows: the vocabularies are
+			// registered on the handbook post type, the review fields are read by
+			// screens a page never reaches, and a sync source on a page would
+			// promise an update path that does not exist for it.
+			return;
+		}
+
+		wp_set_object_terms( $post_id, array( $term_id ), Handbooks::TAXONOMY, false );
+		$this->apply_terms( $post_id, isset( $page['terms'] ) && is_array( $page['terms'] ) ? $page['terms'] : array() );
 
 		$source = isset( $page['source'] ) ? (string) $page['source'] : GitSync::SOURCE_WORDPRESS;
 		update_post_meta( $post_id, GitSync::META_SOURCE, GitSync::SOURCE_GITHUB === $source ? GitSync::SOURCE_GITHUB : GitSync::SOURCE_WORDPRESS );

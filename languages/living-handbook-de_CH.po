@@ -3,9 +3,9 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.61.0\n"
+"Project-Id-Version: Living Handbook 0.62.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-05T15:23:48+00:00\n"
+"POT-Creation-Date: 2026-08-05T15:51:23+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -125,14 +125,59 @@ msgid "%1$d yes, %2$d no"
 msgstr "%1$d Ja, %2$d Nein"
 
 #. translators: %s: the plural taxonomy name, for example "Topics".
-#: src/Admin/Maintenance.php:448
+#: src/Admin/Maintenance.php:452
 #, php-format
 msgid "All %s"
 msgstr "Alle %s"
 
-#: src/Admin/Maintenance.php:480
+#: src/Admin/Maintenance.php:484
 msgid "All review statuses"
 msgstr "Alle Prüfstatus"
+
+#. translators: %s: handbook name.
+#: src/Admin/MoveToHandbook.php:113
+#, php-format
+msgid "Move into the handbook: %s"
+msgstr "Ins Handbuch verschieben: %s"
+
+#. translators: %d: number of pages moved.
+#: src/Admin/MoveToHandbook.php:335
+#, php-format
+msgid ""
+"%d page moved into the handbook, subpages included. Its old address now "
+"redirects to the new one."
+msgid_plural ""
+"%d pages moved into the handbook, subpages included. Their old addresses now "
+"redirect to the new ones."
+msgstr[0] ""
+"%d Seite ins Handbuch verschoben, samt Unterseiten. Ihre alte Adresse leitet "
+"jetzt auf die neue um."
+msgstr[1] ""
+"%d Seiten ins Handbuch verschoben, samt Unterseiten. Ihre alten Adressen "
+"leiten jetzt auf die neuen um."
+
+#. translators: %d: number of pages skipped.
+#: src/Admin/MoveToHandbook.php:341
+#, php-format
+msgid ""
+"%d page was left alone, because it is not a page or you may not edit it."
+msgid_plural ""
+"%d pages were left alone, because they are not pages or you may not edit "
+"them."
+msgstr[0] ""
+"%d Seite wurde nicht angefasst, weil sie keine Seite ist oder du sie nicht "
+"bearbeiten darfst."
+msgstr[1] ""
+"%d Seiten wurden nicht angefasst, weil sie keine Seiten sind oder du sie "
+"nicht bearbeiten darfst."
+
+#: src/Admin/MoveToHandbook.php:345
+msgid ""
+"The moved pages have no review date yet, so they show as \"Not reviewed\" "
+"until you set one."
+msgstr ""
+"Die verschobenen Seiten haben noch kein Prüfdatum und erscheinen darum als "
+"«Nicht geprüft», bis du eines setzt."
 
 #: src/Blocks/Blocks.php:173 src/Blocks/Blocks.php:174 assets/blocks.js:133
 msgid "Table of Contents"
@@ -472,7 +517,7 @@ msgstr ""
 "Seite» rechts."
 
 #: src/Git/ArchiveSource.php:96 src/Git/ArchiveSource.php:128
-#: src/Import/HandbookExport.php:286 src/Import/HandbookImport.php:122
+#: src/Import/HandbookExport.php:286 src/Import/HandbookImport.php:144
 #: src/Import/MarkdownImportPage.php:249 src/Import/MarkdownImportPage.php:334
 msgid "ZipArchive is not available on the server."
 msgstr "ZipArchive ist auf dem Server nicht verfügbar."
@@ -923,43 +968,54 @@ msgstr "Wähle, was exportiert werden soll."
 msgid "The export bundle could not be created."
 msgstr "Das Export-Bündel konnte nicht erstellt werden."
 
-#: src/Import/HandbookImport.php:104
+#: src/Import/HandbookImport.php:126
 msgid "Skip pages that already exist (never overwrite)"
 msgstr "Vorhandene Seiten überspringen (nie überschreiben)"
 
-#: src/Import/HandbookImport.php:105
+#: src/Import/HandbookImport.php:127
 msgid "Update pages that already exist"
 msgstr "Vorhandene Seiten aktualisieren"
 
-#: src/Import/HandbookImport.php:106
+#: src/Import/HandbookImport.php:128
 msgid "Always create new pages"
 msgstr "Immer neue Seiten anlegen"
 
-#: src/Import/HandbookImport.php:117
+#: src/Import/HandbookImport.php:139
 msgid "You are not allowed to import bundles."
 msgstr "Du darfst keine Bündel importieren."
 
-#: src/Import/HandbookImport.php:139
+#: src/Import/HandbookImport.php:164
 msgid "No bundle file received."
 msgstr "Keine Bündel-Datei empfangen."
 
-#: src/Import/HandbookImport.php:144
+#: src/Import/HandbookImport.php:169
 msgid "Could not open the bundle."
 msgstr "Das Bündel konnte nicht geöffnet werden."
 
-#: src/Import/HandbookImport.php:150
+#: src/Import/HandbookImport.php:175
 msgid "The bundle has no manifest.json."
 msgstr "Das Bündel enthält keine manifest.json."
 
-#: src/Import/HandbookImport.php:156
+#: src/Import/HandbookImport.php:181
 msgid "This file is not a Living Handbook bundle."
 msgstr "Diese Datei ist kein Living-Handbook-Bündel."
 
-#: src/Import/HandbookImport.php:226
+#: src/Import/HandbookImport.php:256
+msgid ""
+"The bundle was imported as ordinary WordPress pages, as drafts. They carry "
+"no handbook, so no access rule, no navigation, no table of contents, no "
+"badges and no review data; the text, the images and the diagrams are there."
+msgstr ""
+"Das Bündel wurde als normale WordPress-Seiten importiert, als Entwürfe. Sie "
+"tragen kein Handbuch, also keine Zugriffsregel, keine Navigation, kein "
+"Inhaltsverzeichnis, keine Badges und keine Prüfdaten; Text, Bilder und "
+"Diagramme sind da."
+
+#: src/Import/HandbookImport.php:260
 msgid "The bundle names no handbook."
 msgstr "Das Bündel nennt kein Handbuch."
 
-#: src/Import/HandbookImport.php:273
+#: src/Import/HandbookImport.php:308
 msgid ""
 "The pages went into the handbook you chose; its access configuration was "
 "left unchanged."
@@ -967,14 +1023,14 @@ msgstr ""
 "Die Seiten gingen in das von dir gewählte Handbuch; dessen Zugriffs-"
 "Konfiguration blieb unverändert."
 
-#: src/Import/HandbookImport.php:287
+#: src/Import/HandbookImport.php:322
 msgid ""
 "An existing handbook was reused; its access configuration was left unchanged."
 msgstr ""
 "Ein vorhandenes Handbuch wurde wiederverwendet; seine Zugriffs-Konfiguration "
 "blieb unverändert."
 
-#: src/Import/HandbookImport.php:298
+#: src/Import/HandbookImport.php:333
 msgid ""
 "The handbook was created with visibility \"members\". Raise it by hand if "
 "the content really should be public."
@@ -982,7 +1038,7 @@ msgstr ""
 "Das Handbuch wurde mit der Sichtbarkeit „Mitglieder“ angelegt. Stelle sie "
 "von Hand höher, wenn der Inhalt wirklich öffentlich sein soll."
 
-#: src/Import/HandbookImport.php:316
+#: src/Import/HandbookImport.php:351
 msgid ""
 "The bundle carried a list of individually allowed users. It was not applied; "
 "set the people by hand if the handbook should be restricted."
@@ -992,7 +1048,7 @@ msgstr ""
 "beschränkt sein soll."
 
 #. translators: 1: created count, 2: updated count, 3: skipped count, 4: protected count.
-#: src/Import/HandbookImport.php:617
+#: src/Import/HandbookImport.php:664
 #, php-format
 msgid ""
 "Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected."
@@ -1229,10 +1285,33 @@ msgid "If a page already exists"
 msgstr "Wenn eine Seite schon existiert"
 
 #: src/Import/MarkdownImportPage.php:1044
+msgid "What to create"
+msgstr "Was angelegt wird"
+
+#: src/Import/MarkdownImportPage.php:1048
+msgid "Ordinary WordPress pages instead of handbook pages"
+msgstr "Normale WordPress-Seiten statt Handbuchseiten"
+
+#: src/Import/MarkdownImportPage.php:1050
+msgid ""
+"The text, the images, the diagrams and the page structure come along. "
+"Everything the handbook adds around a page does not: no handbook, and "
+"therefore no access rule, no navigation, no table of contents, no badges and "
+"no review data. The pages are created as drafts, whatever the bundle says, "
+"so nothing from an internal handbook is published by importing it."
+msgstr ""
+"Text, Bilder, Diagramme und die Seitenstruktur kommen mit. Alles, was das "
+"Handbuch um eine Seite herum ergänzt, kommt nicht mit: kein Handbuch, also "
+"keine Zugriffsregel, keine Navigation, kein Inhaltsverzeichnis, keine Badges "
+"und keine Prüfdaten. Die Seiten werden als Entwurf angelegt, unabhängig "
+"davon, was im Bündel steht, damit aus einem internen Handbuch nichts durch "
+"den Import veröffentlicht wird."
+
+#: src/Import/MarkdownImportPage.php:1054
 msgid "Import bundle"
 msgstr "Bündel importieren"
 
-#: src/Import/MarkdownImportPage.php:1050
+#: src/Import/MarkdownImportPage.php:1060
 msgid ""
 "The plugin brings a handbook of its own: the documentation of the app, "
 "written as a Living Handbook. It ships with the plugin, so this loads it "
@@ -1243,7 +1322,7 @@ msgstr ""
 "lädt es also aus der installierten Version, mit seinen Seiten, seiner "
 "Struktur und seinen Bildern."
 
-#: src/Import/MarkdownImportPage.php:1051
+#: src/Import/MarkdownImportPage.php:1061
 msgid ""
 "The pages are published into the handbook you pick. Whether they are visible "
 "on the front end depends on that handbook: set it to \"members\" and only "
@@ -1255,15 +1334,15 @@ msgstr ""
 "«Mitglieder», sehen sie nur Angemeldete. Ein erneutes Laden nach einem "
 "Plugin-Update frischt die Seiten auf; nichts wird gelöscht."
 
-#: src/Import/MarkdownImportPage.php:1054
+#: src/Import/MarkdownImportPage.php:1064
 msgid "Load into"
 msgstr "Laden in"
 
-#: src/Import/MarkdownImportPage.php:1057
+#: src/Import/MarkdownImportPage.php:1067
 msgid "— no handbook (assign later) —"
 msgstr "— kein Handbuch (später zuweisen) —"
 
-#: src/Import/MarkdownImportPage.php:1064
+#: src/Import/MarkdownImportPage.php:1074
 msgid ""
 "Pick the handbook the pages should belong to. Create one first (for example "
 "\"App handbook\") if you want them in their own, and set who may read it "
@@ -1273,7 +1352,7 @@ msgstr ""
 "(zum Beispiel \"App-Handbuch\"), wenn du sie in einem eigenen willst, und "
 "stelle dort ein, wer es lesen darf."
 
-#: src/Import/MarkdownImportPage.php:1068
+#: src/Import/MarkdownImportPage.php:1078
 msgid "Load app handbook"
 msgstr "App-Handbuch laden"
 

@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.61.0
+Stable tag: 0.62.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.62.0 =
+* Existing WordPress pages can be moved into a handbook: select them under Pages and pick "Move into the handbook" from the bulk actions. Subpages come along, and the old addresses keep working through a permanent redirect.
+* A bundle can be imported as ordinary WordPress pages instead of handbook pages. The text, images, diagrams and structure come along; the handbook, the access rule and the review data do not. Those pages are always created as drafts.
+* In the navigation, the first level is now indented under the handbook title, so every level is set in by the same step.
+* In wp-admin: the filters above the page list are in the same order as the columns they filter, and the duplicate handbook column from 0.61.0 is gone.
+
 = 0.61.0 =
 * The handbook title in the navigation is now an ordinary link to the handbook's start page, like every other entry in the list, and the small arrow that used to lead there is gone. Testers did not read that arrow as a way anywhere.
 * The handbook page list shows which handbook each page belongs to, in a new column after the title. A page with no handbook says so, because such a page stays invisible on the front end.
@@ -162,6 +168,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.62.0 =
+New: move existing pages into a handbook, with subpages and a redirect from the old address, and import a bundle as ordinary draft pages. Nothing needs doing on update.
 
 = 0.61.0 =
 The handbook title in the navigation is a normal link now and the small arrow beside it is gone. In wp-admin: a Handbook column in the page list, and Bulk Edit for the review fields.

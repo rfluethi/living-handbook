@@ -282,7 +282,11 @@ final class Handbooks {
 				'public'             => false,
 				'publicly_queryable' => true,
 				'show_ui'            => true,
-				'show_admin_column'  => true,
+				// The list table gets its Handbook column from Maintenance, not from
+				// here. Both at once is what shipped in 0.61.0: two columns saying
+				// the same thing, one of them in the wrong place and neither of
+				// them saying what an empty cell means.
+				'show_admin_column'  => false,
 				'show_in_rest'       => true,
 				'query_var'          => true,
 				/**

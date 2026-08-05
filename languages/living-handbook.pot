@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.61.0\n"
+"Project-Id-Version: Living Handbook 0.62.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-05T15:23:48+00:00\n"
+"POT-Creation-Date: 2026-08-05T15:51:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -118,13 +118,39 @@ msgid "%1$d yes, %2$d no"
 msgstr ""
 
 #. translators: %s: the plural taxonomy name, for example "Topics".
-#: src/Admin/Maintenance.php:448
+#: src/Admin/Maintenance.php:452
 #, php-format
 msgid "All %s"
 msgstr ""
 
-#: src/Admin/Maintenance.php:480
+#: src/Admin/Maintenance.php:484
 msgid "All review statuses"
+msgstr ""
+
+#. translators: %s: handbook name.
+#: src/Admin/MoveToHandbook.php:113
+#, php-format
+msgid "Move into the handbook: %s"
+msgstr ""
+
+#. translators: %d: number of pages moved.
+#: src/Admin/MoveToHandbook.php:335
+#, php-format
+msgid "%d page moved into the handbook, subpages included. Its old address now redirects to the new one."
+msgid_plural "%d pages moved into the handbook, subpages included. Their old addresses now redirect to the new ones."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of pages skipped.
+#: src/Admin/MoveToHandbook.php:341
+#, php-format
+msgid "%d page was left alone, because it is not a page or you may not edit it."
+msgid_plural "%d pages were left alone, because they are not pages or you may not edit them."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin/MoveToHandbook.php:345
+msgid "The moved pages have no review date yet, so they show as \"Not reviewed\" until you set one."
 msgstr ""
 
 #: src/Blocks/Blocks.php:173
@@ -442,7 +468,7 @@ msgstr ""
 #: src/Git/ArchiveSource.php:96
 #: src/Git/ArchiveSource.php:128
 #: src/Import/HandbookExport.php:286
-#: src/Import/HandbookImport.php:122
+#: src/Import/HandbookImport.php:144
 #: src/Import/MarkdownImportPage.php:249
 #: src/Import/MarkdownImportPage.php:334
 msgid "ZipArchive is not available on the server."
@@ -830,60 +856,64 @@ msgstr ""
 msgid "The export bundle could not be created."
 msgstr ""
 
-#: src/Import/HandbookImport.php:104
+#: src/Import/HandbookImport.php:126
 msgid "Skip pages that already exist (never overwrite)"
 msgstr ""
 
-#: src/Import/HandbookImport.php:105
+#: src/Import/HandbookImport.php:127
 msgid "Update pages that already exist"
 msgstr ""
 
-#: src/Import/HandbookImport.php:106
+#: src/Import/HandbookImport.php:128
 msgid "Always create new pages"
 msgstr ""
 
-#: src/Import/HandbookImport.php:117
+#: src/Import/HandbookImport.php:139
 msgid "You are not allowed to import bundles."
 msgstr ""
 
-#: src/Import/HandbookImport.php:139
+#: src/Import/HandbookImport.php:164
 msgid "No bundle file received."
 msgstr ""
 
-#: src/Import/HandbookImport.php:144
+#: src/Import/HandbookImport.php:169
 msgid "Could not open the bundle."
 msgstr ""
 
-#: src/Import/HandbookImport.php:150
+#: src/Import/HandbookImport.php:175
 msgid "The bundle has no manifest.json."
 msgstr ""
 
-#: src/Import/HandbookImport.php:156
+#: src/Import/HandbookImport.php:181
 msgid "This file is not a Living Handbook bundle."
 msgstr ""
 
-#: src/Import/HandbookImport.php:226
+#: src/Import/HandbookImport.php:256
+msgid "The bundle was imported as ordinary WordPress pages, as drafts. They carry no handbook, so no access rule, no navigation, no table of contents, no badges and no review data; the text, the images and the diagrams are there."
+msgstr ""
+
+#: src/Import/HandbookImport.php:260
 msgid "The bundle names no handbook."
 msgstr ""
 
-#: src/Import/HandbookImport.php:273
+#: src/Import/HandbookImport.php:308
 msgid "The pages went into the handbook you chose; its access configuration was left unchanged."
 msgstr ""
 
-#: src/Import/HandbookImport.php:287
+#: src/Import/HandbookImport.php:322
 msgid "An existing handbook was reused; its access configuration was left unchanged."
 msgstr ""
 
-#: src/Import/HandbookImport.php:298
+#: src/Import/HandbookImport.php:333
 msgid "The handbook was created with visibility \"members\". Raise it by hand if the content really should be public."
 msgstr ""
 
-#: src/Import/HandbookImport.php:316
+#: src/Import/HandbookImport.php:351
 msgid "The bundle carried a list of individually allowed users. It was not applied; set the people by hand if the handbook should be restricted."
 msgstr ""
 
 #. translators: 1: created count, 2: updated count, 3: skipped count, 4: protected count.
-#: src/Import/HandbookImport.php:617
+#: src/Import/HandbookImport.php:664
 #, php-format
 msgid "Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected."
 msgstr ""
@@ -1063,30 +1093,42 @@ msgid "If a page already exists"
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:1044
-msgid "Import bundle"
+msgid "What to create"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:1048
+msgid "Ordinary WordPress pages instead of handbook pages"
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:1050
-msgid "The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It ships with the plugin, so this loads it from the installed version, with its pages, structure and images."
-msgstr ""
-
-#: src/Import/MarkdownImportPage.php:1051
-msgid "The pages are published into the handbook you pick. Whether they are visible on the front end depends on that handbook: set it to \"members\" and only logged-in people see them. Loading again after a plugin update refreshes the pages; nothing is deleted."
+msgid "The text, the images, the diagrams and the page structure come along. Everything the handbook adds around a page does not: no handbook, and therefore no access rule, no navigation, no table of contents, no badges and no review data. The pages are created as drafts, whatever the bundle says, so nothing from an internal handbook is published by importing it."
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:1054
-msgid "Load into"
+msgid "Import bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1057
-msgid "— no handbook (assign later) —"
+#: src/Import/MarkdownImportPage.php:1060
+msgid "The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It ships with the plugin, so this loads it from the installed version, with its pages, structure and images."
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:1061
+msgid "The pages are published into the handbook you pick. Whether they are visible on the front end depends on that handbook: set it to \"members\" and only logged-in people see them. Loading again after a plugin update refreshes the pages; nothing is deleted."
 msgstr ""
 
 #: src/Import/MarkdownImportPage.php:1064
+msgid "Load into"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:1067
+msgid "— no handbook (assign later) —"
+msgstr ""
+
+#: src/Import/MarkdownImportPage.php:1074
 msgid "Pick the handbook the pages should belong to. Create one first (for example \"App handbook\") if you want them in their own, and set who may read it there."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1068
+#: src/Import/MarkdownImportPage.php:1078
 msgid "Load app handbook"
 msgstr ""
 

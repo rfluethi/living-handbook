@@ -174,3 +174,23 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 - Synced content is stored as rendered HTML, not editable blocks, because a cron job has no browser to convert HTML into blocks.
 - MkDocs admonitions (`!!! note`, `??? tip`) are converted to a blockquote led by the title, so the note stays set apart instead of collapsing into stray text. Other MkDocs-specific syntax still degrades to plain text: pymdownx tabs, for one, are not part of GitHub Flavored Markdown, so the converter does not understand them.
 - Living Handbook is built for single-site installations; on a multisite network, import per site.
+
+## Moving existing WordPress pages into a handbook
+
+Select the pages in **Pages**, then pick **Move into the handbook: …** from the bulk actions. Three things happen that would not happen if you only changed the post type by hand:
+
+- The pages are assigned to the handbook you picked. Without a handbook a handbook page is not moved but gone: access is fail-closed, and a page with no handbook is not readable by anyone on the front end.
+- Their old addresses keep working. `/about/` becomes `/handbook/about/`, and WordPress does not redirect on a type change, so the old path is remembered and answered with a permanent redirect. Every existing link, bookmark and search result survives the move.
+- Subpages come along, always. This is not offered as a choice: a child left behind keeps a parent that is no longer a page, and its own address is built from that chain, so it would end up unreachable.
+
+What the moved pages do not bring is review data. They arrive as **Not reviewed** and stay there until someone sets a review date and an interval, which is the honest state for a page that has just become documentation.
+
+The way back is the bundle export, below.
+
+## Importing a bundle as ordinary pages
+
+The bundle import can create ordinary WordPress pages instead of handbook pages: tick **Ordinary WordPress pages instead of handbook pages** on the import screen. The text, the images, the diagrams and the page structure come along.
+
+Everything the handbook adds around a page does not, and it is worth naming: no handbook, so no access rule, no navigation, no table of contents, no badges, no feedback and no source note. Those live in the handbook template and in blocks that check their context; on an ordinary page they render nothing.
+
+The pages are created as **drafts**, whatever status the bundle carries. A bundle exported from an internal handbook would otherwise be published by the act of importing it, and that is the one mistake in this direction that cannot be taken back.

@@ -17,6 +17,22 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.62.0] - 2026-08-05
+
+### Added
+
+* **Existing WordPress pages can be moved into a handbook**, from the bulk actions on the page list, one entry per handbook. Changing `post_type` is the whole move and is exactly why doing it by hand goes wrong, so three things happen with it. The pages get the handbook, because access is fail-closed and a handbook page without one is not moved but gone. Their old paths are remembered and answered with a 301, because WordPress does not redirect on a type change and every link, bookmark and search result pointing at `/about/` would otherwise die the day it became `/handbook/about/`. And subpages always come along, not as an option: a bulk dropdown has no room for the question, and the answer "no" leaves children whose parent is no longer a page and whose own address is built from that chain. Moved pages arrive as "Not reviewed", which is the honest state for a page that has just become documentation.
+* **A bundle can be imported as ordinary WordPress pages.** The importer's reading, unpacking, sanitising, media sideload and hierarchy are all independent of the post type; one line decided it. What comes along is the text, the images, the diagrams and the structure. What does not is everything the handbook adds around a page: no handbook, so no access rule, and no navigation, table of contents, badges, feedback or source note, because those live in the handbook template and in blocks that check their context. Pages created this way are always drafts, whatever the bundle says, because a bundle exported from an internal handbook would otherwise be published by the act of importing it. Counter-checked.
+
+### Changed
+
+* The first level of the navigation is indented under the handbook title, like every level below it. Since 0.61.0 the title is the root of the tree, but the level under it still sat flush with it, which made the handbook name read as a label above a list rather than the top of it.
+* The filters above the handbook page list follow the order of the columns they filter: handbook, the four vocabularies, review status, source. WordPress prints its own date dropdown before the hook and cannot be reordered, so the date stays first.
+
+### Removed
+
+* The duplicate handbook column from 0.61.0. `handbook_set` was registered with `show_admin_column`, so the list already had one; 0.61.0 added a second, in a better place and with a better empty state, and shipped both. The taxonomy's own column is switched off and the plugin's stays.
+
 ## [0.61.0] - 2026-08-05
 
 ### Added

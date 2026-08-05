@@ -1040,6 +1040,16 @@ final class MarkdownImportPage {
 										</fieldset>
 									</td>
 								</tr>
+								<tr>
+									<th scope="row"><?php esc_html_e( 'What to create', 'living-handbook' ); ?></th>
+									<td>
+										<label>
+											<input type="checkbox" name="as_pages" value="1">
+											<?php esc_html_e( 'Ordinary WordPress pages instead of handbook pages', 'living-handbook' ); ?>
+										</label>
+										<p class="description"><?php esc_html_e( 'The text, the images, the diagrams and the page structure come along. Everything the handbook adds around a page does not: no handbook, and therefore no access rule, no navigation, no table of contents, no badges and no review data. The pages are created as drafts, whatever the bundle says, so nothing from an internal handbook is published by importing it.', 'living-handbook' ); ?></p>
+									</td>
+								</tr>
 							</table>
 							<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Import bundle', 'living-handbook' ); ?></button></p>
 						</form>
