@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.62.0
+Stable tag: 0.62.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.62.1 =
+* Three findings Plugin Check reported on 0.62.0 are fixed, and the plugin's own code check now runs the same rules Plugin Check does, so this class of finding is caught before a release rather than after one.
+* The redirect that keeps a moved page's old address alive no longer asks the database anything on a site where nothing has been moved.
+
 = 0.62.0 =
 * Existing WordPress pages can be moved into a handbook: select them under Pages and pick "Move into the handbook" from the bulk actions. Subpages come along, and the old addresses keep working through a permanent redirect.
 * A bundle can be imported as ordinary WordPress pages instead of handbook pages. The text, images, diagrams and structure come along; the handbook, the access rule and the review data do not. Those pages are always created as drafts.
@@ -168,6 +172,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.62.1 =
+Housekeeping after Plugin Check: three findings fixed and the local code check aligned with it. Nothing needs doing on update.
 
 = 0.62.0 =
 New: move existing pages into a handbook, with subpages and a redirect from the old address, and import a bundle as ordinary draft pages. Nothing needs doing on update.

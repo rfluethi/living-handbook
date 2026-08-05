@@ -55,6 +55,14 @@ final class MoveToHandbook {
 	private const RESULT_ARG = 'lh_moved';
 
 	/**
+	 * Set once a page has been moved, so a site that never used this feature
+	 * never pays for it. Without it every 404 on every site would ask the
+	 * database whether some page used to live at that address, and the answer on
+	 * almost every site is no.
+	 */
+	private const OPTION_ANY_MOVED = 'living_handbook_moved_pages';
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -237,6 +245,7 @@ final class MoveToHandbook {
 
 		if ( '' !== $was ) {
 			update_post_meta( $post_id, self::META_MOVED_FROM, $was );
+			update_option( self::OPTION_ANY_MOVED, 1 );
 		}
 
 		return true;
@@ -277,6 +286,11 @@ final class MoveToHandbook {
 		if ( ! is_404() ) {
 			return;
 		}
+		// Nothing has ever been moved on this site: no lookup, no query. This is
+		// the common case, and it is the reason the query below is acceptable.
+		if ( ! get_option( self::OPTION_ANY_MOVED ) ) {
+			return;
+		}
 
 		$requested = isset( $_SERVER['REQUEST_URI'] )
 			? (string) wp_parse_url( esc_url_raw( wp_unslash( (string) $_SERVER['REQUEST_URI'] ) ), PHP_URL_PATH )
@@ -290,6 +304,16 @@ final class MoveToHandbook {
 			return;
 		}
 
+		/*
+		 * A meta lookup, which PHPCS flags as a possible slow query because
+		 * meta_value carries no index. Kept, with three things that make it
+		 * cheap: it runs on a 404 only, never on a request that resolves; it
+		 * runs only on a site that has actually moved a page, which the option
+		 * above decides; and meta_key is indexed, so the scan is over the moved
+		 * pages of this site rather than over wp_postmeta. The alternative, an
+		 * autoloaded option holding every old path, would be read on every
+		 * request instead of on a rare one.
+		 */
 		$found = get_posts(
 			array(
 				'post_type'        => Handbook::POST_TYPE,
@@ -297,7 +321,9 @@ final class MoveToHandbook {
 				'numberposts'      => 1,
 				'fields'           => 'ids',
 				'suppress_filters' => false,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- see above.
 				'meta_key'         => self::META_MOVED_FROM,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see above.
 				'meta_value'       => $requested,
 			)
 		);

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.62.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-05T15:51:23+00:00\n"
+"POT-Creation-Date: 2026-08-05T16:15:28+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -135,13 +135,13 @@ msgid "All review statuses"
 msgstr "Alle Prüfstatus"
 
 #. translators: %s: handbook name.
-#: src/Admin/MoveToHandbook.php:113
+#: src/Admin/MoveToHandbook.php:121
 #, php-format
 msgid "Move into the handbook: %s"
 msgstr "Ins Handbuch verschieben: %s"
 
 #. translators: %d: number of pages moved.
-#: src/Admin/MoveToHandbook.php:335
+#: src/Admin/MoveToHandbook.php:361
 #, php-format
 msgid ""
 "%d page moved into the handbook, subpages included. Its old address now "
@@ -157,7 +157,7 @@ msgstr[1] ""
 "leiten jetzt auf die neuen um."
 
 #. translators: %d: number of pages skipped.
-#: src/Admin/MoveToHandbook.php:341
+#: src/Admin/MoveToHandbook.php:367
 #, php-format
 msgid ""
 "%d page was left alone, because it is not a page or you may not edit it."
@@ -171,7 +171,7 @@ msgstr[1] ""
 "%d Seiten wurden nicht angefasst, weil sie keine Seiten sind oder du sie "
 "nicht bearbeiten darfst."
 
-#: src/Admin/MoveToHandbook.php:345
+#: src/Admin/MoveToHandbook.php:371
 msgid ""
 "The moved pages have no review date yet, so they show as \"Not reviewed\" "
 "until you set one."

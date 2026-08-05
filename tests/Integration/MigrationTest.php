@@ -148,6 +148,24 @@ final class MigrationTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The redirect is looked up only on a site that has actually moved a page.
+	 * Without that switch every 404 on every installation would ask the database
+	 * whether some page used to live at that address, and on almost every
+	 * installation the answer is no.
+	 *
+	 * @return void
+	 */
+	public function test_the_redirect_costs_nothing_before_the_first_move(): void {
+		delete_option( 'living_handbook_moved_pages' );
+		$this->assertFalse( (bool) get_option( 'living_handbook_moved_pages' ), 'The switch starts off.' );
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		MoveToHandbook::move( $this->page( 'About us' ), $this->handbook() );
+
+		$this->assertTrue( (bool) get_option( 'living_handbook_moved_pages' ), 'The first move turns it on.' );
+	}
+
+	/**
 	 * A manifest with one page.
 	 *
 	 * @return array<string, mixed>

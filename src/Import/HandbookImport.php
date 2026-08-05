@@ -156,7 +156,7 @@ final class HandbookImport {
 		$chosen = isset( $_POST['handbook'] ) ? absint( wp_unslash( $_POST['handbook'] ) ) : 0;
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
-		$as_pages = isset( $_POST['as_pages'] ) && '1' === (string) wp_unslash( $_POST['as_pages'] );
+		$as_pages = isset( $_POST['as_pages'] ) && '1' === sanitize_key( wp_unslash( $_POST['as_pages'] ) );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a file upload, validated below.
 		$tmp = isset( $_FILES['bundle']['tmp_name'] ) ? sanitize_text_field( wp_unslash( $_FILES['bundle']['tmp_name'] ) ) : '';

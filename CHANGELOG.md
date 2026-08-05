@@ -17,6 +17,17 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.62.1] - 2026-08-05
+
+### Fixed
+
+* Plugin Check reported three findings on 0.62.0 that the plugin's own `composer lint` did not: an unsanitised `$_POST['as_pages']` in the bundle import, and the `meta_key`/`meta_value` lookup in the redirect for moved pages. The input is sanitised. The lookup stays, with the reason written where it sits: it runs on a 404 only, `meta_key` is indexed so the scan covers this site's moved pages rather than all of `wp_postmeta`, and the alternative (an autoloaded option holding every old path) would be read on every request instead of a rare one.
+* The cause behind all three, which matters more than the three: `phpcs.xml.dist` used `WordPress-Extra`, and Plugin Check runs the full `WordPress` standard, which carries two rule groups Extra does not. Local lint was therefore weaker than the check that decides a wordpress.org submission, and this class of finding could only surface after a release. `WordPress.Security` and `WordPress.DB` are now in the ruleset, which brought up exactly these three across the whole codebase and nothing else, so "composer lint is green" now means "Plugin Check is green".
+
+### Changed
+
+* The redirect for a moved page asks the database nothing on a site where no page has ever been moved. A single option decides, set by the first move. Before this, every 404 on every installation ran a meta lookup whose answer on almost every installation is no. Counter-checked.
+
 ## [0.62.0] - 2026-08-05
 
 ### Added

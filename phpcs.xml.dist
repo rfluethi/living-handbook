@@ -25,6 +25,14 @@
 	<rule ref="WordPress-Docs"/>
 	<rule ref="PHPCompatibilityWP"/>
 
+	<!-- Plugin Check runs the full WordPress standard, which carries two groups
+	     that WordPress-Extra does not. Without them, findings that block a
+	     wordpress.org submission only surface after a release: three did, in
+	     0.62.0. Adding them here is what makes "composer lint is green" mean
+	     "Plugin Check is green". -->
+	<rule ref="WordPress.Security"/>
+	<rule ref="WordPress.DB"/>
+
 	<!-- PSR-4 autoloading uses StudlyCase class filenames, so the WordPress
 	     file-name sniff does not apply to the src/ classes. -->
 	<rule ref="WordPress.Files.FileName">
