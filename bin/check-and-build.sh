@@ -35,15 +35,38 @@ echo "==> Unit tests (phpunit)"
 composer test
 
 echo "==> Translations: update .pot, refresh .po, compile .l10n.php and JS JSON"
+
+# make-pot and msgmerge stamp POT-Creation-Date on every run, so a rebuild that
+# found nothing new still rewrites the file. That single line is enough to make
+# a working tree differ from the commit it was built at, which is exactly what
+# a release must be able to rule out. Keep the previous file whenever the
+# content apart from that stamp is unchanged.
+keep_if_only_the_stamp_moved() {
+	local file="$1" before="$2"
+	[ -f "$before" ] || return 0
+	if diff -q <(grep -v '^"POT-Creation-Date' "$before") <(grep -v '^"POT-Creation-Date' "$file") >/dev/null 2>&1; then
+		cp "$before" "$file"
+	fi
+}
+
 if command -v wp >/dev/null 2>&1; then
-	wp i18n make-pot . languages/living-handbook.pot --exclude=vendor,node_modules,tests --slug=living-handbook
+	pot="languages/living-handbook.pot"
+	pot_before="$(mktemp)"
+	[ -f "$pot" ] && cp "$pot" "$pot_before"
+	wp i18n make-pot . "$pot" --exclude=vendor,node_modules,tests --slug=living-handbook
+	keep_if_only_the_stamp_moved "$pot" "$pot_before"
+	rm -f "$pot_before"
 	if command -v msgmerge >/dev/null 2>&1; then
 		# Refresh the German .po from the template so it carries the current
 		# source references (make-json routes JS strings by these) and any new
 		# strings. Keeps existing translations; needs gettext.
 		for po in languages/*.po; do
 			[ -e "$po" ] || continue
-			msgmerge --update --backup=none --no-fuzzy-matching "$po" languages/living-handbook.pot
+			po_before="$(mktemp)"
+			cp "$po" "$po_before"
+			msgmerge --update --backup=none --no-fuzzy-matching "$po" "$pot"
+			keep_if_only_the_stamp_moved "$po" "$po_before"
+			rm -f "$po_before"
 		done
 	else
 		echo "msgmerge (gettext) not found; the .po keeps its current references."

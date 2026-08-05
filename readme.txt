@@ -94,6 +94,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * The Custom CSS field no longer lets a pasted snippet load fonts or images from a foreign server, which would have made every reader of every handbook page contact that server.
 * Anonymous feedback is capped at 200 votes per page and hour, so a script cannot fill the counter.
 * An export bundle now carries the reviewer's user name instead of their e-mail address.
+* The German translation covers the appearance settings. They reached a German site in English since 0.56.0, because the translation template was last built before that tab existed.
 
 = 0.56.0 =
 * The settings screen is now split into tabs: GitHub sync, Appearance, Feedback, Access, Uninstall. Saving writes the tab you are on and leaves the others alone.
