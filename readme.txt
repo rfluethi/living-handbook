@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.62.1
+Stable tag: 0.63.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.63.0 =
+* Moving pages into a handbook is one bulk action now, "Move into a handbook…", with the handbook chosen in a dropdown beside it. Before this every handbook was its own entry in the bulk menu, which grew with each handbook a site created.
 
 = 0.62.1 =
 * Three findings Plugin Check reported on 0.62.0 are fixed, and the plugin's own code check now runs the same rules Plugin Check does, so this class of finding is caught before a release rather than after one.
@@ -172,6 +175,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.63.0 =
+The bulk action for moving pages into a handbook is one entry with a handbook dropdown beside it, instead of one entry per handbook. Nothing needs doing on update.
 
 = 0.62.1 =
 Housekeeping after Plugin Check: three findings fixed and the local code check aligned with it. Nothing needs doing on update.

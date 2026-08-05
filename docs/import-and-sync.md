@@ -177,7 +177,7 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 
 ## Moving existing WordPress pages into a handbook
 
-Select the pages in **Pages**, then pick **Move into the handbook: …** from the bulk actions. Three things happen that would not happen if you only changed the post type by hand:
+Select the pages in **Pages**, pick **Move into a handbook…** from the bulk actions, and choose the handbook in the dropdown that appears beside it. Three things happen that would not happen if you only changed the post type by hand:
 
 - The pages are assigned to the handbook you picked. Without a handbook a handbook page is not moved but gone: access is fail-closed, and a page with no handbook is not readable by anyone on the front end.
 - Their old addresses keep working. `/about/` becomes `/handbook/about/`, and WordPress does not redirect on a type change, so the old path is remembered and answered with a permanent redirect. Every existing link, bookmark and search result survives the move.

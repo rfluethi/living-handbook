@@ -3,9 +3,9 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.62.0\n"
+"Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-05T16:15:28+00:00\n"
+"POT-Creation-Date: 2026-08-05T16:38:40+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -134,14 +134,28 @@ msgstr "Alle %s"
 msgid "All review statuses"
 msgstr "Alle Prüfstatus"
 
-#. translators: %s: handbook name.
-#: src/Admin/MoveToHandbook.php:121
-#, php-format
-msgid "Move into the handbook: %s"
-msgstr "Ins Handbuch verschieben: %s"
+#: src/Admin/MoveToHandbook.php:137
+msgid "Move into a handbook…"
+msgstr "In ein Handbuch verschieben…"
+
+#: src/Admin/MoveToHandbook.php:167
+msgid "Handbook to move the pages into"
+msgstr "Handbuch, in das die Seiten verschoben werden"
+
+#: src/Admin/MoveToHandbook.php:172
+msgid "— pick a handbook —"
+msgstr "— Handbuch wählen —"
+
+#: src/Admin/MoveToHandbook.php:441
+msgid ""
+"Nothing was moved: no handbook was chosen. Pick one in the dropdown beside "
+"the bulk action."
+msgstr ""
+"Es wurde nichts verschoben: es war kein Handbuch gewählt. Wähle eines im "
+"Auswahlfeld neben der Mehrfachaktion."
 
 #. translators: %d: number of pages moved.
-#: src/Admin/MoveToHandbook.php:361
+#: src/Admin/MoveToHandbook.php:458
 #, php-format
 msgid ""
 "%d page moved into the handbook, subpages included. Its old address now "
@@ -157,7 +171,7 @@ msgstr[1] ""
 "leiten jetzt auf die neuen um."
 
 #. translators: %d: number of pages skipped.
-#: src/Admin/MoveToHandbook.php:367
+#: src/Admin/MoveToHandbook.php:464
 #, php-format
 msgid ""
 "%d page was left alone, because it is not a page or you may not edit it."
@@ -171,7 +185,7 @@ msgstr[1] ""
 "%d Seiten wurden nicht angefasst, weil sie keine Seiten sind oder du sie "
 "nicht bearbeiten darfst."
 
-#: src/Admin/MoveToHandbook.php:371
+#: src/Admin/MoveToHandbook.php:468
 msgid ""
 "The moved pages have no review date yet, so they show as \"Not reviewed\" "
 "until you set one."
@@ -2259,6 +2273,10 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#, php-format
+#~ msgid "Move into the handbook: %s"
+#~ msgstr "Ins Handbuch verschieben: %s"
 
 #~ msgid "Open the handbook start page"
 #~ msgstr "Handbuch-Startseite öffnen"

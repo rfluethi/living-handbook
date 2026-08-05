@@ -45,9 +45,17 @@ final class MoveToHandbook {
 	public const META_MOVED_FROM = '_lh_moved_from';
 
 	/**
-	 * Prefix of the bulk action, followed by the target handbook's term id.
+	 * The bulk action. One entry, not one per handbook: the handbook is chosen in
+	 * a second control that appears beside the bulk dropdown once this is
+	 * selected. A list of handbooks inside the bulk dropdown reads as a list of
+	 * unrelated actions and grows with every handbook a site adds.
 	 */
-	private const ACTION_PREFIX = 'lh_move_to_';
+	private const ACTION = 'lh_move_to_handbook';
+
+	/**
+	 * Name of the field carrying the chosen handbook.
+	 */
+	private const FIELD = 'lh_handbook';
 
 	/**
 	 * Query argument carrying the result back to the list screen.
@@ -70,6 +78,8 @@ final class MoveToHandbook {
 	public function register(): void {
 		add_filter( 'bulk_actions-edit-page', array( $this, 'add_bulk_actions' ) );
 		add_filter( 'handle_bulk_actions-edit-page', array( $this, 'handle_bulk_action' ), 10, 3 );
+		add_action( 'restrict_manage_posts', array( $this, 'render_handbook_select' ), 30 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 		add_action( 'admin_notices', array( $this, 'notice' ) );
 		add_action( 'template_redirect', array( $this, 'redirect_moved' ) );
 	}
@@ -88,20 +98,11 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * One bulk action per handbook.
+	 * The handbooks of this site.
 	 *
-	 * One entry per handbook rather than a single entry plus a second control:
-	 * WordPress gives a bulk action a dropdown and nothing else, and a site has a
-	 * handful of handbooks, not a hundred.
-	 *
-	 * @param array<string, string> $actions Existing bulk actions.
-	 * @return array<string, string>
+	 * @return array<int, WP_Term>
 	 */
-	public function add_bulk_actions( array $actions ): array {
-		if ( ! self::allowed() ) {
-			return $actions;
-		}
-
+	private static function handbooks(): array {
 		$terms = get_terms(
 			array(
 				'taxonomy'   => Handbooks::TAXONOMY,
@@ -109,21 +110,105 @@ final class MoveToHandbook {
 			)
 		);
 		if ( is_wp_error( $terms ) ) {
+			return array();
+		}
+
+		$out = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term ) {
+				$out[] = $term;
+			}
+		}
+
+		return $out;
+	}
+
+	/**
+	 * One bulk action, offered only when there is a handbook to move into.
+	 *
+	 * @param array<string, string> $actions Existing bulk actions.
+	 * @return array<string, string>
+	 */
+	public function add_bulk_actions( array $actions ): array {
+		if ( ! self::allowed() || array() === self::handbooks() ) {
 			return $actions;
 		}
 
-		foreach ( $terms as $term ) {
-			if ( ! $term instanceof WP_Term ) {
-				continue;
-			}
-			$actions[ self::ACTION_PREFIX . $term->term_id ] = sprintf(
-				/* translators: %s: handbook name. */
-				__( 'Move into the handbook: %s', 'living-handbook' ),
-				$term->name
-			);
-		}
+		$actions[ self::ACTION ] = __( 'Move into a handbook…', 'living-handbook' );
 
 		return $actions;
+	}
+
+	/**
+	 * The second control: which handbook.
+	 *
+	 * Rendered into the filter row, which is inside the same form as the bulk
+	 * dropdown, and moved next to that dropdown by the script. Rendering it here
+	 * rather than only in the footer means it is submitted and usable even if the
+	 * script never runs; the script's job is placement, not function.
+	 *
+	 * @param string $post_type Post type of the current list.
+	 * @return void
+	 */
+	public function render_handbook_select( string $post_type ): void {
+		if ( 'page' !== $post_type || ! self::allowed() ) {
+			return;
+		}
+
+		$terms = self::handbooks();
+		if ( array() === $terms ) {
+			return;
+		}
+
+		echo '<span class="living-handbook-move-target">';
+		printf(
+			'<label class="screen-reader-text" for="%1$s">%2$s</label>',
+			esc_attr( self::FIELD ),
+			esc_html__( 'Handbook to move the pages into', 'living-handbook' )
+		);
+		printf( '<select name="%1$s" id="%1$s">', esc_attr( self::FIELD ) );
+		// An empty value, not "0": that is what makes the browser's own required
+		// validation refuse an empty choice, with no dialog of our own.
+		printf( '<option value="">%s</option>', esc_html__( '— pick a handbook —', 'living-handbook' ) );
+		foreach ( $terms as $term ) {
+			printf( '<option value="%1$s">%2$s</option>', esc_attr( (string) $term->term_id ), esc_html( $term->name ) );
+		}
+		echo '</select></span>';
+	}
+
+	/**
+	 * The script that puts that control beside the bulk dropdown and shows it
+	 * only while the move action is selected.
+	 *
+	 * @param string $hook Current admin page.
+	 * @return void
+	 */
+	public function enqueue( string $hook ): void {
+		if ( 'edit.php' !== $hook || ! self::allowed() ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( null === $screen || 'page' !== $screen->post_type ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'living-handbook-bulk-move',
+			LIVING_HANDBOOK_URL . 'assets/js/bulk-move.js',
+			array(),
+			LIVING_HANDBOOK_VERSION,
+			true
+		);
+		wp_add_inline_script(
+			'living-handbook-bulk-move',
+			'window.livingHandbookBulkMove = ' . wp_json_encode(
+				array(
+					'action' => self::ACTION,
+					'field'  => self::FIELD,
+				)
+			) . ';',
+			'before'
+		);
 	}
 
 	/**
@@ -135,17 +220,20 @@ final class MoveToHandbook {
 	 * @return string
 	 */
 	public function handle_bulk_action( string $redirect, string $action, array $ids ): string {
-		if ( ! str_starts_with( $action, self::ACTION_PREFIX ) ) {
+		if ( self::ACTION !== $action ) {
 			return $redirect;
 		}
 		if ( ! self::allowed() ) {
 			return $redirect;
 		}
 
-		$term_id = (int) substr( $action, strlen( self::ACTION_PREFIX ) );
-		$term    = get_term( $term_id, Handbooks::TAXONOMY );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WordPress verifies the bulk nonce before this filter runs.
+		$term_id = isset( $_REQUEST[ self::FIELD ] ) ? absint( wp_unslash( $_REQUEST[ self::FIELD ] ) ) : 0;
+		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
 		if ( ! $term instanceof WP_Term ) {
-			return $redirect;
+			// No handbook chosen: nothing is moved, and the screen says so rather
+			// than reporting a silent success over zero pages.
+			return add_query_arg( array( 'lh_no_handbook' => 1 ), $redirect );
 		}
 
 		$moved   = 0;
@@ -346,6 +434,15 @@ final class MoveToHandbook {
 	 * @return void
 	 */
 	public function notice(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( isset( $_REQUEST['lh_no_handbook'] ) ) {
+			printf(
+				'<div class="notice notice-warning is-dismissible"><p>%s</p></div>',
+				esc_html__( 'Nothing was moved: no handbook was chosen. Pick one in the dropdown beside the bulk action.', 'living-handbook' )
+			);
+			return;
+		}
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_REQUEST[ self::RESULT_ARG ] ) ) {
 			return;

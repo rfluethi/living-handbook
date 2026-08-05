@@ -17,6 +17,16 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.63.0] - 2026-08-05
+
+### Changed
+
+* The bulk action for moving pages into a handbook is a single entry, **Move into a handbook…**, with the handbook chosen in a dropdown that appears beside the bulk menu. 0.62.0 put one entry per handbook into that menu, which grows with every handbook a site creates and reads as a list of unrelated actions rather than one action with a target.
+
+  WordPress gives a bulk action one dropdown and nothing else, so the second control is added by hand. It is rendered by PHP into the filter row, which sits inside the same form, and a script moves it beside the bulk menu and shows it only while the move is selected; one copy per bar, since WordPress draws the bar above and below the table. If the script never runs, the control stays where PHP put it and still works: placement is what the script does, not function.
+
+  An empty choice is refused by the browser's own validation, through `required` on a placeholder option with an empty value, rather than by a dialog. The server checks as well, because a submit can arrive without any of that, and answers with a notice saying nothing was moved instead of reporting a silent success over zero pages. The action is not offered at all while the site has no handbook to move into.
+
 ## [0.62.1] - 2026-08-05
 
 ### Fixed

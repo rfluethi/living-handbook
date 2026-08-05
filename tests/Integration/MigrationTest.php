@@ -166,6 +166,63 @@ final class MigrationTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The bulk dropdown holds one entry, not one per handbook. The handbook is
+	 * chosen in a second control beside it, so the list of actions does not grow
+	 * with every handbook a site creates.
+	 *
+	 * @return void
+	 */
+	public function test_the_bulk_dropdown_holds_one_entry(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$this->handbook();
+		$this->handbook();
+
+		$actions = ( new MoveToHandbook() )->add_bulk_actions( array( 'edit' => 'Edit' ) );
+
+		$this->assertCount( 2, $actions, 'Two handbooks must still add exactly one action.' );
+		$this->assertArrayHasKey( 'lh_move_to_handbook', $actions );
+	}
+
+	/**
+	 * And no entry at all while there is no handbook to move into: an action
+	 * that cannot be completed does not belong in the menu.
+	 *
+	 * @return void
+	 */
+	public function test_without_a_handbook_there_is_no_bulk_action(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$actions = ( new MoveToHandbook() )->add_bulk_actions( array( 'edit' => 'Edit' ) );
+
+		$this->assertSame( array( 'edit' => 'Edit' ), $actions );
+	}
+
+	/**
+	 * The second control offers every handbook and starts on an empty value, so
+	 * the browser's own required validation refuses a submit with nothing
+	 * chosen.
+	 *
+	 * @return void
+	 */
+	public function test_the_second_control_lists_the_handbooks(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$term = get_term( $this->handbook(), Handbooks::TAXONOMY );
+		$this->assertInstanceOf( 'WP_Term', $term );
+
+		ob_start();
+		( new MoveToHandbook() )->render_handbook_select( 'page' );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'name="lh_handbook"', $html );
+		$this->assertStringContainsString( '<option value="">', $html );
+		$this->assertStringContainsString( 'value="' . $term->term_id . '"', $html );
+
+		ob_start();
+		( new MoveToHandbook() )->render_handbook_select( 'post' );
+		$this->assertSame( '', (string) ob_get_clean(), 'The control belongs to the page list only.' );
+	}
+
+	/**
 	 * A manifest with one page.
 	 *
 	 * @return array<string, mixed>
