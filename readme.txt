@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.58.0
+Stable tag: 0.59.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.59.0 =
+* The freshness dot on a card and the two error messages stay legible on a dark theme. They were drawn in fixed colours straight onto the theme's own surface, where they reached 2.6:1 against a 3:1 requirement. They now take a third of the theme's text colour, which darkens them on a light theme and lightens them on a dark one. The badges themselves are unchanged: they bring their own background and were never the problem.
+
 = 0.58.0 =
 * Comments can be switched for a whole handbook, not only page by page: leave it to each page, or open or close comments for every page of that handbook at once. Under Handbook, Handbooks. Closing hides the form; comments already written stay and are not deleted.
 * Links to another website are no longer broken by the import. A link whose address ends in .md was treated as a link inside the import even when it pointed at github.com, so it was stripped to plain text and reported as a dead link. This is what made a fresh installation of the shipped handbook report six of them.
@@ -150,6 +153,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.59.0 =
+Worth having on a dark theme: the freshness dot and the error messages were too faint to read there. Nothing needs doing on update, and the badges look exactly as before.
 
 = 0.58.0 =
 Comments can now be switched for a whole handbook instead of page by page. Fixes links to other websites being stripped by the import. Nothing needs doing on update; the new setting arrives switched off.

@@ -21,9 +21,22 @@ checks the same thing, plus that the newest changelog entry in `readme.txt` is
 the entry for that version. So a forgotten changelog entry turns the test suite
 red rather than shipping quietly.
 
-While the plugin is unreleased on wordpress.org, `Stable tag` runs ahead of what
-is published. Before the first submission that has to change, because wp.org
-reads exactly that line to decide which version it serves.
+`Stable tag` is the line wp.org reads to decide which version it serves, so it
+has to name a version that is actually released. It does, and by construction:
+the version is raised in the release commit itself, not while work is in
+progress, so between two releases `main` carries the last released version.
+Checked over v0.53.0 to v0.58.0: at every tag the header, the constant and
+`Stable tag` all read the tag's own number.
+
+That is the whole rule, and it only holds as long as nobody raises the version
+in a feature branch. If that ever becomes convenient, `Stable tag` has to stop
+following the header and start naming the last published version instead, and
+the three-way check has to learn the difference. Until then, do not raise the
+version except in the commit that is released.
+
+One thing does change at the wordpress.org submission: there `Stable tag` must
+name a version that exists in the SVN `tags/` directory. Publishing the first
+version to SVN is what satisfies that; no change here is needed for it.
 
 ## Steps
 

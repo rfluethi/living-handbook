@@ -1,6 +1,21 @@
 # Contributing
 
-This is an internal team project that is open for anyone to read and, if useful, to build on. Contributions are welcome but not actively solicited.
+This is an internal team project that is open for anyone to read and, if useful,
+to build on. Contributions are welcome but not actively solicited, and that
+sentence has a practical consequence worth stating plainly rather than leaving
+you to find out.
+
+**Open an issue before you write code.** There is no public backlog here: the
+task list lives in the maintainer's own workspace, so an open repository with no
+issues does not mean there is nothing to do, it means the list is somewhere you
+cannot see. A pull request that arrives unannounced may well duplicate work that
+is half finished, or change something in a direction that has already been
+decided against, and finding that out after you wrote it is the worst moment
+for everyone. An issue costs you five minutes and gets you an answer about where
+the thing already stands.
+
+Small and obvious fixes, a typo, a broken link, a wrong version number in the
+docs, need none of that. Send them.
 
 ## Development setup
 

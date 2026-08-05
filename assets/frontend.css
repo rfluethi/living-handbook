@@ -46,10 +46,30 @@
 	--lh-accent-soft: color-mix(in srgb, var(--lh-accent) 12%, var(--lh-surface));
 
 	/* Status colours and badge chips keep fixed values: the chips are small,
-	   self-contained labels that stay legible as light stickers on any surface. */
+	   self-contained labels that stay legible as light stickers on any surface.
+	   Measured on the shipped values: the darkest pair is 4.76:1, all three clear
+	   4.5:1, and they do so on a dark theme as well because the chip brings its
+	   own background. That is why these three stay fixed. */
 	--lh-ok: var(--lh-user-ok, #176e3c);          /* "Reviewed" */
 	--lh-due: var(--lh-user-due, #8a5200);         /* "Review due" */
 	--lh-overdue: var(--lh-user-overdue, #c0392b);     /* "Review overdue" (escalation) */
+
+	/* The same three, for the places that draw them straight onto the theme's
+	   surface with no chip behind them: the freshness dot on a card, and the two
+	   error messages. There the fixed value is wrong, and measurably so. On a
+	   dark surface (#1e1e1e) the dots reach 2.65:1 and 2.61:1 against a 3:1
+	   requirement, and the error text 3.07:1 against 4.5:1.
+
+	   Mixing a third of the surface's own text colour into them fixes both
+	   directions with one expression, because that text colour is dark on a light
+	   theme and light on a dark one: the mix darkens the hue on light (8.4 to
+	   9.0:1) and lightens it on dark (5.3 to 5.6:1). It keeps the hue, so red
+	   still reads as red, and it costs no second set of values to maintain.
+	   Where color-mix is missing, the fallback is the fixed colour, which is
+	   today's behaviour. */
+	--lh-ok-on-surface: color-mix(in srgb, var(--lh-ok) 65%, var(--lh-surface-text));
+	--lh-due-on-surface: color-mix(in srgb, var(--lh-due) 65%, var(--lh-surface-text));
+	--lh-overdue-on-surface: color-mix(in srgb, var(--lh-overdue) 65%, var(--lh-surface-text));
 	--lh-badge-text: var(--lh-user-badge-text, #5f6b75);  /* neutral chip label; fixed, not the surface muted */
 	--lh-badge-bg: var(--lh-user-badge-bg, #eef1f4);
 	--lh-badge-audience-bg: var(--lh-user-badge-audience-bg, #f3eafc);
@@ -281,15 +301,15 @@
 }
 
 .living-handbook-card__dot--ok {
-	background: var(--lh-ok);
+	background: var(--lh-ok-on-surface, var(--lh-ok));
 }
 
 .living-handbook-card__dot--due {
-	background: var(--lh-due);
+	background: var(--lh-due-on-surface, var(--lh-due));
 }
 
 .living-handbook-card__dot--overdue {
-	background: var(--lh-overdue);
+	background: var(--lh-overdue-on-surface, var(--lh-overdue));
 }
 
 .living-handbook-empty {
@@ -840,7 +860,7 @@
 /* Feedback error message shown when the request fails, instead of a false
  * thank-you. */
 .living-handbook-feedback__error {
-	color: var(--lh-overdue, #c0392b);
+	color: var(--lh-overdue-on-surface, var(--lh-overdue, #c0392b));
 }
 
 .living-handbook-reset,
@@ -866,7 +886,7 @@
  * silent stale list. */
 .living-handbook-filter-error {
 	margin: 0 0 0.75rem;
-	color: var(--lh-overdue, #c0392b);
+	color: var(--lh-overdue-on-surface, var(--lh-overdue, #c0392b));
 }
 
 .living-handbook-filterform__actions {

@@ -17,7 +17,7 @@ Two colours are deliberately not fields. The text on an accent-filled control (`
 | Accent | `--lh-accent` | links, current page, filled controls, **and the page-type badge** |
 | Topic badge background / text | `--lh-badge-bg`, `--lh-badge-text` | the topic chip only |
 | Audience badge background / text | `--lh-badge-audience-bg`, `--lh-badge-audience-text` | the "Audience: …" chip only |
-| Reviewed / due / overdue | `--lh-ok`, `--lh-due`, `--lh-overdue` | the three freshness chips and their dots |
+| Reviewed / due / overdue | `--lh-ok`, `--lh-due`, `--lh-overdue` | the three freshness chips; the dots and error messages derive from them |
 
 An empty field means the theme decides, which is the shipped state and the design of the plugin. Nothing is printed for it. What is set is printed as `--lh-user-*` on `:root`, and the stylesheet reads each variable as `var(--lh-user-x, <theme preset>, <fallback>)`. That gives three levels, in this order:
 
@@ -62,10 +62,20 @@ The custom properties are declared on the plugin's frontend wrappers. The quicke
 	--lh-accent-soft: color-mix(in srgb, var(--lh-accent) 12%, var(--lh-surface));
 	                           /* a tinted accent backdrop: page-type badge, hovered and current rows */
 
-	/* Freshness colours stay fixed. */
+	/* Freshness colours stay fixed, because they are only ever drawn inside a
+	   chip that brings its own background. */
 	--lh-ok: var(--lh-user-ok, #176e3c);          /* "Reviewed" */
 	--lh-due: var(--lh-user-due, #8a5200);        /* "Review due" */
 	--lh-overdue: var(--lh-user-overdue, #c0392b); /* "Review overdue" (the escalation state) */
+
+	/* The same three for the places with no chip behind them: the freshness dot
+	   on a card and the two error messages. A third of the surface's own text
+	   colour is mixed in, which darkens the hue on a light theme and lightens it
+	   on a dark one, so it stays legible either way. Derived, so setting the
+	   colour above moves these with it. */
+	--lh-ok-on-surface: color-mix(in srgb, var(--lh-ok) 65%, var(--lh-surface-text));
+	--lh-due-on-surface: color-mix(in srgb, var(--lh-due) 65%, var(--lh-surface-text));
+	--lh-overdue-on-surface: color-mix(in srgb, var(--lh-overdue) 65%, var(--lh-surface-text));
 
 	/* Badge chips keep fixed values too: small stickers that must stay legible
 	   on any surface. Each freshness chip pairs its background with the matching
