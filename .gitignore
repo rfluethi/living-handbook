@@ -20,6 +20,9 @@ living-handbook-*.zip
 /wordpress/
 /tmp/
 
+# wp-env: the shared config is committed, a personal override is not
+.wp-env.override.json
+
 # Compiled translations
 /languages/*.mo
 

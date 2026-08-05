@@ -3,9 +3,9 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.57.0\n"
+"Project-Id-Version: Living Handbook 0.58.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-05T12:08:21+00:00\n"
+"POT-Creation-Date: 2026-08-05T13:10:32+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -289,7 +289,7 @@ msgstr "Keine Handbücher verfügbar."
 
 #: src/Frontend/Entry.php:69 src/Frontend/Entry.php:71
 #: src/Frontend/FrontendRenderer.php:342 src/Frontend/FrontendRenderer.php:379
-#: src/Handbook/Handbooks.php:209
+#: src/Handbook/Handbooks.php:278
 msgid "Handbooks"
 msgstr "Handbücher"
 
@@ -759,60 +759,85 @@ msgid "All sources"
 msgstr "Alle Quellen"
 
 # Access configuration (handbook term)
-#: src/Handbook/HandbookAdmin.php:78 src/Handbook/HandbookAdmin.php:117
+#: src/Handbook/HandbookAdmin.php:78 src/Handbook/HandbookAdmin.php:122
 msgid "Frontend visibility"
 msgstr "Frontend-Sichtbarkeit"
 
-#: src/Handbook/HandbookAdmin.php:82 src/Handbook/HandbookAdmin.php:121
+#: src/Handbook/HandbookAdmin.php:82 src/Handbook/HandbookAdmin.php:126
 msgid "Allowed roles (restricted only)"
 msgstr "Erlaubte Rollen (nur bei beschränkt)"
 
-#: src/Handbook/HandbookAdmin.php:86 src/Handbook/HandbookAdmin.php:125
+#: src/Handbook/HandbookAdmin.php:86 src/Handbook/HandbookAdmin.php:130
 msgid "Allowed users (restricted only)"
 msgstr "Erlaubte Personen (nur bei beschränkt)"
 
-#: src/Handbook/HandbookAdmin.php:88 src/Handbook/HandbookAdmin.php:128
+#: src/Handbook/HandbookAdmin.php:88 src/Handbook/HandbookAdmin.php:133
 msgid "Comma-separated user logins or IDs."
 msgstr "Kommagetrennte Benutzernamen oder IDs."
 
-#: src/Handbook/HandbookAdmin.php:141 src/Setup/Settings.php:51
+#: src/Handbook/HandbookAdmin.php:91 src/Handbook/HandbookAdmin.php:137
+msgid "Comments"
+msgstr "Kommentare"
+
+#: src/Handbook/HandbookAdmin.php:153 src/Setup/Settings.php:51
 msgid "Access"
 msgstr "Zugriff"
 
-#: src/Handbook/HandbookAdmin.php:163
+#: src/Handbook/HandbookAdmin.php:175
 msgid "Public"
 msgstr "Öffentlich"
 
-#: src/Handbook/HandbookAdmin.php:166 src/Setup/Seeder.php:49
+#: src/Handbook/HandbookAdmin.php:178 src/Setup/Seeder.php:49
 msgid "All members"
 msgstr "Alle Mitglieder"
 
 #. translators: %d: number of allowed users.
-#: src/Handbook/HandbookAdmin.php:184
+#: src/Handbook/HandbookAdmin.php:196
 #, php-format
 msgid "%d user"
 msgid_plural "%d users"
 msgstr[0] "%d Nutzer"
 msgstr[1] "%d Nutzer"
 
-#: src/Handbook/HandbookAdmin.php:188
+#: src/Handbook/HandbookAdmin.php:200
 msgid "Restricted"
 msgstr "Beschränkt"
 
-#: src/Handbook/HandbookAdmin.php:199
+#: src/Handbook/HandbookAdmin.php:211
 msgid "Public (no login)"
 msgstr "Öffentlich (ohne Login)"
 
-#: src/Handbook/HandbookAdmin.php:200
+#: src/Handbook/HandbookAdmin.php:212
 msgid "All members (logged in)"
 msgstr "Alle Mitglieder (eingeloggt)"
 
-#: src/Handbook/HandbookAdmin.php:201
+#: src/Handbook/HandbookAdmin.php:213
 msgid "Restricted (roles and/or users)"
 msgstr "Beschränkt (Rollen und/oder Personen)"
 
+#: src/Handbook/HandbookAdmin.php:236
+msgid "Each page decides (default)"
+msgstr "Jede Seite entscheidet selbst (Voreinstellung)"
+
+#: src/Handbook/HandbookAdmin.php:237
+msgid "Open on every page of this handbook"
+msgstr "Auf allen Seiten dieses Handbuchs offen"
+
+#: src/Handbook/HandbookAdmin.php:238
+msgid "Closed on every page of this handbook"
+msgstr "Auf allen Seiten dieses Handbuchs geschlossen"
+
+#: src/Handbook/HandbookAdmin.php:259
+msgid ""
+"Open and Closed override the setting on each page. Closing hides the comment "
+"form; comments already written stay readable and are not deleted."
+msgstr ""
+"Offen und Geschlossen übergehen die Einstellung der einzelnen Seite. "
+"Geschlossen blendet das Kommentarformular aus; bereits geschriebene "
+"Kommentare bleiben lesbar und werden nicht gelöscht."
+
 # Post type and taxonomies
-#: src/Handbook/Handbooks.php:210 src/Import/HandbookExport.php:114
+#: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:114
 #: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
 #: src/Setup/Onboarding.php:100
 msgid "Handbook"

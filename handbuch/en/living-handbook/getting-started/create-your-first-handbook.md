@@ -14,7 +14,8 @@ Every handbook page belongs to exactly one handbook. Who may read what is contro
 1. Open **Handbook → Handbooks** and create a new handbook.
 2. Enter a **name**, for example "General". Add a short **description**. It appears later on the overview and the entry page.
 3. On the same screen, set the **visibility**. There are three levels: **Public** for all visitors, **All members (logged in)** for an internal handbook, or **restricted** to specific user roles and people.
-4. Save.
+4. Under **Comments**, decide whether the pages of this handbook allow comments. **Each page decides** is the default and changes nothing. **Open** and **Closed** apply to every page of the handbook at once and override the setting on the single page.
+5. Save.
 
 ![The "Add handbook" form with name, description and the three visibility levels.](../assets/handbuch-anlegen.webp)
 
@@ -26,6 +27,15 @@ The new handbook appears in the list under **Handbook → Handbooks**. It also a
 <summary>Pitfalls: Visibility is strict on purpose</summary>
 
 A new handbook starts on **All members (logged in)**. Logged out, you see nothing. That only changes when you set it to **Public** or grant roles and people. This is deliberate: the plugin would rather hide a page than publish it by accident. If you see nothing while testing, check the visibility first. Use a private browser window for that. More under [Set visibility](../access/set-visibility.md).
+
+</details>
+
+<details>
+<summary>Concept: comments for a whole handbook</summary>
+
+WordPress switches comments per page. For a handbook of two hundred pages that is no answer, because nobody opens two hundred pages. The setting on the handbook is therefore not a default but an override: set to **Open** or **Closed**, it applies whatever the single page says. A default would have to be written onto every existing page the moment it was set, and would be wrong again for every page imported afterwards.
+
+**Closed** hides the comment form, exactly as closing comments on a single page does. Comments already written stay readable and are not deleted. Deleting them stays a separate, deliberate step under **Comments** in the WordPress admin.
 
 </details>
 
@@ -41,5 +51,5 @@ A new handbook starts on **All members (logged in)**. Logged out, you see nothin
 * Zielgruppe: All members
 * Reihenfolge: 2
 * Textauszug: A handbook is the container for your pages; this guide creates your first handbook and sets its visibility.
-* Letzte Prüfung: 2026-07-27
+* Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

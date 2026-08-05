@@ -87,6 +87,11 @@ final class HandbookAdmin {
 			<input type="text" name="living_handbook_users_raw" id="living_handbook_users_raw" value="">
 			<p class="description"><?php esc_html_e( 'Comma-separated user logins or IDs.', 'living-handbook' ); ?></p>
 		</div>
+		<div class="form-field">
+			<label for="living_handbook_comments"><?php esc_html_e( 'Comments', 'living-handbook' ); ?></label>
+			<?php $this->comments_select( Handbooks::COMMENTS_INHERIT ); ?>
+			<p class="description"><?php echo esc_html( self::comments_hint() ); ?></p>
+		</div>
 		<?php
 	}
 
@@ -126,6 +131,13 @@ final class HandbookAdmin {
 			<td>
 				<input type="text" name="living_handbook_users_raw" id="living_handbook_users_raw" value="<?php echo esc_attr( implode( ', ', $logins ) ); ?>" class="regular-text">
 				<p class="description"><?php esc_html_e( 'Comma-separated user logins or IDs.', 'living-handbook' ); ?></p>
+			</td>
+		</tr>
+		<tr class="form-field">
+			<th scope="row"><label for="living_handbook_comments"><?php esc_html_e( 'Comments', 'living-handbook' ); ?></label></th>
+			<td>
+				<?php $this->comments_select( Handbooks::comments_mode( (int) $term->term_id ) ); ?>
+				<p class="description"><?php echo esc_html( self::comments_hint() ); ?></p>
 			</td>
 		</tr>
 		<?php
@@ -214,6 +226,40 @@ final class HandbookAdmin {
 	}
 
 	/**
+	 * Render the comments select control.
+	 *
+	 * @param string $current Currently selected value.
+	 * @return void
+	 */
+	private function comments_select( string $current ): void {
+		$options = array(
+			Handbooks::COMMENTS_INHERIT => __( 'Each page decides (default)', 'living-handbook' ),
+			Handbooks::COMMENTS_OPEN    => __( 'Open on every page of this handbook', 'living-handbook' ),
+			Handbooks::COMMENTS_CLOSED  => __( 'Closed on every page of this handbook', 'living-handbook' ),
+		);
+
+		echo '<select name="living_handbook_comments" id="living_handbook_comments">';
+		foreach ( $options as $value => $label ) {
+			printf(
+				'<option value="%s" %s>%s</option>',
+				esc_attr( $value ),
+				selected( $current, $value, false ),
+				esc_html( $label )
+			);
+		}
+		echo '</select>';
+	}
+
+	/**
+	 * The one sentence a person needs beside that select.
+	 *
+	 * @return string
+	 */
+	private static function comments_hint(): string {
+		return __( 'Open and Closed override the setting on each page. Closing hides the comment form; comments already written stay readable and are not deleted.', 'living-handbook' );
+	}
+
+	/**
 	 * Render one checkbox per role.
 	 *
 	 * @param string[] $selected Selected role slugs.
@@ -279,5 +325,13 @@ final class HandbookAdmin {
 			}
 		}
 		update_term_meta( $term_id, Handbooks::META_USERS, array_values( array_unique( $users ) ) );
+
+		$comments = isset( $_POST['living_handbook_comments'] )
+			? sanitize_key( wp_unslash( $_POST['living_handbook_comments'] ) )
+			: Handbooks::COMMENTS_INHERIT;
+		if ( ! in_array( $comments, array( Handbooks::COMMENTS_OPEN, Handbooks::COMMENTS_CLOSED ), true ) ) {
+			$comments = Handbooks::COMMENTS_INHERIT;
+		}
+		update_term_meta( $term_id, Handbooks::META_COMMENTS, $comments );
 	}
 }

@@ -406,6 +406,17 @@ final class Postprocessor {
 		$content       = (string) preg_replace_callback(
 			'/<a href="([^"]+\.md)"([^>]*)>(.*?)<\/a>/is',
 			static function ( array $found ) use ( &$count, &$unresolved, $source_path, $base_dir, $page_title, $own_handbooks, $defuse ): string {
+				// A link that names a host is somebody else's document and is left
+				// exactly as it is. Only a relative link is a link into this import.
+				// The shipped handbook is the case that proved it: it points at the
+				// developer docs on github.com, whose file names end in .md like any
+				// other, so every one of them was stripped to plain text and
+				// reported as a dead link, because "ends in .md" had been read as
+				// "belongs to this import".
+				if ( self::is_external_link( $found[1] ) ) {
+					return $found[0];
+				}
+
 				$clean  = rawurldecode( (string) preg_replace( '/[?#].*$/', '', $found[1] ) );
 				$target = 0;
 				if ( '' !== $source_path ) {
@@ -462,6 +473,28 @@ final class Postprocessor {
 			'converted'  => $count,
 			'unresolved' => $unresolved,
 		);
+	}
+
+	/**
+	 * Whether a link target belongs to somebody else.
+	 *
+	 * A scheme or a leading "//" names a host, and a document on another host is
+	 * not part of this import however its file name ends. Everything else is
+	 * relative to the file being imported and is resolved against it. A "mailto:"
+	 * or "tel:" link is caught by the same rule, since it carries a scheme too,
+	 * even though neither could plausibly end in .md.
+	 *
+	 * @param string $href The raw href, before decoding.
+	 * @return bool
+	 */
+	private static function is_external_link( string $href ): bool {
+		$href = trim( $href );
+
+		if ( str_starts_with( $href, '//' ) ) {
+			return true;
+		}
+
+		return 1 === preg_match( '#^[a-z][a-z0-9+.-]*:#i', $href );
 	}
 
 	/**

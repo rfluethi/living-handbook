@@ -14,6 +14,7 @@ Active development (0.x). The plugin is usable end to end: multiple handbooks, p
 - Ownership per page: a responsible role mapped to a current person.
 - Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
 - Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
+- Comments per handbook: leave them to each page, or switch them on or off for a whole handbook at once.
 - Several handbooks side by side, each with its own entry page and navigation.
 - An entry page per handbook with full-text search, taxonomy filters, area tiles and recently updated pages.
 - Per-handbook navigation built from the page hierarchy: a self-contained, collapsible page tree with a Menu or Accordion display, styled by the plugin. No other plugin is required.
@@ -30,26 +31,30 @@ Living Handbook is built for single-site installations; network activation on mu
 
 ## Development
 
-```bash
-composer install
-bash bin/check-and-build.sh   # lint, static analysis, unit tests, then build the zip
-```
-
-Or run the checks individually:
+A running WordPress with the plugin in it, in two commands (needs Docker):
 
 ```bash
-composer lint      # PHPCS (WordPress standards)
-composer analyze   # PHPStan
-composer test      # PHPUnit (unit)
+composer install   # vendor/ first: the plugin needs it at runtime
+npx wp-env start   # http://localhost:8888, admin / password
 ```
 
-Continuous integration runs linting, static analysis, and unit tests on every push and pull request. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+The checks, and the zip:
+
+```bash
+composer lint             # PHPCS (WordPress standards)
+composer analyze          # PHPStan
+composer test             # PHPUnit (unit)
+composer test:integration # PHPUnit (integration, needs a database)
+bash bin/check-and-build.sh   # all of the above except the integration tests, then build the zip
+```
+
+Continuous integration runs the coding standards, the static analysis, the unit tests on PHP 8.1 to 8.4, and the integration suite against MySQL, on every push to `main` and every pull request. All of it has to be green before a pull request is merged. Setting up the integration tests, the local environment and the conventions: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Documentation
 
 New to the plugin? Start with [getting started](docs/getting-started.md): from install to your first page that visitors can see. Then [maintenance and freshness](docs/maintenance.md), the feature the plugin is built around.
 
-Developer documentation lives in [`docs/`](docs/): a plain-language [code overview](docs/code-overview.md) to start, then [blocks](docs/blocks.md), [templates](docs/templates.md), [customization](docs/customization.md), [architecture](docs/architecture.md), [hooks](docs/hooks.md) and [import and sync](docs/import-and-sync.md).
+Developer documentation lives in [`docs/`](docs/README.md), which has an index and a reading order: a plain-language [code overview](docs/code-overview.md) to start, then [blocks](docs/blocks.md), [templates](docs/templates.md), [customization](docs/customization.md), [architecture](docs/architecture.md), [hooks](docs/hooks.md), [import and sync](docs/import-and-sync.md) and [releasing](docs/releasing.md).
 
 ## License
 

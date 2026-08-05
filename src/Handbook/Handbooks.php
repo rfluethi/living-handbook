@@ -49,6 +49,12 @@ final class Handbooks {
 	public const VISIBILITY_MEMBERS    = 'members';
 	public const VISIBILITY_RESTRICTED = 'restricted';
 
+	public const META_COMMENTS = 'living_handbook_comments';
+
+	public const COMMENTS_INHERIT = 'inherit';
+	public const COMMENTS_OPEN    = 'open';
+	public const COMMENTS_CLOSED  = 'closed';
+
 	/**
 	 * Guard so that the enforcement's own write does not trigger it again.
 	 *
@@ -71,6 +77,69 @@ final class Handbooks {
 
 		// One handbook per page, enforced instead of assumed. See enforce_single().
 		add_action( 'set_object_terms', array( $this, 'enforce_single' ), 10, 6 );
+
+		// A handbook may decide about comments for all of its pages at once.
+		// Late priority so this is the last word: the point of the setting is to
+		// spare somebody opening two hundred pages one by one.
+		add_filter( 'comments_open', array( __CLASS__, 'filter_comments_open' ), 99, 2 );
+	}
+
+	/**
+	 * Let a handbook decide about comments for every page it holds.
+	 *
+	 * Without this the only switch is the one on each page, which is fine for a
+	 * page and useless for a handbook: turning comments on for two hundred pages
+	 * means opening two hundred pages. The handbook's setting is therefore a
+	 * plain override, not a default that pages could drift away from, because a
+	 * default would have to be written onto every page at the moment it is set
+	 * and would then be wrong for every page imported afterwards.
+	 *
+	 * "Inherit" leaves the page setting alone, and is the default, so an existing
+	 * site notices nothing. Note what closing does and does not do: it hides the
+	 * form, exactly as closing comments on a single page does. Comments already
+	 * written stay readable, and stay in the database. Deleting them is a
+	 * separate act and stays a manual one.
+	 *
+	 * @param bool       $open    Whether comments are open.
+	 * @param int|string $post_id Post id.
+	 * @return bool
+	 */
+	public static function filter_comments_open( $open, $post_id ): bool {
+		$post_id = (int) $post_id;
+		if ( $post_id <= 0 || Handbook::POST_TYPE !== get_post_type( $post_id ) ) {
+			return (bool) $open;
+		}
+
+		$mode = self::comments_mode( self::for_post( $post_id ) );
+		if ( self::COMMENTS_OPEN === $mode ) {
+			return true;
+		}
+		if ( self::COMMENTS_CLOSED === $mode ) {
+			return false;
+		}
+
+		return (bool) $open;
+	}
+
+	/**
+	 * What a handbook says about comments: inherit, open or closed.
+	 *
+	 * Anything unknown, including a handbook that does not exist, reads as
+	 * inherit, so a stray value can never silently open comments.
+	 *
+	 * @param int $term_id Handbook term id.
+	 * @return string One of the COMMENTS_* constants.
+	 */
+	public static function comments_mode( int $term_id ): string {
+		if ( $term_id <= 0 ) {
+			return self::COMMENTS_INHERIT;
+		}
+
+		$mode = (string) get_term_meta( $term_id, self::META_COMMENTS, true );
+
+		return in_array( $mode, array( self::COMMENTS_OPEN, self::COMMENTS_CLOSED ), true )
+			? $mode
+			: self::COMMENTS_INHERIT;
 	}
 
 	/**
@@ -303,6 +372,18 @@ final class Handbooks {
 			array(
 				'type'          => 'array',
 				'single'        => true,
+				'show_in_rest'  => false,
+				'auth_callback' => array( __CLASS__, 'can_edit_access' ),
+			)
+		);
+
+		register_term_meta(
+			self::TAXONOMY,
+			self::META_COMMENTS,
+			array(
+				'type'          => 'string',
+				'single'        => true,
+				'default'       => self::COMMENTS_INHERIT,
 				'show_in_rest'  => false,
 				'auth_callback' => array( __CLASS__, 'can_edit_access' ),
 			)

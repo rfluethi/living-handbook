@@ -1,0 +1,4 @@
+# Every pull request is reviewed by the maintainer. One line, so that the
+# expectation is in the repository rather than in somebody's head, and so GitHub
+# requests the review by itself instead of leaving a pull request unnoticed.
+*       @rfluethi

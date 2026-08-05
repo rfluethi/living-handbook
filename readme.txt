@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.57.0
+Stable tag: 0.58.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.58.0 =
+* Comments can be switched for a whole handbook, not only page by page: leave it to each page, or open or close comments for every page of that handbook at once. Under Handbook, Handbooks. Closing hides the form; comments already written stay and are not deleted.
+* Links to another website are no longer broken by the import. A link whose address ends in .md was treated as a link inside the import even when it pointed at github.com, so it was stripped to plain text and reported as a dead link. This is what made a fresh installation of the shipped handbook report six of them.
+
 = 0.57.0 =
 * Comments on a handbook page work now. They never showed up, whatever you set: no shipped layout contained a comment block, and the import closed comments on every page it created. Open them under the page's Discussion panel and they appear.
 * Mermaid diagrams follow your theme instead of always drawing light, so the connecting lines stay visible on a dark theme.
@@ -146,6 +150,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.58.0 =
+Comments can now be switched for a whole handbook instead of page by page. Fixes links to other websites being stripped by the import. Nothing needs doing on update; the new setting arrives switched off.
 
 = 0.57.0 =
 Recommended: comments on handbook pages finally work, Mermaid diagrams follow a dark theme, and the Custom CSS field can no longer pull fonts or images from a foreign server. Nothing needs doing on update; pages keep the comment setting they have.

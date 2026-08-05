@@ -14,7 +14,8 @@ Jede Handbuch-Seite gehört zu genau einem Handbuch. Wer etwas lesen darf, wird 
 1. Öffne **Handbuch → Handbücher** und lege ein neues Handbuch an.
 2. Gib einen **Namen** ein, zum Beispiel „Allgemein“. Ergänze eine kurze **Beschreibung**. Sie erscheint später auf der Übersicht und der Einstiegsseite.
 3. Setze auf derselben Seite die **Sichtbarkeit**. Es gibt drei Stufen: **Öffentlich** für alle Besucher, **Alle Mitglieder (angemeldet)** für ein internes Handbuch, oder **Eingeschränkt** auf bestimmte Benutzerrollen und Personen.
-4. Speichere.
+4. Entscheide unter **Kommentare**, ob die Seiten dieses Handbuchs Kommentare erlauben. **Jede Seite entscheidet selbst** ist die Voreinstellung und ändert nichts. **Offen** und **Geschlossen** gelten für alle Seiten des Handbuchs auf einmal und übergehen die Einstellung der einzelnen Seite.
+5. Speichere.
 
 ![Das Formular „Handbuch anlegen“ mit Name, Beschreibung und den drei Sichtbarkeits-Stufen.](../assets/handbuch-anlegen.webp)
 
@@ -26,6 +27,15 @@ Das neue Handbuch erscheint in der Liste unter **Handbuch → Handbücher**. Es 
 <summary>Stolpersteine: Die Sichtbarkeit ist bewusst streng</summary>
 
 Ein neues Handbuch steht auf **Alle Mitglieder (angemeldet)**. Ausgeloggt siehst du also nichts. Das ändert sich erst, wenn du es auf **Öffentlich** stellst oder Rollen und Personen freigibst. Das ist Absicht: Das Plugin verbirgt eine Seite lieber, als sie versehentlich zu veröffentlichen. Siehst du beim Testen nichts, prüfe zuerst die Sichtbarkeit. Nutze dafür ein privates Browserfenster. Mehr unter [Sichtbarkeit einstellen](../zugriff/sichtbarkeit-einstellen.md).
+
+</details>
+
+<details>
+<summary>Konzept: Kommentare für ein ganzes Handbuch</summary>
+
+WordPress schaltet Kommentare pro Seite. Für ein Handbuch mit zweihundert Seiten ist das keine Antwort, denn niemand öffnet zweihundert Seiten. Die Einstellung am Handbuch ist deshalb kein Vorschlagswert, sondern eine Übersteuerung: Steht sie auf **Offen** oder **Geschlossen**, gilt sie, egal was an der einzelnen Seite steht. Ein Vorschlagswert müsste beim Setzen auf jede vorhandene Seite geschrieben werden und wäre für jede später importierte Seite wieder falsch.
+
+**Geschlossen** blendet das Kommentarformular aus, genau wie das Schließen der Kommentare an einer einzelnen Seite. Bereits geschriebene Kommentare bleiben lesbar und werden nicht gelöscht. Das Löschen bleibt ein eigener, bewusster Schritt unter **Kommentare** in der WordPress-Verwaltung.
 
 </details>
 
@@ -41,5 +51,5 @@ Ein neues Handbuch steht auf **Alle Mitglieder (angemeldet)**. Ausgeloggt siehst
 * Zielgruppe: Alle Mitglieder
 * Reihenfolge: 2
 * Textauszug: Ein Handbuch ist der Behälter, in dem deine Seiten liegen; diese Anleitung legt dein erstes Handbuch an und setzt seine Sichtbarkeit.
-* Letzte Prüfung: 2026-07-23
+* Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

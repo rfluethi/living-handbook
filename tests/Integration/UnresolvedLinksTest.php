@@ -117,6 +117,66 @@ final class UnresolvedLinksTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A link to another host is left alone, even though its file name ends in
+	 * .md. This is the shipped handbook's own case: it links to the developer
+	 * docs on github.com, and every one of those links was stripped to plain
+	 * text and reported as a dead link, on every fresh installation.
+	 *
+	 * @return void
+	 */
+	public function test_a_link_to_another_host_is_left_alone(): void {
+		$url    = 'https://github.com/rfluethi/living-handbook/blob/main/docs/hooks.md';
+		$source = $this->page( 'Understanding access', 'See the <a href="' . $url . '">developer documentation on the hooks</a>.' );
+
+		$result  = Postprocessor::convert_md_links( $source );
+		$content = (string) get_post( $source )->post_content;
+
+		$this->assertStringContainsString( $url, $content, 'The external link must survive untouched.' );
+		$this->assertSame( array(), $result['unresolved'], 'An external link is not a dead internal link.' );
+		$this->assertSame( 0, $result['converted'], 'Nothing was converted: it was not ours to convert.' );
+	}
+
+	/**
+	 * The same for a protocol-relative link, which names a host without naming a
+	 * scheme. Rarer, and it would fall through a check that only looks for
+	 * "http".
+	 *
+	 * @return void
+	 */
+	public function test_a_protocol_relative_link_is_left_alone(): void {
+		$source = $this->page( 'A', 'See <a href="//example.org/docs/blocks.md">the blocks</a>.' );
+
+		$result  = Postprocessor::convert_md_links( $source );
+		$content = (string) get_post( $source )->post_content;
+
+		$this->assertStringContainsString( '//example.org/docs/blocks.md', $content );
+		$this->assertSame( array(), $result['unresolved'] );
+	}
+
+	/**
+	 * And the rule cuts only where it should: a relative link that happens to sit
+	 * next to an external one is still resolved. Without this, "leave external
+	 * links alone" could quietly become "leave every link alone".
+	 *
+	 * @return void
+	 */
+	public function test_a_relative_link_beside_an_external_one_still_resolves(): void {
+		$target = $this->page( 'Checking pages', '', 'checking-pages' );
+		$source = $this->page(
+			'The review cycle',
+			'See <a href="https://example.org/docs/hooks.md">the hooks</a> and <a href="checking-pages.md">Checking pages</a>.'
+		);
+
+		$result  = Postprocessor::convert_md_links( $source );
+		$content = (string) get_post( $source )->post_content;
+
+		$this->assertStringContainsString( 'https://example.org/docs/hooks.md', $content );
+		$this->assertStringContainsString( (string) get_permalink( $target ), $content );
+		$this->assertSame( 1, $result['converted'] );
+		$this->assertSame( array(), $result['unresolved'] );
+	}
+
+	/**
 	 * A page with no links is left alone.
 	 *
 	 * @return void

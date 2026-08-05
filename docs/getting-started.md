@@ -47,7 +47,7 @@ Two settings in the editor sidebar matter before you publish:
 
 > **The most common "nothing shows up".** If a page you published does not appear, it almost always has no handbook assigned, or its handbook is not visible to the current visitor. Assign the handbook, and check the handbook's visibility.
 
-New handbook pages default to comments closed, so a handbook is not a comment thread unless you want one. This is only the default: turn comments on for a page in its **Discussion** panel if you want them. Imported pages, the app handbook included, are created with comments off the same way.
+New handbook pages default to comments closed, so a handbook is not a comment thread unless you want one. This is only the default: turn comments on for a page in its **Discussion** panel if you want them. Imported pages, the app handbook included, are created with comments off the same way. To decide for a whole handbook rather than page by page, use the **Comments** field on the handbook itself under **Handbook → Handbooks**; set to Open or Closed it overrides every page in that handbook, and closing hides the form without deleting comments that already exist.
 
 ## 4. Set ownership and freshness
 

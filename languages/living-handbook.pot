@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.57.0\n"
+"Project-Id-Version: Living Handbook 0.58.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-05T12:08:21+00:00\n"
+"POT-Creation-Date: 2026-08-05T13:10:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -262,7 +262,7 @@ msgstr ""
 #: src/Frontend/Entry.php:71
 #: src/Frontend/FrontendRenderer.php:342
 #: src/Frontend/FrontendRenderer.php:379
-#: src/Handbook/Handbooks.php:209
+#: src/Handbook/Handbooks.php:278
 msgid "Handbooks"
 msgstr ""
 
@@ -675,64 +675,85 @@ msgid "All sources"
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:78
-#: src/Handbook/HandbookAdmin.php:117
+#: src/Handbook/HandbookAdmin.php:122
 msgid "Frontend visibility"
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:82
-#: src/Handbook/HandbookAdmin.php:121
+#: src/Handbook/HandbookAdmin.php:126
 msgid "Allowed roles (restricted only)"
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:86
-#: src/Handbook/HandbookAdmin.php:125
+#: src/Handbook/HandbookAdmin.php:130
 msgid "Allowed users (restricted only)"
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:88
-#: src/Handbook/HandbookAdmin.php:128
+#: src/Handbook/HandbookAdmin.php:133
 msgid "Comma-separated user logins or IDs."
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:141
+#: src/Handbook/HandbookAdmin.php:91
+#: src/Handbook/HandbookAdmin.php:137
+msgid "Comments"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:153
 #: src/Setup/Settings.php:51
 msgid "Access"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:163
+#: src/Handbook/HandbookAdmin.php:175
 msgid "Public"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:166
+#: src/Handbook/HandbookAdmin.php:178
 #: src/Setup/Seeder.php:49
 msgid "All members"
 msgstr ""
 
 #. translators: %d: number of allowed users.
-#: src/Handbook/HandbookAdmin.php:184
+#: src/Handbook/HandbookAdmin.php:196
 #, php-format
 msgid "%d user"
 msgid_plural "%d users"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Handbook/HandbookAdmin.php:188
+#: src/Handbook/HandbookAdmin.php:200
 msgid "Restricted"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:199
+#: src/Handbook/HandbookAdmin.php:211
 msgid "Public (no login)"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:200
+#: src/Handbook/HandbookAdmin.php:212
 msgid "All members (logged in)"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:201
+#: src/Handbook/HandbookAdmin.php:213
 msgid "Restricted (roles and/or users)"
 msgstr ""
 
-#: src/Handbook/Handbooks.php:210
+#: src/Handbook/HandbookAdmin.php:236
+msgid "Each page decides (default)"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:237
+msgid "Open on every page of this handbook"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:238
+msgid "Closed on every page of this handbook"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:259
+msgid "Open and Closed override the setting on each page. Closing hides the comment form; comments already written stay readable and are not deleted."
+msgstr ""
+
+#: src/Handbook/Handbooks.php:279
 #: src/Import/HandbookExport.php:114
 #: src/PostType/Handbook.php:95
 #: src/PostType/Handbook.php:97
