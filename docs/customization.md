@@ -161,12 +161,12 @@ In list display the cards lose their box and become flat rows; target them with 
 
 ### Navigation
 
-The navigation is a native `<details>` element, styled entirely by the plugin through the `--lh-*` variables above; no other plugin is involved.
+The navigation is styled entirely by the plugin through the `--lh-*` variables above; no other plugin is involved. Its title row has the same shape as any row with children: a toggle button on the left, a link beside it.
 
 - `.living-handbook-navwrap`: wraps the navigation and keeps it left-aligned.
-- `.living-handbook-nav`: the bordered, sticky navigation. It carries `.living-handbook-nav--tree` (the **Menu** display, the whole tree open) or `.living-handbook-nav--accordion` (the **Accordion** display, branches collapse).
-- `.living-handbook-nav__top`: the title (the `<summary>`), which opens and closes the whole navigation. Its weight is set by `--lh-nav-top-weight`.
-- `.living-handbook-nav__home`: the small arrow link next to the title that leads to the handbook's start page.
+- `.living-handbook-nav`: the bordered, sticky navigation. It carries `.living-handbook-nav--tree` (the **Menu** display, the whole tree open) or `.living-handbook-nav--accordion` (the **Accordion** display, branches collapse), and `.is-collapsed` while the whole navigation is closed.
+- `.living-handbook-nav__top`: the title row. It holds the toggle and a link to the handbook's start page. Its weight is set by `--lh-nav-top-weight`.
+- `.living-handbook-nav__toggle--all`: the toggle in that row, which opens and closes the whole navigation. **Do not hide it:** on a narrow screen it is how the navigation gets out of the way of the content, and it is the only control that does so.
 - `.living-handbook-nav__list`, `.living-handbook-nav__sublist`: the tree and its nested levels.
 - `.living-handbook-nav__item`: one page. It carries `.has-children` on a branch, `.is-current` on the current page, and `.is-open` on an open branch.
 - `.living-handbook-nav__row`: the row inside an item, holding the toggle (or a spacer) and the page link.

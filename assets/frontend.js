@@ -188,12 +188,29 @@
 			} );
 		} );
 
+		// The title row's toggle opens and closes the whole navigation. It is the
+		// same button as a branch toggle, one level up, so it is wired here
+		// rather than through a second mechanism.
+		document.querySelectorAll( '.living-handbook-nav__toggle--all' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				var nav = btn.closest( '.living-handbook-nav' );
+				if ( ! nav ) {
+					return;
+				}
+				var collapsed = nav.classList.toggle( 'is-collapsed' );
+				btn.setAttribute( 'aria-expanded', collapsed ? 'false' : 'true' );
+			} );
+		} );
+
 		// Start the whole navigation collapsed on narrow screens; on wider
-		// screens it stays open. The title (summary) opens or closes it either
-		// way, natively.
+		// screens it stays open.
 		if ( window.matchMedia && window.matchMedia( '(max-width: 781px)' ).matches ) {
-			document.querySelectorAll( 'details.living-handbook-nav[open]' ).forEach( function ( nav ) {
-				nav.open = false;
+			document.querySelectorAll( '.living-handbook-nav' ).forEach( function ( nav ) {
+				nav.classList.add( 'is-collapsed' );
+				var btn = nav.querySelector( '.living-handbook-nav__toggle--all' );
+				if ( btn ) {
+					btn.setAttribute( 'aria-expanded', 'false' );
+				}
 			} );
 		}
 	}

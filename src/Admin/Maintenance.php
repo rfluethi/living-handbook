@@ -17,6 +17,7 @@ use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
 use WP_Post;
 use WP_Query;
+use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -243,9 +244,25 @@ final class Maintenance {
 	 * @return array<string, string>
 	 */
 	public function columns( array $columns ): array {
-		$columns['living_handbook_reviewed'] = __( 'Last reviewed', 'living-handbook' );
-		$columns['living_handbook_feedback'] = __( 'Feedback', 'living-handbook' );
-		return $columns;
+		// The handbook goes directly after the title, because it is the first
+		// thing a person needs to place a row: the list mixes every handbook,
+		// and until now nothing in a row said which one it belonged to. You
+		// could filter by handbook and still not read one off the list.
+		$out = array();
+		foreach ( $columns as $key => $label ) {
+			$out[ $key ] = $label;
+			if ( 'title' === $key ) {
+				$out['living_handbook_set'] = __( 'Handbook', 'living-handbook' );
+			}
+		}
+		if ( ! isset( $out['living_handbook_set'] ) ) {
+			$out['living_handbook_set'] = __( 'Handbook', 'living-handbook' );
+		}
+
+		$out['living_handbook_reviewed'] = __( 'Last reviewed', 'living-handbook' );
+		$out['living_handbook_feedback'] = __( 'Feedback', 'living-handbook' );
+
+		return $out;
 	}
 
 	/**
@@ -256,6 +273,34 @@ final class Maintenance {
 	 * @return void
 	 */
 	public function render_column( string $column, int $post_id ): void {
+		if ( 'living_handbook_set' === $column ) {
+			$term_id = Handbooks::for_post( $post_id );
+			$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
+			if ( ! $term instanceof WP_Term ) {
+				// Not a decoration: a page without a handbook is invisible on the
+				// front end, and this is the list where that is noticed.
+				echo '<span aria-hidden="true">—</span><span class="screen-reader-text">'
+					. esc_html__( 'No handbook, so this page stays invisible on the front end.', 'living-handbook' )
+					. '</span>';
+				return;
+			}
+
+			printf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url(
+					add_query_arg(
+						array(
+							'post_type'         => Handbook::POST_TYPE,
+							Handbooks::TAXONOMY => $term->slug,
+						),
+						admin_url( 'edit.php' )
+					)
+				),
+				esc_html( $term->name )
+			);
+			return;
+		}
+
 		if ( 'living_handbook_reviewed' === $column ) {
 			$reviewed = (string) get_post_meta( $post_id, Metadata::REVIEWED, true );
 			$label    = FreshnessStatus::label( FreshnessStatus::for_post( $post_id ) );

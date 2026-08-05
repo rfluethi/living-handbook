@@ -343,11 +343,12 @@
 }
 
 /* Handbook navigation: a self-contained, collapsible page tree, styled by the
- * plugin, with no dependency on any other plugin. The whole block is a native
- * <details>; its <summary> (the handbook title) opens and closes it, like the
- * table of contents, on desktop and on mobile. Two variants: --tree shows the
- * whole tree at once, --accordion collapses branches with a toggle on the left
- * so only the current path is open. */
+ * plugin, with no dependency on any other plugin. The title row has the same
+ * shape as any row with children, a toggle on the left and a link beside it:
+ * the toggle opens and closes the whole navigation, the link goes to the
+ * handbook's start page. Two variants: --tree shows the whole tree at once,
+ * --accordion collapses branches with a toggle on the left so only the current
+ * path is open. */
 
 .living-handbook-nav {
 	font-size: calc(var(--lh-base, 1rem) * 0.9);
@@ -360,20 +361,42 @@
 	top: var(--lh-sticky-top, 2rem);
 }
 
-/* The summary is the clickable title; keep the native disclosure triangle. */
+/* The title row: heavier than the entries below it, and its link inherits the
+   colour of the surface rather than the accent, so the handbook name reads as a
+   heading that happens to be clickable. */
 .living-handbook-nav__top {
-	cursor: pointer;
 	font-weight: var(--lh-nav-top-weight, 700);
-	color: inherit;
-	margin: 0;
-}
-
-.living-handbook-nav[open] > .living-handbook-nav__top {
 	margin: 0 0 0.5rem;
 }
 
-.living-handbook-nav__top:hover {
+.living-handbook-nav.is-collapsed > .living-handbook-nav__top {
+	margin: 0;
+}
+
+.living-handbook-nav__top > a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.living-handbook-nav__top > a:hover,
+.living-handbook-nav__top > a:focus-visible {
 	color: var(--lh-accent);
+	text-decoration: underline;
+}
+
+/* Collapsed: the tree is hidden, the title row stays. */
+.living-handbook-nav.is-collapsed > nav {
+	display: none;
+}
+
+/* The title toggle points down when open, at the label when collapsed, like the
+   branch toggles below it. */
+.living-handbook-nav__toggle--all > span {
+	transform: rotate(90deg);
+}
+
+.living-handbook-nav.is-collapsed .living-handbook-nav__toggle--all > span {
+	transform: none;
 }
 
 .living-handbook-nav__list,
@@ -461,8 +484,11 @@
 	display: block;
 }
 
-/* Tree variant: everything is shown, so no toggles and no left gutter. */
-.living-handbook-nav--tree .living-handbook-nav__toggle,
+/* Tree variant: every branch is shown, so branch toggles and the left gutter go
+   away. The title toggle stays: collapsing the whole navigation is useful in
+   both variants, and on a narrow screen it is how the navigation gets out of
+   the way of the content. */
+.living-handbook-nav--tree .living-handbook-nav__item .living-handbook-nav__toggle,
 .living-handbook-nav--tree .living-handbook-nav__spacer {
 	display: none;
 }
@@ -823,28 +849,6 @@
 	.living-handbook-card:hover {
 		transform: none;
 	}
-}
-
-/* Handbook navigation: the arrow link to the handbook start page, sitting next
- * to the collapsible title. The title (summary) only opens or closes the tree;
- * this arrow is the way back to the handbook start page. */
-.living-handbook-nav__home {
-	float: right;
-	display: inline-flex;
-	align-items: center;
-	margin-inline-start: 0.5rem;
-	color: inherit;
-	text-decoration: none;
-}
-
-.living-handbook-nav__home:hover {
-	color: var(--lh-accent);
-}
-
-.living-handbook-nav__home:focus-visible {
-	outline: 2px solid var(--lh-accent, #2c5f8a);
-	outline-offset: 2px;
-	border-radius: 4px;
 }
 
 /* ---------- Review follow-up: accessibility and contrast ---------- */

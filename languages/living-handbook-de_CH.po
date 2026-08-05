@@ -3,9 +3,9 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.60.0\n"
+"Project-Id-Version: Living Handbook 0.61.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-05T14:03:07+00:00\n"
+"POT-Creation-Date: 2026-08-05T15:23:48+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -65,59 +65,72 @@ msgstr ""
 msgid "Back to the site"
 msgstr "Zurück zur Website"
 
-#: src/Admin/Maintenance.php:83
+#: src/Admin/Maintenance.php:84
 msgid "Reset feedback"
 msgstr "Feedback zurücksetzen"
 
-#: src/Admin/Maintenance.php:97
+#: src/Admin/Maintenance.php:98
 msgid "You are not allowed to reset feedback for this page."
 msgstr "Du darfst das Feedback dieser Seite nicht zurücksetzen."
 
-#: src/Admin/Maintenance.php:127
+#: src/Admin/Maintenance.php:128
 msgid "Feedback was reset."
 msgstr "Feedback wurde zurückgesetzt."
 
 # Dashboard
-#: src/Admin/Maintenance.php:141
+#: src/Admin/Maintenance.php:142
 msgid "Handbook: reviews overdue"
 msgstr "Handbuch: überfällige Prüfungen"
 
 #. translators: 1: overdue count, 2: total count, 3: percentage.
-#: src/Admin/Maintenance.php:196
+#: src/Admin/Maintenance.php:197
 #, php-format
 msgid "%1$d of %2$d pages overdue (%3$d%%)."
 msgstr "%1$d von %2$d Seiten überfällig (%3$d%%)."
 
-#: src/Admin/Maintenance.php:205
+#: src/Admin/Maintenance.php:206
 msgid "All pages are currently reviewed."
 msgstr "Alle Seiten sind aktuell geprüft."
 
-#: src/Admin/Maintenance.php:234
+#: src/Admin/Maintenance.php:235
 msgid "Show all handbook pages, oldest review first"
 msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
-#: src/Admin/Maintenance.php:246 src/Frontend/PageMeta.php:85
-#: src/Meta/Metadata.php:205 src/Meta/Metadata.php:342
+# Post type and taxonomies
+#: src/Admin/Maintenance.php:255 src/Admin/Maintenance.php:259
+#: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:114
+#: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
+#: src/Setup/Onboarding.php:100
+msgid "Handbook"
+msgstr "Handbuch"
+
+#: src/Admin/Maintenance.php:262 src/Frontend/PageMeta.php:85
+#: src/Meta/Metadata.php:210 src/Meta/Metadata.php:347
+#: src/Meta/Metadata.php:397
 msgid "Last reviewed"
 msgstr "Zuletzt geprüft"
 
-#: src/Admin/Maintenance.php:247 src/Setup/Settings.php:50
+#: src/Admin/Maintenance.php:263 src/Setup/Settings.php:50
 msgid "Feedback"
 msgstr "Feedback"
 
+#: src/Admin/Maintenance.php:283
+msgid "No handbook, so this page stays invisible on the front end."
+msgstr "Kein Handbuch, diese Seite bleibt im Frontend unsichtbar."
+
 #. translators: 1: number of positive votes, 2: number of negative votes.
-#: src/Admin/Maintenance.php:277
+#: src/Admin/Maintenance.php:322
 #, php-format
 msgid "%1$d yes, %2$d no"
 msgstr "%1$d Ja, %2$d Nein"
 
 #. translators: %s: the plural taxonomy name, for example "Topics".
-#: src/Admin/Maintenance.php:403
+#: src/Admin/Maintenance.php:448
 #, php-format
 msgid "All %s"
 msgstr "Alle %s"
 
-#: src/Admin/Maintenance.php:435
+#: src/Admin/Maintenance.php:480
 msgid "All review statuses"
 msgstr "Alle Prüfstatus"
 
@@ -397,14 +410,11 @@ msgstr "Vergrössertes Diagramm"
 msgid "%d matching pages"
 msgstr "%d passende Seiten"
 
-#: src/Frontend/Navigation.php:98
-msgid "Open the handbook start page"
-msgstr "Handbuch-Startseite öffnen"
-
 # Handbook navigation (self-contained accordion). Source in
 # src/Frontend/Navigation.php.
+#. translators: %s: handbook name.
 #. translators: %s: page title.
-#: src/Frontend/Navigation.php:216
+#: src/Frontend/Navigation.php:116 src/Frontend/Navigation.php:229
 #, php-format
 msgid "Toggle %s"
 msgstr "%s auf- oder zuklappen"
@@ -843,13 +853,6 @@ msgstr ""
 "Offen und Geschlossen übergehen die Einstellung der einzelnen Seite. "
 "Geschlossen blendet das Kommentarformular aus; bereits geschriebene "
 "Kommentare bleiben lesbar und werden nicht gelöscht."
-
-# Post type and taxonomies
-#: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:114
-#: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
-#: src/Setup/Onboarding.php:100
-msgid "Handbook"
-msgstr "Handbuch"
 
 # App handbook: bundled with the plugin, imported from disk
 #: src/Import/AppHandbook.php:114
@@ -1295,41 +1298,43 @@ msgstr ""
 "Dateinamen wurden zu den Seitentiteln. Der Leser meldet: %s"
 
 # Maintenance meta box
-#: src/Meta/Metadata.php:183
+#: src/Meta/Metadata.php:188
 msgid "Handbook maintenance"
 msgstr "Handbuch-Wartung"
 
-#: src/Meta/Metadata.php:209 src/Meta/Metadata.php:346
+#: src/Meta/Metadata.php:214 src/Meta/Metadata.php:351
+#: src/Meta/Metadata.php:401
 msgid "Review interval (days)"
 msgstr "Prüfintervall (Tage)"
 
-#: src/Meta/Metadata.php:213 src/Meta/Metadata.php:350
+#: src/Meta/Metadata.php:218 src/Meta/Metadata.php:355
+#: src/Meta/Metadata.php:405
 msgid "Reviewed by"
 msgstr "Geprüft von"
 
-#: src/Meta/Metadata.php:220 src/Meta/Metadata.php:355
+#: src/Meta/Metadata.php:225 src/Meta/Metadata.php:360
 msgid "none"
 msgstr "keine"
 
-#: src/Meta/Metadata.php:227
+#: src/Meta/Metadata.php:232
 msgid "On this page: heading depth"
 msgstr "Auf dieser Seite: Überschriftentiefe"
 
-#: src/Meta/Metadata.php:229
+#: src/Meta/Metadata.php:234
 msgid "Use the block default"
 msgstr "Block-Standard verwenden"
 
 #. translators: %d: heading level, e.g. up to H2.
-#: src/Meta/Metadata.php:234
+#: src/Meta/Metadata.php:239
 #, php-format
 msgid "Up to H%d"
 msgstr "Bis H%d"
 
-#: src/Meta/Metadata.php:243
+#: src/Meta/Metadata.php:248
 msgid "Exclude this page from AI use"
 msgstr "Diese Seite von KI-Nutzung ausschliessen"
 
-#: src/Meta/Metadata.php:246
+#: src/Meta/Metadata.php:251
 msgid ""
 "A marker only. It does not block anything by itself; it is published in the "
 "page REST data (living_handbook_status), so an AI tool or export that reads "
@@ -1339,9 +1344,21 @@ msgstr ""
 "Daten der Seite (living_handbook_status), sodass ein KI-Werkzeug oder ein "
 "Export, der das Handbuch liest, diese Seite überspringen kann."
 
-#: src/Meta/Metadata.php:247
+#: src/Meta/Metadata.php:252
 msgid "The last updated date is set automatically on save."
 msgstr "Das Aktualisierungsdatum wird beim Speichern automatisch gesetzt."
+
+#: src/Meta/Metadata.php:402
+msgid "unchanged"
+msgstr "unverändert"
+
+#: src/Meta/Metadata.php:410
+msgid "— No change —"
+msgstr "— Keine Änderung —"
+
+#: src/Meta/Metadata.php:417
+msgid "Empty fields are left as they are on each page."
+msgstr "Leere Felder bleiben auf jeder Seite so, wie sie sind."
 
 #: src/PostType/Handbook.php:99
 msgid "New pages"
@@ -2163,6 +2180,9 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#~ msgid "Open the handbook start page"
+#~ msgstr "Handbuch-Startseite öffnen"
 
 #~ msgid "Never reviewed"
 #~ msgstr "Nie geprüft"

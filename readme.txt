@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.60.0
+Stable tag: 0.61.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,11 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.61.0 =
+* The handbook title in the navigation is now an ordinary link to the handbook's start page, like every other entry in the list, and the small arrow that used to lead there is gone. Testers did not read that arrow as a way anywhere.
+* The handbook page list shows which handbook each page belongs to, in a new column after the title. A page with no handbook says so, because such a page stays invisible on the front end.
+* Bulk Edit can set the review date, the review interval and the reviewer for many pages at once. Fields left empty are left alone on every page.
+
 = 0.60.0 =
 * A page nobody has reviewed yet says so. It used to show nothing at all where its freshness belongs, so a reader could not tell "fresh" from "forgotten". The new state is called "Not reviewed" and is deliberately neutral in colour: a page nobody has looked at is not overdue.
 * The hook documentation and the code agree again. Seven filters the plugin fires were documented nowhere, and three hooks were announced as planned that were never built. The seven are written up, the three announcements are gone, and a test now fails if either side drifts from the other.
@@ -157,6 +162,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.61.0 =
+The handbook title in the navigation is a normal link now and the small arrow beside it is gone. In wp-admin: a Handbook column in the page list, and Bulk Edit for the review fields.
 
 = 0.60.0 =
 Pages with no review date now carry a state of their own, "Not reviewed", instead of showing nothing. Nothing needs doing on update.

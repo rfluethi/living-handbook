@@ -4,12 +4,17 @@
  *
  * Builds the page tree of one handbook as a self-contained, collapsible list
  * with its own accordion behaviour, so the navigation works on its own and does
- * not depend on any other plugin. The whole block is a native <details> whose
- * <summary> is the handbook title: clicking the title opens or closes the entire
- * navigation, exactly like the on-this-page table of contents, and it works the
- * same on desktop and on narrow screens (the frontend script starts it collapsed
- * on small viewports). A small arrow next to the title links to the handbook
- * start page.
+ * not depend on any other plugin.
+ *
+ * The title row is built exactly like every other row that has children: a
+ * toggle on the left opens and closes the whole navigation, and the handbook
+ * name beside it is an ordinary link to the handbook's start page. That is a
+ * change from the first version, which made the whole block a native <details>
+ * with the title as its <summary>. A <summary> can toggle or it can link, not
+ * both dependably, so the way to the start page had to hang beside it as a
+ * small arrow, and testers did not read that arrow as a way anywhere. The
+ * toggle is now a button like the others, which costs a few lines of script and
+ * makes the title behave the way every other entry in the list behaves.
  *
  * The two display variants:
  * - "sidebar" (Menu): the whole tree is shown, nothing collapses.
@@ -87,27 +92,35 @@ final class Navigation {
 		$accordion = 'accordion' === $variant;
 		$classes   = 'living-handbook-nav ' . ( $accordion ? 'living-handbook-nav--accordion' : 'living-handbook-nav--tree' );
 
-		// A small arrow next to the title links back to the handbook start page.
-		// The title itself only opens or closes the navigation.
-		$home  = '';
+		// The title row: the same shape as any row with children, a toggle and a
+		// link. The toggle carries aria-controls and aria-expanded so that what
+		// it opens is named rather than implied; the link goes to the handbook's
+		// start page, which is what a reader expects of a title in a list of
+		// links. Open by default; the frontend script collapses it on narrow
+		// screens.
+		$panel = wp_unique_id( 'living-handbook-nav-' );
+		$title = esc_html( $term->name );
 		$entry = get_term_link( $term );
+
+		$label = '' === $title ? '' : $title;
 		if ( ! is_wp_error( $entry ) ) {
-			$home = sprintf(
-				'<a class="living-handbook-nav__home" href="%1$s" aria-label="%2$s"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H5"/><path d="M8 4l-4 4 4 4"/></svg></a>',
-				esc_url( (string) $entry ),
-				esc_attr__( 'Open the handbook start page', 'living-handbook' )
-			);
+			$label = '<a href="' . esc_url( (string) $entry ) . '">' . $title . '</a>';
 		}
 
-		// The whole navigation is a native <details>, open by default; the
-		// frontend script collapses it on narrow screens. The <summary> is the
-		// handbook title and toggles the block, like the table of contents.
-		$out  = '<details class="' . esc_attr( $classes ) . '" open>';
-		$out .= '<summary class="living-handbook-nav__top">' . $home . esc_html( $term->name ) . '</summary>';
-		$out .= '<nav aria-label="' . esc_attr( $term->name ) . '">';
+		$out  = '<div class="' . esc_attr( $classes ) . '">';
+		$out .= '<div class="living-handbook-nav__row living-handbook-nav__top">';
+		$out .= sprintf(
+			'<button type="button" class="living-handbook-nav__toggle living-handbook-nav__toggle--all" aria-expanded="true" aria-controls="%1$s" aria-label="%2$s"><span aria-hidden="true"></span></button>',
+			esc_attr( $panel ),
+			/* translators: %s: handbook name. */
+			esc_attr( sprintf( __( 'Toggle %s', 'living-handbook' ), $term->name ) )
+		);
+		$out .= $label;
+		$out .= '</div>';
+		$out .= '<nav id="' . esc_attr( $panel ) . '" aria-label="' . esc_attr( $term->name ) . '">';
 		$out .= '<ul class="living-handbook-nav__list">' . $tree . '</ul>';
 		$out .= '</nav>';
-		$out .= '</details>';
+		$out .= '</div>';
 
 		return '<div class="living-handbook-navwrap">' . $out . '</div>';
 	}

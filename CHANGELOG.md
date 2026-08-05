@@ -17,6 +17,18 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.61.0] - 2026-08-05
+
+### Added
+
+* A **Handbook** column in the handbook page list, directly after the title. The list mixes every handbook and you could filter by handbook without ever being able to read one off a row. A page with no handbook shows a dash with a screen-reader note saying what that means, because such a page is invisible on the front end and this list is where that gets noticed.
+* **Bulk Edit** for the review date, the review interval and the reviewer. Quick Edit answers "I reviewed this page today"; a handbook of two hundred pages raises a different question, "these forty are reviewed yearly by the same person", and answering it page by page is a large part of what makes a big handbook feel unmaintainable. The responsible role was already there, because WordPress offers flat taxonomies in Bulk Edit by itself; meta it offers nothing for. Every field defaults to "leave unchanged": the form submits all of them, so "not filled in" and "cleared" look identical on the wire and are told apart in the handler. Counter-checked, because that distinction is the one mistake on this screen that cannot be undone from the screen.
+
+### Changed
+
+* The handbook title in the navigation is an ordinary link to the handbook's start page, and the small arrow that used to lead there is gone. The arrow existed for a technical reason and testers read it as noise: the whole navigation was a native `<details>` with the title as its `<summary>`, and a `<summary>` can toggle or it can link, not both dependably. The title row now has the same shape as every other row with children, a toggle button on the left and a link beside it, so the handbook name behaves like every other name in the list. The block is no longer a `<details>`; `.living-handbook-nav.is-collapsed` marks the closed state, and `.living-handbook-nav__home` is gone.
+* The freshness threshold idea from the same conversation was dropped rather than built. The measurement behind it was real (WordPress loads every page of a hierarchical post type into memory to draw the list, 2441 posts and 323 ms against 20 posts and 12 ms with an explicit sort order, `wp-admin/includes/post.php`), but the conclusion was not: 323 ms once in wp-admin is not worth trading a view for, and switching the tree off above a threshold would have removed it exactly where a large handbook needs it most.
+
 ## [0.60.0] - 2026-08-05
 
 ### Added

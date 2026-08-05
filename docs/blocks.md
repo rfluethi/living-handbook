@@ -70,7 +70,7 @@ Two more caveats. The injection reproduces the markup of the core Navigation blo
 
 ![](_attachments/handbook-navigation-en.png)
 
-The page tree of the current handbook, rendered as a self-contained, collapsible list styled by the plugin. No other plugin is required. The whole block is a native `<details>` element: its title is the handbook name and toggles the entire navigation open or closed, like the table of contents, and it behaves the same on desktop and on narrow screens (where it starts collapsed). A small arrow next to the title links to the handbook's start page. The tree is scoped to the current handbook, so it never lists pages of another one, it is built fresh on every request, and the current page is marked automatically.
+The page tree of the current handbook, rendered as a self-contained, collapsible list styled by the plugin. No other plugin is required. The title row is the handbook name: a toggle on its left opens and closes the whole navigation, on desktop and on narrow screens (where it starts collapsed), and the name itself is a link to the handbook's start page, exactly like every other entry in the list is a link to its page. The tree is scoped to the current handbook, so it never lists pages of another one, it is built fresh on every request, and the current page is marked automatically.
 
 **Settings:** *Display* chooses between **Menu** (the whole tree is shown at once, nothing collapses) and **Accordion** (each branch with children collapses; the branch leading to the current page starts open, the rest closed, and a toggle on the left of a branch opens or closes it).
 
