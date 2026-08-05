@@ -164,8 +164,90 @@ add_filter(
 );
 ```
 
-_Planned: filters for the navigation markup, the metadata output and the freshness evaluation._
+### `living_handbook_access_denied_title`
+
+Filters the title of the page a signed-in visitor lands on when they open a handbook they may not read. The built-in message is used unless the settings name a page of your own; this filter changes the built-in one without needing a page.
+
+Parameters:
+
+- `string $title` The built-in title.
+
+Return a string.
+
+### `living_handbook_access_denied_message`
+
+The same for the body of that page. Use it to say who grants access on your site, which the plugin cannot know.
+
+Parameters:
+
+- `string $message` The built-in message, already escaped for output.
+- `WP_User $user` The signed-in user who was refused.
+
+Return a string. Anything you return is printed as it is, so escape it yourself.
+
+### `living_handbook_anonymous_feedback_limit`
+
+Filters how many anonymous votes one page accepts per hour (default 200). Anonymous feedback is deliberately not tied to a person, so it cannot be deduplicated; the ceiling exists so an unattended script cannot fill the counter, and it answers with HTTP 429 once reached. It is not a one-vote-per-person rule and cannot be made into one. Return `0` to switch the ceiling off.
+
+Parameters:
+
+- `int $limit` The default ceiling.
+- `int $post_id` The page being voted on.
+
+Return an integer. Example, a stricter ceiling on a busy public handbook:
+
+```php
+add_filter(
+	'living_handbook_anonymous_feedback_limit',
+	function ( int $limit, int $post_id ): int {
+		return 50;
+	},
+	10,
+	2
+);
+```
+
+### `living_handbook_archive_allowed_hosts`
+
+Filters the hosts the repository archive may be downloaded from. A GitHub folder import above about twenty files fetches the repository once as a zipball instead of one request per file, and GitHub answers that with a redirect to `codeload.github.com`. This list is deliberately separate from `living_handbook_sync_allowed_hosts`: it applies to the archive path only, so widening it does not widen the general source check. Both are part of the SSRF protection; add a host only if you host your own Git service and know what you are adding.
+
+Parameters:
+
+- `string[] $hosts` The allowed hosts.
+
+Return an array of host names.
+
+### `living_handbook_archive_max_bytes`
+
+Filters the maximum size of that downloaded archive, in bytes. The same reasoning as `living_handbook_zip_max_bytes`: a guard against memory exhaustion, not a promise about what the server can carry.
+
+Parameters:
+
+- `int $bytes` The default limit in bytes.
+
+Return an integer.
+
+### `living_handbook_import_time_budget`
+
+Filters how long one import batch may run, in seconds, before it pauses and continues in the next request. The default is 60 percent of `max_execution_time`, which leaves room for the response itself. Lower it on a host that cuts requests short, raise it on a machine you control. A large import is not lost when a batch ends: it resumes at the stored offset.
+
+Parameters:
+
+- `float $budget` The default budget in seconds.
+
+Return a float.
+
+### `living_handbook_export_user_identifier`
+
+Filters how a reviewer is named in an export bundle. The default is the user's login, which is less personal than the e-mail address in a file that leaves the site. The importer reads either, so bundles written before this still resolve. The trade-off, stated rather than hidden: matching by login fails where the same person has a different login on the target site, and returning the e-mail address puts the old behaviour back.
+
+Parameters:
+
+- `string $identifier` The default, the user's login.
+- `int $user_id` The reviewer.
+
+Return a string.
 
 ## Actions
 
-_None yet. Planned: after a Markdown, ZIP or GitHub import completes, and after a GitHub page is synced._
+_None. The three that were listed here as planned, after an import, on the metadata and on the freshness evaluation, were removed in 0.60.0 rather than left standing as a promise: a hook is a commitment whose signature cannot be changed later without breaking whoever uses it, and these three came from a list rather than from a use. They are kept as a note in the project's own workspace, with signature and purpose, and will be built when something actually needs them._

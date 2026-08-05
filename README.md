@@ -11,7 +11,7 @@ Active development (0.x). The plugin is usable end to end: multiple handbooks, p
 ## Features
 
 - A dedicated handbook content type with structured page types (Diataxis plus FAQ).
-- Ownership per page: a responsible role mapped to a current person.
+- Ownership per page: assign a responsible role to every page, and a reviewer as a WordPress user.
 - Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
 - Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
 - Comments per handbook: leave them to each page, or switch them on or off for a whole handbook at once.

@@ -12,15 +12,18 @@ Every page carries two dates and one interval:
 
 From the review date and the interval the plugin computes a **freshness state** and shows it as a badge in the page's metadata footer.
 
-## The three states
+## The four states
 
 | Badge | Meaning |
 | --- | --- |
-| **Reviewed** | The last review is within the page's review interval. |
-| **Review due** | The interval has passed. The page is not wrong, but nobody has confirmed it lately. |
 | **Review overdue** | Twice the interval has passed. This is the escalation state, meant to be noticed. |
+| **Review due** | The interval has passed. The page is not wrong, but nobody has confirmed it lately. |
+| **Reviewed** | The last review is within the page's review interval. |
+| **Not reviewed** | No review date, or no interval. Nobody has set the page up for review yet. |
 
-The badge is not colour alone: each state has its own shape and a text label, so it is readable without colour vision and by a screen reader.
+**Not reviewed** is deliberately neutral in colour rather than a warning. A page nobody has looked at is not a page that went stale, and every page arrives in this state: a fresh import would otherwise look like a failing handbook on its first day. What it asks for is not a review but a decision, a review date and an interval, and after that the page joins the other three states.
+
+The badge is not colour alone: each state has its own shape and a text label, so it is readable without colour vision and by a screen reader. The dot of **Not reviewed** is an outlined circle rather than a filled one, an empty shape for a field nobody has filled in.
 
 ## Setting the fields
 

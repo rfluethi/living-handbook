@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.59.0\n"
+"Project-Id-Version: Living Handbook 0.60.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-05T13:30:57+00:00\n"
+"POT-Creation-Date: 2026-08-05T14:03:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -85,7 +85,7 @@ msgid "Show all handbook pages, oldest review first"
 msgstr ""
 
 #: src/Admin/Maintenance.php:246
-#: src/Frontend/PageMeta.php:81
+#: src/Frontend/PageMeta.php:85
 #: src/Meta/Metadata.php:205
 #: src/Meta/Metadata.php:342
 msgid "Last reviewed"
@@ -110,10 +110,6 @@ msgstr ""
 
 #: src/Admin/Maintenance.php:435
 msgid "All review statuses"
-msgstr ""
-
-#: src/Admin/Maintenance.php:439
-msgid "Never reviewed"
 msgstr ""
 
 #: src/Blocks/Blocks.php:173
@@ -198,30 +194,39 @@ msgid "The text of the audience label."
 msgstr ""
 
 #: src/Frontend/Appearance.php:98
-#: src/Frontend/FreshnessStatus.php:87
+#: src/Frontend/FreshnessStatus.php:106
 msgid "Reviewed"
 msgstr ""
 
 #: src/Frontend/Appearance.php:99
-msgid "The first of the three review states."
+msgid "The first of the four review states."
 msgstr ""
 
 #: src/Frontend/Appearance.php:102
-#: src/Frontend/FreshnessStatus.php:89
+#: src/Frontend/FreshnessStatus.php:108
 msgid "Review due"
 msgstr ""
 
 #: src/Frontend/Appearance.php:103
-msgid "The second of the three review states."
+msgid "The second of the four review states."
 msgstr ""
 
 #: src/Frontend/Appearance.php:106
-#: src/Frontend/FreshnessStatus.php:91
+#: src/Frontend/FreshnessStatus.php:110
 msgid "Review overdue"
 msgstr ""
 
 #: src/Frontend/Appearance.php:107
-msgid "The third of the three review states. Keep the three clearly different from each other, and not by hue alone."
+msgid "The third of the four review states. Keep them clearly different from each other, and not by hue alone."
+msgstr ""
+
+#: src/Frontend/Appearance.php:110
+#: src/Frontend/FreshnessStatus.php:112
+msgid "Not reviewed"
+msgstr ""
+
+#: src/Frontend/Appearance.php:111
+msgid "A page with no review date yet. Neutral on purpose: a page nobody has looked at is not overdue."
 msgstr ""
 
 #. translators: %s: name of the responsible role.
@@ -388,19 +393,19 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:77
+#: src/Frontend/PageMeta.php:81
 msgid "never"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:79
+#: src/Frontend/PageMeta.php:83
 msgid "Created"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:80
+#: src/Frontend/PageMeta.php:84
 msgid "Last updated"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:82
+#: src/Frontend/PageMeta.php:86
 msgid "Responsible role"
 msgstr ""
 

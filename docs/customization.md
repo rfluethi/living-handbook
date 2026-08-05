@@ -110,6 +110,7 @@ The three freshness colours carry meaning. The variable and class names use shor
 | Reviewed | `--lh-ok` | `--ok` | Within the review interval |
 | Review due | `--lh-due` | `--due` | The interval has passed |
 | Review overdue | `--lh-overdue` | `--overdue` | Twice the interval has passed |
+| Not reviewed | `--lh-none` | `--none` | No review date set |
 
 So `--lh-ok` is the colour of the badge that reads **Reviewed**, and `--lh-overdue` the one that reads **Review overdue**. The variable names are internal; the badges are what your readers see.
 

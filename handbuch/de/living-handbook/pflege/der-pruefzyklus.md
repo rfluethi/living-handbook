@@ -14,7 +14,9 @@ Aus Prüfdatum und Intervall berechnet das Plugin den Status. Er erscheint als A
 
 ![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.webp)
 
-Jeder Status hat neben der Farbe eine eigene Form und eine Beschriftung. Er bleibt darum auch ohne Farbensehen und mit Screenreader erkennbar.
+Dazu kommt ein vierter Status, **Nicht geprüft**, für Seiten ohne Prüfdatum oder ohne Intervall. Er ist bewusst neutral gefärbt und keine Warnung: Eine Seite, die noch niemand angeschaut hat, ist nicht veraltet, und jede Seite startet hier. Sonst sähe ein frisch importiertes Handbuch am ersten Tag aus wie ein vernachlässigtes. Was dieser Status verlangt, ist keine Prüfung, sondern eine Entscheidung: Prüfdatum und Intervall setzen. Danach nimmt die Seite am Kreislauf teil.
+
+Jeder Status hat neben der Farbe eine eigene Form und eine Beschriftung. Er bleibt darum auch ohne Farbensehen und mit Screenreader erkennbar. Der Punkt von **Nicht geprüft** ist ein leerer Kreis statt eines gefüllten, passend zu einem Feld, das noch niemand ausgefüllt hat.
 
 Das Diagramm zeigt den Kreislauf: Nach der Prüfung läuft das Intervall. Läuft es ab, erscheint das Abzeichen, und die verantwortliche Rolle prüft erneut.
 
@@ -64,5 +66,5 @@ Die Seiten leben in WordPress. Die WordPress-Revisionen sind darum die Versionsg
 * Zielgruppe: Alle Mitglieder
 * Reihenfolge: 1
 * Textauszug: Jede Seite trägt Prüfdatum und Prüfintervall; daraus entsteht sichtbar, wie verlässlich eine Seite gerade ist.
-* Letzte Prüfung: 2026-07-23
+* Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

@@ -108,13 +108,14 @@ The "Was this helpful?" prompt with Yes and No buttons. By default a vote counts
 
 ![](_attachments/handbook-page-meta-en.png)
 
-The metadata footer of a single page: created, last updated, last reviewed and the responsible role, each with the person (avatar and name) where one is assigned. The review date carries a freshness badge with one of three states:
+The metadata footer of a single page: created, last updated, last reviewed and the responsible role, each with the person (avatar and name) where one is assigned. The review date carries a freshness badge with one of four states:
 
 | Badge | Meaning |
 | --- | --- |
-| **Reviewed** | The last review is within the page's review interval. |
-| **Review due** | The interval has passed. |
 | **Review overdue** | Twice the interval has passed, the escalation state. |
+| **Review due** | The interval has passed. |
+| **Reviewed** | The last review is within the page's review interval. |
+| **Not reviewed** | No review date or no interval yet. Neutral, not a warning. |
 
 **Settings:** *Show people* toggles the avatar and name.
 

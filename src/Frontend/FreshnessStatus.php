@@ -17,6 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Derives a review status from the last review date and the review interval.
+ *
+ * Four states, not three. A page with no review date and no interval is not
+ * reviewed, due or overdue; it is a page nobody has looked at, and that is a
+ * state of its own with its own answer ("set a review date"). It used to be the
+ * absence of a state: NONE existed as a value, had no label, and was skipped
+ * wherever a badge or a dot was drawn, so a freshly imported handbook showed
+ * nothing at all where its freshness belongs. NONE is deliberately neutral in
+ * colour rather than alarming: never looked at is not the same as overdue.
  */
 final class FreshnessStatus {
 
@@ -24,6 +32,17 @@ final class FreshnessStatus {
 	public const DUE     = 'due';
 	public const OVERDUE = 'overdue';
 	public const NONE    = 'none';
+
+	/**
+	 * Every status, in the order a person reads them: from the page that needs
+	 * attention most to the one that needs none, with the page nobody has looked
+	 * at yet at the end. Used wherever all four are offered at once.
+	 *
+	 * @return array<int, string>
+	 */
+	public static function all(): array {
+		return array( self::OVERDUE, self::DUE, self::OK, self::NONE );
+	}
 
 	/**
 	 * Compute the status for a post.
@@ -89,6 +108,8 @@ final class FreshnessStatus {
 				return __( 'Review due', 'living-handbook' );
 			case self::OVERDUE:
 				return __( 'Review overdue', 'living-handbook' );
+			case self::NONE:
+				return __( 'Not reviewed', 'living-handbook' );
 			default:
 				return '';
 		}

@@ -14,7 +14,9 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Tests\Integration;
 
+use LivingHandbook\Frontend\Cards;
 use LivingHandbook\Frontend\FreshnessStatus;
+use LivingHandbook\Frontend\PageMeta;
 use LivingHandbook\Frontend\PageTree;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
@@ -194,16 +196,64 @@ final class PageTreeTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Every status a page can carry has a label, and "nothing to say" says
-	 * nothing rather than an empty-looking badge.
+	 * All four states have a label, the fourth one included. It used to have
+	 * none, which is why a page nobody had reviewed showed nothing at all where
+	 * its freshness belongs, leaving a reader unable to tell "fresh" from
+	 * "forgotten". A value nobody knows still says nothing, so a stray status
+	 * cannot draw an empty badge.
 	 *
 	 * @return void
 	 */
-	public function test_every_status_has_a_label_except_none(): void {
-		$this->assertNotSame( '', FreshnessStatus::label( FreshnessStatus::OK ) );
-		$this->assertNotSame( '', FreshnessStatus::label( FreshnessStatus::DUE ) );
-		$this->assertNotSame( '', FreshnessStatus::label( FreshnessStatus::OVERDUE ) );
-		$this->assertSame( '', FreshnessStatus::label( FreshnessStatus::NONE ) );
+	public function test_every_status_has_a_label(): void {
+		foreach ( FreshnessStatus::all() as $status ) {
+			$this->assertNotSame( '', FreshnessStatus::label( $status ), $status . ' has no label.' );
+		}
+
 		$this->assertSame( '', FreshnessStatus::label( 'something else' ) );
+	}
+
+	/**
+	 * all() really is all of them, in the order a person reads them: worst
+	 * first, never-looked-at last. The filter dropdown in the page list and the
+	 * colour fields in the settings both follow it, so a fifth state added to
+	 * the class but not here would be missing from both.
+	 *
+	 * @return void
+	 */
+	public function test_all_lists_the_four_states_worst_first(): void {
+		$this->assertSame(
+			array( FreshnessStatus::OVERDUE, FreshnessStatus::DUE, FreshnessStatus::OK, FreshnessStatus::NONE ),
+			FreshnessStatus::all()
+		);
+	}
+
+	/**
+	 * The fourth state reaches the reader, on the card and in the page footer.
+	 * Both used to skip it explicitly, so a freshly imported handbook showed a
+	 * blank where its freshness belongs.
+	 *
+	 * @return void
+	 */
+	public function test_a_page_without_a_review_date_still_shows_its_state(): void {
+		$term = self::factory()->term->create_and_get( array( 'taxonomy' => Handbooks::TAXONOMY ) );
+		update_term_meta( (int) $term->term_id, Handbooks::META_VISIBILITY, 'public' );
+		$page = (int) self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'publish',
+				'post_title'  => 'Never looked at',
+			)
+		);
+		wp_set_object_terms( $page, array( (int) $term->term_id ), Handbooks::TAXONOMY );
+
+		$this->assertSame( FreshnessStatus::NONE, FreshnessStatus::for_post( $page ) );
+
+		$meta = PageMeta::render_meta( $page );
+		$this->assertStringContainsString( 'living-handbook-badge--none', $meta );
+		$this->assertStringContainsString( FreshnessStatus::label( FreshnessStatus::NONE ), $meta );
+
+		$card = Cards::page_card( $page );
+		$this->assertStringContainsString( 'living-handbook-card__dot--none', $card );
+		$this->assertStringContainsString( FreshnessStatus::label( FreshnessStatus::NONE ), $card );
 	}
 }

@@ -436,7 +436,7 @@ final class Maintenance {
 			FreshnessStatus::OVERDUE => FreshnessStatus::label( FreshnessStatus::OVERDUE ),
 			FreshnessStatus::DUE     => FreshnessStatus::label( FreshnessStatus::DUE ),
 			FreshnessStatus::OK      => FreshnessStatus::label( FreshnessStatus::OK ),
-			FreshnessStatus::NONE    => __( 'Never reviewed', 'living-handbook' ),
+			FreshnessStatus::NONE    => FreshnessStatus::label( FreshnessStatus::NONE ),
 		);
 		echo '<select name="lh_status">';
 		foreach ( $options as $value => $label ) {
@@ -470,7 +470,7 @@ final class Maintenance {
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$status = isset( $_GET['lh_status'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_status'] ) ) : '';
-		$valid  = array( FreshnessStatus::OK, FreshnessStatus::DUE, FreshnessStatus::OVERDUE, FreshnessStatus::NONE );
+		$valid  = FreshnessStatus::all();
 		if ( ! in_array( $status, $valid, true ) ) {
 			return;
 		}

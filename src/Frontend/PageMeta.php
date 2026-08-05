@@ -59,10 +59,14 @@ final class PageMeta {
 		$updated  = (string) get_post_meta( $post_id, Metadata::UPDATED, true );
 		$reviewed = (string) get_post_meta( $post_id, Metadata::REVIEWED, true );
 
+		// All four states are shown, the fourth one included: a page nobody has
+		// reviewed says so, instead of leaving the reader to guess whether the
+		// blank means fresh or forgotten.
 		$status = FreshnessStatus::for_post( $post_id );
+		$label  = FreshnessStatus::label( $status );
 		$badge  = '';
-		if ( FreshnessStatus::NONE !== $status ) {
-			$badge = ' <span class="living-handbook-badge living-handbook-badge--' . esc_attr( $status ) . '">' . esc_html( FreshnessStatus::label( $status ) ) . '</span>';
+		if ( '' !== $label ) {
+			$badge = ' <span class="living-handbook-badge living-handbook-badge--' . esc_attr( $status ) . '">' . esc_html( $label ) . '</span>';
 		}
 
 		$author_id   = (int) get_post_field( 'post_author', $post_id );

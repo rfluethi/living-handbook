@@ -14,7 +14,9 @@ From the review date and the interval, the plugin computes the state. It appears
 
 ![The three review-status badges: Reviewed, Review due, Review overdue](../assets/pruefstatus-abzeichen.webp)
 
-Besides its colour, every state has its own shape and a text label. It stays recognisable without colour vision and with a screen reader.
+There is a fourth state, **Not reviewed**, for pages with no review date or no interval. It is deliberately neutral rather than a warning: a page nobody has looked at yet is not a page that went stale, and every page starts here. Otherwise a freshly imported handbook would look neglected on its first day. What this state asks for is not a review but a decision: set a review date and an interval. After that the page joins the cycle.
+
+Besides its colour, every state has its own shape and a text label. It stays recognisable without colour vision and with a screen reader. The dot of **Not reviewed** is an outlined circle rather than a filled one, matching a field nobody has filled in.
 
 The diagram shows the cycle: after the review the interval runs. When it expires, the badge appears, and the responsible role reviews again.
 
@@ -64,5 +66,5 @@ The pages live in WordPress. So the WordPress revisions are the version history:
 * Zielgruppe: All members
 * Reihenfolge: 1
 * Textauszug: Every page carries a review date and a review interval; from them it becomes visible how reliable a page currently is.
-* Letzte Prüfung: 2026-07-27
+* Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

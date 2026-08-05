@@ -80,11 +80,30 @@ final class SmokeTest extends TestCase {
 			'the LIVING_HANDBOOK_VERSION constant'
 		);
 		$stable    = $this->capture( '/^Stable tag:\s*([0-9][0-9.]*)/m', $this->read_plugin_file( 'readme.txt' ), 'the stable tag' );
-		$changelog = $this->capture( '/^=\s*([0-9][0-9.]*)\s*=/m', $this->read_plugin_file( 'CHANGELOG.md' ), 'the newest changelog entry' );
+		$changelog = $this->capture( '/^##\s*\[([0-9][0-9.]*)\]/m', $this->read_plugin_file( 'CHANGELOG.md' ), 'the newest changelog entry' );
+		$readme    = $this->capture( '/^=\s*([0-9][0-9.]*)\s*=/m', $this->readme_changelog(), 'the newest readme changelog entry' );
 
 		$this->assertSame( $header, $constant, 'The constant does not match the plugin header.' );
 		$this->assertSame( $header, $stable, 'The stable tag does not match the plugin header.' );
-		$this->assertSame( $header, $changelog, 'The newest changelog entry does not match the plugin header.' );
+		$this->assertSame( $header, $changelog, 'The newest entry in CHANGELOG.md does not match the plugin header.' );
+		$this->assertSame( $header, $readme, 'The newest entry in the readme changelog does not match the plugin header.' );
+	}
+
+	/**
+	 * The Changelog section of readme.txt, without the Upgrade Notice section
+	 * that follows it and uses the same "= 0.0.0 =" syntax.
+	 *
+	 * @return string
+	 */
+	private function readme_changelog(): string {
+		$readme = $this->read_plugin_file( 'readme.txt' );
+		$start  = strpos( $readme, '== Changelog ==' );
+		$this->assertNotFalse( $start, 'readme.txt has no Changelog section.' );
+
+		$rest = substr( $readme, $start );
+		$end  = strpos( $rest, '== Upgrade Notice ==' );
+
+		return false === $end ? $rest : substr( $rest, 0, $end );
 	}
 
 	/**

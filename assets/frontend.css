@@ -77,6 +77,15 @@
 	--lh-badge-ok-bg: #e7f6ec;
 	--lh-badge-due-bg: #fdf0e0;
 	--lh-badge-overdue-bg: #fdecea;
+
+	/* The fourth state, "Not reviewed": neutral on purpose. A page nobody has
+	   looked at yet is not overdue, and colouring it like a warning would make a
+	   freshly imported handbook look like a failing one. Grey on grey, measured
+	   at 5.87:1, and the dot takes the same treatment as the other three so it
+	   stays visible on a dark theme. */
+	--lh-none: var(--lh-user-none, #52606d);
+	--lh-none-on-surface: color-mix(in srgb, var(--lh-none) 65%, var(--lh-surface-text));
+	--lh-badge-none-bg: #eceff2;
 	--lh-sticky-top: 2rem;
 }
 
@@ -310,6 +319,10 @@
 
 .living-handbook-card__dot--overdue {
 	background: var(--lh-overdue-on-surface, var(--lh-overdue));
+}
+
+.living-handbook-card__dot--none {
+	background: var(--lh-none-on-surface, var(--lh-none));
 }
 
 .living-handbook-empty {
@@ -628,6 +641,11 @@
 	color: var(--lh-overdue);
 }
 
+.living-handbook-badge--none {
+	background: var(--lh-badge-none-bg);
+	color: var(--lh-none);
+}
+
 /* Feedback */
 
 .living-handbook-feedback {
@@ -847,7 +865,8 @@
 
 /* Freshness status must not rely on colour alone (WCAG 1.4.1): vary the dot
  * shape per status. Reviewed stays a circle, review due becomes a rounded
- * square, overdue a diamond. */
+ * square, overdue a diamond, and not reviewed an outlined circle: an empty
+ * shape for the state where nothing has been filled in. */
 .living-handbook-card__dot--due {
 	border-radius: 2px;
 }
@@ -855,6 +874,11 @@
 .living-handbook-card__dot--overdue {
 	border-radius: 1px;
 	transform: rotate(45deg);
+}
+
+.living-handbook-card__dot--none {
+	background: transparent;
+	box-shadow: inset 0 0 0 2px var(--lh-none-on-surface, var(--lh-none));
 }
 
 /* Feedback error message shown when the request fails, instead of a false

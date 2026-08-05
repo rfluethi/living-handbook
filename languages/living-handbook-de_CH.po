@@ -3,9 +3,9 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.58.0\n"
+"Project-Id-Version: Living Handbook 0.60.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-05T13:10:32+00:00\n"
+"POT-Creation-Date: 2026-08-05T14:03:07+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -96,7 +96,7 @@ msgstr "Alle Seiten sind aktuell geprüft."
 msgid "Show all handbook pages, oldest review first"
 msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
-#: src/Admin/Maintenance.php:246 src/Frontend/PageMeta.php:81
+#: src/Admin/Maintenance.php:246 src/Frontend/PageMeta.php:85
 #: src/Meta/Metadata.php:205 src/Meta/Metadata.php:342
 msgid "Last reviewed"
 msgstr "Zuletzt geprüft"
@@ -120,10 +120,6 @@ msgstr "Alle %s"
 #: src/Admin/Maintenance.php:435
 msgid "All review statuses"
 msgstr "Alle Prüfstatus"
-
-#: src/Admin/Maintenance.php:439
-msgid "Never reviewed"
-msgstr "Nie geprüft"
 
 #: src/Blocks/Blocks.php:173 src/Blocks/Blocks.php:174 assets/blocks.js:133
 msgid "Table of Contents"
@@ -224,33 +220,45 @@ msgid "The text of the audience label."
 msgstr "Der Text des Zielgruppen-Badges."
 
 # Freshness
-#: src/Frontend/Appearance.php:98 src/Frontend/FreshnessStatus.php:87
+#: src/Frontend/Appearance.php:98 src/Frontend/FreshnessStatus.php:106
 msgid "Reviewed"
 msgstr "Geprüft"
 
 #: src/Frontend/Appearance.php:99
-msgid "The first of the three review states."
-msgstr "Der erste der drei Prüfzustände."
+msgid "The first of the four review states."
+msgstr "Der erste der vier Prüfzustände."
 
-#: src/Frontend/Appearance.php:102 src/Frontend/FreshnessStatus.php:89
+#: src/Frontend/Appearance.php:102 src/Frontend/FreshnessStatus.php:108
 msgid "Review due"
 msgstr "Prüfung fällig"
 
 #: src/Frontend/Appearance.php:103
-msgid "The second of the three review states."
-msgstr "Der zweite der drei Prüfzustände."
+msgid "The second of the four review states."
+msgstr "Der zweite der vier Prüfzustände."
 
-#: src/Frontend/Appearance.php:106 src/Frontend/FreshnessStatus.php:91
+#: src/Frontend/Appearance.php:106 src/Frontend/FreshnessStatus.php:110
 msgid "Review overdue"
 msgstr "Prüfung überfällig"
 
 #: src/Frontend/Appearance.php:107
 msgid ""
-"The third of the three review states. Keep the three clearly different from "
-"each other, and not by hue alone."
+"The third of the four review states. Keep them clearly different from each "
+"other, and not by hue alone."
 msgstr ""
-"Der dritte der drei Prüfzustände. Halte die drei deutlich voneinander "
+"Der dritte der vier Prüfzustände. Halte sie deutlich voneinander "
 "unterscheidbar, und nicht allein über den Farbton."
+
+#: src/Frontend/Appearance.php:110 src/Frontend/FreshnessStatus.php:112
+msgid "Not reviewed"
+msgstr "Nicht geprüft"
+
+#: src/Frontend/Appearance.php:111
+msgid ""
+"A page with no review date yet. Neutral on purpose: a page nobody has looked "
+"at is not overdue."
+msgstr ""
+"Eine Seite ohne Prüfdatum. Bewusst neutral: eine Seite, die noch niemand "
+"angeschaut hat, ist nicht überfällig."
 
 # Cards
 #. translators: %s: name of the responsible role.
@@ -413,20 +421,20 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nein"
 
-#: src/Frontend/PageMeta.php:77
+#: src/Frontend/PageMeta.php:81
 msgid "never"
 msgstr "nie"
 
 # Metadata footer and feedback
-#: src/Frontend/PageMeta.php:79
+#: src/Frontend/PageMeta.php:83
 msgid "Created"
 msgstr "Erstellt"
 
-#: src/Frontend/PageMeta.php:80
+#: src/Frontend/PageMeta.php:84
 msgid "Last updated"
 msgstr "Zuletzt aktualisiert"
 
-#: src/Frontend/PageMeta.php:82
+#: src/Frontend/PageMeta.php:86
 msgid "Responsible role"
 msgstr "Verantwortliche Rolle"
 
@@ -2155,6 +2163,22 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#~ msgid "Never reviewed"
+#~ msgstr "Nie geprüft"
+
+#~ msgid "The first of the three review states."
+#~ msgstr "Der erste der drei Prüfzustände."
+
+#~ msgid "The second of the three review states."
+#~ msgstr "Der zweite der drei Prüfzustände."
+
+#~ msgid ""
+#~ "The third of the three review states. Keep the three clearly different "
+#~ "from each other, and not by hue alone."
+#~ msgstr ""
+#~ "Der dritte der drei Prüfzustände. Halte die drei deutlich voneinander "
+#~ "unterscheidbar, und nicht allein über den Farbton."
 
 #~ msgid ""
 #~ "The ZIP carries a mkdocs.yml, but no YAML reader is available on this "

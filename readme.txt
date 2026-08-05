@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.59.0
+Stable tag: 0.60.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Living Handbook turns WordPress into an internal team handbook that is built to 
 Core features:
 
 * A dedicated handbook content type with structured page types (Diataxis plus FAQ).
-* Ownership per page: a responsible role mapped to a current person.
+* Ownership per page: assign a responsible role to every page, and a reviewer as a WordPress user.
 * Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
 * Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
 * Several handbooks side by side, each with its own access group, its own entry page, and its own navigation.
@@ -87,6 +87,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.60.0 =
+* A page nobody has reviewed yet says so. It used to show nothing at all where its freshness belongs, so a reader could not tell "fresh" from "forgotten". The new state is called "Not reviewed" and is deliberately neutral in colour: a page nobody has looked at is not overdue.
+* The hook documentation and the code agree again. Seven filters the plugin fires were documented nowhere, and three hooks were announced as planned that were never built. The seven are written up, the three announcements are gone, and a test now fails if either side drifts from the other.
+
 = 0.59.0 =
 * The freshness dot on a card and the two error messages stay legible on a dark theme. They were drawn in fixed colours straight onto the theme's own surface, where they reached 2.6:1 against a 3:1 requirement. They now take a third of the theme's text colour, which darkens them on a light theme and lightens them on a dark one. The badges themselves are unchanged: they bring their own background and were never the problem.
 
@@ -153,6 +157,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.60.0 =
+Pages with no review date now carry a state of their own, "Not reviewed", instead of showing nothing. Nothing needs doing on update.
 
 = 0.59.0 =
 Worth having on a dark theme: the freshness dot and the error messages were too faint to read there. Nothing needs doing on update, and the badges look exactly as before.

@@ -96,15 +96,19 @@ final class Appearance {
 			),
 			'ok'                  => array(
 				'label'       => __( 'Reviewed', 'living-handbook' ),
-				'description' => __( 'The first of the three review states.', 'living-handbook' ),
+				'description' => __( 'The first of the four review states.', 'living-handbook' ),
 			),
 			'due'                 => array(
 				'label'       => __( 'Review due', 'living-handbook' ),
-				'description' => __( 'The second of the three review states.', 'living-handbook' ),
+				'description' => __( 'The second of the four review states.', 'living-handbook' ),
 			),
 			'overdue'             => array(
 				'label'       => __( 'Review overdue', 'living-handbook' ),
-				'description' => __( 'The third of the three review states. Keep the three clearly different from each other, and not by hue alone.', 'living-handbook' ),
+				'description' => __( 'The third of the four review states. Keep them clearly different from each other, and not by hue alone.', 'living-handbook' ),
+			),
+			'none'                => array(
+				'label'       => __( 'Not reviewed', 'living-handbook' ),
+				'description' => __( 'A page with no review date yet. Neutral on purpose: a page nobody has looked at is not overdue.', 'living-handbook' ),
 			),
 		);
 	}
