@@ -13,7 +13,7 @@ Living Handbook bringt eigene Blöcke mit, also Bausteine für den Editor. Du fi
 Zeichnet Diagramme direkt auf der Seite: Abläufe, Entscheidungswege, Hierarchien. Du beschreibst das Diagramm als Text in der Diagramm-Sprache [Mermaid](https://mermaid.js.org/); gezeichnet wird es beim Anzeigen der Seite. Füge den Block ein und schreibe die Beschreibung in das Feld **Mermaid-Code**. Ein Titel wird zur Bildunterschrift. Die Textbeschreibung wird vorgelesen, wenn jemand die Seite mit einem Screenreader nutzt. So sieht die Beschreibung eines kleinen Ablaufs aus:
 
 ```text
-graph LR;
+graph TD;
   A["Entwurf schreiben"] --> B["Prüfen lassen"];
   B --> C["Veröffentlichen"];
 ```
@@ -21,7 +21,7 @@ graph LR;
 Und so wird sie gezeichnet:
 
 ```mermaid
-graph LR;
+graph TD;
   A["Entwurf schreiben"] --> B["Prüfen lassen"];
   B --> C["Veröffentlichen"];
 ```
@@ -110,7 +110,9 @@ Jeder Block bietet in der Seitenleiste unter **Erweitert** zwei Felder: eine **z
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Gestaltung
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Oberfläche
 * Reihenfolge: 2
 * Textauszug: Welche Blöcke des Plugins du selbst einsetzt, allen voran das Mermaid-Diagramm, und welche das Plugin von allein platziert.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

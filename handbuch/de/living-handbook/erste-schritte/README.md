@@ -3,7 +3,7 @@
 Dieser Bereich führt dich in vier Schritten zum ersten sichtbaren Handbuch. Gehe die Seiten der Reihe nach durch. Jede baut auf der vorherigen auf. Du kennst WordPress schon gut? Dann fasst der [Schnellstart](../schnellstart.md) denselben Weg auf einer Seite zusammen. Eine fünfte, freiwillige Seite lädt dieses Handbuch als Beispiel in deine Installation.
 
 ```mermaid
-graph LR;
+graph TD;
   A["1. Installation"] --> B["2. Erstes Handbuch anlegen"];
   B --> C["3. Erste Seite anlegen"];
   C --> D["4. Seiten ordnen"];
@@ -26,10 +26,13 @@ Du musst nicht bei null anfangen. Lade dieses Handbuch mit einem Klick in deine 
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Slug: erste-schritte
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Einstieg
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 3
 * Textauszug: Dieser Bereich führt dich in vier Schritten von der Installation bis zu einem Handbuch, das Besucherinnen und Besucher wirklich sehen können.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

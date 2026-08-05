@@ -40,7 +40,9 @@ Im Zweifel versteckt das Plugin. Eine Seite ohne Handbuch ist unsichtbar. Ein ne
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Überblick
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 2
 * Textauszug: Der ganze Weg zum fertigen Handbuch auf einer Seite, für alle, die WordPress gut kennen und sich nur einen Überblick verschaffen wollen.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

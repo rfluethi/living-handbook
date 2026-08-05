@@ -51,7 +51,9 @@ All pages carry a current review date. The box on the dashboard is empty. The ba
 * Verantwortliche Rolle: Handbook editors
 * Thema: Upkeep
 * Zielgruppe: All members
+* Eltern-Seite: Upkeep
 * Reihenfolge: 2
 * Textauszug: The practical review work: confirming single pages, working through many quickly, and reliably finding the overdue ones.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

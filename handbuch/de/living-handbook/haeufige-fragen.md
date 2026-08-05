@@ -89,7 +89,9 @@ Nein. Es liest nur die Adressen, die du selbst einträgst, beim Import oder in d
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Überblick
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 9
 * Textauszug: Kurze Antworten auf die häufigsten Fragen zu Living Handbook, jede mit Verweis auf die ausführliche Seite.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

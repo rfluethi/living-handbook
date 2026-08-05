@@ -55,7 +55,9 @@ WordPress actively asks GitHub whether the file still exists and what it contain
 * Verantwortliche Rolle: Handbook editors
 * Thema: Content
 * Zielgruppe: All members, Tech
+* Eltern-Seite: Content
 * Reihenfolge: 3
 * Textauszug: A page can stay permanently connected to a Markdown file on GitHub; this guide sets that up.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

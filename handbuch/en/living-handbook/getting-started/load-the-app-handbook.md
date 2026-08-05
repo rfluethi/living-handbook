@@ -55,7 +55,9 @@ The handbook exists in German and English. The tab picks the language of your ad
 * Verantwortliche Rolle: Handbook editors
 * Thema: Getting started
 * Zielgruppe: All members
+* Eltern-Seite: Getting started
 * Reihenfolge: 5
 * Textauszug: This handbook ships with the plugin and loads into your own installation with one click, matching the installed version.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

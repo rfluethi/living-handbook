@@ -12,7 +12,7 @@ Every page carries two dates and one interval:
 
 From the review date and the interval, the plugin computes the state. It appears as a badge at the bottom of every page:
 
-![The three review-status badges: Reviewed, Review due, Review overdue](../assets/pruefstatus-abzeichen.webp)
+![The four review-status badges: Reviewed, Review due, Review overdue, Not reviewed](../assets/pruefstatus-abzeichen.webp)
 
 There is a fourth state, **Not reviewed**, for pages with no review date or no interval. It is deliberately neutral rather than a warning: a page nobody has looked at yet is not a page that went stale, and every page starts here. Otherwise a freshly imported handbook would look neglected on its first day. What this state asks for is not a review but a decision: set a review date and an interval. After that the page joins the cycle.
 
@@ -64,7 +64,9 @@ The pages live in WordPress. So the WordPress revisions are the version history:
 * Verantwortliche Rolle: Handbook editors
 * Thema: Upkeep
 * Zielgruppe: All members
+* Eltern-Seite: Upkeep
 * Reihenfolge: 1
 * Textauszug: Every page carries a review date and a review interval; from them it becomes visible how reliable a page currently is.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

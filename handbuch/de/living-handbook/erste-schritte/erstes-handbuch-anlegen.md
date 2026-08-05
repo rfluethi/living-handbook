@@ -49,7 +49,9 @@ WordPress schaltet Kommentare pro Seite. Für ein Handbuch mit zweihundert Seite
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Einstieg
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Erste Schritte
 * Reihenfolge: 2
 * Textauszug: Ein Handbuch ist der Behälter, in dem deine Seiten liegen; diese Anleitung legt dein erstes Handbuch an und setzt seine Sichtbarkeit.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

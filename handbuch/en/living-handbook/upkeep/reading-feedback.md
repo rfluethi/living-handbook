@@ -38,7 +38,9 @@ The feedback counters are operating data of this one website. When [moving a han
 * Verantwortliche Rolle: Handbook editors
 * Thema: Upkeep
 * Zielgruppe: All members
+* Eltern-Seite: Upkeep
 * Reihenfolge: 3
 * Textauszug: Where the votes from "Was this helpful?" land, and how you use them to find the pages that need work.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

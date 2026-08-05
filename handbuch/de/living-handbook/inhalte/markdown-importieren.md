@@ -47,7 +47,7 @@ Der Steckbrief beginnt mit einer Überschrift der zweiten Ebene, die genau „Tr
 * Thema: Applikation
 * Zielgruppe: Alle Mitglieder, Technik
 * Eltern-Seite: Übersicht
-* Reihenfolge: 3
+* Reihenfolge: 2
 * Textauszug: Kurz erklärt.
 * Letzte Prüfung: 2026-07-08
 * Prüfintervall: 90 Tage
@@ -89,7 +89,9 @@ Ein zweiter Import derselben Quelle legt keine Kopien an. Er aktualisiert die be
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Inhalte
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Inhalte
 * Reihenfolge: 2
 * Textauszug: Diese Anleitung übernimmt fertige Markdown-Texte als Seiten in dein Handbuch: eingefügt, als ZIP-Datei oder von einer GitHub-Adresse.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

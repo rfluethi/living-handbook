@@ -13,10 +13,13 @@ Documentation without upkeep goes wrong. And wrong documentation is worse than n
 
 ## Transport-Metadaten
 * Seitentyp: Area overview
+* Slug: upkeep
 * Verantwortliche Rolle: Handbook editors
 * Thema: Upkeep
 * Zielgruppe: All members
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 7
 * Textauszug: Living Handbook is built around upkeep: the review cycle, the day-to-day review work and the reader feedback.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

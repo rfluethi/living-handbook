@@ -55,7 +55,9 @@ Das Handbuch gibt es auf Deutsch und Englisch. Der Reiter wählt die Sprache dei
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Einstieg
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Erste Schritte
 * Reihenfolge: 5
 * Textauszug: Dieses Handbuch wird mit dem Plugin ausgeliefert und lässt sich mit einem Klick in deine eigene Installation laden, passend zur installierten Version.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

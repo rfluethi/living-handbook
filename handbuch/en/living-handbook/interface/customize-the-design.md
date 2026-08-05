@@ -83,7 +83,9 @@ Every block additionally offers its own CSS class and an HTML anchor under **Adv
 * Verantwortliche Rolle: Handbook editors
 * Thema: Design
 * Zielgruppe: Tech
+* Eltern-Seite: Interface
 * Reihenfolge: 4
 * Textauszug: The handbook pages follow your theme's colours; through CSS variables with the --lh- prefix you adjust them deliberately.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 365 Tage

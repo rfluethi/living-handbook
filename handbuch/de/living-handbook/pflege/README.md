@@ -13,10 +13,13 @@ Dokumentation ohne Pflege wird falsch. Und falsche Dokumentation ist schlimmer a
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Slug: pflege
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Pflege
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 7
 * Textauszug: Living Handbook ist um die Pflege gebaut: der Prüfzyklus, die tägliche Prüfarbeit und das Leser-Feedback.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

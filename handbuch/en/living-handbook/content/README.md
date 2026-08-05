@@ -15,10 +15,13 @@ Do you only write in WordPress? Then the first page of this area is all you need
 
 ## Transport-Metadaten
 * Seitentyp: Area overview
+* Slug: content
 * Verantwortliche Rolle: Handbook editors
 * Thema: Content
 * Zielgruppe: All members
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 4
 * Textauszug: This area explains how content gets into your handbook: written directly, imported from Markdown or synced from GitHub.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

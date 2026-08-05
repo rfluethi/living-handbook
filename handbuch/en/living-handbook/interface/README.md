@@ -11,10 +11,13 @@ This area explains what your readers see, and above all how much of it you contr
 
 ## Transport-Metadaten
 * Seitentyp: Area overview
+* Slug: interface
 * Verantwortliche Rolle: Handbook editors
 * Thema: Design
 * Zielgruppe: All members
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 5
 * Textauszug: This area explains the three kinds of handbook pages on the website, adding handbooks to the theme menu, and adjusting the design.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

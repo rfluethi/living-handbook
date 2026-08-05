@@ -11,10 +11,13 @@ Dieser Bereich erklärt, was deine Leserinnen und Leser sehen, und vor allem, wi
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Slug: oberflaeche
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Gestaltung
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 5
 * Textauszug: Dieser Bereich erklärt die drei Arten von Handbuch-Seiten auf der Website, die Einbindung ins Theme-Menü und die Anpassung der Gestaltung.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

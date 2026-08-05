@@ -9,10 +9,13 @@ This area covers the most important question of an internal handbook: who may re
 
 ## Transport-Metadaten
 * Seitentyp: Area overview
+* Slug: access
 * Verantwortliche Rolle: Handbook editors
 * Thema: Access
 * Zielgruppe: All members
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 6
 * Textauszug: This area covers who may read which handbooks: setting the visibility, and the principle behind it.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

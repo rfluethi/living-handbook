@@ -25,7 +25,7 @@ Diese Anleitung erstellt deine erste Handbuch-Seite. Die Schritte: schreiben, ei
 
 Die Seite ist auf der Website erreichbar, unter `/handbook/<seitenname>/`. Auf der Einstiegsseite ihres Handbuchs erscheint sie unter „Zuletzt aktualisiert“. Oben zeigt sie die Abzeichen, rechts das Verzeichnis „Auf dieser Seite“. Ganz unten stehen die Angaben zur Seite, mit dem Prüfstatus als Abzeichen.
 
-![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.webp)
+![Die vier Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig, Nicht geprüft](../assets/pruefstatus-abzeichen.webp)
 
 <details>
 <summary>Stolpersteine: „Meine Seite erscheint nicht“</summary>
@@ -45,7 +45,9 @@ Fast immer hat das eine von drei Ursachen: Die Seite hat kein Handbuch zugewiese
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Einstieg
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Erste Schritte
 * Reihenfolge: 3
 * Textauszug: Diese Anleitung erstellt deine erste Handbuch-Seite: schreiben, einem Handbuch zuweisen, klassifizieren, Prüfdaten setzen, veröffentlichen.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

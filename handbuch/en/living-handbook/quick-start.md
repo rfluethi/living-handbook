@@ -40,7 +40,9 @@ When in doubt, the plugin hides. A page without a handbook is invisible. A new o
 * Verantwortliche Rolle: Handbook editors
 * Thema: Overview
 * Zielgruppe: All members
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 2
 * Textauszug: The whole path to a finished handbook on one page, for everyone who knows WordPress well and just wants an overview.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

@@ -47,7 +47,9 @@ Kommen deine Seiten aus importierten Markdown-Dateien, entsteht die Ordnung auto
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Einstieg
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Erste Schritte
 * Reihenfolge: 4
 * Textauszug: Die Navigation eines Handbuchs entsteht aus der Hierarchie der Seiten; diese Anleitung zeigt, wie du sie mit Eltern-Seite und Reihenfolge bestimmst.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

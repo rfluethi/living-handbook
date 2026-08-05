@@ -25,7 +25,7 @@ This guide creates your first handbook page. The steps: write, assign to a handb
 
 The page is reachable on the website at `/handbook/<page-name>/`. On the entry page of its handbook it appears under "Recently updated". At the top it shows the badges, on the right the "On this page" list. At the very bottom sit the page details, with the review status as a badge.
 
-![The three review-status badges: Reviewed, Review due, Review overdue](../assets/pruefstatus-abzeichen.webp)
+![The four review-status badges: Reviewed, Review due, Review overdue, Not reviewed](../assets/pruefstatus-abzeichen.webp)
 
 <details>
 <summary>Pitfalls: "My page does not show up"</summary>
@@ -45,7 +45,9 @@ Almost always it is one of three causes: The page has no handbook assigned. Or t
 * Verantwortliche Rolle: Handbook editors
 * Thema: Getting started
 * Zielgruppe: All members
+* Eltern-Seite: Getting started
 * Reihenfolge: 3
 * Textauszug: This guide creates your first handbook page: write, assign to a handbook, classify, set review data, publish.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

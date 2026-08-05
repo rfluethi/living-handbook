@@ -45,7 +45,9 @@ All four groups hold the terms your handbook needs. When writing a page, they ar
 * Verantwortliche Rolle: Handbook editors
 * Thema: Upkeep
 * Zielgruppe: All members
+* Eltern-Seite: Upkeep
 * Reihenfolge: 4
 * Textauszug: Where you maintain the four tag groups, and why the mapping of people to roles deliberately lives outside the plugin.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

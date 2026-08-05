@@ -49,7 +49,9 @@ WordPress switches comments per page. For a handbook of two hundred pages that i
 * Verantwortliche Rolle: Handbook editors
 * Thema: Getting started
 * Zielgruppe: All members
+* Eltern-Seite: Getting started
 * Reihenfolge: 2
 * Textauszug: A handbook is the container for your pages; this guide creates your first handbook and sets its visibility.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

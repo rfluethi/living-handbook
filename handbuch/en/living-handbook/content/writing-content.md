@@ -43,7 +43,9 @@ This part only concerns you if your pages come from Markdown files. The two ways
 * Verantwortliche Rolle: Handbook editors
 * Thema: Content
 * Zielgruppe: All members
+* Eltern-Seite: Content
 * Reihenfolge: 1
 * Textauszug: What belongs on a good handbook page, how to use diagrams, and what survives when Markdown files are read in.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

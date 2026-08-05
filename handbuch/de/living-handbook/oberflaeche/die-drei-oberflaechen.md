@@ -67,7 +67,9 @@ Das Plugin bringt elf eigene Blöcke mit, von der Handbuch-Übersicht bis zum Me
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Gestaltung
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Oberfläche
 * Reihenfolge: 1
 * Textauszug: Ein Handbuch besteht auf der Website aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

@@ -67,7 +67,9 @@ The plugin ships eleven blocks of its own, from the handbook overview to the Mer
 * Verantwortliche Rolle: Handbook editors
 * Thema: Design
 * Zielgruppe: All members
+* Eltern-Seite: Interface
 * Reihenfolge: 1
 * Textauszug: On the website a handbook consists of three kinds of pages: the overview, the entry page and the single page; this page explains all three.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

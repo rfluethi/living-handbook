@@ -60,7 +60,9 @@ The file itself is not protected, and no plugin can protect it. WordPress keeps 
 * Verantwortliche Rolle: Handbook editors
 * Thema: Access
 * Zielgruppe: All members
+* Eltern-Seite: Access
 * Reihenfolge: 2
 * Textauszug: Living Handbook rather hides than gives something away by accident; this page explains the fail-closed principle.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 365 Tage

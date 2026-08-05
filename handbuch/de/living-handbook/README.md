@@ -52,11 +52,14 @@ Die Texte dieses Handbuchs werden öffentlich auf GitHub geschrieben. GitHub ist
 </details>
 
 ## Transport-Metadaten
-* Seitentyp: Hintergrund / Konzept
+* Seitentyp: Bereichs-Übersicht
+* Slug: living-handbook
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Überblick
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: oberste Ebene
 * Reihenfolge: 1
 * Textauszug: Dieses Benutzerhandbuch erklärt Schritt für Schritt, wie du mit Living Handbook arbeitest, und ist zugleich ein Beispiel für ein fertiges Handbuch.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 365 Tage

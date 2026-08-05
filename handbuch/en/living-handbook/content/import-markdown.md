@@ -47,7 +47,7 @@ The data sheet starts with a level-two heading that reads exactly "Transport-Met
 * Thema: Application
 * Zielgruppe: All members, Tech
 * Eltern-Seite: Overview
-* Reihenfolge: 3
+* Reihenfolge: 2
 * Textauszug: Explained in short.
 * Letzte Prüfung: 2026-07-08
 * Prüfintervall: 90 Tage
@@ -89,7 +89,9 @@ A second import of the same source creates no copies. It updates the existing pa
 * Verantwortliche Rolle: Handbook editors
 * Thema: Content
 * Zielgruppe: All members
+* Eltern-Seite: Content
 * Reihenfolge: 2
 * Textauszug: This guide brings finished Markdown texts into your handbook as pages: pasted, as a ZIP file or from a GitHub address.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

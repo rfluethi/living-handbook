@@ -50,7 +50,9 @@ Die Seiten stehen auf der Ziel-Website. Links zwischen den Seiten führen zu den
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Inhalte
 * Zielgruppe: Alle Mitglieder, Technik
+* Eltern-Seite: Inhalte
 * Reihenfolge: 4
 * Textauszug: Ein Handbuch lässt sich als Paket exportieren und auf einer anderen Website wieder importieren; so gehst du vor.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

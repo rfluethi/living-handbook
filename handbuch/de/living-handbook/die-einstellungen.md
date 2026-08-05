@@ -40,7 +40,9 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Überblick
 * Zielgruppe: Technik
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 8
 * Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Abgleich, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Seite ohne Zugriff und das Verhalten beim Deinstallieren.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

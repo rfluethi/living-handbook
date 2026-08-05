@@ -13,7 +13,7 @@ Through the blocks you decide what a page can do. You combine them freely with t
 Draws diagrams right on the page: workflows, decision paths, hierarchies. You describe the diagram as text in the diagram language [Mermaid](https://mermaid.js.org/); it is drawn when the page is shown. Insert the block and write the description into the **Mermaid code** field. A title becomes the caption. The text description is read aloud when someone uses the page with a screen reader. This is what the description of a small workflow looks like:
 
 ```text
-graph LR;
+graph TD;
   A["Write a draft"] --> B["Have it reviewed"];
   B --> C["Publish"];
 ```
@@ -21,7 +21,7 @@ graph LR;
 And this is how it is drawn:
 
 ```mermaid
-graph LR;
+graph TD;
   A["Write a draft"] --> B["Have it reviewed"];
   B --> C["Publish"];
 ```
@@ -110,7 +110,9 @@ Every block offers two fields in the sidebar under **Advanced**: an **additional
 * Verantwortliche Rolle: Handbook editors
 * Thema: Design
 * Zielgruppe: All members
+* Eltern-Seite: Interface
 * Reihenfolge: 2
 * Textauszug: Which blocks of the plugin you use yourself, first of all the Mermaid diagram, and which ones the plugin places on its own.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

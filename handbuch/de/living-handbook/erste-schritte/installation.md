@@ -47,7 +47,9 @@ Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **H
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Einstieg
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Erste Schritte
 * Reihenfolge: 1
 * Textauszug: So machst du das Plugin einsatzbereit, von der ZIP-Datei bis zur ersten sichtbaren Handbuch-Seite in deiner WordPress-Installation.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

@@ -55,7 +55,9 @@ WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinste
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Inhalte
 * Zielgruppe: Alle Mitglieder, Technik
+* Eltern-Seite: Inhalte
 * Reihenfolge: 3
 * Textauszug: Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben; diese Anleitung richtet das ein.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

@@ -48,7 +48,9 @@ The menu item stays in place and gains a submenu. In it appear the handbooks the
 * Verantwortliche Rolle: Handbook editors
 * Thema: Design
 * Zielgruppe: All members
+* Eltern-Seite: Interface
 * Reihenfolge: 3
 * Textauszug: This guide puts the handbooks into your theme's menu, through the CSS class has-handbook-menu on the Navigation block.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

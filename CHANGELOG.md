@@ -17,6 +17,15 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.63.1] - 2026-08-05
+
+### Fixed
+
+* The shipped handbook now follows the team's handbook rules in full. Every one of the 56 pages gained the two transport fields it was missing, `Eltern-Seite` and `Letzte Aktualisierung`; the twelve start pages gained the `Slug:` line, without which an imported start page would take the slug `readme` and every area would collide on it. The top-level start page carried the page type "Background / Concept" where the rule says "Area overview". Two pages in the content area both claimed order 3, so their sequence in the navigation was decided by the title rather than by intent.
+* Two diagrams were drawn left to right where the rule is upright, because the content column is narrow and a horizontal diagram ends up small.
+* Two alt texts still described three review states. There have been four since 0.60.0.
+* `docs/customization.md` said ten colour fields; there are eleven since the fourth freshness state got its own.
+
 ## [0.63.0] - 2026-08-05
 
 ### Changed

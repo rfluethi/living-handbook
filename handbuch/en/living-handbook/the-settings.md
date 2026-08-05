@@ -40,7 +40,9 @@ A page carries up to three of these small badges, and they are told apart by col
 * Verantwortliche Rolle: Handbook editors
 * Thema: Overview
 * Zielgruppe: Tech
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 8
 * Textauszug: Every option of the plugin at a glance: automatic GitHub sync, text size, colours and custom CSS, public feedback, the no-access page and the uninstall behaviour.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

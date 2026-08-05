@@ -38,7 +38,9 @@ Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines 
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Pflege
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Pflege
 * Reihenfolge: 3
 * Textauszug: Wo die Stimmen aus „War das hilfreich?“ landen und wie du daraus die Seiten findest, die Arbeit brauchen.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

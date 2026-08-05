@@ -51,7 +51,9 @@ Alle Seiten tragen ein aktuelles Prüfdatum. Der Kasten auf dem Dashboard ist le
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Pflege
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Pflege
 * Reihenfolge: 2
 * Textauszug: Die praktische Prüfarbeit: einzelne Seiten bestätigen, mehrere schnell abarbeiten und die überfälligen zuverlässig finden.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

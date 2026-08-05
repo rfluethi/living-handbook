@@ -37,7 +37,9 @@ The rule takes effect immediately and everywhere: on the handbook overview, on t
 * Verantwortliche Rolle: Handbook editors
 * Thema: Access
 * Zielgruppe: All members
+* Eltern-Seite: Access
 * Reihenfolge: 1
 * Textauszug: Visibility is controlled per handbook; this guide sets who may read a handbook on the website.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

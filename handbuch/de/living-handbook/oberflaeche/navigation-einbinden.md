@@ -48,7 +48,9 @@ Der Menüpunkt bleibt bestehen und bekommt ein Untermenü. Darin erscheinen die 
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Gestaltung
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Oberfläche
 * Reihenfolge: 3
 * Textauszug: Diese Anleitung bringt die Handbücher ins Menü deines Themes, über die CSS-Klasse has-handbook-menu im Navigations-Block.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

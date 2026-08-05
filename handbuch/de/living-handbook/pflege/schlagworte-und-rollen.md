@@ -45,7 +45,9 @@ Alle vier Gruppen enthalten die Begriffe, die euer Handbuch braucht. Beim Schrei
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Pflege
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Pflege
 * Reihenfolge: 4
 * Textauszug: Wo du die vier Schlagwort-Gruppen pflegst und warum die Zuordnung von Personen zu Rollen bewusst außerhalb des Plugins lebt.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

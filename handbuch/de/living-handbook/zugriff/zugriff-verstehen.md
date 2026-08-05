@@ -60,7 +60,9 @@ Die Datei selbst ist nicht geschützt, und kein Plugin kann sie schützen. WordP
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Zugriff
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Zugriff
 * Reihenfolge: 2
 * Textauszug: Living Handbook versteckt im Zweifel lieber, als versehentlich etwas preiszugeben; diese Seite erklärt das Fail-closed-Prinzip.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 365 Tage

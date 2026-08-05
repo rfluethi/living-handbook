@@ -37,7 +37,9 @@ Die Regel wirkt sofort und überall: auf der Handbuch-Übersicht, auf den Seiten
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Zugriff
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Zugriff
 * Reihenfolge: 1
 * Textauszug: Die Sichtbarkeit wird pro Handbuch geregelt; diese Anleitung stellt ein, wer ein Handbuch auf der Website lesen darf.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

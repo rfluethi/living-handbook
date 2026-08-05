@@ -50,7 +50,9 @@ The pages are on the target site. Links between the pages lead to the new pages.
 * Verantwortliche Rolle: Handbook editors
 * Thema: Content
 * Zielgruppe: All members, Tech
+* Eltern-Seite: Content
 * Reihenfolge: 4
 * Textauszug: A handbook can be exported as a self-contained bundle and imported again on another website; here is how.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

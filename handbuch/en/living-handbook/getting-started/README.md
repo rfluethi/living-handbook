@@ -3,7 +3,7 @@
 This area takes you to your first visible handbook in four steps. Work through the pages in order. Each one builds on the previous. Do you already know WordPress well? Then the [Quick start](../quick-start.md) sums up the same path on one page. A fifth, optional page loads this handbook into your installation as an example.
 
 ```mermaid
-graph LR;
+graph TD;
   A["1. Installation"] --> B["2. Create your first handbook"];
   B --> C["3. Create your first page"];
   C --> D["4. Organise pages"];
@@ -26,10 +26,13 @@ You do not have to start from zero. Load this handbook into your installation wi
 
 ## Transport-Metadaten
 * Seitentyp: Area overview
+* Slug: getting-started
 * Verantwortliche Rolle: Handbook editors
 * Thema: Getting started
 * Zielgruppe: All members
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 3
 * Textauszug: This area takes you in four steps from installation to a handbook that visitors can actually see.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

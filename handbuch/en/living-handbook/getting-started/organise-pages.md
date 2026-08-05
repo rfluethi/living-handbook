@@ -47,7 +47,9 @@ When you import a folder, the order grows automatically out of the files' folder
 * Verantwortliche Rolle: Handbook editors
 * Thema: Getting started
 * Zielgruppe: All members
+* Eltern-Seite: Getting started
 * Reihenfolge: 4
 * Textauszug: A handbook's navigation grows out of the page hierarchy; this guide shows how you shape it with parent page and order.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

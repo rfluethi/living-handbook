@@ -12,7 +12,7 @@ Jede Seite trägt zwei Daten und ein Intervall:
 
 Aus Prüfdatum und Intervall berechnet das Plugin den Status. Er erscheint als Abzeichen unten auf jeder Seite:
 
-![Die drei Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig](../assets/pruefstatus-abzeichen.webp)
+![Die vier Prüfstatus-Abzeichen: Geprüft, Prüfung fällig, Prüfung überfällig, Nicht geprüft](../assets/pruefstatus-abzeichen.webp)
 
 Dazu kommt ein vierter Status, **Nicht geprüft**, für Seiten ohne Prüfdatum oder ohne Intervall. Er ist bewusst neutral gefärbt und keine Warnung: Eine Seite, die noch niemand angeschaut hat, ist nicht veraltet, und jede Seite startet hier. Sonst sähe ein frisch importiertes Handbuch am ersten Tag aus wie ein vernachlässigtes. Was dieser Status verlangt, ist keine Prüfung, sondern eine Entscheidung: Prüfdatum und Intervall setzen. Danach nimmt die Seite am Kreislauf teil.
 
@@ -64,7 +64,9 @@ Die Seiten leben in WordPress. Die WordPress-Revisionen sind darum die Versionsg
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Pflege
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Pflege
 * Reihenfolge: 1
 * Textauszug: Jede Seite trägt Prüfdatum und Prüfintervall; daraus entsteht sichtbar, wie verlässlich eine Seite gerade ist.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

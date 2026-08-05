@@ -89,7 +89,9 @@ No. It only reads the addresses you enter yourself, during an import or in a pag
 * Verantwortliche Rolle: Handbook editors
 * Thema: Overview
 * Zielgruppe: All members
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 9
 * Textauszug: Short answers to the most common questions about Living Handbook, each pointing to the page with the full story.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

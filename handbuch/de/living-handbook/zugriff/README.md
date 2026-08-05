@@ -9,10 +9,13 @@ Dieser Bereich regelt die wichtigste Frage eines internen Handbuchs: Wer darf wa
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Slug: zugriff
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Zugriff
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 6
 * Textauszug: Dieser Bereich regelt, wer welche Handbücher lesen darf: die Einstellung der Sichtbarkeit und das Prinzip dahinter.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

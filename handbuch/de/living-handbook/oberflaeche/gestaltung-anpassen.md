@@ -83,7 +83,9 @@ Jeder Block bietet unter **Erweitert** zusätzlich eine eigene CSS-Klasse und ei
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Gestaltung
 * Zielgruppe: Technik
+* Eltern-Seite: Oberfläche
 * Reihenfolge: 4
 * Textauszug: Die Handbuch-Seiten folgen den Farben deines Themes; über CSS-Variablen mit dem Präfix --lh- passt du sie gezielt an.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 365 Tage

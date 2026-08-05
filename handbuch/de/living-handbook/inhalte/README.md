@@ -15,10 +15,13 @@ Schreibst du nur in WordPress? Dann reicht dir aus diesem Bereich die erste Seit
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
+* Slug: inhalte
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Inhalte
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Living Handbook
 * Reihenfolge: 4
 * Textauszug: Dieser Bereich erklärt, wie Inhalte in dein Handbuch kommen: direkt geschrieben, importiert aus Markdown oder synchronisiert von GitHub.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

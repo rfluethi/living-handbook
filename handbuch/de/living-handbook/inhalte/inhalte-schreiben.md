@@ -43,7 +43,9 @@ Dieser Teil betrifft dich nur, wenn deine Seiten aus Markdown-Dateien kommen. Di
 * Verantwortliche Rolle: Handbuch-Redaktion
 * Thema: Inhalte
 * Zielgruppe: Alle Mitglieder
+* Eltern-Seite: Inhalte
 * Reihenfolge: 1
 * Textauszug: Was auf eine gute Handbuch-Seite gehört, wie du Diagramme einsetzt und was beim Einlesen von Markdown-Dateien übersteht.
+* Letzte Aktualisierung: 2026-08-05
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage
