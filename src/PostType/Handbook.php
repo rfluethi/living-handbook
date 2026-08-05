@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\PostType;
 
+use LivingHandbook\Setup\Settings;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -169,7 +171,7 @@ final class Handbook {
 			'taxonomy=handbook_topic',
 			'taxonomy=handbook_audience',
 			'taxonomy=handbook_role',
-			'living-handbook-sync',
+			Settings::PAGE_SLUG,
 		);
 
 		$items = $submenu[ $parent ];

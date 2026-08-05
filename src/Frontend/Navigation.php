@@ -167,6 +167,13 @@ final class Navigation {
 	/**
 	 * Recursively build the list markup for one branch of the tree.
 	 *
+	 * On the question of a cycle in post_parent, asked by the 0.52.0 review and
+	 * answered here so nobody has to ask twice: it cannot loop. A page has one
+	 * parent, so it appears exactly once in the map, under that parent. A cycle
+	 * (A is the parent of B and B the parent of A) is therefore a component with
+	 * no path from the root, and this walk starts at the root. Such pages are
+	 * never rendered, which is its own kind of wrong, but it is not a recursion.
+	 *
 	 * @param int                             $parent_id Parent post ID (0 for the top level).
 	 * @param array<int, array<int, WP_Post>> $map       Parent-to-children map from PageTree.
 	 * @param int                             $current   The current page ID (0 when not on a page).

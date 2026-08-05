@@ -682,7 +682,18 @@ JS;
 	}
 
 	/**
-	 * A single user's stable identifier: e-mail, or the login when no e-mail.
+	 * A single user's identifier for the bundle: the login.
+	 *
+	 * The login, not the e-mail address. A bundle is a file that leaves the site,
+	 * and of the two identifiers that serve the same purpose, re-attaching the
+	 * reviewer on the target site, the e-mail address is the more personal one.
+	 * The importer reads both (is_email() decides which lookup it uses), so
+	 * bundles written before this still resolve.
+	 *
+	 * The trade-off, stated rather than hidden: matching by login fails where the
+	 * same person carries a different login on the target site and the e-mail
+	 * would have matched. A site that would rather have that says so through the
+	 * filter below; nothing is lost, only moved out of the default.
 	 *
 	 * @param int $user_id User ID.
 	 * @return string
@@ -695,6 +706,13 @@ JS;
 		if ( false === $user ) {
 			return '';
 		}
-		return '' !== $user->user_email ? $user->user_email : $user->user_login;
+
+		/**
+		 * Filters how a user is written into an export bundle.
+		 *
+		 * @param string $identifier The user login.
+		 * @param int    $user_id    The user.
+		 */
+		return (string) apply_filters( 'living_handbook_export_user_identifier', (string) $user->user_login, $user_id );
 	}
 }

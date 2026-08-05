@@ -45,6 +45,15 @@ final class Feedback {
 	public const VOTERS = '_lh_feedback_voters';
 
 	/**
+	 * How many anonymous votes one page accepts per hour, by default.
+	 *
+	 * Deliberately generous: it is a ceiling against a script, not a quota for
+	 * readers. A handbook page that genuinely collects 200 anonymous votes in an
+	 * hour is having a very good day, and the site can raise the number.
+	 */
+	public const ANONYMOUS_LIMIT = 200;
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -122,9 +131,23 @@ final class Feedback {
 		// carries no dedup: to stay privacy-friendly we store no cookie, no IP and
 		// no id for it, so the same visitor can vote again after reloading. The
 		// buttons hide client-side after a vote to blunt casual double-clicks.
+		//
+		// What that costs is a database write per request, without limit, which is
+		// why there is a ceiling per page and hour below. It is not a dedup and
+		// does not pretend to be one: it keeps a script from turning the counter
+		// into noise and the postmeta table into a write log.
 		if ( 0 === $user_id ) {
 			if ( ! Settings::public_feedback_enabled() ) {
 				return new WP_REST_Response( array( 'ok' => false ), 403 );
+			}
+			if ( ! self::anonymous_vote_allowed( $post_id ) ) {
+				return new WP_REST_Response(
+					array(
+						'ok'      => true,
+						'counted' => false,
+					),
+					429
+				);
 			}
 			$count = (int) get_post_meta( $post_id, $key, true ) + 1;
 			update_post_meta( $post_id, $key, $count );
@@ -164,5 +187,46 @@ final class Feedback {
 				'counted' => true,
 			)
 		);
+	}
+
+	/**
+	 * Whether another anonymous vote on this page fits inside the hourly ceiling.
+	 *
+	 * Counted in one transient per page and hour, not per visitor: an anonymous
+	 * vote is deliberately not tied to a person, so there is nobody to count. The
+	 * ceiling therefore protects the page, not the fairness of the vote, and it
+	 * is set far above what a team of readers produces. A site that needs a real
+	 * one-vote-per-person rule switches public feedback off and lets people sign
+	 * in, which is what the logged-in path does.
+	 *
+	 * Sites can raise or lower it through living_handbook_anonymous_feedback_limit,
+	 * and a value of 0 or less switches the ceiling off.
+	 *
+	 * @param int $post_id Page being voted on.
+	 * @return bool
+	 */
+	private static function anonymous_vote_allowed( int $post_id ): bool {
+		/**
+		 * Filters how many anonymous votes one page accepts per hour.
+		 *
+		 * @param int $limit   Votes per page and hour. 0 or less switches it off.
+		 * @param int $post_id Page being voted on.
+		 */
+		$limit = (int) apply_filters( 'living_handbook_anonymous_feedback_limit', self::ANONYMOUS_LIMIT, $post_id );
+		if ( $limit <= 0 ) {
+			return true;
+		}
+
+		$key   = 'lh_fb_' . $post_id . '_' . gmdate( 'YmdH' );
+		$count = (int) get_transient( $key );
+		if ( $count >= $limit ) {
+			return false;
+		}
+
+		// Two hours, so the entry outlives its own window and a page that stops
+		// being voted on does not leave a counter behind that never expires.
+		set_transient( $key, $count + 1, 2 * HOUR_IN_SECONDS );
+
+		return true;
 	}
 }

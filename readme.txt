@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.56.0
+Stable tag: 0.57.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,14 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 
 == Changelog ==
 
+= 0.57.0 =
+* Comments on a handbook page work now. They never showed up, whatever you set: no shipped layout contained a comment block, and the import closed comments on every page it created. Open them under the page's Discussion panel and they appear.
+* Mermaid diagrams follow your theme instead of always drawing light, so the connecting lines stay visible on a dark theme.
+* An imported diagram keeps the title and description it carries (accTitle and accDescr), so screen readers get a description instead of the diagram source.
+* The Custom CSS field no longer lets a pasted snippet load fonts or images from a foreign server, which would have made every reader of every handbook page contact that server.
+* Anonymous feedback is capped at 200 votes per page and hour, so a script cannot fill the counter.
+* An export bundle now carries the reviewer's user name instead of their e-mail address.
+
 = 0.56.0 =
 * The settings screen is now split into tabs: GitHub sync, Appearance, Feedback, Access, Uninstall. Saving writes the tab you are on and leaves the others alone.
 * New under Handbook, Settings, Appearance: ten colour fields and a text size, for the case your theme's colours do not fit. A page carries up to three small badges and they keep three different colours on purpose, so the page type follows the accent while the topic and the audience have a pair each. Leave a field empty and the handbook follows your theme, exactly as before; the colour picker offers your theme's own palette. The text size scales what the plugin itself sets, the navigation, table of contents, badges, cards and page details, not the text of a page. Useful if your theme sets larger text than 16 pixels and the handbook looks small beside it. Nothing changes until you fill something in.
@@ -137,6 +145,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.57.0 =
+Recommended: comments on handbook pages finally work (no shipped layout ever contained a comment block, and the import closed them), Mermaid diagrams follow a dark theme, and the Custom CSS field can no longer pull fonts or images from a foreign server. Nothing needs doing on update; pages keep the comment setting they have.
 
 = 0.56.0 =
 Recommended for every site, and especially for large handbooks: a handbook view costs a fraction of the database queries it used to, an import no longer loses links to pages it has not created yet, and an import that runs into GitHub's hourly limit stops cleanly instead of marking every remaining page with an error. Two internal custom fields are renamed automatically on update; nothing needs doing. Import an affected handbook again to repair its links. The page layouts the plugin brings along are rearranged; a layout you have edited yourself in the Site Editor keeps your version. New colour and text-size fields under Handbook, Settings, Appearance change nothing until you fill one in.

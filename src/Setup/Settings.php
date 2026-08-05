@@ -478,7 +478,42 @@ final class Settings {
 	 */
 	public function sanitize_css( $value ): string {
 		$value = is_string( $value ) ? $value : '';
-		return trim( str_replace( '<', '', $value ) );
+
+		// CSS never needs a "<", so removing it prevents closing the style tag or
+		// injecting a script.
+		$value = str_replace( '<', '', $value );
+
+		// @import pulls a whole stylesheet from wherever it points, and every
+		// visitor of every handbook page then contacts that host. Same for
+		// url(https://...): a background image is a request with a referrer. Only
+		// an administrator can write in this field, so this is not a hole someone
+		// else can use, but a handbook is exactly the kind of page whose readers
+		// should not be announced to a third party, and a pasted snippet is how
+		// that happens by accident. Local references (relative paths, data: and
+		// the site's own host) are left alone.
+		$value = (string) preg_replace( '/@import\b[^;]*;?/i', '', $value );
+		$value = (string) preg_replace_callback(
+			'/url\(\s*([\'"]?)([^\'")]+)\1\s*\)/i',
+			static function ( array $matches ): string {
+				$target = trim( $matches[2] );
+				if ( '' === $target ) {
+					return '';
+				}
+				if ( 0 === stripos( $target, 'data:' ) ) {
+					return $matches[0];
+				}
+				$host = wp_parse_url( $target, PHP_URL_HOST );
+				if ( null === $host || '' === $host ) {
+					return $matches[0];
+				}
+				$own = wp_parse_url( home_url(), PHP_URL_HOST );
+
+				return is_string( $own ) && strtolower( $host ) === strtolower( $own ) ? $matches[0] : '';
+			},
+			$value
+		);
+
+		return trim( $value );
 	}
 
 	/**

@@ -98,6 +98,7 @@ Do not extract the zip inside the repository; that would commit a second copy of
 - Target PHP 8.1 and WordPress 6.8 or newer.
 - Follow the WordPress coding standards (enforced by PHPCS).
 - All user-facing strings use the `living-handbook` text domain, and English is the source language, so the plugin is translatable into any language.
+- **German content that ships with the plugin uses German spelling, with `ß`.** That is the app handbook under `handbuch/de/` and the `de_DE` translation. `de_CH` is the Swiss variant of the same text with `ß` resolved to `ss`, derived from `de_DE` rather than written separately. Both follow the current rules; they differ only in that Switzerland dropped the `ß`. Neither is the pre-1996 spelling, and no file here uses it.
 - Escape on output, sanitize on input, check capabilities and nonces.
 - Keep the changelog in `readme.txt`.
 - Branch off `main`, keep pull requests focused, and make sure CI is green.

@@ -142,6 +142,12 @@ final class BlockTemplatesTest extends WP_UnitTestCase {
 			$this->assertContains( $block, $names );
 		}
 
+		// The comments block renders nothing on a page whose comments are closed,
+		// which is the default. Without it in the template, a page with comments
+		// open shows nothing either, and the setting looks broken.
+		$this->assertContains( 'core/comments', $names );
+		$this->assertContains( 'core/post-comments-form', $names );
+
 		$order = array_values(
 			array_filter(
 				$names,

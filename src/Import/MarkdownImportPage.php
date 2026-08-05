@@ -538,11 +538,10 @@ final class MarkdownImportPage {
 		// wp_insert_post expects slashed data and unslashes it; slash the block
 		// markup so escape sequences like \n and > survive.
 		$data = array(
-			'post_type'      => Handbook::POST_TYPE,
-			'post_title'     => $title,
-			'post_parent'    => $parent,
-			'post_content'   => (string) wp_slash( $content ),
-			'comment_status' => 'closed',
+			'post_type'    => Handbook::POST_TYPE,
+			'post_title'   => $title,
+			'post_parent'  => $parent,
+			'post_content' => (string) wp_slash( $content ),
 		);
 
 		if ( $existing_id > 0 ) {

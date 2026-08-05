@@ -18,6 +18,7 @@ use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Import\Postprocessor;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Setup\Settings;
 use WP_Error;
 use WP_Post;
 use WP_Query;
@@ -178,8 +179,6 @@ final class GitSync {
 	private const CRON_HOOK = 'living_handbook_git_sync';
 
 	public const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
-
-	private const SETTINGS_SLUG = 'living-handbook-sync';
 
 	private const SCHEDULES = array( 'off', 'hourly', 'twicedaily', 'daily', 'weekly' );
 
@@ -1982,7 +1981,7 @@ final class GitSync {
 		if ( null === $screen ) {
 			return;
 		}
-		$relevant = Handbook::POST_TYPE === $screen->post_type || false !== strpos( (string) $screen->id, self::SETTINGS_SLUG );
+		$relevant = Handbook::POST_TYPE === $screen->post_type || false !== strpos( (string) $screen->id, Settings::PAGE_SLUG );
 		if ( ! $relevant ) {
 			return;
 		}
@@ -2373,13 +2372,37 @@ final class GitSync {
 	/**
 	 * Turn Mermaid code fences into mermaid.js containers.
 	 *
+	 * Mermaid's own accessibility directives travel into the two attributes the
+	 * block and the viewer already read. Without them the accessible label falls
+	 * back to the raw diagram source, which describes nothing: a screen reader
+	 * gets "graph TD; A-->B" instead of what the picture says.
+	 *
 	 * @param string $html HTML.
 	 * @return string
 	 */
 	private function mermaid_to_html( string $html ): string {
-		return (string) preg_replace(
+		return (string) preg_replace_callback(
 			'#<pre><code class="language-mermaid">(.*?)</code></pre>#s',
-			'<pre class="mermaid">$1</pre>',
+			static function ( array $matches ): string {
+				$code = (string) $matches[1];
+				$pre  = '<pre class="mermaid"';
+
+				$directives = array(
+					'accTitle' => 'data-title',
+					'accDescr' => 'data-description',
+				);
+				foreach ( $directives as $directive => $attribute ) {
+					if ( ! preg_match( '/^\s*' . $directive . '\s*:\s*(.+)$/mi', $code, $found ) ) {
+						continue;
+					}
+					$value = trim( html_entity_decode( $found[1], ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+					if ( '' !== $value ) {
+						$pre .= ' ' . $attribute . '="' . esc_attr( $value ) . '"';
+					}
+				}
+
+				return $pre . '>' . $code . '</pre>';
+			},
 			$html
 		);
 	}

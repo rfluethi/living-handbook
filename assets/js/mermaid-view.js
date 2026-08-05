@@ -1,4 +1,29 @@
 ( function () {
+	// Which mermaid colour scheme fits this page. The plugin used to start
+	// mermaid with nothing but startOnLoad, so it always drew the light default:
+	// connecting lines in #333333, which on a dark theme are all but invisible.
+	// The page background decides instead, because that is what the diagram is
+	// drawn on. Plain brightness is enough for a light-or-dark question; the
+	// full WCAG luminance would not change the answer.
+	function scheme() {
+		var node = document.body;
+		var colour = '';
+		while ( node ) {
+			var c = window.getComputedStyle( node ).backgroundColor;
+			if ( c && c !== 'transparent' && c.indexOf( 'rgba(0, 0, 0, 0)' ) === -1 ) {
+				colour = c;
+				break;
+			}
+			node = node.parentElement;
+		}
+		var parts = colour ? colour.match( /\d+(\.\d+)?/g ) : null;
+		if ( ! parts || parts.length < 3 ) {
+			return 'default';
+		}
+		var brightness = ( 0.2126 * parts[0] + 0.7152 * parts[1] + 0.0722 * parts[2] ) / 255;
+		return brightness < 0.5 ? 'dark' : 'default';
+	}
+
 	// Build the accessible name for a diagram from its title and description,
 	// falling back to the diagram source captured before mermaid replaces it.
 	function label( pre ) {
@@ -40,7 +65,7 @@
 		} );
 
 		try {
-			window.mermaid.initialize( { startOnLoad: false } );
+			window.mermaid.initialize( { startOnLoad: false, theme: scheme() } );
 			var pending;
 			if ( typeof window.mermaid.run === 'function' ) {
 				pending = window.mermaid.run( { querySelector: 'pre.mermaid' } );

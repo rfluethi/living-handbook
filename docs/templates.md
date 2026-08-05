@@ -28,6 +28,8 @@ Applies to a single handbook page. A three-column layout, 22 / 54 / 22 percent:
 - **Centre (wide):** the title (`core/post-title`), the mobile table of contents (`living-handbook/toc` set to *mobile*, shown above the content on small screens) and the content (`core/post-content`). Then everything about the page, at the foot: the feedback prompt (`living-handbook/feedback`), a divider, the source note (`living-handbook/git-source-note`), the badges (`living-handbook/badges`), a second divider and the metadata footer (`living-handbook/pagemeta`).
 - **Right (narrow):** the desktop table of contents (`living-handbook/toc`, sticky, shown on wide screens).
 
+Last in the centre column comes the core comments block (`core/comments`, with the comment template, pagination and the reply form). It renders nothing while a page's comments are closed, which is the default, so it costs nothing until a site opens them. It is in the template because without it a page with comments open showed nothing at all, and the setting looked broken.
+
 The two dividers are static `core/separator` blocks carrying the class `living-handbook-divider`. They are static on purpose: two of their neighbours render nothing in some cases, a guest without public feedback gets no prompt and a page maintained in WordPress gets no source note, and the foot should look the same either way.
 
 The two tables of contents are the same block with a different **Placement** setting; CSS shows only the one that fits the current screen width, so you do not have to choose.

@@ -118,6 +118,12 @@ final class Templates {
 		// not their neighbours render: a guest without public feedback gets no
 		// prompt, and a page maintained in WordPress gets no source note. Styled
 		// through the living-handbook-divider class.
+		//
+		// The comments block sits last. The post type has supported comments since
+		// the beginning and the access filters cover them, but no shipped template
+		// ever rendered them, so a page with comments open showed nothing and the
+		// setting looked broken. It renders nothing on a page whose comments are
+		// closed, which is the default, so nothing appears until a site opens them.
 		$center = '<!-- wp:post-title {"level":1} /-->'
 			. '<!-- wp:living-handbook/toc {"variant":"mobile"} /-->'
 			. '<!-- wp:post-content /-->'
@@ -126,7 +132,22 @@ final class Templates {
 			. '<!-- wp:living-handbook/git-source-note /-->'
 			. '<!-- wp:living-handbook/badges /-->'
 			. '<!-- wp:separator {"className":"living-handbook-divider"} --><hr class="wp-block-separator has-alpha-channel-opacity living-handbook-divider"/><!-- /wp:separator -->'
-			. '<!-- wp:living-handbook/pagemeta /-->';
+			. '<!-- wp:living-handbook/pagemeta /-->'
+			. '<!-- wp:comments --><div class="wp-block-comments">'
+			. '<!-- wp:comments-title /-->'
+			. '<!-- wp:comment-template --><!-- wp:columns -->'
+			. '<div class="wp-block-columns"><!-- wp:column {"width":"40px"} -->'
+			. '<div class="wp-block-column" style="flex-basis:40px"><!-- wp:avatar {"size":40} /--></div>'
+			. '<!-- /wp:column --><!-- wp:column -->'
+			. '<div class="wp-block-column"><!-- wp:comment-author-name /-->'
+			. '<!-- wp:comment-date /--><!-- wp:comment-content /-->'
+			. '<!-- wp:comment-reply-link /--></div><!-- /wp:column --></div>'
+			. '<!-- /wp:columns --><!-- /wp:comment-template -->'
+			. '<!-- wp:comments-pagination --><!-- wp:comments-pagination-previous /-->'
+			. '<!-- wp:comments-pagination-numbers /--><!-- wp:comments-pagination-next /-->'
+			. '<!-- /wp:comments-pagination -->'
+			. '<!-- wp:post-comments-form /-->'
+			. '</div><!-- /wp:comments -->';
 
 		$columns = '<!-- wp:columns {"align":"wide"} --><div class="wp-block-columns alignwide">'
 			. '<!-- wp:column {"width":"22%"} --><div class="wp-block-column" style="flex-basis:22%">'

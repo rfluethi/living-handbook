@@ -1,4 +1,24 @@
 ( function ( wp ) {
+
+	// The editor canvas can be light while the site is dark, or the other way
+	// round, so the preview asks its own surroundings rather than the front end.
+	function lhEditorScheme( node ) {
+		var colour = '';
+		while ( node ) {
+			var c = window.getComputedStyle( node ).backgroundColor;
+			if ( c && c !== 'transparent' && c.indexOf( 'rgba(0, 0, 0, 0)' ) === -1 ) {
+				colour = c;
+				break;
+			}
+			node = node.parentElement;
+		}
+		var parts = colour ? colour.match( /\d+(\.\d+)?/g ) : null;
+		if ( ! parts || parts.length < 3 ) {
+			return 'default';
+		}
+		return ( ( 0.2126 * parts[0] + 0.7152 * parts[1] + 0.0722 * parts[2] ) / 255 ) < 0.5 ? 'dark' : 'default';
+	}
+
 	if ( ! wp || ! wp.blocks ) {
 		return;
 	}
@@ -69,7 +89,10 @@
 						return;
 					}
 					try {
-						window.mermaid.initialize( { startOnLoad: false } );
+						window.mermaid.initialize( {
+							startOnLoad: false,
+							theme: lhEditorScheme( target ),
+						} );
 						window.mermaid.render( 'lhm' + Date.now(), code ).then( function ( r ) {
 							if ( previewRef.current ) {
 								previewRef.current.innerHTML = r.svg;

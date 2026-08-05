@@ -396,12 +396,11 @@ final class HandbookImport {
 		$parent_id  = ( '' !== $parent_key && isset( $key_to_id[ $parent_key ] ) ) ? $key_to_id[ $parent_key ] : 0;
 
 		$data = array(
-			'post_type'      => Handbook::POST_TYPE,
-			'post_title'     => isset( $page['title'] ) ? sanitize_text_field( (string) $page['title'] ) : $slug,
-			'post_content'   => (string) wp_slash( $content ),
-			'post_parent'    => $parent_id,
-			'menu_order'     => isset( $page['order'] ) ? (int) $page['order'] : 0,
-			'comment_status' => 'closed',
+			'post_type'    => Handbook::POST_TYPE,
+			'post_title'   => isset( $page['title'] ) ? sanitize_text_field( (string) $page['title'] ) : $slug,
+			'post_content' => (string) wp_slash( $content ),
+			'post_parent'  => $parent_id,
+			'menu_order'   => isset( $page['order'] ) ? (int) $page['order'] : 0,
 		);
 
 		$is_new = ( 0 === $existing );
