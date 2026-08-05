@@ -147,11 +147,9 @@ Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-h
 == Upgrade Notice ==
 
 = 0.57.0 =
-Recommended: comments on handbook pages finally work (no shipped layout ever contained a comment block, and the import closed them), Mermaid diagrams follow a dark theme, and the Custom CSS field can no longer pull fonts or images from a foreign server. Nothing needs doing on update; pages keep the comment setting they have.
-
+Recommended: comments on handbook pages finally work, Mermaid diagrams follow a dark theme, and the Custom CSS field can no longer pull fonts or images from a foreign server. Nothing needs doing on update; pages keep the comment setting they have.
 = 0.56.0 =
-Recommended for every site, and especially for large handbooks: a handbook view costs a fraction of the database queries it used to, an import no longer loses links to pages it has not created yet, and an import that runs into GitHub's hourly limit stops cleanly instead of marking every remaining page with an error. Two internal custom fields are renamed automatically on update; nothing needs doing. Import an affected handbook again to repair its links. The page layouts the plugin brings along are rearranged; a layout you have edited yourself in the Site Editor keeps your version. New colour and text-size fields under Handbook, Settings, Appearance change nothing until you fill one in.
-
+Recommended for every site, especially large handbooks: a handbook view costs a fraction of the database queries it used to, and imports no longer lose links or stop at GitHub's hourly limit. Import an affected handbook again to repair its links.
 = 0.55.0 =
 Recommended if you import from GitHub or MkDocs, and for every site with internal handbooks: large imports no longer die at the server's time limit, a MkDocs navigation is kept, and the media endpoint no longer describes images from handbooks you may not read.
 

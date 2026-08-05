@@ -86,4 +86,31 @@ final class SmokeTest extends TestCase {
 		$this->assertSame( $header, $stable, 'The stable tag does not match the plugin header.' );
 		$this->assertSame( $header, $changelog, 'The newest changelog entry does not match the plugin header.' );
 	}
+
+	/**
+	 * Every Upgrade Notice stays under the 300 characters wp.org allows.
+	 *
+	 * The readme is the one file whose rules are enforced by somebody else, and
+	 * Plugin Check reports this one late, after the release is written. It costs
+	 * nothing to find it here instead.
+	 *
+	 * @return void
+	 */
+	public function test_every_upgrade_notice_fits_the_limit(): void {
+		$readme = $this->read_plugin_file( 'readme.txt' );
+		$parts  = explode( '== Upgrade Notice ==', $readme );
+
+		$this->assertCount( 2, $parts, 'The readme has no Upgrade Notice section.' );
+
+		$found = preg_match_all( '/^=\s*([0-9][0-9.]*)\s*=\n(.*?)(?=\n=\s|\z)/ms', $parts[1], $matches, PREG_SET_ORDER );
+		$this->assertGreaterThan( 0, $found, 'No upgrade notice was found to check.' );
+
+		foreach ( $matches as $notice ) {
+			$this->assertLessThanOrEqual(
+				300,
+				strlen( trim( $notice[2] ) ),
+				'The upgrade notice for ' . $notice[1] . ' is longer than wp.org allows.'
+			);
+		}
+	}
 }
