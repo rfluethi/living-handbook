@@ -32,7 +32,7 @@ For the common case "read it, still holds" you do not even have to open the page
 Three tools lead you to the pages that need attention:
 
 * **The box on the dashboard**, the start screen of the WordPress admin, lists every page whose review is due or overdue. It is the best entry into the review work: go through it top to bottom, review, reset the date.
-* **The status filter above the page list** pulls out everything due, overdue or never reviewed with one click. Next to it sit dropdowns. They filter by handbook, page type, topic, role, audience and source.
+* **The status filter above the page list** pulls out everything due, overdue or never reviewed with one click. Next to it sit dropdowns. They filter by handbook, page type, topic, role, audience and source. You only see the dropdowns that are of use to you: hide a column under "Screen Options" at the top right and its dropdown goes with it, and a vocabulary without a single term gets none at all. If you are currently filtering by something whose column is hidden, that dropdown stays, so you can take the filter back.
 * **The "Last reviewed" column** can be sorted. The useful direction: oldest reviews first.
 
 Two warnings can additionally appear above the list. One names pages without a handbook, which stay invisible on the website. The other names pages whose GitHub sync failed. Both link the affected pages directly.

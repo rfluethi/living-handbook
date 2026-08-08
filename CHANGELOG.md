@@ -17,6 +17,22 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.64.0] - 2026-08-08
+
+### Changed
+
+* The filter bar above the handbook list follows the columns. WordPress already lets each user switch columns off under "Screen Options", this plugin's columns included, and it has nothing of the kind for filters, so a list stripped down to title and handbook still carried seven dropdowns, most of them for columns that were not on screen. A filter now goes with its column: hide **Topics** and the topic dropdown goes too. One control, two effects, and deliberately no second place to configure the same thing.
+
+  A vocabulary with no term at all is left out as well, whatever its column does, because its dropdown could only ever offer "All topics" and selecting it changes nothing.
+
+  One case does not follow the rule: a filter that is currently narrowing the list is drawn even when its column is hidden. The query var lives in the URL and does not care what is on screen, so dropping the control would leave a list filtered by something invisible, with no way to undo it. One dropdown too many is the smaller harm.
+
+  `Admin/ListScreen.php` holds both questions, and `Maintenance` and `GitSync` ask it, so the review-status and source filters obey the same rule as the five taxonomy ones rather than each inventing their own.
+
+### Fixed
+
+* A comment in `Maintenance::register()` still claimed priority 25 for the review-status filter, which was changed to 15 in 0.62.0 when the filters were put in column order. The code was right, the comment was not.
+
 ## [0.63.1] - 2026-08-05
 
 ### Fixed

@@ -39,6 +39,8 @@ The handbook list carries a few columns and filters to help you work through it.
 
 A **review-status filter** (reviewed, due, overdue, never reviewed) sits alongside them. The status is not a stored field: it is computed from each page's review date and its review interval, so it lives as its own filter rather than as a sortable column. Sort the Last reviewed column by date to see the oldest reviews, or filter by status to pull out everything overdue at once.
 
+**The filter bar follows the columns.** WordPress already lets each user switch columns off under "Screen Options" at the top right, this plugin's columns included, and since 0.64.0 a filter goes with its column: hide Topics and the topic dropdown disappears too. A vocabulary that has no term at all is left out as well, because its dropdown could only offer "All topics". There is deliberately no second setting for this, and one exception to the rule: a filter that is currently narrowing the list stays visible even when its column is hidden, since the query var lives in the URL and a filter nobody can see is a filter nobody can undo. `Admin/ListScreen.php` holds both questions, and `Maintenance` and `GitSync` ask it.
+
 Two warnings can appear above the list: pages that belong to no handbook (and so stay invisible on the front end), and GitHub pages whose last sync failed. Both list the affected pages as direct links, so you reach each one in a click.
 
 ## The overdue dashboard

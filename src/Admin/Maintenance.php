@@ -47,8 +47,8 @@ final class Maintenance {
 		add_filter( 'posts_clauses', array( $this, 'order_by_reviewed' ), 10, 2 );
 		add_filter( 'posts_clauses', array( $this, 'order_by_feedback' ), 10, 2 );
 		add_action( 'restrict_manage_posts', array( $this, 'taxonomy_filter_dropdowns' ) );
-		// Priority 25 so the status filter renders after the source dropdown (20),
-		// matching the columns: source, then the review status of "Last reviewed".
+		// Priority 15 so the status filter renders before the source dropdown (20),
+		// matching the columns: "Last reviewed" comes before "Source".
 		add_action( 'restrict_manage_posts', array( $this, 'status_filter_dropdown' ), 15 );
 		add_action( 'pre_get_posts', array( $this, 'filter_by_status' ), 15 );
 		add_filter( 'post_row_actions', array( $this, 'feedback_reset_action' ), 10, 2 );
@@ -433,21 +433,36 @@ final class Maintenance {
 		// stays first; everything after it follows the columns: handbook, then the
 		// four vocabularies, then the review status, then the source (the last two
 		// are added at later priorities, by this class and by GitSync).
+		//
+		// The value is the column each filter belongs to. The handbook has one of
+		// this plugin's own, the vocabularies get theirs from WordPress, which
+		// names a taxonomy column "taxonomy-" plus the taxonomy.
 		$taxonomies = array(
-			Handbooks::TAXONOMY,
-			Taxonomies::PAGE_TYPE,
-			Taxonomies::TOPIC,
-			Taxonomies::ROLE,
-			Taxonomies::AUDIENCE,
+			Handbooks::TAXONOMY   => 'living_handbook_set',
+			Taxonomies::PAGE_TYPE => 'taxonomy-' . Taxonomies::PAGE_TYPE,
+			Taxonomies::TOPIC     => 'taxonomy-' . Taxonomies::TOPIC,
+			Taxonomies::ROLE      => 'taxonomy-' . Taxonomies::ROLE,
+			Taxonomies::AUDIENCE  => 'taxonomy-' . Taxonomies::AUDIENCE,
 		);
 
-		foreach ( $taxonomies as $taxonomy ) {
+		foreach ( $taxonomies as $taxonomy => $column ) {
 			$object = get_taxonomy( $taxonomy );
 			if ( false === $object ) {
 				continue;
 			}
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
+
+			// A filter that is doing nothing and could do nothing is left out: its
+			// column is hidden, or the vocabulary has no term to choose. An active
+			// one is always drawn, whatever the columns say, so that what narrows
+			// the list can also be undone.
+			if ( '' === $current
+				&& ( ! ListScreen::shows_column( $column ) || ! ListScreen::taxonomy_has_terms( $taxonomy ) )
+			) {
+				continue;
+			}
+
 			/* translators: %s: the plural taxonomy name, for example "Topics". */
 			$all_label = sprintf( __( 'All %s', 'living-handbook' ), $object->labels->name );
 			wp_dropdown_categories(
@@ -480,6 +495,13 @@ final class Maintenance {
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current = isset( $_GET['lh_status'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_status'] ) ) : '';
+
+		// Same rule as the taxonomy filters: gone with its column, unless it is
+		// currently narrowing the list.
+		if ( '' === $current && ! ListScreen::shows_column( 'living_handbook_reviewed' ) ) {
+			return;
+		}
+
 		$options = array(
 			''                       => __( 'All review statuses', 'living-handbook' ),
 			FreshnessStatus::OVERDUE => FreshnessStatus::label( FreshnessStatus::OVERDUE ),

@@ -17,6 +17,7 @@ use LivingHandbook\Import\MarkdownConverter;
 use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Import\Postprocessor;
 use LivingHandbook\Meta\Metadata;
+use LivingHandbook\Admin\ListScreen;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Settings;
 use WP_Error;
@@ -2473,6 +2474,14 @@ final class GitSync {
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current = isset( $_GET['lh_source'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_source'] ) ) : '';
+
+		// Follows its column, like the other filters: switched off in Screen
+		// Options it goes too, unless it is currently narrowing the list, which
+		// has to stay undoable.
+		if ( '' === $current && ! ListScreen::shows_column( 'lh_source' ) ) {
+			return;
+		}
+
 		$options = array(
 			''                     => __( 'All sources', 'living-handbook' ),
 			self::SOURCE_GITHUB    => __( 'GitHub', 'living-handbook' ),

@@ -32,7 +32,7 @@ Für den häufigen Fall „gelesen, stimmt noch“ musst du die Seite gar nicht 
 Drei Werkzeuge führen dich zu den Seiten, die Aufmerksamkeit brauchen:
 
 * **Der Kasten auf dem Dashboard**, also auf der Startseite der WordPress-Verwaltung, listet alle Seiten mit fälliger oder überfälliger Prüfung. Er ist der beste Einstieg in die Prüfarbeit: von oben nach unten durchgehen, prüfen, Datum zurücksetzen.
-* **Der Status-Filter über der Seitenliste** zieht mit einem Klick alles Fällige, Überfällige oder noch nie Geprüfte heraus. Daneben gibt es Auswahllisten. Sie filtern nach Handbuch, Seitentyp, Thema, Rolle, Zielgruppe und Quelle.
+* **Der Status-Filter über der Seitenliste** zieht mit einem Klick alles Fällige, Überfällige oder noch nie Geprüfte heraus. Daneben gibt es Auswahllisten. Sie filtern nach Handbuch, Seitentyp, Thema, Rolle, Zielgruppe und Quelle. Du siehst nur die Auswahllisten, die dir etwas nützen: Wer oben rechts unter „Ansicht anpassen“ eine Spalte ausblendet, verliert auch deren Auswahlliste, und ein Vokabular ohne einen einzigen Begriff bekommt gar keine. Filterst du gerade nach etwas, dessen Spalte ausgeblendet ist, bleibt diese Auswahlliste stehen, damit du den Filter zurücknehmen kannst.
 * **Die Spalte „Geprüft“** lässt sich sortieren. Die nützliche Richtung: älteste Prüfungen zuerst.
 
 Über der Liste können zwei Warnhinweise erscheinen. Der eine nennt Seiten ohne Handbuch, die auf der Website unsichtbar bleiben. Der andere nennt Seiten, deren Abgleich mit GitHub fehlschlug. Beide verlinken die betroffenen Seiten direkt.

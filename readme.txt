@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.63.1
+Stable tag: 0.64.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.64.0 =
+* The filter bar above the page list follows the columns: hide a column under "Screen Options" and its filter goes with it, and a vocabulary without a single term gets no filter at all. A filter that is currently narrowing the list stays visible even when its column is hidden, so it can still be taken back.
 
 = 0.63.1 =
 * The shipped handbook is brought in line with the team's handbook rules: every page carries a complete transport block, the start pages carry their slug, two diagrams are upright, and the alt texts name four review states instead of three.
