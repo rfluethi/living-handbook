@@ -17,6 +17,14 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.66.1] - 2026-08-08
+
+### Fixed
+
+* The render callbacks of the search bar, the filter bar and the quick search asked WordPress for the block wrapper attributes unconditionally. `get_block_wrapper_attributes()` reads `WP_Block_Supports::$block_to_render`, which `render_block()` sets and which is null at any other time. WordPress 7.1 checks that property before using it; **6.8 and the current release do not**, so calling such a callback outside a block render is a fatal error there. A render callback is a public method and does get called that way, by a theme, by another plugin, and by this plugin's own tests, which is how the CI run on 6.8 found it while the sandbox on 7.1-beta stayed green.
+
+  The check now sits in the plugin, where it does not depend on the core version: without a block being rendered there are no block settings to apply, so the markup gets the plugin's own class and nothing else. Two tests hold it, one rendering through `do_blocks()` so the settings demonstrably do arrive, one calling the callbacks directly. Counter-checked by removing the guard from the local copy of core: the previous release then fails with exactly the eight errors CI reported.
+
 ## [0.66.0] - 2026-08-08
 
 ### Changed

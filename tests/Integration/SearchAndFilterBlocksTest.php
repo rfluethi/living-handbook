@@ -196,6 +196,39 @@ final class SearchAndFilterBlocksTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Rendered as a block, the block settings arrive: the wrapper carries the
+	 * generated block class, which is what proves colour, border, typography and
+	 * spacing can reach the markup at all.
+	 *
+	 * @return void
+	 */
+	public function test_the_block_settings_reach_the_markup(): void {
+		$out = do_blocks( '<!-- wp:living-handbook/search-form /-->' );
+
+		$this->assertStringContainsString( 'wp-block-living-handbook-search-form', $out );
+		$this->assertStringContainsString( 'living-handbook-start__search', $out );
+	}
+
+	/**
+	 * Called outside a block render, the callback still works and still carries
+	 * the plugin class. It is a public method, so it gets called that way: by a
+	 * theme, by another plugin, by these tests. WordPress 6.8 and the current
+	 * release read the block being rendered without checking whether there is
+	 * one, so asking them for wrapper attributes here is a fatal error, which is
+	 * exactly what CI caught in 0.66.0.
+	 *
+	 * @return void
+	 */
+	public function test_the_callbacks_survive_being_called_outside_a_block(): void {
+		$blocks = new Blocks();
+
+		foreach ( array( $blocks->render_search_form( array() ), $blocks->render_filters( array() ), $blocks->render_search( array() ) ) as $out ) {
+			$this->assertNotSame( '', $out );
+			$this->assertStringNotContainsString( 'wp-block-living-handbook', $out );
+		}
+	}
+
+	/**
 	 * Off a handbook there is no handbook to search, so both render nothing
 	 * rather than a control that would go nowhere.
 	 *

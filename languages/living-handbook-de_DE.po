@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-08T16:09:31+00:00\n"
+"POT-Creation-Date: 2026-08-08T17:24:55+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 # Block category
 #. Plugin Name of the plugin
-#: living-handbook.php src/Blocks/Blocks.php:96
+#: living-handbook.php src/Blocks/Blocks.php:97
 msgid "Living Handbook"
 msgstr "Living Handbook"
 
@@ -193,16 +193,16 @@ msgstr ""
 "Die verschobenen Seiten haben noch kein Prüfdatum und erscheinen darum als "
 "«Nicht geprüft», bis du eines setzt."
 
-#: src/Blocks/Blocks.php:247 src/Blocks/Blocks.php:248 assets/blocks.js:134
+#: src/Blocks/Blocks.php:261 src/Blocks/Blocks.php:262 assets/blocks.js:134
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
 # Search and filters
-#: src/Blocks/Blocks.php:292 src/Frontend/Filters.php:385
+#: src/Blocks/Blocks.php:306 src/Frontend/Filters.php:385
 msgid "Search this handbook"
 msgstr "Dieses Handbuch durchsuchen"
 
-#: src/Blocks/Blocks.php:295 src/Frontend/Filters.php:388
+#: src/Blocks/Blocks.php:309 src/Frontend/Filters.php:388
 msgid "Search this handbook …"
 msgstr "Dieses Handbuch durchsuchen …"
 
@@ -520,7 +520,9 @@ msgstr "Handbuch-Eintrag"
 #: src/Frontend/Templates.php:57
 msgid ""
 "Entry page of a single handbook: navigation, search bar, results, filter bar."
-msgstr "Einstiegsseite eines einzelnen Handbuchs: Navigation, Suchleiste, Ergebnisse, Filterleiste."
+msgstr ""
+"Einstiegsseite eines einzelnen Handbuchs: Navigation, Suchleiste, "
+"Ergebnisse, Filterleiste."
 
 #: src/Frontend/Templates.php:65 src/PostType/Handbook.php:96
 msgid "Handbook page"
@@ -1928,7 +1930,10 @@ msgid ""
 "Handbook entry (results): the areas and recently updated pages of this "
 "handbook, or the matches while a search or filter is active. The search bar "
 "and the filter bar are blocks of their own."
-msgstr "Handbuch-Eintrag (Ergebnisse): die Bereiche und die zuletzt aktualisierten Seiten dieses Handbuchs, oder die Treffer, solange eine Suche oder ein Filter aktiv ist. Suchleiste und Filterleiste sind eigene Blöcke."
+msgstr ""
+"Handbuch-Eintrag (Ergebnisse): die Bereiche und die zuletzt aktualisierten "
+"Seiten dieses Handbuchs, oder die Treffer, solange eine Suche oder ein "
+"Filter aktiv ist. Suchleiste und Filterleiste sind eigene Blöcke."
 
 #: assets/blocks.js:214 assets/blocks.js:280
 msgid "Show the label"
@@ -1972,7 +1977,10 @@ msgid ""
 "Handbook search: searches the handbook this page belongs to and narrows the "
 "result column. Colours, border, typography and spacing are in the block "
 "settings; the wording is here."
-msgstr "Handbuch-Suche: sucht in dem Handbuch, zu dem diese Seite gehört, und grenzt die Ergebnisspalte ein. Farben, Rahmen, Schrift und Abstände stehen in den Block-Einstellungen, der Wortlaut hier."
+msgstr ""
+"Handbuch-Suche: sucht in dem Handbuch, zu dem diese Seite gehört, und grenzt "
+"die Ergebnisspalte ein. Farben, Rahmen, Schrift und Abstände stehen in den "
+"Block-Einstellungen, der Wortlaut hier."
 
 #: assets/blocks.js:248
 msgid ""
@@ -2003,7 +2011,10 @@ msgid ""
 "Handbook quick search: lists matching pages as you type, each with the "
 "sentence it was found in, so a reader jumps straight to a page. Does not "
 "narrow the result column; that is the Handbook search block."
-msgstr "Handbuch-Schnellsuche: listet passende Seiten schon beim Tippen auf, je mit dem Satz, in dem der Treffer steht, und springt direkt dorthin. Sie grenzt die Ergebnisspalte nicht ein, das macht der Block Handbuch-Suche."
+msgstr ""
+"Handbuch-Schnellsuche: listet passende Seiten schon beim Tippen auf, je mit "
+"dem Satz, in dem der Treffer steht, und springt direkt dorthin. Sie grenzt "
+"die Ergebnisspalte nicht ein, das macht der Block Handbuch-Suche."
 
 #: assets/js/git-source-note-block.js:16
 msgid "Note text (shown only on GitHub pages)"
@@ -2222,7 +2233,10 @@ msgid ""
 "Handbook entry: the result column of a handbook page, the areas and the "
 "recently updated pages, or the matches when a search or filter is active. "
 "The search bar and the filter bar are blocks of their own."
-msgstr "Handbuch-Eintrag: die Ergebnisspalte einer Handbuch-Seite, also die Bereiche und die zuletzt aktualisierten Seiten, oder die Treffer, wenn eine Suche oder ein Filter aktiv ist. Suchleiste und Filterleiste sind eigene Blöcke."
+msgstr ""
+"Handbuch-Eintrag: die Ergebnisspalte einer Handbuch-Seite, also die Bereiche "
+"und die zuletzt aktualisierten Seiten, oder die Treffer, wenn eine Suche "
+"oder ein Filter aktiv ist. Suchleiste und Filterleiste sind eigene Blöcke."
 
 #: blocks/feedback/block.json
 msgctxt "block title"
@@ -2352,7 +2366,10 @@ msgctxt "block description"
 msgid ""
 "Handbook quick search: a search-as-you-type box that lists matching pages as "
 "links, so a reader jumps straight to a page without leaving this one."
-msgstr "Handbuch-Schnellsuche: ein Suchfeld, das passende Seiten schon beim Tippen als Links auflistet, sodass man direkt zu einer Seite springt, ohne die aktuelle zu verlassen."
+msgstr ""
+"Handbuch-Schnellsuche: ein Suchfeld, das passende Seiten schon beim Tippen "
+"als Links auflistet, sodass man direkt zu einer Seite springt, ohne die "
+"aktuelle zu verlassen."
 
 #: blocks/toc/block.json
 msgctxt "block title"

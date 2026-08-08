@@ -3,7 +3,7 @@
  * Plugin Name:       Living Handbook
  * Plugin URI:        https://github.com/rfluethi/living-handbook
  * Description:       An internal team handbook for WordPress: structured page types, clear ownership, and freshness tracking so docs don't rot.
- * Version:           0.66.0
+ * Version:           0.66.1
  * Requires at least: 6.8
  * Requires PHP:      8.1
  * Author:            Rico F. Luethi
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LIVING_HANDBOOK_VERSION', '0.66.0' );
+define( 'LIVING_HANDBOOK_VERSION', '0.66.1' );
 define( 'LIVING_HANDBOOK_FILE', __FILE__ );
 define( 'LIVING_HANDBOOK_DIR', plugin_dir_path( __FILE__ ) );
 define( 'LIVING_HANDBOOK_URL', plugin_dir_url( __FILE__ ) );

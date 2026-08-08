@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.66.0
+Stable tag: 0.66.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.66.1 =
+* Fixes a fatal error on WordPress 6.8 and the current release when one of the search or filter block callbacks is called outside a block render, for example by a theme or another plugin.
 
 = 0.66.0 =
 * An entry page is three blocks now: the search bar, the result column and the filter bar. The shipped template holds all three, so the page looks as it did, and in the editor you can see them, move them or leave one out. The two switches 0.65.0 put into the entry block are gone with the reason for them.

@@ -21,6 +21,7 @@ use LivingHandbook\Frontend\PageMeta;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use WP_Block_Supports;
 use WP_HTML_Tag_Processor;
 use WP_Term;
 
@@ -181,13 +182,26 @@ final class Blocks {
 	 * here. The plugin's own class is passed in so it survives, because the
 	 * wrapper attributes replace the class attribute rather than add to it.
 	 *
+	 * Only while a block is actually being rendered, though. get_block_wrapper_
+	 * attributes() reads WP_Block_Supports::$block_to_render, which is set by
+	 * render_block() and is null at any other time; WordPress 6.8 and the current
+	 * release read that property without checking, so calling this from anywhere
+	 * else is a fatal error there. A render callback is a public method and gets
+	 * called directly, by our own tests among others, so the check belongs here
+	 * rather than in a note telling people not to. Without a block, the plugin
+	 * class alone is the honest answer: there are no block settings to apply.
+	 *
 	 * @param string $keep The plugin class the markup needs to keep.
 	 * @return string
 	 */
 	private static function wrapper_attributes( string $keep ): string {
-		if ( ! function_exists( 'get_block_wrapper_attributes' ) ) {
+		if ( ! function_exists( 'get_block_wrapper_attributes' )
+			|| ! class_exists( 'WP_Block_Supports' )
+			|| ! is_array( WP_Block_Supports::$block_to_render )
+		) {
 			return 'class="' . esc_attr( $keep ) . '"';
 		}
+
 		return get_block_wrapper_attributes( array( 'class' => $keep ) );
 	}
 
