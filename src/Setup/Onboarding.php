@@ -177,9 +177,19 @@ final class Onboarding {
 	}
 
 	/**
-	 * The one-time notice after activation: where the overview is and what to
-	 * do next. Dismissed with the standard notice close button, which the
-	 * accompanying script makes permanent.
+	 * The one-time notice after activation: the two steps a new install needs,
+	 * in the order it needs them, and where the overview page is.
+	 *
+	 * It used to be one box with five things in it: a heading, a "start here"
+	 * with a button, the overview page, a paragraph on creating a handbook, and a
+	 * paragraph explaining that a page without a handbook stays invisible. Rico
+	 * called it confusing, and it was: two of those are actions, one is a fact,
+	 * and two were an explanation of a rule nobody has run into yet. The rule now
+	 * appears where it bites, in the warning below this one, and this notice is a
+	 * numbered list of the two steps plus one line for the page.
+	 *
+	 * Dismissed with the standard notice close button, which the accompanying
+	 * script makes permanent.
 	 *
 	 * @return void
 	 */
@@ -194,17 +204,19 @@ final class Onboarding {
 		printf(
 			'<div id="%1$s" class="notice notice-info is-dismissible"><p><strong>%2$s</strong></p>',
 			esc_attr( self::NOTICE_ID ),
-			esc_html__( 'Living Handbook is ready.', 'living-handbook' )
+			esc_html__( 'Living Handbook is ready. Two steps, in this order:', 'living-handbook' )
 		);
 
-		// The app handbook comes first on purpose. An empty install cannot show
-		// what a page type, a filter or a freshness badge is for, so the fastest
-		// honest answer to "what does this plugin do" is a filled handbook.
+		echo '<ol>';
+
+		// Looking at a filled handbook comes before building one. An empty install
+		// cannot show what a page type, a filter or a freshness badge is for, so
+		// the fastest honest answer to "what does this thing do" is the plugin's
+		// own handbook, which ships with it.
 		if ( AppHandbook::can_load() ) {
 			printf(
-				'<p><strong>%1$s</strong> %2$s</p><p><a href="%3$s" class="button button-primary">%4$s</a></p>',
-				esc_html__( 'Start here:', 'living-handbook' ),
-				esc_html__( 'the plugin comes with a handbook of its own, the documentation of the app, written as a Living Handbook. Load it from the import screen and read it as a first example of what a handbook looks like.', 'living-handbook' ),
+				'<li>%1$s <a href="%2$s">%3$s</a></li>',
+				esc_html__( 'Load one of the handbooks that ship with the plugin and read it as an example.', 'living-handbook' ),
 				esc_url(
 					add_query_arg(
 						array(
@@ -214,30 +226,29 @@ final class Onboarding {
 						admin_url( 'edit.php' )
 					)
 				),
-				esc_html__( 'Load the app handbook', 'living-handbook' )
+				esc_html__( 'Go to the import screen', 'living-handbook' )
 			);
 		}
 
+		printf(
+			'<li>%1$s <a href="%2$s">%3$s</a></li>',
+			esc_html__( 'Create a handbook of your own and set who may read it. Your pages then go into it.', 'living-handbook' ),
+			esc_url( admin_url( 'edit-tags.php?taxonomy=' . Handbooks::TAXONOMY . '&post_type=' . Handbook::POST_TYPE ) ),
+			esc_html__( 'Create a handbook', 'living-handbook' )
+		);
+
+		echo '</ol>';
+
+		// One line, not a paragraph: the page exists, it is a normal page, and
+		// where it is. Everything else about it belongs in the handbook.
 		if ( is_string( $link ) && '' !== $link ) {
 			printf(
-				'<p>%1$s <a href="%2$s">%3$s</a></p>',
-				esc_html__( 'Your handbook overview was created as a normal page, so you can style and move it like any other:', 'living-handbook' ),
+				'<p class="description">%1$s <a href="%2$s">%3$s</a></p>',
+				esc_html__( 'The overview page was created for you, as a normal page:', 'living-handbook' ),
 				esc_url( $link ),
 				esc_html( get_the_title( $page_id ) )
 			);
 		}
-
-		printf(
-			'<p>%1$s</p><p>%2$s</p>',
-			esc_html__( 'For your own content: create a handbook under Handbook, Handbook types, and set who may read it. Then assign your pages to that handbook.', 'living-handbook' ),
-			esc_html__( 'A page without a handbook stays invisible on the front end. That is on purpose: access is granted per handbook, so a page that belongs to none belongs to nobody.', 'living-handbook' )
-		);
-
-		printf(
-			'<p><a href="%1$s">%2$s</a></p>',
-			esc_url( admin_url( 'edit-tags.php?taxonomy=' . Handbooks::TAXONOMY . '&post_type=' . Handbook::POST_TYPE ) ),
-			esc_html__( 'Create a handbook', 'living-handbook' )
-		);
 
 		echo '</div>';
 	}

@@ -1,6 +1,6 @@
 # App-Handbuch laden
 
-Dieses Handbuch ist die Dokumentation von Living Handbook. Du kannst es mit einem Klick in deine eigene Installation laden. Damit hast du die aktuelle Anleitung direkt in WordPress. Zugleich siehst du ein fertiges, gefülltes Handbuch als Beispiel.
+Living Handbook bringt vier Handbücher mit: dieses Benutzerhandbuch auf Deutsch und Englisch, und die technische Dokumentation in denselben zwei Sprachen. Du lädst sie mit einem Klick in deine eigene Installation. Damit hast du die Anleitung direkt in WordPress, und zugleich siehst du ein fertiges, gefülltes Handbuch als Beispiel.
 
 <details>
 <summary>Voraussetzungen: Was du brauchst</summary>
@@ -15,9 +15,19 @@ Das Handbuch liegt im Plugin, du brauchst also keine Internetverbindung, um es z
 ## Schritte
 
 1. Öffne **Handbuch → Import** und wechsle auf den Reiter **App-Handbuch**.
-2. Wähle unter **Laden in** das Ziel-Handbuch aus.
-3. Klicke auf **App-Handbuch laden**.
-4. Lies die Ergebnisliste. Sieh dir danach das geladene Handbuch auf der Website an.
+2. Wähle unter **Welches Handbuch** aus, was du laden willst.
+3. Wähle unter **Laden in** das Ziel-Handbuch aus.
+4. Entscheide unter **Verbindung zur Quelle**, ob die Seiten am mitgelieferten Stand hängen bleiben sollen. Siehe unten.
+5. Klicke auf **Handbuch laden**.
+6. Lies die Ergebnisliste. Sieh dir danach das geladene Handbuch auf der Website an.
+
+Willst du mehrere davon, wiederhole das mit einem anderen Ziel-Handbuch. Zwei Handbücher in einem Ziel zu mischen ergibt eine unübersichtliche Navigation.
+
+### Verbindung zur Quelle
+
+Der Haken ist gesetzt, und das ist für den Normalfall richtig: die Seiten sind im Editor gesperrt und ein späteres Laden frischt sie auf, das Handbuch folgt also dem Plugin.
+
+Nimm den Haken weg, wenn du ein mitgeliefertes Handbuch als Vorlage für dein eigenes nehmen willst. Dann kommen die Seiten als gewöhnliche Handbuch-Seiten an, die du frei bearbeitest. Der Preis: sie altern. Ein Plugin-Update rührt sie nicht mehr an, und was sich in der Vorlage ändert, erfährst du nicht.
 
 ![Die Import-Seite mit geöffnetem Reiter „App-Handbuch“, markiert sind die Auswahl „Laden in“ und der Lade-Knopf.](../assets/import-app-handbuch.webp)
 

@@ -17,6 +17,20 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.67.0] - 2026-08-08
+
+### Added
+
+* **The technical documentation ships with the plugin**, in English (`docs/`) and German (`docs-de/`), the way the user handbook already did. Decided on 2026-08-08 against loading it from GitHub, which would have given up the two reasons the app handbook ships in the first place: the version always matches the installed plugin, and no installation depends on a repository staying reachable. Measured before deciding: `docs/` is 184 KB against the 1.6 MB `handbuch/` already contributes, and of 51 links only four point at repository files that are not in the ZIP.
+
+* **The import screen offers the four bundled handbooks instead of picking one for you.** It used to read the admin language and load the user handbook in it: right often enough to be annoying when it was wrong, with no way for a German admin to ask for the English pages, and no way to load the technical documentation at all. Now: user handbook and technical documentation, each in German and English, each into a handbook you choose. An entry whose folder is not in this build is left out rather than offered and then failing.
+
+* **A handbook can be loaded without the connection to the shipped copy.** Tied, which stays the default, the pages are locked in the editor and a later load refreshes them, so they follow the plugin. Untied, they arrive as ordinary handbook pages, free to edit, which is what you want when a shipped handbook is the template for your own. The price is on the screen next to the checkbox: an untied copy is never refreshed again and ages with every update.
+
+### Changed
+
+* **The notice after a fresh install says two things instead of five.** It used to be one box holding a heading, a "start here" with a button, the overview page, a paragraph about creating a handbook, and a paragraph explaining that a page without a handbook stays invisible. Two of those were actions, one was a fact, and two explained a rule nobody had run into yet. It is now a numbered list of the two steps a new install needs, in the order it needs them, plus one line for the overview page. The rule about pages without a handbook stayed where it bites: the warning that appears on the page list when it actually happens.
+
 ## [0.66.2] - 2026-08-08
 
 ### Fixed

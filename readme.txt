@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.66.2
+Stable tag: 0.67.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,11 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.67.0 =
+* The technical documentation ships with the plugin, in German and English, so the import screen now offers four handbooks instead of loading one for you: user handbook and technical documentation, each in both languages, each into a handbook you pick.
+* A handbook can be loaded without the connection to the shipped copy, as ordinary pages you can edit. Useful as a template for your own; the pages are then never refreshed again.
+* The notice after a fresh install is two numbered steps instead of five things in one box.
 
 = 0.66.2 =
 * Colours, border, typography and spacing set on the search bar or the filter bar in the editor now actually show on the website. The plugin's own default styles were overriding them.

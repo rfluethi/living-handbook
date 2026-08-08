@@ -519,11 +519,21 @@
 		}
 
 		function importApp() {
-			setStatus( __( 'Loading the app handbook…', 'living-handbook' ) );
+			var entry = document.getElementById( 'lh-app-entry' );
+			var keep = document.getElementById( 'lh-app-keep' );
+
+			setStatus( __( 'Loading the handbook…', 'living-handbook' ) );
 			return wp.apiFetch( {
 				path: lhImport.githubPath,
 				method: 'POST',
-				data: { app_handbook: 1, handbook: handbookId() }
+				data: {
+					app_handbook: 1,
+					handbook: handbookId(),
+					app_entry: entry ? entry.value : '',
+					// Sent as 0 or 1 rather than a boolean: an unchecked box has to
+					// arrive as "untie", not as "nothing said".
+					keep_source: ( ! keep || keep.checked ) ? 1 : 0
+				}
 			} ).then( function ( res ) {
 				var pages = ( res && res.pages ) ? res.pages : [];
 				if ( ! pages.length ) {
@@ -603,9 +613,9 @@
 				run( importGithub( url ) );
 			} );
 		}
-		// The app handbook ships with the plugin; the server loads it from the
-		// bundled folder (or a GitHub override if the filter sets one). The button
-		// just asks for it by a flag, no URL from the browser.
+		// The handbooks ship with the plugin; the server loads the chosen one from
+		// its bundled folder (or a GitHub override if the filter sets one). The
+		// button asks for it by key, no URL from the browser.
 		var appBtn = document.getElementById( 'lh-app-btn' );
 		if ( appBtn ) {
 			appBtn.addEventListener( 'click', function () {

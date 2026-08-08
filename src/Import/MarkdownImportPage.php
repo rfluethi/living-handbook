@@ -428,7 +428,12 @@ final class MarkdownImportPage {
 					array( 'status' => 403 )
 				);
 			}
-			return AppHandbook::load( $handbook_id );
+			$key = sanitize_key( (string) $request->get_param( 'app_entry' ) );
+			// "keep_source" is the checkbox, so its absence means the old
+			// behaviour: tied to the shipped copy, refreshed by a later load.
+			$keep = null === $request->get_param( 'keep_source' ) || (bool) $request->get_param( 'keep_source' );
+
+			return AppHandbook::load( $handbook_id, $key, $keep );
 		}
 
 		$git = new GitSync();
@@ -1057,9 +1062,19 @@ final class MarkdownImportPage {
 				<?php endif; ?>
 				<?php if ( $app ) : ?>
 					<div class="living-handbook-import__panel" id="lh-panel-app" role="tabpanel" aria-labelledby="lh-tab-app" hidden>
-						<p><?php esc_html_e( 'The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook. It ships with the plugin, so this loads it from the installed version, with its pages, structure and images.', 'living-handbook' ); ?></p>
-						<p class="description"><?php esc_html_e( 'The pages are published into the handbook you pick. Whether they are visible on the front end depends on that handbook: set it to "members" and only logged-in people see them. Loading again after a plugin update refreshes the pages; nothing is deleted.', 'living-handbook' ); ?></p>
+						<p><?php esc_html_e( 'The plugin brings its own handbooks: the documentation of the app, written as a Living Handbook. They ship with the plugin, so this loads them from the installed version, with their pages, structure and images.', 'living-handbook' ); ?></p>
 						<table class="form-table" role="presentation">
+							<tr>
+								<th scope="row"><label for="lh-app-entry"><?php esc_html_e( 'Which handbook', 'living-handbook' ); ?></label></th>
+								<td>
+									<select id="lh-app-entry" class="lh-app-entry" name="app_entry">
+										<?php foreach ( AppHandbook::entries() as $key => $entry ) : ?>
+											<option value="<?php echo esc_attr( $key ); ?>"<?php selected( $key, AppHandbook::default_key() ); ?>><?php echo esc_html( $entry['label'] ); ?></option>
+										<?php endforeach; ?>
+									</select>
+									<p class="description"><?php esc_html_e( 'The user handbook is for the people who write and read the handbook. The technical documentation is for whoever installs, styles or extends the plugin. Load one, or load several into handbooks of their own.', 'living-handbook' ); ?></p>
+								</td>
+							</tr>
 							<tr>
 								<th scope="row"><label for="lh-app-handbook"><?php esc_html_e( 'Load into', 'living-handbook' ); ?></label></th>
 								<td>
@@ -1071,11 +1086,21 @@ final class MarkdownImportPage {
 											<?php endif; ?>
 										<?php endforeach; ?>
 									</select>
-									<p class="description"><?php esc_html_e( 'Pick the handbook the pages should belong to. Create one first (for example "App handbook") if you want them in their own, and set who may read it there.', 'living-handbook' ); ?></p>
+									<p class="description"><?php esc_html_e( 'Pick the handbook the pages should belong to. Create one first (for example "App handbook") if you want them in their own, and set who may read it there. The pages are published into it; whether anyone sees them is that handbook\'s access rule, not this button.', 'living-handbook' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><?php esc_html_e( 'Connection to the source', 'living-handbook' ); ?></th>
+								<td>
+									<label>
+										<input type="checkbox" id="lh-app-keep" checked>
+										<?php esc_html_e( 'Keep the pages tied to the shipped copy', 'living-handbook' ); ?>
+									</label>
+									<p class="description"><?php esc_html_e( 'Tied, the pages are locked in the editor and a later load refreshes them, so they follow the plugin. Untied, they arrive as ordinary handbook pages you can edit freely, which is what you want when you use them as a template for your own; the price is that they stay as they are, a plugin update does not touch them again.', 'living-handbook' ); ?></p>
 								</td>
 							</tr>
 						</table>
-						<p><button type="button" id="lh-app-btn" class="button button-primary"><?php esc_html_e( 'Load app handbook', 'living-handbook' ); ?></button></p>
+						<p><button type="button" id="lh-app-btn" class="button button-primary"><?php esc_html_e( 'Load handbook', 'living-handbook' ); ?></button></p>
 					</div>
 				<?php endif; ?>
 			</div>

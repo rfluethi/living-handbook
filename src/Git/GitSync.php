@@ -996,9 +996,11 @@ final class GitSync {
 	 * @param string $dir         Absolute path to the folder.
 	 * @param int    $handbook_id Optional handbook term id.
 	 * @param bool   $publish     Whether new pages are published rather than drafted.
+	 * @param bool   $managed     Whether the pages stay tied to the shipped copy: locked in the editor
+	 *                            and refreshed by a later load. False makes them ordinary pages.
 	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
 	 */
-	public function import_local_folder( string $dir, int $handbook_id = 0, bool $publish = false ) {
+	public function import_local_folder( string $dir, int $handbook_id = 0, bool $publish = false, bool $managed = true ) {
 		$dir = rtrim( $dir, '/' );
 		if ( '' === $dir || ! is_dir( $dir ) ) {
 			return new WP_Error( 'living_handbook_import', __( 'The app handbook folder was not found in the plugin.', 'living-handbook' ), array( 'status' => 404 ) );
@@ -1031,9 +1033,9 @@ final class GitSync {
 
 		foreach ( $plan['folders'] as $folder ) {
 			if ( '' !== $folder['index'] ) {
-				$post_id = $this->create_local_page( $dir, $folder['index'], $handbook_id, $publish, basename( $folder['path'] ) );
+				$post_id = $this->create_local_page( $dir, $folder['index'], $handbook_id, $publish, basename( $folder['path'] ), $managed );
 			} else {
-				$post_id = $this->create_local_folder_page( $folder['path'], $handbook_id, $publish );
+				$post_id = $this->create_local_folder_page( $folder['path'], $handbook_id, $publish, $managed );
 			}
 			if ( 0 === $post_id ) {
 				continue;
@@ -1049,7 +1051,7 @@ final class GitSync {
 		}
 
 		foreach ( $plan['files'] as $file ) {
-			$post_id = $this->create_local_page( $dir, $file['path'], $handbook_id, $publish );
+			$post_id = $this->create_local_page( $dir, $file['path'], $handbook_id, $publish, '', $managed );
 			if ( 0 === $post_id ) {
 				continue;
 			}
@@ -1522,9 +1524,10 @@ final class GitSync {
 	 * @param int    $handbook_id   Optional handbook term id.
 	 * @param bool   $publish       Whether a new page is published rather than drafted.
 	 * @param string $slug_override Slug to use instead of the one from the file name.
+	 * @param bool   $managed       Whether the page stays tied to the shipped source (locked editor, refreshed on reload).
 	 * @return int Post id, or 0 on failure.
 	 */
-	private function create_local_page( string $base_dir, string $rel_path, int $handbook_id, bool $publish, string $slug_override = '' ): int {
+	private function create_local_page( string $base_dir, string $rel_path, int $handbook_id, bool $publish, string $slug_override = '', bool $managed = true ): int {
 		$abs = rtrim( $base_dir, '/' ) . '/' . ltrim( $rel_path, '/' );
 		if ( ! is_file( $abs ) || ! is_readable( $abs ) ) {
 			return 0;
@@ -1554,7 +1557,12 @@ final class GitSync {
 		}
 
 		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
-		update_post_meta( $post_id, self::META_APP, '1' );
+		// The marker is what ties the page to the shipped copy: it locks the
+		// editor and lets a later load refresh the page. Without it the page is an
+		// ordinary handbook page, free to edit and on its own from then on.
+		if ( $managed ) {
+			update_post_meta( $post_id, self::META_APP, '1' );
+		}
 		if ( 0 < $handbook_id ) {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}
@@ -1574,9 +1582,10 @@ final class GitSync {
 	 * @param string $folder      Folder path relative to the import base.
 	 * @param int    $handbook_id Optional handbook term id.
 	 * @param bool   $publish     Whether the page is published rather than drafted.
+	 * @param bool   $managed     Whether the page stays tied to the shipped source.
 	 * @return int Post id, or 0.
 	 */
-	private function create_local_folder_page( string $folder, int $handbook_id = 0, bool $publish = false ): int {
+	private function create_local_folder_page( string $folder, int $handbook_id = 0, bool $publish = false, bool $managed = true ): int {
 		$marker = 'local:' . $folder;
 
 		$existing = get_posts(
@@ -1616,7 +1625,9 @@ final class GitSync {
 		$post_id = (int) $inserted;
 		update_post_meta( $post_id, self::META_FOLDER, $marker );
 		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
-		update_post_meta( $post_id, self::META_APP, '1' );
+		if ( $managed ) {
+			update_post_meta( $post_id, self::META_APP, '1' );
+		}
 		if ( 0 < $handbook_id ) {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}

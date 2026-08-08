@@ -86,7 +86,7 @@ Importing requires `edit_others_posts`, so an editor or above. A bundle is a fil
 
 ## The app handbook
 
-The plugin comes with a handbook of its own: the documentation of the app, written as a Living Handbook so it doubles as a first example of one. It **ships inside the plugin**, as Markdown under `handbuch/`, and the **App handbook** tab imports it from there. Shipping it means it always matches the installed version and no install depends on a repository staying reachable. The Markdown is authored in a public repository and copied into the plugin at build time, so it still has one editing source; it just travels with the release. Loading it again after a plugin update refreshes the pages.
+The plugin comes with four handbooks: the **user handbook** in German and English, the documentation for the people who write and read a handbook, and the **technical documentation** in German and English, for whoever installs, styles or extends the plugin. All four are written as Living Handbooks, so they double as a first example of one. They **ship inside the plugin**, as Markdown under `handbuch/`, `docs/` and `docs-de/`, and the **App handbook** tab imports them from there. Shipping it means it always matches the installed version and no install depends on a repository staying reachable. The Markdown is authored in a public repository and copied into the plugin at build time, so it still has one editing source; it just travels with the release. Loading it again after a plugin update refreshes the pages.
 
 The pages are read from disk and their images sideloaded into the media library, the same way the GitHub folder import handles a repository. The content is stored as sanitised HTML, so the plugin's own blocks (the entry list, the feedback prompt, the badges) cannot travel this way; they are described in the text, not embedded. Mermaid diagrams do travel.
 
@@ -94,7 +94,11 @@ A fork, or anyone who would rather pull the latest state straight from GitHub, p
 
 The app handbook is **published straight away** rather than left as a draft: it is curated content, and its front-end visibility is governed by the handbook it lands in. Put it in a handbook set to "members" and only logged-in people see it; it becomes public only if you set that handbook to public. A manual GitHub import, by contrast, stays a draft, so you can review the pages before publishing.
 
+**Which handbook** picks one of the four. Loading several into handbooks of their own is fine and is what a site that wants both would do.
+
 **Load into** picks the handbook the pages belong to. Create one first, for example "App handbook", and set who may read it there.
+
+**Connection to the source** is on by default: the pages are locked in the editor and a later load refreshes them, so they follow the plugin. Switch it off to load them as ordinary handbook pages, free to edit, which is what you want when you take a shipped handbook as the template for your own. The price is stated on the screen and holds: an untied copy is never refreshed again, so it ages with every plugin update.
 
 ## Transport metadata
 

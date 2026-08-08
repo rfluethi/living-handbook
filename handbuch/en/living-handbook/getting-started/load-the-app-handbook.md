@@ -1,6 +1,6 @@
 # Load the app handbook
 
-This handbook is the documentation of Living Handbook. You can load it into your own installation with one click. That gives you the guide right inside WordPress. At the same time you get a finished, filled handbook as an example.
+Living Handbook ships with four handbooks: this user handbook in German and English, and the technical documentation in the same two languages. You load them into your own installation with one click. That gives you the guide right inside WordPress, and at the same time a finished, filled handbook as an example.
 
 <details>
 <summary>Requirements: What you need</summary>
@@ -15,9 +15,19 @@ The handbook ships inside the plugin, so you need no internet connection to load
 ## Steps
 
 1. Open **Handbook → Import** and switch to the **App handbook** tab.
-2. Under **Load into**, choose the target handbook.
-3. Click **Load app handbook**.
-4. Read the result list. Then look at the loaded handbook on the website.
+2. Under **Which handbook**, choose what to load.
+3. Under **Load into**, choose the target handbook.
+4. Under **Connection to the source**, decide whether the pages stay tied to the shipped copy. See below.
+5. Click **Load handbook**.
+6. Read the result list. Then look at the loaded handbook on the website.
+
+If you want more than one, repeat this with another target handbook. Mixing two handbooks into one target gives you a navigation nobody can read.
+
+### Connection to the source
+
+The box is ticked, and for the normal case that is right: the pages are locked in the editor and a later load refreshes them, so the handbook follows the plugin.
+
+Untick it when you want to use a shipped handbook as the template for your own. The pages then arrive as ordinary handbook pages you can edit freely. The price: they age. A plugin update no longer touches them, and you will not hear about what changed in the template.
 
 ![The import screen with the App handbook tab open, highlighting the "Load into" choice and the load button.](../assets/import-app-handbuch.webp)
 
