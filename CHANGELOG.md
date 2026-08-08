@@ -17,6 +17,16 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.66.2] - 2026-08-08
+
+### Fixed
+
+* **What the block settings set on the search bar and the filter bar now shows on the website.** The settings did reach the markup all along, as an inline style for a custom value and as a class such as `has-accent-background-color` for a preset one. The plugin's own defaults then overrode them: a plain `.living-handbook-filterform` rule is one class, exactly like the class WordPress adds, so which one won was decided by the order the two stylesheets happened to load. Worse, 0.66.0 shipped a rule that set `background: none` whenever `.has-background` was present, which erased a preset colour on purpose.
+
+  The defaults of the three block roots (`.living-handbook-start__search`, `.living-handbook-filterform`, `.living-handbook-page-search`) now sit inside `:where()`, which has no specificity at all, so there is nothing left to tie with. That is the same mechanism core uses for its own block defaults.
+
+* **A font size or a text colour set on the search bar reaches its parts.** Both arrive on the bar and travel to the label, the field and the button by inheritance, and a child with a rule of its own blocks that however the specificity is written. The label and the field were sized in `rem` and coloured explicitly; the size is now relative (`em`, inherited), and both hand their colour back as soon as the block sets one (`.has-text-color`). The button keeps its own colours: its label sits on an accent fill, and recolouring one of the two alone would break that pair.
+
 ## [0.66.1] - 2026-08-08
 
 ### Fixed

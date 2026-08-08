@@ -106,8 +106,21 @@
 
 /* Entry page: search, layout, headings */
 
-.living-handbook-start__search {
+/* The three block roots that take block settings (colour, border, typography,
+ * spacing) carry their defaults inside :where(), which has no specificity. A
+ * setting made in the editor arrives either as an inline style, which wins over
+ * anything, or as a class like .has-accent-background-color, which is a single
+ * class and would otherwise merely tie with a plain rule here and be decided by
+ * the order the stylesheets happen to load. Inside :where() there is nothing to
+ * tie with. 0.66.1 had it the other way round and quietly overrode what the
+ * editor set. */
+:where(.living-handbook-start__search) {
 	margin: 0 0 1.5rem;
+	/* The size lives on the bar, and the label and the field are sized in em
+	 * against it. A font size set in the block settings lands on the bar, so
+	 * sizing the parts from it is what makes that setting arrive at all: a child
+	 * with its own rem size would simply ignore the inherited one. */
+	font-size: calc(var(--lh-base, 1rem) * 1.05);
 }
 
 /* The field and its button. The label sits above them when it is shown, so the
@@ -120,7 +133,7 @@
 .living-handbook-start__search-label {
 	display: block;
 	margin: 0 0 0.35rem;
-	font-size: calc(var(--lh-base, 1rem) * 0.9);
+	font-size: 0.86em;
 	font-weight: 600;
 	color: var(--lh-muted);
 }
@@ -129,11 +142,21 @@
 	flex: 1;
 	min-width: 0;
 	padding: 0.85rem 1rem;
-	font-size: calc(var(--lh-base, 1rem) * 1.05);
+	font-size: inherit;
 	background: var(--lh-surface);
 	color: var(--lh-surface-text);
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
+}
+
+/* A text colour set in the block settings sits on the bar and reaches its parts
+ * by inheritance, which a child with its own colour would block. These two have
+ * one, for the default look, so they hand it back as soon as the block sets a
+ * colour of its own. The button keeps its own: its label sits on an accent
+ * fill, and recolouring one of the two would break that pair. */
+.living-handbook-start__search.has-text-color .living-handbook-search__input,
+.living-handbook-start__search.has-text-color .living-handbook-start__search-label {
+	color: inherit;
 }
 
 .living-handbook-start__search button {
@@ -165,13 +188,6 @@
 	border-radius: 8px;
 }
 
-/* The block supports write colour, border and spacing onto the form itself, so
- * a form styled that way must not be overridden by the plain field border. */
-.living-handbook-start__search.has-background,
-.living-handbook-start__search.has-border-color {
-	padding: 0.75rem;
-}
-
 .living-handbook-entry__h {
 	font-size: calc(var(--lh-base, 1rem) * 1.1);
 	margin: 1.5rem 0 0.75rem;
@@ -190,7 +206,7 @@
 /* Filter bar. Since 0.66.0 it is a block of its own and may sit anywhere, so
  * the box it used to get from the entry page's sidebar is on the form itself. */
 
-.living-handbook-filterform {
+:where(.living-handbook-filterform) {
 	font-size: calc(var(--lh-base, 1rem) * 0.9);
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
@@ -199,14 +215,6 @@
 	color: var(--lh-surface-text);
 	position: sticky;
 	top: var(--lh-sticky-top, 2rem);
-}
-
-/* A form styled through the block settings brings its own background and
- * border, and must not draw the default ones underneath. */
-.living-handbook-filterform.has-background,
-.living-handbook-filterform.has-border-color {
-	border: 0;
-	background: none;
 }
 
 .living-handbook-facet {
@@ -1006,7 +1014,7 @@ h4:hover > .living-handbook-anchor,
 /* On-page handbook search (typeahead): a full-width field with a dropdown of
  * matching pages, so the visitor jumps straight to a page without leaving this
  * one. The field carries the same thin border as the entry search. */
-.living-handbook-page-search {
+:where(.living-handbook-page-search) {
 	position: relative;
 	margin: 0 0 1.25rem;
 }
