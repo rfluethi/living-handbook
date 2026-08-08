@@ -117,20 +117,7 @@ final class Blocks {
 	 */
 	public function render_entry( array $attributes ): string {
 		$term = get_queried_object();
-		if ( ! $term instanceof WP_Term ) {
-			return '';
-		}
-
-		// Both parts are on unless a template turns them off, which is what a
-		// template does when it places the search bar or the filter bar as their
-		// own blocks somewhere else on the page.
-		$with_search  = ! isset( $attributes['showSearch'] ) || false !== $attributes['showSearch'];
-		$with_filters = ! isset( $attributes['showFilters'] ) || false !== $attributes['showFilters'];
-
-		return self::with_block_attributes(
-			Entry::render_entry( $term, self::display_mode( $attributes ), $with_search, $with_filters ),
-			$attributes
-		);
+		return self::with_block_attributes( $term instanceof WP_Term ? Entry::render_entry( $term, self::display_mode( $attributes ) ) : '', $attributes );
 	}
 
 	/**
@@ -286,9 +273,9 @@ final class Blocks {
 	 * @return string
 	 */
 	public function render_search( array $attributes = array() ): string {
-		if ( ! is_singular( Handbook::POST_TYPE ) ) {
-			return '';
-		}
+		// Wherever the page knows its handbook: a single page, and the entry page
+		// too. It used to bail on anything but a single page, so placing it on an
+		// entry page rendered nothing at all and said nothing about why.
 		$term_id = self::current_term_id();
 		if ( $term_id <= 0 ) {
 			return '';

@@ -54,13 +54,13 @@ The following blocks already sit in the right place in the shipped page layouts.
 
 ![Icon of the Handbook entry block](../assets/bloecke-eintrag.webp)
 
-Builds a handbook's entry page: search, filters, area tiles and the recently updated pages. Works only on the entry page.
+Shows the result column of an entry page: the area tiles and the recently updated pages, or the matches while a search or a filter is active. Works only on the entry page.
 
-In the block settings you can turn **Show the search bar** and **Show the filter bar** off one at a time. You need that when you want either of them somewhere else on the page: turn it off here, then place the matching block (below) where you want it. Do not have both draw it, or the page ends up with two search fields.
+An entry page is three blocks: **Handbook search**, **Handbook entry** and **Handbook filter bar**. The shipped template holds all three, so you see them in the editor and can move them or leave one out. They find each other through the handbook that hangs on the result column, wherever on the page they sit.
 
-### Handbook search bar
+### Handbook search
 
-The same search bar the Handbook entry block draws, free to place. It always searches the handbook the page belongs to, and it carries the active filters along.
+A handbook's search bar. It searches the handbook the page belongs to, narrows the result column, and carries the active filters along.
 
 In the block settings: the label on or off and its wording, the placeholder, the button text, and whether the button sits beside the field, inside it, or not at all. Without a button, Enter searches. Colours, border, typography and spacing are set in the sidebar, the same way as for the core blocks.
 
@@ -88,11 +88,11 @@ Shows a page's badges: page type, topic, audience. Works only on single pages.
 
 Builds "On this page" from the page's headings and highlights the current section while you read. Works only on single pages.
 
-### Handbook search
+### Handbook quick search
 
-![Icon of the Handbook search block](../assets/bloecke-suche.webp)
+![Icon of the Handbook quick search block](../assets/bloecke-suche.webp)
 
-A search field that suggests matching pages of the handbook as you type. Works only on single pages.
+A search field that suggests matching pages of the handbook as you type and jumps straight there. It is not the search bar: that narrows the result column, this one takes you away from the current page. It works on single pages and on the entry page.
 
 Under each result stands the sentence the words were found in, with the words highlighted. That is the page's own text around the hit, not its excerpt: an excerpt would be the same for every search and would not tell you why this page matched. When the search only matched the title, there is no sentence, so none is shown.
 

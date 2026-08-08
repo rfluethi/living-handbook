@@ -2,10 +2,10 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "living-handbook/entry",
-	"title": "Handbook entry",
+	"title": "Handbook entry (results)",
 	"category": "living-handbook",
 	"icon": "welcome-learn-more",
-	"description": "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.",
+	"description": "Handbook entry: the result column of a handbook page, the areas and the recently updated pages, or the matches when a search or filter is active. The search bar and the filter bar are blocks of their own.",
 	"keywords": [ "handbook", "living handbook", "documentation" ],
 	"textdomain": "living-handbook",
 	"editorScript": "living-handbook-blocks",
@@ -16,14 +16,6 @@
 		"display": {
 			"type": "string",
 			"default": "cards"
-		},
-		"showSearch": {
-			"type": "boolean",
-			"default": true
-		},
-		"showFilters": {
-			"type": "boolean",
-			"default": true
 		}
 	},
 	"supports": {

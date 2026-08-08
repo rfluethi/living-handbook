@@ -28,21 +28,27 @@ Lists every handbook the current visitor may read: name, description and page co
 
 **Renders on:** any page or template you place it on. Unlike the other blocks it does not need a special context.
 
-## Handbook entry (`living-handbook/entry`)
+## The entry page is three blocks
+
+An entry page has three parts, and since 0.66.0 each is its own block: the **search bar**, the **result column** (the entry block), and the **filter bar**. The shipped "Handbook entry" template holds all three, so a fresh install looks as it did; in the editor you can now see them, move them, and leave one out.
+
+Before 0.66.0 the entry block drew all three itself, and 0.65.0 gave it two switches for turning the search bar and the filter bar off. Both are gone: a setting that manages a weakness is worse than not having the weakness. What you place is what renders.
+
+The three find each other through the handbook id on the result column, so the search bar and the filter bar work wherever on the page they sit.
+
+## Handbook entry, results (`living-handbook/entry`)
 
 ![](_attachments/handbook-entry-en.png)
 
-The start page of one handbook. It shows a prominent search field, the areas of the handbook (its top-level pages, with a subpage count) and the most recently updated pages, plus a facet filter (page type, topic, responsible role, audience).
+The result column of a handbook's start page: the areas of the handbook (its top-level pages, with a subpage count) and the most recently updated pages, or the matching pages while a search or a filter is active.
 
-Selecting a facet or submitting the search filters the list without reloading the page. The facet form also has a submit button, so it works without JavaScript; the frontend script hides that button and filters live as you toggle a facet. If JavaScript is unavailable, the facet form and the search both submit as a normal form.
+**Settings:** *Display* switches the cards between **Cards** (default) and **List**.
 
-**Settings:** *Display* switches the cards between **Cards** (default) and **List**. *Show the search bar* and *Show the filter bar* turn either control off, which is how you move it elsewhere on the page: turn it off here and place the matching block (below) where you want it. Leaving both on and also placing the separate block gives the page two search fields, which is worth avoiding.
+**Renders on:** a handbook entry page only (the `handbook_set` term archive, for example `/handbook-set/general/`). It reads which handbook to show from the URL, so it outputs nothing anywhere else.
 
-**Renders on:** a handbook entry page only (the `handbook_set` term archive, for example `/handbook-set/general/`), placed by the "Handbook entry" template. It reads which handbook to show from the URL, so it outputs nothing anywhere else.
+## Handbook search (`living-handbook/search-form`)
 
-## Handbook search bar (`living-handbook/search-form`)
-
-The search bar of a handbook as its own block: the same control the entry block draws, free to place. It submits to the handbook and narrows the list of pages, carrying the active facet selections as hidden fields so a search does not silently drop the filters.
+The search bar of a handbook. It submits to the handbook and narrows the result column, carrying the active facet selections as hidden fields so a search does not silently drop the filters. With JavaScript the column updates as you type; without it, the form submits and the page reloads with the search in the URL.
 
 **Settings:** *Show the label* and its wording, the placeholder, the button text, and where the button sits (outside the field, inside it, or no button at all). Without a button the form still submits with Enter. The label is in the document either way, shown or not: a search field with nothing but a placeholder loses its accessible name as soon as something is typed into it.
 
@@ -52,9 +58,9 @@ Colour, border, typography and spacing are not settings here, they are the block
 
 ## Handbook filter bar (`living-handbook/filters`)
 
-The facet filter of a handbook as its own block: page type, topic, responsible role and audience. It only offers terms that pages in this handbook actually use, so it is empty until pages carry them.
+The facet filter of a handbook: page type, topic, responsible role and audience. It only offers terms that pages in this handbook actually use, so it is empty until pages carry them.
 
-With JavaScript it filters the result list in place; without it, its submit button reloads the page with the selection in the URL. It drives the result column of the entry block, which may sit anywhere on the same page.
+With JavaScript it filters the result column in place; without it, its submit button reloads the page with the selection in the URL. It drives the result column wherever that sits on the same page.
 
 **Settings:** none of its own. Colour, border, typography and spacing come from the block supports.
 
@@ -102,7 +108,7 @@ The page tree of the current handbook, rendered as a self-contained, collapsible
 
 The badge row for a single page: page type, topic and audience.
 
-**Renders on:** single handbook pages only.
+**Renders on:** single handbook pages and handbook entry pages.
 
 ## Table of Contents (`living-handbook/toc`)
 
@@ -114,7 +120,7 @@ A table of contents for the current page. The block outputs an empty, hidden con
 
 The templates place two instances: a sticky desktop one in the side column and a mobile one above the content. CSS shows only the one that fits the screen, so you do not have to choose.
 
-**Renders on:** single handbook pages only.
+**Renders on:** single handbook pages and handbook entry pages.
 
 ## Handbook feedback (`living-handbook/feedback`)
 
@@ -122,7 +128,7 @@ The templates place two instances: a sticky desktop one in the side column and a
 
 The "Was this helpful?" prompt with Yes and No buttons. By default a vote counts once per user and page, and only users allowed to read the page vote, so the buttons show to logged-in visitors only. Turn on **Public feedback** in the settings and the buttons also show to logged-out visitors on public pages; those votes store nothing personal (no cookie, no IP) and so have no per-person limit. The maintenance dashboard reports the totals.
 
-**Renders on:** single handbook pages only.
+**Renders on:** single handbook pages and handbook entry pages.
 
 ## Handbook page meta (`living-handbook/pagemeta`)
 
@@ -139,7 +145,7 @@ The metadata footer of a single page: created, last updated, last reviewed and t
 
 **Settings:** *Show people* toggles the avatar and name.
 
-**Renders on:** single handbook pages only.
+**Renders on:** single handbook pages and handbook entry pages.
 
 ## Mermaid diagram (`living-handbook/mermaid`)
 
@@ -155,15 +161,15 @@ A short note marking a page as maintained on GitHub and updated automatically, w
 
 **Settings:** the note text is editable.
 
-## Handbook search (`living-handbook/search`)
+## Handbook quick search (`living-handbook/search`)
 
-A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It only renders on a single handbook page; anywhere else it outputs nothing.
+A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It is not the search bar: it jumps to a page rather than narrowing the result column. Until 0.66.0 it rendered on single pages only, so placing it on an entry page produced nothing and said nothing about why; it now renders wherever the page knows its handbook.
 
 Under each result stands the sentence the words were found in, with the words marked. That is the page's own text around the hit, not its excerpt: an excerpt is the same text for every search and would not say why this page matched. A page that matched by its title alone shows no sentence, because there is none to show. The pieces travel as text, not as markup, and the browser builds the `<mark>` elements from them, so nothing from a page's content is ever parsed as HTML on the way.
 
 **Settings:** *Show the label* and its wording, and the placeholder. Colour, border, typography and spacing come from the block supports.
 
-**Renders on:** single handbook pages only.
+**Renders on:** single handbook pages and handbook entry pages.
 
 ## Nothing shows up?
 

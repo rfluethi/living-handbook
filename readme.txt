@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.65.0
+Stable tag: 0.66.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,10 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.66.0 =
+* An entry page is three blocks now: the search bar, the result column and the filter bar. The shipped template holds all three, so the page looks as it did, and in the editor you can see them, move them or leave one out. The two switches 0.65.0 put into the entry block are gone with the reason for them.
+* The two search blocks were a word apart in name and easy to confuse. The search bar of a handbook is now "Handbook search"; the one that jumps to a page as you type is "Handbook quick search", and it renders on an entry page too instead of silently showing nothing there.
 
 = 0.65.0 =
 * The search bar and the filter bar of a handbook are blocks of their own now, so a template can place them freely; the entry block can leave either one out.

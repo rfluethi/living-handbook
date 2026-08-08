@@ -135,10 +135,10 @@ Every handbook block also offers, under its **Advanced** panel in the editor, an
 ### Overview and entry pages
 
 - `.living-handbook-overview`, `.living-handbook-entry`: the block wrappers. Each also carries a `--list` or `--cards` modifier reflecting the block's Display setting, for example `.living-handbook-entry--list`.
-- `.living-handbook-layout`: the two-column grid (results plus filter sidebar); a single column below 781px.
-- `.living-handbook-start__search`, `.living-handbook-search__input`: the full-text search row.
-- `.living-handbook-aside`, `.living-handbook-facet`, `.living-handbook-facet__opt`, `.living-handbook-reset`: the facet sidebar and its reset link.
+- `.living-handbook-start__search`, `.living-handbook-start__search-field`, `.living-handbook-start__search-label`, `.living-handbook-search__input`: the search bar. The form's `data-button-position` attribute says where the button sits (`button-outside`, `button-inside`, `no-button`).
+- `.living-handbook-filterform`, `.living-handbook-facet`, `.living-handbook-facet__opt`, `.living-handbook-reset`: the filter bar, its groups and its reset link. The filter bar is its own block since 0.66.0, so the box it used to get from the entry page's sidebar (`.living-handbook-aside`, gone with `.living-handbook-layout`) is on the form itself, and the columns of the entry page come from the template's own Columns block.
 - `.living-handbook-main`: the result column that is swapped in when a facet or search filters the list. While loading it carries `aria-busy="true"`, which the default styles use to dim it.
+- `.living-handbook-anchor`: the `#` link beside an h2 to h4. Do not hide it with `display: none`, or it becomes unreachable by keyboard; the default styles use `opacity` and reveal it on hover and focus.
 - `.living-handbook-entry__h`, `.living-handbook-count`, `.living-handbook-empty`: section headings, result count and the empty state.
 
 ### Search on a single page

@@ -15,9 +15,8 @@
 .living-handbook-entry,
 .living-handbook-cards,
 .living-handbook-card,
-.living-handbook-layout,
 .living-handbook-sidebar,
-.living-handbook-aside,
+.living-handbook-filterform,
 .living-handbook-nav,
 .living-handbook-toc,
 .living-handbook-badges,
@@ -173,19 +172,6 @@
 	padding: 0.75rem;
 }
 
-.living-handbook-layout {
-	display: grid;
-	grid-template-columns: 1fr 250px;
-	gap: 1.75rem;
-	align-items: start;
-}
-
-@media (max-width: 781px) {
-	.living-handbook-layout {
-		grid-template-columns: 1fr;
-	}
-}
-
 .living-handbook-entry__h {
 	font-size: calc(var(--lh-base, 1rem) * 1.1);
 	margin: 1.5rem 0 0.75rem;
@@ -201,9 +187,10 @@
 	margin: 0 0 0.75rem;
 }
 
-/* Filter sidebar */
+/* Filter bar. Since 0.66.0 it is a block of its own and may sit anywhere, so
+ * the box it used to get from the entry page's sidebar is on the form itself. */
 
-.living-handbook-aside {
+.living-handbook-filterform {
 	font-size: calc(var(--lh-base, 1rem) * 0.9);
 	border: 1px solid var(--lh-border);
 	border-radius: 10px;
@@ -212,6 +199,14 @@
 	color: var(--lh-surface-text);
 	position: sticky;
 	top: var(--lh-sticky-top, 2rem);
+}
+
+/* A form styled through the block settings brings its own background and
+ * border, and must not draw the default ones underneath. */
+.living-handbook-filterform.has-background,
+.living-handbook-filterform.has-border-color {
+	border: 0;
+	background: none;
 }
 
 .living-handbook-facet {

@@ -54,7 +54,7 @@ final class Templates {
 			'living-handbook//taxonomy-' . Handbooks::TAXONOMY,
 			array(
 				'title'       => __( 'Handbook entry', 'living-handbook' ),
-				'description' => __( 'Entry page of a single handbook: navigation, search, filters, areas and recently updated pages.', 'living-handbook' ),
+				'description' => __( 'Entry page of a single handbook: navigation, search bar, results, filter bar.', 'living-handbook' ),
 				'content'     => self::entry_content(),
 			)
 		);
@@ -97,7 +97,18 @@ final class Templates {
 			. '<!-- wp:living-handbook/navigation {"variant":"accordion"} /-->'
 			. '</div><!-- /wp:column -->'
 			. '<!-- wp:column {"width":"78%"} --><div class="wp-block-column" style="flex-basis:78%">'
+			// The three parts of an entry page as three blocks, so what the editor
+			// shows is what renders, and each can be moved or removed on its own.
+			// They find each other through the handbook id on the result column.
+			. '<!-- wp:living-handbook/search-form /-->'
+			. '<!-- wp:columns --><div class="wp-block-columns">'
+			. '<!-- wp:column {"width":"70%"} --><div class="wp-block-column" style="flex-basis:70%">'
 			. '<!-- wp:living-handbook/entry /-->'
+			. '</div><!-- /wp:column -->'
+			. '<!-- wp:column {"width":"30%"} --><div class="wp-block-column" style="flex-basis:30%">'
+			. '<!-- wp:living-handbook/filters /-->'
+			. '</div><!-- /wp:column -->'
+			. '</div><!-- /wp:columns -->'
 			. '</div><!-- /wp:column -->'
 			. '</div><!-- /wp:columns -->';
 

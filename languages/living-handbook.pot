@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.65.0\n"
+"Project-Id-Version: Living Handbook 0.66.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-08T15:42:41+00:00\n"
+"POT-Creation-Date: 2026-08-08T16:09:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -163,18 +163,18 @@ msgstr[1] ""
 msgid "The moved pages have no review date yet, so they show as \"Not reviewed\" until you set one."
 msgstr ""
 
-#: src/Blocks/Blocks.php:260
-#: src/Blocks/Blocks.php:261
+#: src/Blocks/Blocks.php:247
+#: src/Blocks/Blocks.php:248
 #: assets/blocks.js:134
 msgid "Table of Contents"
 msgstr ""
 
-#: src/Blocks/Blocks.php:305
+#: src/Blocks/Blocks.php:292
 #: src/Frontend/Filters.php:385
 msgid "Search this handbook"
 msgstr ""
 
-#: src/Blocks/Blocks.php:308
+#: src/Blocks/Blocks.php:295
 #: src/Frontend/Filters.php:388
 msgid "Search this handbook …"
 msgstr ""
@@ -322,24 +322,24 @@ msgstr ""
 msgid "Handbooks"
 msgstr ""
 
-#: src/Frontend/Entry.php:146
+#: src/Frontend/Entry.php:144
 msgid "Areas"
 msgstr ""
 
-#: src/Frontend/Entry.php:151
+#: src/Frontend/Entry.php:149
 msgid "Recently updated"
 msgstr ""
 
-#: src/Frontend/Entry.php:155
+#: src/Frontend/Entry.php:153
 msgid "This handbook has no pages yet."
 msgstr ""
 
-#: src/Frontend/Entry.php:160
+#: src/Frontend/Entry.php:158
 msgid "Log in to see more."
 msgstr ""
 
 #: src/Frontend/Filters.php:391
-#: assets/blocks.js:283
+#: assets/blocks.js:237
 msgid "Search"
 msgstr ""
 
@@ -470,7 +470,7 @@ msgid "Handbook entry"
 msgstr ""
 
 #: src/Frontend/Templates.php:57
-msgid "Entry page of a single handbook: navigation, search, filters, areas and recently updated pages."
+msgid "Entry page of a single handbook: navigation, search bar, results, filter bar."
 msgstr ""
 
 #: src/Frontend/Templates.php:65
@@ -1578,80 +1578,72 @@ msgstr ""
 msgid "Entry"
 msgstr ""
 
-#: assets/blocks.js:204
-msgid "Show the search bar"
+#: assets/blocks.js:203
+msgid "Handbook entry (results): the areas and recently updated pages of this handbook, or the matches while a search or filter is active. The search bar and the filter bar are blocks of their own."
 msgstr ""
 
-#: assets/blocks.js:205
-msgid "Show the filter bar"
-msgstr ""
-
-#: assets/blocks.js:207
-msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook. Turn the search bar or the filter bar off here to place them as their own blocks."
-msgstr ""
-
-#: assets/blocks.js:218
-#: assets/blocks.js:284
+#: assets/blocks.js:214
+#: assets/blocks.js:280
 msgid "Show the label"
 msgstr ""
 
-#: assets/blocks.js:219
-#: assets/blocks.js:285
+#: assets/blocks.js:215
+#: assets/blocks.js:281
 msgid "Label"
 msgstr ""
 
-#: assets/blocks.js:219
-#: assets/blocks.js:285
+#: assets/blocks.js:215
+#: assets/blocks.js:281
 msgid "Read out to screen readers even when it is not shown."
 msgstr ""
 
-#: assets/blocks.js:220
-#: assets/blocks.js:286
+#: assets/blocks.js:216
+#: assets/blocks.js:282
 msgid "Placeholder"
 msgstr ""
 
-#: assets/blocks.js:221
+#: assets/blocks.js:217
 msgid "Button text"
 msgstr ""
 
-#: assets/blocks.js:226
+#: assets/blocks.js:222
 msgid "Button position"
 msgstr ""
 
-#: assets/blocks.js:229
+#: assets/blocks.js:225
 msgid "Outside the field"
 msgstr ""
 
-#: assets/blocks.js:230
+#: assets/blocks.js:226
 msgid "Inside the field"
 msgstr ""
 
-#: assets/blocks.js:231
+#: assets/blocks.js:227
 msgid "No button"
 msgstr ""
 
-#: assets/blocks.js:241
-msgid "Search bar"
+#: assets/blocks.js:238
+msgid "Handbook search: searches the handbook this page belongs to and narrows the result column. Colours, border, typography and spacing are in the block settings; the wording is here."
 msgstr ""
 
-#: assets/blocks.js:242
-msgid "Handbook search bar: searches the handbook this page belongs to. Colours, border, typography and spacing are in the block settings; the wording is here."
-msgstr ""
-
-#: assets/blocks.js:252
+#: assets/blocks.js:248
 msgid "Handbook filter bar: page type, topic, responsibility and audience of the pages in this handbook. It only offers terms that are actually used, so it is empty until pages carry them."
 msgstr ""
 
-#: assets/blocks.js:270
+#: assets/blocks.js:266
 msgid "Handbook badges: page type, topic and audience of the current page."
 msgstr ""
 
-#: assets/blocks.js:275
+#: assets/blocks.js:271
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 
-#: assets/blocks.js:288
-msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type, with the sentence each match was found in."
+#: assets/blocks.js:279
+msgid "Quick search"
+msgstr ""
+
+#: assets/blocks.js:284
+msgid "Handbook quick search: lists matching pages as you type, each with the sentence it was found in, so a reader jumps straight to a page. Does not narrow the result column; that is the Handbook search block."
 msgstr ""
 
 #: assets/js/git-source-note-block.js:16
@@ -1888,12 +1880,12 @@ msgstr ""
 
 #: blocks/entry/block.json
 msgctxt "block title"
-msgid "Handbook entry"
+msgid "Handbook entry (results)"
 msgstr ""
 
 #: blocks/entry/block.json
 msgctxt "block description"
-msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
+msgid "Handbook entry: the result column of a handbook page, the areas and the recently updated pages, or the matches when a search or filter is active. The search bar and the filter bar are blocks of their own."
 msgstr ""
 
 #: blocks/feedback/block.json
@@ -1978,7 +1970,7 @@ msgstr ""
 
 #: blocks/search-form/block.json
 msgctxt "block title"
-msgid "Handbook search bar"
+msgid "Handbook search"
 msgstr ""
 
 #: blocks/search-form/block.json
@@ -1993,12 +1985,12 @@ msgstr ""
 
 #: blocks/search/block.json
 msgctxt "block title"
-msgid "Handbook search"
+msgid "Handbook quick search"
 msgstr ""
 
 #: blocks/search/block.json
 msgctxt "block description"
-msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type."
+msgid "Handbook quick search: a search-as-you-type box that lists matching pages as links, so a reader jumps straight to a page without leaving this one."
 msgstr ""
 
 #: blocks/toc/block.json

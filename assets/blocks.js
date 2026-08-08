@@ -199,12 +199,8 @@
 			return el(
 				Fragment,
 				{},
-				panel( __( 'Entry', 'living-handbook' ), [
-					displayControl( props ),
-					toggle( props, 'showSearch', __( 'Show the search bar', 'living-handbook' ) ),
-					toggle( props, 'showFilters', __( 'Show the filter bar', 'living-handbook' ) )
-				] ),
-				note( __( 'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook. Turn the search bar or the filter bar off here to place them as their own blocks.', 'living-handbook' ) )
+				panel( __( 'Entry', 'living-handbook' ), displayControl( props ) ),
+				note( __( 'Handbook entry (results): the areas and recently updated pages of this handbook, or the matches while a search or filter is active. The search bar and the filter bar are blocks of their own.', 'living-handbook' ) )
 			);
 		},
 		save: function () {
@@ -238,8 +234,8 @@
 			return el(
 				Fragment,
 				{},
-				panel( __( 'Search bar', 'living-handbook' ), controls ),
-				note( __( 'Handbook search bar: searches the handbook this page belongs to. Colours, border, typography and spacing are in the block settings; the wording is here.', 'living-handbook' ) )
+				panel( __( 'Search', 'living-handbook' ), controls ),
+				note( __( 'Handbook search: searches the handbook this page belongs to and narrows the result column. Colours, border, typography and spacing are in the block settings; the wording is here.', 'living-handbook' ) )
 			);
 		},
 		save: function () {
@@ -280,12 +276,12 @@
 			return el(
 				Fragment,
 				{},
-				panel( __( 'Search', 'living-handbook' ), [
+				panel( __( 'Quick search', 'living-handbook' ), [
 					toggle( props, 'showLabel', __( 'Show the label', 'living-handbook' ) ),
 					text( props, 'label', __( 'Label', 'living-handbook' ), __( 'Read out to screen readers even when it is not shown.', 'living-handbook' ) ),
 					text( props, 'placeholder', __( 'Placeholder', 'living-handbook' ) )
 				] ),
-				note( __( 'Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type, with the sentence each match was found in.', 'living-handbook' ) )
+				note( __( 'Handbook quick search: lists matching pages as you type, each with the sentence it was found in, so a reader jumps straight to a page. Does not narrow the result column; that is the Handbook search block.', 'living-handbook' ) )
 			);
 		},
 		save: function () {

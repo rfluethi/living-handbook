@@ -54,13 +54,13 @@ Die folgenden Blöcke sitzen schon an der richtigen Stelle in den mitgelieferten
 
 ![Icon des Blocks „Handbuch-Eintrag“](../assets/bloecke-eintrag.webp)
 
-Baut die Einstiegsseite eines Handbuchs: Suche, Filter, Bereichs-Kacheln und die zuletzt aktualisierten Seiten. Wirkt nur auf der Einstiegsseite.
+Zeigt die Ergebnisspalte einer Einstiegsseite: die Bereichs-Kacheln und die zuletzt aktualisierten Seiten, oder die Treffer, solange eine Suche oder ein Filter aktiv ist. Wirkt nur auf der Einstiegsseite.
 
-In den Block-Einstellungen kannst du **Suchleiste anzeigen** und **Filterleiste anzeigen** einzeln abschalten. Das brauchst du, wenn du eine der beiden woanders auf der Seite haben willst: hier abschalten, den passenden Block (siehe unten) an die gewünschte Stelle setzen. Lass sie nicht beides gleichzeitig zeichnen, sonst stehen zwei Suchfelder auf einer Seite.
+Eine Einstiegsseite besteht aus drei Blöcken: **Handbuch-Suche**, **Handbuch-Eintrag** und **Handbuch-Filterleiste**. Das mitgelieferte Template enthält alle drei, du siehst sie also im Editor und kannst sie verschieben oder weglassen. Sie finden einander über das Handbuch, das an der Ergebnisspalte hängt, egal wo auf der Seite sie stehen.
 
-### Handbuch-Suchleiste
+### Handbuch-Suche
 
-Dieselbe Suchleiste wie im Block „Handbuch-Eintrag“, aber frei platzierbar. Sie sucht immer in dem Handbuch, zu dem die Seite gehört, und nimmt die gesetzten Filter mit.
+Die Suchleiste eines Handbuchs. Sie sucht in dem Handbuch, zu dem die Seite gehört, grenzt die Ergebnisspalte ein und nimmt die gesetzten Filter mit.
 
 In den Block-Einstellungen: Beschriftung ein oder aus und ihr Wortlaut, der Platzhaltertext, die Aufschrift der Schaltfläche und ob diese neben dem Feld, im Feld oder gar nicht erscheint. Ohne Schaltfläche sucht die Eingabetaste. Farben, Rahmen, Schrift und Abstände stellst du wie bei den Kern-Blöcken in der Seitenleiste ein.
 
@@ -88,11 +88,11 @@ Zeigt die Abzeichen einer Seite: Seitentyp, Thema, Zielgruppe. Wirkt nur auf Ein
 
 Baut „Auf dieser Seite“ aus den Überschriften der Seite und markiert beim Lesen den aktuellen Abschnitt. Wirkt nur auf Einzelseiten.
 
-### Handbuch-Suche
+### Handbuch-Schnellsuche
 
-![Icon des Blocks „Handbuch-Suche“](../assets/bloecke-suche.webp)
+![Icon des Blocks „Handbuch-Schnellsuche“](../assets/bloecke-suche.webp)
 
-Ein Suchfeld, das schon beim Tippen passende Seiten des Handbuchs vorschlägt. Wirkt nur auf Einzelseiten.
+Ein Suchfeld, das schon beim Tippen passende Seiten des Handbuchs vorschlägt und direkt dorthin springt. Das ist nicht die Suchleiste: die grenzt die Ergebnisspalte ein, diese hier führt dich weg von der aktuellen Seite. Sie wirkt auf Einzelseiten und auf der Einstiegsseite.
 
 Unter jedem Treffer steht der Satz, in dem die Wörter gefunden wurden, mit den Wörtern hervorgehoben. Das ist der Text der Seite rund um die Fundstelle, nicht ihr Textauszug: der wäre bei jeder Suche derselbe und würde nicht verraten, warum diese Seite passt. Traf die Suche nur den Titel, steht kein Satz darunter, weil es keinen gibt.
 

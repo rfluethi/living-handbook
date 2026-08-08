@@ -4,12 +4,14 @@
  *
  * The entry block used to draw the whole entry page in one fixed layout:
  * search on top, facets on the right, cards in the middle. A template could
- * take it or leave it. These tests hold the two halves of the way out: the
- * entry block can be told to leave either control out, and each control can be
- * placed on its own, finding its handbook by itself.
+ * take it or leave it. 0.65.0 added two switches for leaving a control out,
+ * which was a setting to manage that weakness rather than remove it; 0.66.0
+ * removes both the switches and the drawing. The entry block is the result
+ * column, the other two are blocks, and the shipped template holds all three.
  *
- * The trap this guards against is having both at once, which would put two
- * search fields on one page and leave the visitor guessing which one counts.
+ * These tests hold that split: the entry block draws no control, each control
+ * stands on its own and finds its handbook, and the template still has the
+ * page a fresh install had before.
  *
  * @package LivingHandbook
  */
@@ -74,42 +76,49 @@ final class SearchAndFilterBlocksTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * By default the entry block draws both, exactly as before, so an existing
-	 * template keeps its page.
+	 * The entry block is the result column and nothing else. It used to draw the
+	 * search bar and the facets as well, with two switches to turn them off,
+	 * which was a setting managing a weakness rather than removing it.
 	 *
 	 * @return void
 	 */
-	public function test_the_entry_block_draws_both_by_default(): void {
+	public function test_the_entry_block_is_the_result_column_only(): void {
 		$out = ( new Blocks() )->render_entry( array() );
 
-		$this->assertStringContainsString( 'living-handbook-start__search', $out );
-		$this->assertStringContainsString( 'living-handbook-filterform', $out );
+		$this->assertStringContainsString( 'living-handbook-main', $out );
+		$this->assertStringContainsString( 'data-term-id', $out );
+		$this->assertStringNotContainsString( 'living-handbook-start__search', $out );
+		$this->assertStringNotContainsString( 'living-handbook-filterform', $out );
 	}
 
 	/**
-	 * Switched off, the entry block leaves the control out, which is what makes
-	 * room for the separate block.
+	 * The shipped entry template holds all three, so a fresh install has the page
+	 * it had before, now as blocks a person can see and move.
 	 *
 	 * @return void
 	 */
-	public function test_the_entry_block_can_leave_each_control_out(): void {
-		$blocks = new Blocks();
+	public function test_the_entry_template_holds_all_three(): void {
+		$template = get_block_template( 'living-handbook//taxonomy-' . Handbooks::TAXONOMY, 'wp_template' );
 
-		$without_search = $blocks->render_entry( array( 'showSearch' => false ) );
-		$this->assertStringNotContainsString( 'living-handbook-start__search', $without_search );
-		$this->assertStringContainsString( 'living-handbook-filterform', $without_search );
-
-		$without_filters = $blocks->render_entry( array( 'showFilters' => false ) );
-		$this->assertStringContainsString( 'living-handbook-start__search', $without_filters );
-		$this->assertStringNotContainsString( 'living-handbook-filterform', $without_filters );
-
-		// The result column is the point of the block and stays either way.
-		$this->assertStringContainsString( 'living-handbook-main', $without_search );
-		$this->assertStringContainsString( 'living-handbook-main', $without_filters );
+		$this->assertNotNull( $template );
+		foreach ( array( 'living-handbook/search-form', 'living-handbook/entry', 'living-handbook/filters' ) as $block ) {
+			$this->assertStringContainsString( $block, (string) $template->content );
+		}
 	}
 
 	/**
-	 * The search bar on its own finds its handbook and submits to it.
+	 * The quick search renders on an entry page too. It used to bail on anything
+	 * but a single page, so a person who reached for it there got an empty spot
+	 * and no reason why.
+	 *
+	 * @return void
+	 */
+	public function test_the_quick_search_also_renders_on_an_entry_page(): void {
+		$this->assertStringContainsString( 'living-handbook-page-search', ( new Blocks() )->render_search( array() ) );
+	}
+
+	/**
+	 * The search bar finds its handbook and submits to it.
 	 *
 	 * @return void
 	 */

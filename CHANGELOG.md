@@ -17,6 +17,24 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.66.0] - 2026-08-08
+
+### Changed
+
+* **An entry page is three blocks: the search bar, the result column, the filter bar.** The entry block now renders the result column and nothing else, and the shipped "Handbook entry" template holds all three, so a fresh install has the page it had before, with the parts visible in the editor. The two columns come from the template's own Columns block rather than from a grid inside the entry block, which is what made the filter bar movable in the first place.
+
+  This removes the two switches 0.65.0 added (*Show the search bar*, *Show the filter bar*). They existed because the entry block drew all three parts, so placing one separately would have drawn it twice; a setting whose job is to manage a weakness is worse than not having the weakness. What is placed is what renders.
+
+  A site that has saved its own copy of the entry template in the Site Editor keeps that copy, which still has the old single block, and therefore loses the search bar and the filter bar until the template is reset or the two blocks are added. That is stated rather than worked around: guessing at a saved template is worse than one clear step.
+
+* **The two search blocks were named a word apart** ("Handbook search" and "Handbook search bar"), and the wrong one renders nothing on an entry page, which is how it was found: inserting it produced an empty spot and no reason why. The search bar of a handbook is now **Handbook search** (`living-handbook/search-form`), and the one that lists pages as you type is **Handbook quick search** (`living-handbook/search`). The block names in post content are unchanged, so nothing has to be re-inserted.
+
+* **The quick search renders wherever the page knows its handbook**, an entry page included, instead of bailing on anything but a single page. Rendering nothing is a fair answer when there is no handbook; it was not a fair answer here.
+
+### Removed
+
+* `.living-handbook-layout` and `.living-handbook-aside`. The entry block no longer draws a two-column grid with a sidebar, so both classes are gone from the markup and the stylesheet. The box the sidebar gave the facet form now sits on `.living-handbook-filterform`, which is the element that survived, and custom CSS that targeted the two should move there. Documented in `customization.md`.
+
 ## [0.65.0] - 2026-08-08
 
 ### Added
