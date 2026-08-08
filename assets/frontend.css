@@ -108,13 +108,27 @@
 /* Entry page: search, layout, headings */
 
 .living-handbook-start__search {
+	margin: 0 0 1.5rem;
+}
+
+/* The field and its button. The label sits above them when it is shown, so the
+ * row is its own element rather than the form itself. */
+.living-handbook-start__search-field {
 	display: flex;
 	gap: 0.5rem;
-	margin: 0 0 1.5rem;
+}
+
+.living-handbook-start__search-label {
+	display: block;
+	margin: 0 0 0.35rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.9);
+	font-weight: 600;
+	color: var(--lh-muted);
 }
 
 .living-handbook-start__search .living-handbook-search__input {
 	flex: 1;
+	min-width: 0;
 	padding: 0.85rem 1rem;
 	font-size: calc(var(--lh-base, 1rem) * 1.05);
 	background: var(--lh-surface);
@@ -130,6 +144,33 @@
 	background: var(--lh-accent);
 	color: var(--lh-on-accent);
 	cursor: pointer;
+}
+
+/* Button inside the field: one bordered box with the button set into it. The
+ * border moves to the row, so the two do not draw two outlines. */
+.living-handbook-start__search[data-button-position="button-inside"] .living-handbook-start__search-field {
+	gap: 0;
+	background: var(--lh-surface);
+	border: 1px solid var(--lh-border);
+	border-radius: 10px;
+	padding: 0.2rem;
+}
+
+.living-handbook-start__search[data-button-position="button-inside"] .living-handbook-search__input {
+	border: 0;
+	background: transparent;
+}
+
+.living-handbook-start__search[data-button-position="button-inside"] button {
+	padding: 0.65rem 1.1rem;
+	border-radius: 8px;
+}
+
+/* The block supports write colour, border and spacing onto the form itself, so
+ * a form styled that way must not be overridden by the plain field border. */
+.living-handbook-start__search.has-background,
+.living-handbook-start__search.has-border-color {
+	padding: 0.75rem;
 }
 
 .living-handbook-layout {
@@ -539,6 +580,43 @@
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	color: var(--lh-muted);
+}
+
+/* The link to one section. Out of the way until the heading is hovered or the
+ * link itself is focused, so it does not compete with the heading; never
+ * display:none, because a keyboard has to be able to reach it. A touch screen
+ * has no hover, so it stays visible there. */
+.living-handbook-anchor {
+	margin-inline-start: 0.35em;
+	font-weight: 400;
+	color: var(--lh-muted);
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity 0.1s ease;
+}
+
+h2:hover > .living-handbook-anchor,
+h3:hover > .living-handbook-anchor,
+h4:hover > .living-handbook-anchor,
+.living-handbook-anchor:focus,
+.living-handbook-anchor:focus-visible {
+	opacity: 1;
+}
+
+.living-handbook-anchor:hover {
+	color: var(--lh-accent);
+}
+
+@media (hover: none) {
+	.living-handbook-anchor {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.living-handbook-anchor {
+		transition: none;
+	}
 }
 
 .living-handbook-toc__list {
@@ -992,6 +1070,30 @@
 .living-handbook-page-search__empty {
 	padding: 0.5rem 0.6rem;
 	color: var(--lh-muted, #5f6b75);
+}
+
+/* The quoted sentence under a result. Smaller and quieter than the title, and
+ * limited to two lines, so eight results stay a list one can scan. */
+.living-handbook-page-search__snippet {
+	margin: -0.35rem 0 0.35rem;
+	padding: 0 0.6rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.85);
+	line-height: 1.45;
+	color: var(--lh-muted, #5f6b75);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* The hit itself. A background alone would carry the meaning by colour only, so
+ * the words are also set in bold. */
+.living-handbook-page-search__snippet mark {
+	background: var(--lh-accent-soft, #eaf1f8);
+	color: var(--lh-surface-text, inherit);
+	font-weight: 600;
+	border-radius: 3px;
+	padding: 0 0.1em;
 }
 
 /* Pagination for the filtered result list. */

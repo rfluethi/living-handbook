@@ -5,10 +5,14 @@
  * WordPress has one place where a person says what the list should show, the
  * "Screen Options" panel, and it only governs columns. The filters above the
  * list were unaffected, so a list narrowed to title and handbook still offered
- * five dropdowns. These tests hold the two halves of the rule: a filter goes
- * when its column is off or its vocabulary is empty, and a filter that is
- * currently narrowing the list stays regardless, because a filter nobody can
- * see is a filter nobody can undo.
+ * seven dropdowns. These tests hold the three parts of the rule: a filter is
+ * hidden when its column is off, it is left out entirely when its vocabulary
+ * has no term, and it stays visible while it is narrowing the list, because a
+ * filter nobody can see is a filter nobody can undo.
+ *
+ * Hidden rather than left out matters: the Screen Options checkboxes take
+ * effect without a reload, and a control that was never rendered could be
+ * hidden live but never brought back.
  *
  * @package LivingHandbook
  */
@@ -29,6 +33,16 @@ use WP_UnitTestCase;
  * and GitSync::source_filter_dropdown.
  */
 final class ListFiltersTest extends WP_UnitTestCase {
+
+	/**
+	 * The column each filter belongs to.
+	 */
+	private const HANDBOOK_COLUMN = 'living_handbook_set';
+	private const TOPIC_COLUMN    = 'taxonomy-' . Taxonomies::TOPIC;
+	private const ROLE_COLUMN     = 'taxonomy-' . Taxonomies::ROLE;
+	private const AUDIENCE_COLUMN = 'taxonomy-' . Taxonomies::AUDIENCE;
+	private const REVIEW_COLUMN   = 'living_handbook_reviewed';
+	private const SOURCE_COLUMN   = 'lh_source';
 
 	/**
 	 * Put the code on the handbook list screen and give every vocabulary a term,
@@ -82,21 +96,6 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Whether the bar offers a control under this name.
-	 *
-	 * The quoting differs by origin: wp_dropdown_categories writes single quotes,
-	 * this plugin's own selects double ones. The test asks about the control, not
-	 * about who printed it.
-	 *
-	 * @param string $out  Rendered filter bar.
-	 * @param string $name Form field name.
-	 * @return bool
-	 */
-	private function offers( string $out, string $name ): bool {
-		return str_contains( $out, 'name="' . $name . '"' ) || str_contains( $out, "name='" . $name . "'" );
-	}
-
-	/**
 	 * The rendered filter bar of the handbook list.
 	 *
 	 * @return string
@@ -113,31 +112,82 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Nothing hidden, every vocabulary filled: all seven dropdowns.
+	 * The opening wrapper tag of one column's filter, or an empty string when
+	 * that filter was not rendered at all.
+	 *
+	 * @param string $out    Rendered filter bar.
+	 * @param string $column Column key.
+	 * @return string
+	 */
+	private function wrapper( string $out, string $column ): string {
+		$found = array();
+		if ( ! preg_match( '#<span class="living-handbook-list-filter" data-column="' . preg_quote( $column, '#' ) . '"[^>]*>#', $out, $found ) ) {
+			return '';
+		}
+		return $found[0];
+	}
+
+	/**
+	 * Whether the filter for a column is in the document at all.
+	 *
+	 * @param string $out    Rendered filter bar.
+	 * @param string $column Column key.
+	 * @return bool
+	 */
+	private function rendered( string $out, string $column ): bool {
+		return '' !== $this->wrapper( $out, $column );
+	}
+
+	/**
+	 * Whether the filter for a column is rendered and on screen.
+	 *
+	 * @param string $out    Rendered filter bar.
+	 * @param string $column Column key.
+	 * @return bool
+	 */
+	private function visible( string $out, string $column ): bool {
+		$wrapper = $this->wrapper( $out, $column );
+		return '' !== $wrapper && ! str_contains( $wrapper, ' hidden' );
+	}
+
+	/**
+	 * Nothing hidden, every vocabulary filled: all seven dropdowns, on screen.
 	 *
 	 * @return void
 	 */
 	public function test_all_filters_are_shown_by_default(): void {
 		$out = $this->filter_bar();
 
-		foreach ( array( Handbooks::TAXONOMY, Taxonomies::PAGE_TYPE, Taxonomies::TOPIC, Taxonomies::ROLE, Taxonomies::AUDIENCE, 'lh_status', 'lh_source' ) as $name ) {
-			$this->assertTrue( $this->offers( $out, $name ), $name . ' should be offered' );
+		$columns = array(
+			self::HANDBOOK_COLUMN,
+			'taxonomy-' . Taxonomies::PAGE_TYPE,
+			self::TOPIC_COLUMN,
+			self::ROLE_COLUMN,
+			self::AUDIENCE_COLUMN,
+			self::REVIEW_COLUMN,
+			self::SOURCE_COLUMN,
+		);
+		foreach ( $columns as $column ) {
+			$this->assertTrue( $this->visible( $out, $column ), $column . ' should be offered' );
 		}
 	}
 
 	/**
-	 * A hidden taxonomy column takes its dropdown with it, and only its own.
+	 * A hidden column hides its dropdown, and only its own. The dropdown stays in
+	 * the document, so switching the column back on can bring it back without a
+	 * reload.
 	 *
 	 * @return void
 	 */
-	public function test_a_hidden_column_removes_its_filter(): void {
-		$this->hide( array( 'taxonomy-' . Taxonomies::TOPIC ) );
+	public function test_a_hidden_column_hides_its_filter(): void {
+		$this->hide( array( self::TOPIC_COLUMN ) );
 
 		$out = $this->filter_bar();
 
-		$this->assertFalse( $this->offers( $out, Taxonomies::TOPIC ) );
-		$this->assertTrue( $this->offers( $out, Taxonomies::AUDIENCE ) );
-		$this->assertTrue( $this->offers( $out, Handbooks::TAXONOMY ) );
+		$this->assertTrue( $this->rendered( $out, self::TOPIC_COLUMN ) );
+		$this->assertFalse( $this->visible( $out, self::TOPIC_COLUMN ) );
+		$this->assertTrue( $this->visible( $out, self::AUDIENCE_COLUMN ) );
+		$this->assertTrue( $this->visible( $out, self::HANDBOOK_COLUMN ) );
 	}
 
 	/**
@@ -147,17 +197,18 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_the_handbook_filter_follows_the_handbook_column(): void {
-		$this->hide( array( 'living_handbook_set' ) );
+		$this->hide( array( self::HANDBOOK_COLUMN ) );
 
 		$out = $this->filter_bar();
 
-		$this->assertFalse( $this->offers( $out, Handbooks::TAXONOMY ) );
-		$this->assertTrue( $this->offers( $out, Taxonomies::TOPIC ) );
+		$this->assertFalse( $this->visible( $out, self::HANDBOOK_COLUMN ) );
+		$this->assertTrue( $this->visible( $out, self::TOPIC_COLUMN ) );
 	}
 
 	/**
-	 * A vocabulary without a single term offers nothing to choose, so it is left
-	 * out even with its column on screen.
+	 * A vocabulary without a single term is left out of the document entirely,
+	 * not just hidden. Unlike a column, that cannot change while the page is
+	 * open, so there is nothing to bring back.
 	 *
 	 * @return void
 	 */
@@ -174,22 +225,46 @@ final class ListFiltersTest extends WP_UnitTestCase {
 
 		$out = $this->filter_bar();
 
-		$this->assertFalse( $this->offers( $out, Taxonomies::ROLE ) );
-		$this->assertTrue( $this->offers( $out, Taxonomies::TOPIC ) );
+		$this->assertFalse( $this->rendered( $out, self::ROLE_COLUMN ) );
+		$this->assertTrue( $this->visible( $out, self::TOPIC_COLUMN ) );
 	}
 
 	/**
-	 * A filter that is currently narrowing the list survives its hidden column.
-	 * Without this, the list would stay filtered by a term with no control on
-	 * screen to clear it.
+	 * A filter that is currently narrowing the list stays on screen even with its
+	 * column hidden, and says so, so the script leaves it alone too. Without
+	 * this, the list would stay filtered by a term with no control to clear it.
 	 *
 	 * @return void
 	 */
 	public function test_an_active_filter_survives_a_hidden_column(): void {
 		$_GET[ Taxonomies::TOPIC ] = 'onboarding';
-		$this->hide( array( 'taxonomy-' . Taxonomies::TOPIC ) );
+		$this->hide( array( self::TOPIC_COLUMN ) );
 
-		$this->assertTrue( $this->offers( $this->filter_bar(), Taxonomies::TOPIC ) );
+		$out = $this->filter_bar();
+
+		$this->assertTrue( $this->visible( $out, self::TOPIC_COLUMN ) );
+		$this->assertStringContainsString( 'data-active="1"', $this->wrapper( $out, self::TOPIC_COLUMN ) );
+	}
+
+	/**
+	 * An active filter survives even when its vocabulary was emptied in the
+	 * meantime: the term is gone, the query var is not.
+	 *
+	 * @return void
+	 */
+	public function test_an_active_filter_survives_an_empty_vocabulary(): void {
+		foreach ( get_terms(
+			array(
+				'taxonomy'   => Taxonomies::ROLE,
+				'hide_empty' => false,
+				'fields'     => 'ids',
+			)
+		) as $term_id ) {
+			wp_delete_term( (int) $term_id, Taxonomies::ROLE );
+		}
+		$_GET[ Taxonomies::ROLE ] = 'editor';
+
+		$this->assertTrue( $this->visible( $this->filter_bar(), self::ROLE_COLUMN ) );
 	}
 
 	/**
@@ -198,11 +273,11 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_the_status_filter_follows_the_review_column(): void {
-		$this->hide( array( 'living_handbook_reviewed' ) );
-		$this->assertFalse( $this->offers( $this->filter_bar(), 'lh_status' ) );
+		$this->hide( array( self::REVIEW_COLUMN ) );
+		$this->assertFalse( $this->visible( $this->filter_bar(), self::REVIEW_COLUMN ) );
 
 		$_GET['lh_status'] = 'overdue';
-		$this->assertTrue( $this->offers( $this->filter_bar(), 'lh_status' ) );
+		$this->assertTrue( $this->visible( $this->filter_bar(), self::REVIEW_COLUMN ) );
 	}
 
 	/**
@@ -212,11 +287,11 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_the_source_filter_follows_the_source_column(): void {
-		$this->hide( array( 'lh_source' ) );
-		$this->assertFalse( $this->offers( $this->filter_bar(), 'lh_source' ) );
+		$this->hide( array( self::SOURCE_COLUMN ) );
+		$this->assertFalse( $this->visible( $this->filter_bar(), self::SOURCE_COLUMN ) );
 
 		$_GET['lh_source'] = 'github';
-		$this->assertTrue( $this->offers( $this->filter_bar(), 'lh_source' ) );
+		$this->assertTrue( $this->visible( $this->filter_bar(), self::SOURCE_COLUMN ) );
 	}
 
 	/**

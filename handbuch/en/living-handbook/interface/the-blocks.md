@@ -56,6 +56,20 @@ The following blocks already sit in the right place in the shipped page layouts.
 
 Builds a handbook's entry page: search, filters, area tiles and the recently updated pages. Works only on the entry page.
 
+In the block settings you can turn **Show the search bar** and **Show the filter bar** off one at a time. You need that when you want either of them somewhere else on the page: turn it off here, then place the matching block (below) where you want it. Do not have both draw it, or the page ends up with two search fields.
+
+### Handbook search bar
+
+The same search bar the Handbook entry block draws, free to place. It always searches the handbook the page belongs to, and it carries the active filters along.
+
+In the block settings: the label on or off and its wording, the placeholder, the button text, and whether the button sits beside the field, inside it, or not at all. Without a button, Enter searches. Colours, border, typography and spacing are set in the sidebar, the same way as for the core blocks.
+
+The label is in the document even when you hide it. A search field with nothing but a placeholder loses its name for screen readers as soon as someone types into it.
+
+### Handbook filter bar
+
+A handbook's facet filters as their own block: page type, topic, responsibility, audience. It only offers what the pages of this handbook actually carry, so it stays empty until something is set. It drives the result list of the Handbook entry block, even when it sits somewhere else entirely on the page.
+
 ### Handbook navigation
 
 ![Icon of the Handbook navigation block](../assets/bloecke-navigation.webp)
@@ -79,6 +93,10 @@ Builds "On this page" from the page's headings and highlights the current sectio
 ![Icon of the Handbook search block](../assets/bloecke-suche.webp)
 
 A search field that suggests matching pages of the handbook as you type. Works only on single pages.
+
+Under each result stands the sentence the words were found in, with the words highlighted. That is the page's own text around the hit, not its excerpt: an excerpt would be the same for every search and would not tell you why this page matched. When the search only matched the title, there is no sentence, so none is shown.
+
+In the block settings: the label on or off and its wording, plus the placeholder. Colours, border, typography and spacing as for the core blocks in the sidebar.
 
 ### Handbook feedback
 

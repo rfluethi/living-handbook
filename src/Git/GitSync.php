@@ -2475,28 +2475,28 @@ final class GitSync {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current = isset( $_GET['lh_source'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_source'] ) ) : '';
 
-		// Follows its column, like the other filters: switched off in Screen
-		// Options it goes too, unless it is currently narrowing the list, which
-		// has to stay undoable.
-		if ( '' === $current && ! ListScreen::shows_column( 'lh_source' ) ) {
-			return;
-		}
-
 		$options = array(
 			''                     => __( 'All sources', 'living-handbook' ),
 			self::SOURCE_GITHUB    => __( 'GitHub', 'living-handbook' ),
 			self::SOURCE_WORDPRESS => __( 'WordPress', 'living-handbook' ),
 		);
-		echo '<select name="lh_source">';
+
+		$select = '<select name="lh_source">';
 		foreach ( $options as $value => $label ) {
-			printf(
+			$select .= sprintf(
 				'<option value="%1$s"%2$s>%3$s</option>',
 				esc_attr( $value ),
 				selected( $current, $value, false ),
 				esc_html( $label )
 			);
 		}
-		echo '</select>';
+		$select .= '</select>';
+
+		// Follows its column, like the other filters, through the same wrapper:
+		// switched off in Screen Options it goes too, unless it is currently
+		// narrowing the list, which has to stay undoable.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built above from escaped values.
+		echo ListScreen::wrap( 'lh_source', $select, '' !== $current );
 	}
 
 	/**

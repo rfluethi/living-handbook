@@ -16,6 +16,14 @@
 		"display": {
 			"type": "string",
 			"default": "cards"
+		},
+		"showSearch": {
+			"type": "boolean",
+			"default": true
+		},
+		"showFilters": {
+			"type": "boolean",
+			"default": true
 		}
 	},
 	"supports": {

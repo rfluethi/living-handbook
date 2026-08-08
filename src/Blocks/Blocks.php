@@ -15,6 +15,7 @@ namespace LivingHandbook\Blocks;
 
 use LivingHandbook\Frontend\Cards;
 use LivingHandbook\Frontend\Entry;
+use LivingHandbook\Frontend\Filters;
 use LivingHandbook\Frontend\Navigation;
 use LivingHandbook\Frontend\PageMeta;
 use LivingHandbook\Handbook\Handbooks;
@@ -63,15 +64,17 @@ final class Blocks {
 		// supports, keywords, description) from blocks/<name>/block.json, the
 		// single source; only the server render callback is supplied here.
 		$blocks = array(
-			'navigation' => array( $this, 'render_navigation' ),
-			'toc'        => array( $this, 'render_toc' ),
-			'pagemeta'   => array( $this, 'render_pagemeta' ),
-			'overview'   => array( $this, 'render_overview' ),
-			'entry'      => array( $this, 'render_entry' ),
-			'menu'       => array( $this, 'render_menu' ),
-			'badges'     => array( $this, 'render_badges' ),
-			'feedback'   => array( $this, 'render_feedback' ),
-			'search'     => array( $this, 'render_search' ),
+			'navigation'  => array( $this, 'render_navigation' ),
+			'toc'         => array( $this, 'render_toc' ),
+			'pagemeta'    => array( $this, 'render_pagemeta' ),
+			'overview'    => array( $this, 'render_overview' ),
+			'entry'       => array( $this, 'render_entry' ),
+			'menu'        => array( $this, 'render_menu' ),
+			'badges'      => array( $this, 'render_badges' ),
+			'feedback'    => array( $this, 'render_feedback' ),
+			'search'      => array( $this, 'render_search' ),
+			'search-form' => array( $this, 'render_search_form' ),
+			'filters'     => array( $this, 'render_filters' ),
 		);
 		foreach ( $blocks as $dir => $callback ) {
 			register_block_type(
@@ -114,7 +117,91 @@ final class Blocks {
 	 */
 	public function render_entry( array $attributes ): string {
 		$term = get_queried_object();
-		return self::with_block_attributes( $term instanceof WP_Term ? Entry::render_entry( $term, self::display_mode( $attributes ) ) : '', $attributes );
+		if ( ! $term instanceof WP_Term ) {
+			return '';
+		}
+
+		// Both parts are on unless a template turns them off, which is what a
+		// template does when it places the search bar or the filter bar as their
+		// own blocks somewhere else on the page.
+		$with_search  = ! isset( $attributes['showSearch'] ) || false !== $attributes['showSearch'];
+		$with_filters = ! isset( $attributes['showFilters'] ) || false !== $attributes['showFilters'];
+
+		return self::with_block_attributes(
+			Entry::render_entry( $term, self::display_mode( $attributes ), $with_search, $with_filters ),
+			$attributes
+		);
+	}
+
+	/**
+	 * Render the handbook search bar as its own block.
+	 *
+	 * Same control as the one inside the entry block, so a template can put it
+	 * where it wants instead of taking the layout the entry block draws. It finds
+	 * its handbook itself: the queried handbook on an entry page, the page's
+	 * handbook on a single page.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_search_form( array $attributes = array() ): string {
+		$term_id = self::current_term_id();
+		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
+		if ( ! $term instanceof WP_Term ) {
+			return '';
+		}
+
+		return self::with_block_attributes(
+			Filters::search_form(
+				$term,
+				array(
+					'show_label'         => ! empty( $attributes['showLabel'] ),
+					'label'              => isset( $attributes['label'] ) ? (string) $attributes['label'] : '',
+					'placeholder'        => isset( $attributes['placeholder'] ) ? (string) $attributes['placeholder'] : '',
+					'button_text'        => isset( $attributes['buttonText'] ) ? (string) $attributes['buttonText'] : '',
+					'button_position'    => isset( $attributes['buttonPosition'] ) ? (string) $attributes['buttonPosition'] : 'button-outside',
+					'wrapper_attributes' => self::wrapper_attributes( 'living-handbook-start__search' ),
+				)
+			),
+			$attributes
+		);
+	}
+
+	/**
+	 * Render the handbook filter bar as its own block.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_filters( array $attributes = array() ): string {
+		$term_id = self::current_term_id();
+		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
+		if ( ! $term instanceof WP_Term ) {
+			return '';
+		}
+
+		return self::with_block_attributes(
+			Filters::facets( $term, self::wrapper_attributes( 'living-handbook-filterform' ) ),
+			$attributes
+		);
+	}
+
+	/**
+	 * The block wrapper attributes for a block that renders its own root element.
+	 *
+	 * This is what makes the block supports real: colour, border, typography and
+	 * spacing are set in the editor and arrive as classes and inline styles from
+	 * here. The plugin's own class is passed in so it survives, because the
+	 * wrapper attributes replace the class attribute rather than add to it.
+	 *
+	 * @param string $keep The plugin class the markup needs to keep.
+	 * @return string
+	 */
+	private static function wrapper_attributes( string $keep ): string {
+		if ( ! function_exists( 'get_block_wrapper_attributes' ) ) {
+			return 'class="' . esc_attr( $keep ) . '"';
+		}
+		return get_block_wrapper_attributes( array( 'class' => $keep ) );
 	}
 
 	/**
@@ -212,18 +299,30 @@ final class Blocks {
 		// markup promised the pattern without implementing it. Arrow keys walk the
 		// list, Escape closes it, and a status line says how many matches there
 		// are, which is what the pattern was announcing in the first place.
-		$id   = wp_unique_id( 'living-handbook-search-' );
+		$id          = wp_unique_id( 'living-handbook-search-' );
+		$label       = isset( $attributes['label'] ) && '' !== $attributes['label']
+			? (string) $attributes['label']
+			: __( 'Search this handbook', 'living-handbook' );
+		$placeholder = isset( $attributes['placeholder'] ) && '' !== $attributes['placeholder']
+			? (string) $attributes['placeholder']
+			: __( 'Search this handbook …', 'living-handbook' );
+
+		// The label stays in the document whether or not it is shown: a search
+		// field with nothing but a placeholder has no accessible name as soon as
+		// something is typed into it.
 		$html = sprintf(
-			'<div class="living-handbook-page-search" data-term-id="%1$s">'
-			. '<label class="living-handbook-visually-hidden" for="%2$s">%3$s</label>'
-			. '<input type="search" id="%2$s" class="living-handbook-page-search__input" autocomplete="off" placeholder="%4$s" aria-describedby="%2$s-status">'
-			. '<p id="%2$s-status" class="living-handbook-visually-hidden" role="status"></p>'
-			. '<ul id="%2$s-results" class="living-handbook-page-search__results" hidden></ul>'
+			'<div %1$s data-term-id="%2$s">'
+			. '<label class="%6$s" for="%3$s">%4$s</label>'
+			. '<input type="search" id="%3$s" class="living-handbook-page-search__input" autocomplete="off" placeholder="%5$s" aria-describedby="%3$s-status">'
+			. '<p id="%3$s-status" class="living-handbook-visually-hidden" role="status"></p>'
+			. '<ul id="%3$s-results" class="living-handbook-page-search__results" hidden></ul>'
 			. '</div>',
+			self::wrapper_attributes( 'living-handbook-page-search' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes escapes its own output.
 			esc_attr( (string) $term_id ),
 			esc_attr( $id ),
-			esc_html__( 'Search this handbook', 'living-handbook' ),
-			esc_attr__( 'Search this handbook …', 'living-handbook' )
+			esc_html( $label ),
+			esc_attr( $placeholder ),
+			empty( $attributes['showLabel'] ) ? 'living-handbook-visually-hidden' : 'living-handbook-page-search__label'
 		);
 		return self::with_block_attributes( $html, $attributes );
 	}

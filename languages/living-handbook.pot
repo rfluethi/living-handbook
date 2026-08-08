@@ -2,21 +2,21 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.64.0\n"
+"Project-Id-Version: Living Handbook 0.65.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-08T13:32:08+00:00\n"
+"POT-Creation-Date: 2026-08-08T15:42:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
 
 #. Plugin Name of the plugin
 #: living-handbook.php
-#: src/Blocks/Blocks.php:93
+#: src/Blocks/Blocks.php:96
 msgid "Living Handbook"
 msgstr ""
 
@@ -54,38 +54,38 @@ msgstr ""
 msgid "Back to the site"
 msgstr ""
 
-#: src/Admin/Maintenance.php:84
+#: src/Admin/Maintenance.php:85
 msgid "Reset feedback"
 msgstr ""
 
-#: src/Admin/Maintenance.php:98
+#: src/Admin/Maintenance.php:99
 msgid "You are not allowed to reset feedback for this page."
 msgstr ""
 
-#: src/Admin/Maintenance.php:128
+#: src/Admin/Maintenance.php:129
 msgid "Feedback was reset."
 msgstr ""
 
-#: src/Admin/Maintenance.php:142
+#: src/Admin/Maintenance.php:143
 msgid "Handbook: reviews overdue"
 msgstr ""
 
 #. translators: 1: overdue count, 2: total count, 3: percentage.
-#: src/Admin/Maintenance.php:197
+#: src/Admin/Maintenance.php:198
 #, php-format
 msgid "%1$d of %2$d pages overdue (%3$d%%)."
 msgstr ""
 
-#: src/Admin/Maintenance.php:206
+#: src/Admin/Maintenance.php:207
 msgid "All pages are currently reviewed."
 msgstr ""
 
-#: src/Admin/Maintenance.php:235
+#: src/Admin/Maintenance.php:236
 msgid "Show all handbook pages, oldest review first"
 msgstr ""
 
-#: src/Admin/Maintenance.php:255
-#: src/Admin/Maintenance.php:259
+#: src/Admin/Maintenance.php:256
+#: src/Admin/Maintenance.php:260
 #: src/Handbook/Handbooks.php:279
 #: src/Import/HandbookExport.php:114
 #: src/PostType/Handbook.php:95
@@ -94,7 +94,7 @@ msgstr ""
 msgid "Handbook"
 msgstr ""
 
-#: src/Admin/Maintenance.php:262
+#: src/Admin/Maintenance.php:263
 #: src/Frontend/PageMeta.php:85
 #: src/Meta/Metadata.php:210
 #: src/Meta/Metadata.php:347
@@ -102,28 +102,28 @@ msgstr ""
 msgid "Last reviewed"
 msgstr ""
 
-#: src/Admin/Maintenance.php:263
+#: src/Admin/Maintenance.php:264
 #: src/Setup/Settings.php:50
 msgid "Feedback"
 msgstr ""
 
-#: src/Admin/Maintenance.php:283
+#: src/Admin/Maintenance.php:284
 msgid "No handbook, so this page stays invisible on the front end."
 msgstr ""
 
 #. translators: 1: number of positive votes, 2: number of negative votes.
-#: src/Admin/Maintenance.php:322
+#: src/Admin/Maintenance.php:323
 #, php-format
 msgid "%1$d yes, %2$d no"
 msgstr ""
 
 #. translators: %s: the plural taxonomy name, for example "Topics".
-#: src/Admin/Maintenance.php:467
+#: src/Admin/Maintenance.php:468
 #, php-format
 msgid "All %s"
 msgstr ""
 
-#: src/Admin/Maintenance.php:506
+#: src/Admin/Maintenance.php:530
 msgid "All review statuses"
 msgstr ""
 
@@ -163,19 +163,19 @@ msgstr[1] ""
 msgid "The moved pages have no review date yet, so they show as \"Not reviewed\" until you set one."
 msgstr ""
 
-#: src/Blocks/Blocks.php:173
-#: src/Blocks/Blocks.php:174
-#: assets/blocks.js:133
+#: src/Blocks/Blocks.php:260
+#: src/Blocks/Blocks.php:261
+#: assets/blocks.js:134
 msgid "Table of Contents"
 msgstr ""
 
-#: src/Blocks/Blocks.php:225
-#: src/Frontend/Filters.php:257
+#: src/Blocks/Blocks.php:305
+#: src/Frontend/Filters.php:385
 msgid "Search this handbook"
 msgstr ""
 
-#: src/Blocks/Blocks.php:226
-#: src/Frontend/Filters.php:258
+#: src/Blocks/Blocks.php:308
+#: src/Frontend/Filters.php:388
 msgid "Search this handbook …"
 msgstr ""
 
@@ -322,68 +322,69 @@ msgstr ""
 msgid "Handbooks"
 msgstr ""
 
-#: src/Frontend/Entry.php:139
+#: src/Frontend/Entry.php:146
 msgid "Areas"
 msgstr ""
 
-#: src/Frontend/Entry.php:144
+#: src/Frontend/Entry.php:151
 msgid "Recently updated"
 msgstr ""
 
-#: src/Frontend/Entry.php:148
+#: src/Frontend/Entry.php:155
 msgid "This handbook has no pages yet."
 msgstr ""
 
-#: src/Frontend/Entry.php:153
+#: src/Frontend/Entry.php:160
 msgid "Log in to see more."
 msgstr ""
 
-#: src/Frontend/Filters.php:260
+#: src/Frontend/Filters.php:391
+#: assets/blocks.js:283
 msgid "Search"
 msgstr ""
 
-#: src/Frontend/Filters.php:337
+#: src/Frontend/Filters.php:496
 msgid "Apply filters"
 msgstr ""
 
-#: src/Frontend/Filters.php:338
+#: src/Frontend/Filters.php:497
 msgid "Reset"
 msgstr ""
 
 #. translators: %d: number of matching pages.
-#: src/Frontend/Filters.php:531
+#: src/Frontend/Filters.php:690
 #, php-format
 msgid "%d page found"
 msgid_plural "%d pages found"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Frontend/Filters.php:534
+#: src/Frontend/Filters.php:693
 msgid "No matches. Adjust the filters or the search."
 msgstr ""
 
-#: src/Frontend/Filters.php:549
+#: src/Frontend/Filters.php:708
 #: src/PostType/Handbook.php:98
 msgid "Handbook pages"
 msgstr ""
 
-#: src/Frontend/Filters.php:662
+#: src/Frontend/Filters.php:821
 #: src/Taxonomy/Taxonomies.php:52
 msgid "Page type"
 msgstr ""
 
-#: src/Frontend/Filters.php:664
+#: src/Frontend/Filters.php:823
 #: src/Taxonomy/Taxonomies.php:62
 msgid "Topics"
 msgstr ""
 
-#: src/Frontend/Filters.php:666
+#: src/Frontend/Filters.php:825
 #: src/Taxonomy/Taxonomies.php:73
 #: src/Taxonomy/Taxonomies.php:74
 msgid "Responsibility"
 msgstr ""
 
-#: src/Frontend/Filters.php:668
+#: src/Frontend/Filters.php:827
 #: src/Taxonomy/Taxonomies.php:85
 msgid "Audience"
 msgstr ""
@@ -420,6 +421,12 @@ msgstr ""
 #: src/Frontend/FrontendRenderer.php:112
 #, php-format
 msgid "%d matching pages"
+msgstr ""
+
+#. translators: %s: the heading's text.
+#: src/Frontend/Headings.php:126
+#, php-format
+msgid "Link to this section: %s"
 msgstr ""
 
 #. translators: %s: handbook name.
@@ -710,13 +717,13 @@ msgid "OK %s"
 msgstr ""
 
 #: src/Git/GitSync.php:2456
-#: src/Git/GitSync.php:2487
+#: src/Git/GitSync.php:2480
 #: src/Import/MarkdownImportPage.php:972
 msgid "GitHub"
 msgstr ""
 
 #: src/Git/GitSync.php:2456
-#: src/Git/GitSync.php:2488
+#: src/Git/GitSync.php:2481
 msgid "WordPress"
 msgstr ""
 
@@ -724,7 +731,7 @@ msgstr ""
 msgid "(sync failed)"
 msgstr ""
 
-#: src/Git/GitSync.php:2486
+#: src/Git/GitSync.php:2479
 msgid "All sources"
 msgstr ""
 
@@ -1502,89 +1509,149 @@ msgstr ""
 msgid "Back to %s"
 msgstr ""
 
-#: assets/blocks.js:37
-#: assets/blocks.js:79
+#: assets/blocks.js:38
+#: assets/blocks.js:80
 msgid "Display"
 msgstr ""
 
-#: assets/blocks.js:40
+#: assets/blocks.js:41
 msgid "Cards"
 msgstr ""
 
-#: assets/blocks.js:41
+#: assets/blocks.js:42
 msgid "List"
 msgstr ""
 
-#: assets/blocks.js:67
+#: assets/blocks.js:68
 msgid "Overview"
 msgstr ""
 
-#: assets/blocks.js:82
+#: assets/blocks.js:83
 msgid "Menu"
 msgstr ""
 
-#: assets/blocks.js:83
+#: assets/blocks.js:84
 msgid "Accordion"
 msgstr ""
 
-#: assets/blocks.js:92
+#: assets/blocks.js:93
 msgid "Navigation"
 msgstr ""
 
-#: assets/blocks.js:93
+#: assets/blocks.js:94
 msgid "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings."
 msgstr ""
 
-#: assets/blocks.js:107
+#: assets/blocks.js:108
 msgid "Placement"
 msgstr ""
 
-#: assets/blocks.js:110
+#: assets/blocks.js:111
 msgid "Desktop (side column, open)"
 msgstr ""
 
-#: assets/blocks.js:111
+#: assets/blocks.js:112
 msgid "Mobile (above content, collapsed)"
 msgstr ""
 
-#: assets/blocks.js:121
+#: assets/blocks.js:122
 msgid "Heading depth (up to H…)"
 msgstr ""
 
-#: assets/blocks.js:134
+#: assets/blocks.js:135
 msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
 msgstr ""
 
-#: assets/blocks.js:145
+#: assets/blocks.js:146
 msgid "Show people (avatar and name)"
 msgstr ""
 
-#: assets/blocks.js:154
+#: assets/blocks.js:155
 msgid "Page meta"
 msgstr ""
 
-#: assets/blocks.js:155
+#: assets/blocks.js:156
 msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
 msgstr ""
 
-#: assets/blocks.js:168
+#: assets/blocks.js:202
 msgid "Entry"
 msgstr ""
 
-#: assets/blocks.js:169
-msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook."
+#: assets/blocks.js:204
+msgid "Show the search bar"
 msgstr ""
 
-#: assets/blocks.js:188
+#: assets/blocks.js:205
+msgid "Show the filter bar"
+msgstr ""
+
+#: assets/blocks.js:207
+msgid "Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook. Turn the search bar or the filter bar off here to place them as their own blocks."
+msgstr ""
+
+#: assets/blocks.js:218
+#: assets/blocks.js:284
+msgid "Show the label"
+msgstr ""
+
+#: assets/blocks.js:219
+#: assets/blocks.js:285
+msgid "Label"
+msgstr ""
+
+#: assets/blocks.js:219
+#: assets/blocks.js:285
+msgid "Read out to screen readers even when it is not shown."
+msgstr ""
+
+#: assets/blocks.js:220
+#: assets/blocks.js:286
+msgid "Placeholder"
+msgstr ""
+
+#: assets/blocks.js:221
+msgid "Button text"
+msgstr ""
+
+#: assets/blocks.js:226
+msgid "Button position"
+msgstr ""
+
+#: assets/blocks.js:229
+msgid "Outside the field"
+msgstr ""
+
+#: assets/blocks.js:230
+msgid "Inside the field"
+msgstr ""
+
+#: assets/blocks.js:231
+msgid "No button"
+msgstr ""
+
+#: assets/blocks.js:241
+msgid "Search bar"
+msgstr ""
+
+#: assets/blocks.js:242
+msgid "Handbook search bar: searches the handbook this page belongs to. Colours, border, typography and spacing are in the block settings; the wording is here."
+msgstr ""
+
+#: assets/blocks.js:252
+msgid "Handbook filter bar: page type, topic, responsibility and audience of the pages in this handbook. It only offers terms that are actually used, so it is empty until pages carry them."
+msgstr ""
+
+#: assets/blocks.js:270
 msgid "Handbook badges: page type, topic and audience of the current page."
 msgstr ""
 
-#: assets/blocks.js:193
+#: assets/blocks.js:275
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 
-#: assets/blocks.js:198
-msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type."
+#: assets/blocks.js:288
+msgid "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type, with the sentence each match was found in."
 msgstr ""
 
 #: assets/js/git-source-note-block.js:16
@@ -1777,10 +1844,12 @@ msgstr ""
 #: blocks/badges/block.json
 #: blocks/entry/block.json
 #: blocks/feedback/block.json
+#: blocks/filters/block.json
 #: blocks/menu/block.json
 #: blocks/navigation/block.json
 #: blocks/overview/block.json
 #: blocks/pagemeta/block.json
+#: blocks/search-form/block.json
 #: blocks/search/block.json
 #: blocks/toc/block.json
 msgctxt "block keyword"
@@ -1790,10 +1859,12 @@ msgstr ""
 #: blocks/badges/block.json
 #: blocks/entry/block.json
 #: blocks/feedback/block.json
+#: blocks/filters/block.json
 #: blocks/menu/block.json
 #: blocks/navigation/block.json
 #: blocks/overview/block.json
 #: blocks/pagemeta/block.json
+#: blocks/search-form/block.json
 #: blocks/search/block.json
 #: blocks/toc/block.json
 msgctxt "block keyword"
@@ -1803,10 +1874,12 @@ msgstr ""
 #: blocks/badges/block.json
 #: blocks/entry/block.json
 #: blocks/feedback/block.json
+#: blocks/filters/block.json
 #: blocks/menu/block.json
 #: blocks/navigation/block.json
 #: blocks/overview/block.json
 #: blocks/pagemeta/block.json
+#: blocks/search-form/block.json
 #: blocks/search/block.json
 #: blocks/toc/block.json
 msgctxt "block keyword"
@@ -1831,6 +1904,21 @@ msgstr ""
 #: blocks/feedback/block.json
 msgctxt "block description"
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
+msgstr ""
+
+#: blocks/filters/block.json
+msgctxt "block title"
+msgid "Handbook filter bar"
+msgstr ""
+
+#: blocks/filters/block.json
+msgctxt "block description"
+msgid "The filter bar of a handbook: page type, topic, responsibility and audience of the pages in it. Only offers terms that are actually used."
+msgstr ""
+
+#: blocks/filters/block.json
+msgctxt "block keyword"
+msgid "filter"
 msgstr ""
 
 #: blocks/git-source-note/block.json
@@ -1886,6 +1974,21 @@ msgstr ""
 #: blocks/pagemeta/block.json
 msgctxt "block description"
 msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
+msgstr ""
+
+#: blocks/search-form/block.json
+msgctxt "block title"
+msgid "Handbook search bar"
+msgstr ""
+
+#: blocks/search-form/block.json
+msgctxt "block description"
+msgid "The search bar of a handbook: submits to the handbook and narrows the list of pages. Keeps the active filters."
+msgstr ""
+
+#: blocks/search-form/block.json
+msgctxt "block keyword"
+msgid "search"
 msgstr ""
 
 #: blocks/search/block.json

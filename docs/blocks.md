@@ -36,9 +36,29 @@ The start page of one handbook. It shows a prominent search field, the areas of 
 
 Selecting a facet or submitting the search filters the list without reloading the page. The facet form also has a submit button, so it works without JavaScript; the frontend script hides that button and filters live as you toggle a facet. If JavaScript is unavailable, the facet form and the search both submit as a normal form.
 
-**Settings:** *Display* switches the cards between **Cards** (default) and **List**.
+**Settings:** *Display* switches the cards between **Cards** (default) and **List**. *Show the search bar* and *Show the filter bar* turn either control off, which is how you move it elsewhere on the page: turn it off here and place the matching block (below) where you want it. Leaving both on and also placing the separate block gives the page two search fields, which is worth avoiding.
 
 **Renders on:** a handbook entry page only (the `handbook_set` term archive, for example `/handbook-set/general/`), placed by the "Handbook entry" template. It reads which handbook to show from the URL, so it outputs nothing anywhere else.
+
+## Handbook search bar (`living-handbook/search-form`)
+
+The search bar of a handbook as its own block: the same control the entry block draws, free to place. It submits to the handbook and narrows the list of pages, carrying the active facet selections as hidden fields so a search does not silently drop the filters.
+
+**Settings:** *Show the label* and its wording, the placeholder, the button text, and where the button sits (outside the field, inside it, or no button at all). Without a button the form still submits with Enter. The label is in the document either way, shown or not: a search field with nothing but a placeholder loses its accessible name as soon as something is typed into it.
+
+Colour, border, typography and spacing are not settings here, they are the block's own supports in the sidebar, the same ones the core blocks use. The one thing the core search block has and this does not is the collapsible variant, left out until someone asks for it.
+
+**Renders on:** a handbook entry page, and a single handbook page (where it searches the handbook that page belongs to).
+
+## Handbook filter bar (`living-handbook/filters`)
+
+The facet filter of a handbook as its own block: page type, topic, responsible role and audience. It only offers terms that pages in this handbook actually use, so it is empty until pages carry them.
+
+With JavaScript it filters the result list in place; without it, its submit button reloads the page with the selection in the URL. It drives the result column of the entry block, which may sit anywhere on the same page.
+
+**Settings:** none of its own. Colour, border, typography and spacing come from the block supports.
+
+**Renders on:** a handbook entry page.
 
 ## Handbook menu (`living-handbook/menu`)
 
@@ -138,6 +158,10 @@ A short note marking a page as maintained on GitHub and updated automatically, w
 ## Handbook search (`living-handbook/search`)
 
 A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It only renders on a single handbook page; anywhere else it outputs nothing.
+
+Under each result stands the sentence the words were found in, with the words marked. That is the page's own text around the hit, not its excerpt: an excerpt is the same text for every search and would not say why this page matched. A page that matched by its title alone shows no sentence, because there is none to show. The pieces travel as text, not as markup, and the browser builds the `<mark>` elements from them, so nothing from a page's content is ever parsed as HTML on the way.
+
+**Settings:** *Show the label* and its wording, and the placeholder. Colour, border, typography and spacing come from the block supports.
 
 **Renders on:** single handbook pages only.
 

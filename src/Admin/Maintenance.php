@@ -51,6 +51,7 @@ final class Maintenance {
 		// matching the columns: "Last reviewed" comes before "Source".
 		add_action( 'restrict_manage_posts', array( $this, 'status_filter_dropdown' ), 15 );
 		add_action( 'pre_get_posts', array( $this, 'filter_by_status' ), 15 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_list_filters' ) );
 		add_filter( 'post_row_actions', array( $this, 'feedback_reset_action' ), 10, 2 );
 		add_action( 'admin_post_' . self::RESET_ACTION, array( $this, 'handle_feedback_reset' ) );
 		add_action( 'admin_notices', array( $this, 'feedback_reset_notice' ) );
@@ -452,20 +453,20 @@ final class Maintenance {
 			}
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
+			$active  = '' !== $current;
 
-			// A filter that is doing nothing and could do nothing is left out: its
-			// column is hidden, or the vocabulary has no term to choose. An active
-			// one is always drawn, whatever the columns say, so that what narrows
-			// the list can also be undone.
-			if ( '' === $current
-				&& ( ! ListScreen::shows_column( $column ) || ! ListScreen::taxonomy_has_terms( $taxonomy ) )
-			) {
+			// A vocabulary with no term at all is left out entirely: its dropdown
+			// could only offer "All topics", and unlike a hidden column that cannot
+			// change while the page is open. A hidden column, by contrast, only
+			// hides the control, so switching the column back on brings it back
+			// without a reload.
+			if ( ! $active && ! ListScreen::taxonomy_has_terms( $taxonomy ) ) {
 				continue;
 			}
 
 			/* translators: %s: the plural taxonomy name, for example "Topics". */
 			$all_label = sprintf( __( 'All %s', 'living-handbook' ), $object->labels->name );
-			wp_dropdown_categories(
+			$dropdown  = wp_dropdown_categories(
 				array(
 					'taxonomy'        => $taxonomy,
 					'name'            => $taxonomy,
@@ -475,9 +476,38 @@ final class Maintenance {
 					'hierarchical'    => is_taxonomy_hierarchical( $taxonomy ),
 					'orderby'         => 'name',
 					'selected'        => $current,
+					'echo'            => false,
 				)
 			);
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_dropdown_categories escapes its own markup; the wrapper escapes its attributes.
+			echo ListScreen::wrap( $column, (string) $dropdown, $active );
 		}
+	}
+
+	/**
+	 * Load the small script that keeps the filter bar in step with the column
+	 * checkboxes, on the handbook list only.
+	 *
+	 * @param string $hook The current admin page.
+	 * @return void
+	 */
+	public function enqueue_list_filters( string $hook ): void {
+		if ( 'edit.php' !== $hook ) {
+			return;
+		}
+		$screen = get_current_screen();
+		if ( null === $screen || Handbook::POST_TYPE !== $screen->post_type ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'living-handbook-list-filters',
+			LIVING_HANDBOOK_URL . 'assets/js/list-filters.js',
+			array(),
+			LIVING_HANDBOOK_VERSION,
+			true
+		);
 	}
 
 	/**
@@ -496,12 +526,6 @@ final class Maintenance {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current = isset( $_GET['lh_status'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_status'] ) ) : '';
 
-		// Same rule as the taxonomy filters: gone with its column, unless it is
-		// currently narrowing the list.
-		if ( '' === $current && ! ListScreen::shows_column( 'living_handbook_reviewed' ) ) {
-			return;
-		}
-
 		$options = array(
 			''                       => __( 'All review statuses', 'living-handbook' ),
 			FreshnessStatus::OVERDUE => FreshnessStatus::label( FreshnessStatus::OVERDUE ),
@@ -509,16 +533,22 @@ final class Maintenance {
 			FreshnessStatus::OK      => FreshnessStatus::label( FreshnessStatus::OK ),
 			FreshnessStatus::NONE    => FreshnessStatus::label( FreshnessStatus::NONE ),
 		);
-		echo '<select name="lh_status">';
+
+		$select = '<select name="lh_status">';
 		foreach ( $options as $value => $label ) {
-			printf(
+			$select .= sprintf(
 				'<option value="%1$s"%2$s>%3$s</option>',
 				esc_attr( $value ),
 				selected( $current, $value, false ),
 				esc_html( $label )
 			);
 		}
-		echo '</select>';
+		$select .= '</select>';
+
+		// Same rule as the taxonomy filters, and the same wrapper, so it follows
+		// the "Last reviewed" column live.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built above from escaped values.
+		echo ListScreen::wrap( 'living_handbook_reviewed', $select, '' !== $current );
 	}
 
 	/**

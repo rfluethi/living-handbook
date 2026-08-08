@@ -68,7 +68,8 @@
 	// count ("%d pages found") and the empty message, both translated, so the
 	// status line repeats that text rather than inventing a second wording.
 	function announceCount( entry, main ) {
-		var status = entry.querySelector( '.living-handbook-entry__status' );
+		var status = entry.querySelector( '.living-handbook-entry__status' )
+			|| document.querySelector( '.living-handbook-entry__status' );
 		if ( ! status ) {
 			return;
 		}
@@ -89,11 +90,15 @@
 		var params = new URLSearchParams();
 		params.set( 'term_id', termId );
 
-		var input = entry.querySelector( '.living-handbook-search__input' );
+		// The controls are looked up in the document, not in the entry element.
+		// Since 0.65.0 the search bar and the filter bar can be their own blocks
+		// and sit anywhere on the page, and a term archive shows exactly one
+		// handbook, so the document is the right scope.
+		var input = document.querySelector( '.living-handbook-search__input' );
 		if ( input && input.value.trim() ) {
 			params.set( 'lh_s', input.value.trim() );
 		}
-		entry.querySelectorAll( '.living-handbook-facet__cb:checked' ).forEach( function ( cb ) {
+		document.querySelectorAll( '.living-handbook-facet__cb:checked' ).forEach( function ( cb ) {
 			params.append( cb.name, cb.value );
 		} );
 
@@ -134,43 +139,51 @@
 		} );
 	}
 
+	// The entry element is the one that holds the result column and knows the
+	// handbook. The controls may live inside it, or as their own blocks anywhere
+	// else on the page; either way they drive this one.
+	function entryElement() {
+		return document.querySelector( '.living-handbook-entry[data-term-id]' );
+	}
+
 	function wireEntry( entry ) {
+		if ( ! entry ) {
+			return;
+		}
+
 		// With JavaScript the facets filter live on change, so the no-JS submit
 		// button is hidden.
-		entry.querySelectorAll( '.living-handbook-filterform__submit' ).forEach( function ( button ) {
+		document.querySelectorAll( '.living-handbook-filterform__submit' ).forEach( function ( button ) {
 			button.hidden = true;
 		} );
 
-		entry.addEventListener( 'change', function ( event ) {
+		// Listening on the document rather than on the entry element, because a
+		// filter bar placed as its own block is not inside it. A no-JS page keeps
+		// working either way: the forms submit to the handbook.
+		document.addEventListener( 'change', function ( event ) {
 			if ( event.target && event.target.classList && event.target.classList.contains( 'living-handbook-facet__cb' ) ) {
 				ajaxFilter( entry );
 			}
 		} );
 
-		var searchForm = entry.querySelector( '.living-handbook-start__search' );
-		if ( searchForm && canAjax() ) {
-			searchForm.addEventListener( 'submit', function ( event ) {
+		document.querySelectorAll( '.living-handbook-start__search, .living-handbook-filterform' ).forEach( function ( form ) {
+			if ( ! canAjax() ) {
+				return;
+			}
+			form.addEventListener( 'submit', function ( event ) {
 				event.preventDefault();
 				ajaxFilter( entry );
 			} );
-		}
+		} );
 
 		// Live search: re-run the server search after a short debounce, so the
 		// result list (title and body matches) stays authoritative instead of
 		// hiding cards by their visible text.
-		var searchInput = entry.querySelector( '.living-handbook-search__input' );
+		var searchInput = document.querySelector( '.living-handbook-search__input' );
 		if ( searchInput && canAjax() ) {
 			searchInput.addEventListener( 'input', debounce( function () {
 				ajaxFilter( entry );
 			}, 150 ) );
-		}
-
-		var filterForm = entry.querySelector( '.living-handbook-filterform' );
-		if ( filterForm && canAjax() ) {
-			filterForm.addEventListener( 'submit', function ( event ) {
-				event.preventDefault();
-				ajaxFilter( entry );
-			} );
 		}
 	}
 
@@ -272,6 +285,25 @@
 					a.href = item.url;
 					a.textContent = item.title;
 					li.appendChild( a );
+
+					// The sentence the words were found in, built from segments the
+					// server marked. Every piece goes in as text, so nothing from the
+					// page content is ever parsed as markup here.
+					if ( item.snippet && item.snippet.length ) {
+						var p = document.createElement( 'p' );
+						p.className = 'living-handbook-page-search__snippet';
+						item.snippet.forEach( function ( part ) {
+							if ( part.mark ) {
+								var mark = document.createElement( 'mark' );
+								mark.textContent = part.text;
+								p.appendChild( mark );
+							} else {
+								p.appendChild( document.createTextNode( part.text ) );
+							}
+						} );
+						li.appendChild( p );
+					}
+
 					results.appendChild( li );
 				} );
 				// One short sentence, not the whole list: the list itself is right
@@ -399,11 +431,25 @@
 			return;
 		}
 
+		// h2 to h4 get their id from the server, from the heading text. What is
+		// left here are h1, h5 and h6, and any heading on a page this filter did
+		// not touch. Those keep the positional fallback: it is not an address to
+		// pass on, but it is enough for the table of contents on this page.
 		heads.forEach( function ( h, i ) {
 			if ( ! h.id ) {
 				h.id = 'lh-section-' + i;
 			}
 		} );
+
+		// The heading text without the anchor link, so the entry does not read
+		// "Installation #".
+		function headingText( h ) {
+			var copy = h.cloneNode( true );
+			copy.querySelectorAll( '.living-handbook-anchor' ).forEach( function ( a ) {
+				a.remove();
+			} );
+			return copy.textContent.trim();
+		}
 
 		var map = {};
 
@@ -425,7 +471,7 @@
 				li.style.paddingInlineStart = ( ( level( h ) - 1 ) * 0.8 ) + 'rem';
 				var a = document.createElement( 'a' );
 				a.href = '#' + h.id;
-				a.textContent = h.textContent;
+				a.textContent = headingText( h );
 				a.addEventListener( 'click', function ( event ) {
 					event.preventDefault();
 					h.scrollIntoView( { behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' } );
@@ -726,7 +772,7 @@
 		wireMenus();
 		initLightbox();
 
-		document.querySelectorAll( '.living-handbook-entry' ).forEach( wireEntry );
+		wireEntry( entryElement() );
 		document.querySelectorAll( '.living-handbook-page-search' ).forEach( wirePageSearch );
 
 		document.querySelectorAll( '.living-handbook-feedback' ).forEach( function ( box ) {

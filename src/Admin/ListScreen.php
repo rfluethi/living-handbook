@@ -57,6 +57,32 @@ final class ListScreen {
 	}
 
 	/**
+	 * Wrap a filter control so it can follow its column, before and after the
+	 * page is loaded.
+	 *
+	 * The control is always in the document, hidden rather than left out, because
+	 * the Screen Options checkboxes take effect without a reload: a control that
+	 * was never rendered could be hidden live but never brought back. `hidden`
+	 * does the work on its own, so a browser without the script still gets the
+	 * right filter bar for the columns it was loaded with.
+	 *
+	 * @param string $column Column key this filter belongs to.
+	 * @param string $html   The rendered control.
+	 * @param bool   $active Whether this filter is currently narrowing the list.
+	 * @return string
+	 */
+	public static function wrap( string $column, string $html, bool $active ): string {
+		if ( '' === $html ) {
+			return '';
+		}
+
+		return '<span class="living-handbook-list-filter" data-column="' . esc_attr( $column ) . '"'
+			. ( $active ? ' data-active="1"' : '' )
+			. ( ! $active && ! self::shows_column( $column ) ? ' hidden' : '' )
+			. '>' . $html . '</span>';
+	}
+
+	/**
 	 * Whether a taxonomy has any term at all.
 	 *
 	 * A vocabulary nobody has filled cannot narrow anything: its dropdown offers

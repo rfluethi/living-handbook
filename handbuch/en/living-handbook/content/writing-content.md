@@ -11,6 +11,12 @@ Two recommendations for readable pages:
 * **Start with a short opening sentence.** It says what the page delivers and who it is for. The same sentence works well as the short text on the overview tiles.
 * **Structure with subheadings.** Use headings of level 2 and below. The "On this page" list builds itself from them.
 
+### Linking to one section
+
+Headings of levels 2 to 4 get an address of their own, made from their text. Hover a heading and a `#` appears beside it. Clicking it jumps to the section and puts the address in the address bar, ready to pass on, for example `.../understanding-access/#three-levels`.
+
+The address hangs on the heading's text, not on its position. Insert a section above and every link below it stays valid. Change a heading's wording, though, and its address changes with it, so older links stop working. To prevent that, set a fixed **HTML anchor** under **Advanced** in the editor: it holds whatever the heading is called.
+
 ## Using diagrams
 
 Does a workflow have several steps or decisions? Then a diagram often shows more than a long paragraph. Living Handbook draws diagrams itself, right on the page. They are described in [Mermaid](https://mermaid.js.org/), a simple text language for diagrams. Insert the **Mermaid** block in the editor and write the diagram description into it. How the block works, with an example, is on [The blocks](../interface/the-blocks.md); a larger diagram is on [The review cycle](../upkeep/the-review-cycle.md).

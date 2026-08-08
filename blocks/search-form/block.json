@@ -1,12 +1,12 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "living-handbook/search",
-	"title": "Handbook search",
+	"name": "living-handbook/search-form",
+	"title": "Handbook search bar",
 	"category": "living-handbook",
 	"icon": "search",
-	"description": "Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type.",
-	"keywords": [ "handbook", "living handbook", "documentation" ],
+	"description": "The search bar of a handbook: submits to the handbook and narrows the list of pages. Keeps the active filters.",
+	"keywords": [ "handbook", "living handbook", "search", "documentation" ],
 	"textdomain": "living-handbook",
 	"editorScript": "living-handbook-blocks",
 	"viewScript": "living-handbook",
@@ -24,6 +24,14 @@
 		"placeholder": {
 			"type": "string",
 			"default": ""
+		},
+		"buttonText": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonPosition": {
+			"type": "string",
+			"default": "button-outside"
 		}
 	},
 	"supports": {
@@ -32,7 +40,8 @@
 		"customClassName": true,
 		"color": {
 			"background": true,
-			"text": true
+			"text": true,
+			"gradients": true
 		},
 		"typography": {
 			"fontSize": true,

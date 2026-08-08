@@ -17,6 +17,26 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.65.0] - 2026-08-08
+
+### Added
+
+* **The search bar and the filter bar are blocks of their own** (`living-handbook/search-form`, `living-handbook/filters`). Until now `Entry::render_entry()` drew both in one fixed layout: search on top, facets on the right, cards in the middle, take it or leave it. A template can now place either control where it wants, and the entry block has two switches, *Show the search bar* and *Show the filter bar*, for leaving out what has been placed elsewhere. Existing templates are unchanged: both default to on.
+
+  The part that decided the work was the AJAX contract. The facets replace the main column, and the script used to look up its controls inside the entry element. A control placed as its own block is not inside it, so the lookup moved to the document: a term archive shows exactly one handbook, so the document is the right scope. Without JavaScript both forms submit to the handbook as before.
+
+* **Search results carry the sentence the words were found in**, with the words marked, under the title. Eight results whose titles all start with the same word are eight guesses; the sentence is what decides which one to open. It is the page's own text around the hit, not its excerpt, because an excerpt is the same text for every search and says nothing about why this page matched. A page that matched by its title alone shows no sentence.
+
+  The snippet travels as segments, each saying whether it is part of the hit, and the browser builds the `<mark>` elements from text. Markup built from page content would have to be escaped correctly at every step; segments have nothing to escape. It is read from the post that already passed the access check, not from a second query.
+
+* **Sections have an address.** h2 to h4 get an id built from the heading's own text, with a counter for repeats, and a `#` link beside the heading that appears on hover and on keyboard focus. The ids used to be made in the browser from the position of the heading (`lh-section-3`), which is not an address to pass on: inserting a heading anywhere above silently moved every link below it. Nobody outside had copied one yet, which made this the cheap moment. An id set by hand in the editor still wins, and `living_handbook_heading_anchors` switches the whole thing off.
+
+* **The two search blocks take the visual settings the core blocks have**: colour, border, typography and spacing through block supports, plus label on or off, its wording, the placeholder, and for the search bar the button's wording and position (outside the field, inside it, or none). Deliberately not by wrapping `core/search`: it fixes `action` to `home_url()` and the field to `name="s"`, has no filter of its own, and its markup has just changed. The collapsible variant of the core block is left out until someone asks for it.
+
+### Changed
+
+* In wp-admin the filter bar now follows the column checkboxes **while the page stays open**. 0.64.0 decided this on the server, which could only hide a filter, never bring one back: the control was not in the document. Every filter is rendered now and hidden with `hidden` when its column is off, and a small script flips that as the Screen Options checkboxes change. Without the script the bar is still right for the columns the page was loaded with. A vocabulary with no term at all is still left out entirely, because that cannot change while the page is open, and an active filter is still never hidden.
+
 ## [0.64.0] - 2026-08-08
 
 ### Changed

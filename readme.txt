@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.64.0
+Stable tag: 0.65.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,13 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.65.0 =
+* The search bar and the filter bar of a handbook are blocks of their own now, so a template can place them freely; the entry block can leave either one out.
+* The handbook search shows the sentence each match was found in, with the words marked, instead of the title alone.
+* Sections have an address: headings get an id from their own text and a link beside them, and inserting a heading above no longer moves the links below it.
+* The search blocks take colours, border, typography and spacing from the block settings, plus label, placeholder and button wording.
+* In wp-admin the filter bar now follows the column checkboxes while the page stays open, without a reload.
 
 = 0.64.0 =
 * The filter bar above the page list follows the columns: hide a column under "Screen Options" and its filter goes with it, and a vocabulary without a single term gets no filter at all. A filter that is currently narrowing the list stays visible even when its column is hidden, so it can still be taken back.

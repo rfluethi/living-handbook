@@ -158,12 +158,132 @@ final class Filters {
 			}
 			$permalink = get_permalink( $post->ID );
 			$results[] = array(
-				'title' => get_the_title( $post->ID ),
-				'url'   => is_string( $permalink ) ? $permalink : '',
+				'title'   => get_the_title( $post->ID ),
+				'url'     => is_string( $permalink ) ? $permalink : '',
+				'snippet' => self::snippet( $post, $search ),
 			);
 		}
 
 		return new WP_REST_Response( array( 'results' => $results ), 200 );
+	}
+
+	/**
+	 * A piece of the page's own text around the search hit.
+	 *
+	 * Eight results with similar titles ("Access", "Access rules", "Access for
+	 * external people") are eight guesses; the sentence the words were found in
+	 * is what decides which one to open. This is deliberately not the page's
+	 * excerpt: an excerpt is the same text for every search and would not show
+	 * why this page matched. When the words are only in the title, there is
+	 * nothing to show and the result carries no snippet.
+	 *
+	 * Returned as segments rather than as markup: each piece says whether it is
+	 * part of the hit, and the browser builds the elements from text. Nothing
+	 * from the content has to be trusted or escaped on the way, because nothing
+	 * on the way is markup.
+	 *
+	 * The post is the one that already passed the access check in the caller.
+	 * Reading its content anywhere else would have to repeat that check.
+	 *
+	 * @param WP_Post $post   The post whose content to quote.
+	 * @param string  $search The search words.
+	 * @return array<int, array{text:string, mark:bool}>
+	 */
+	private static function snippet( WP_Post $post, string $search ): array {
+		$radius = 80;
+
+		$text = wp_strip_all_tags( strip_shortcodes( excerpt_remove_blocks( $post->post_content ) ) );
+		$text = wp_specialchars_decode( $text, ENT_QUOTES );
+		$text = trim( (string) preg_replace( '/\s+/u', ' ', $text ) );
+		if ( '' === $text || '' === $search ) {
+			return array();
+		}
+
+		$at = mb_stripos( $text, $search );
+		if ( false === $at ) {
+			// WordPress matches each word on its own, so a two-word search can find
+			// a page that never has the two next to each other. Fall back to the
+			// longest word, which is the most telling one to quote around.
+			$words = preg_split( '/\s+/u', $search );
+			if ( ! is_array( $words ) ) {
+				$words = array();
+			}
+			usort(
+				$words,
+				static function ( string $a, string $b ): int {
+					return mb_strlen( $b ) <=> mb_strlen( $a );
+				}
+			);
+			foreach ( $words as $word ) {
+				if ( mb_strlen( $word ) >= 3 ) {
+					$at = mb_stripos( $text, $word );
+					if ( false !== $at ) {
+						$search = $word;
+						break;
+					}
+				}
+			}
+		}
+		if ( false === $at ) {
+			return array();
+		}
+
+		$start  = max( 0, $at - $radius );
+		$length = mb_strlen( $search ) + ( 2 * $radius );
+		$cut    = mb_substr( $text, $start, $length );
+
+		// Do not start or end mid-word: a snippet that begins with "ngsseite" reads
+		// as a typo rather than as a quotation.
+		if ( $start > 0 ) {
+			$space = mb_strpos( $cut, ' ' );
+			$cut   = false !== $space ? mb_substr( $cut, $space + 1 ) : $cut;
+		}
+		if ( $start + $length < mb_strlen( $text ) ) {
+			$space = mb_strrpos( $cut, ' ' );
+			$cut   = false !== $space ? mb_substr( $cut, 0, $space ) : $cut;
+		}
+
+		$segments = array();
+		if ( $start > 0 ) {
+			$segments[] = array(
+				'text' => '… ',
+				'mark' => false,
+			);
+		}
+
+		$rest = $cut;
+		while ( '' !== $rest ) {
+			$hit = mb_stripos( $rest, $search );
+			if ( false === $hit ) {
+				$segments[] = array(
+					'text' => $rest,
+					'mark' => false,
+				);
+				break;
+			}
+			if ( $hit > 0 ) {
+				$segments[] = array(
+					'text' => mb_substr( $rest, 0, $hit ),
+					'mark' => false,
+				);
+			}
+			// The page's own spelling, not the visitor's: the hit is quoted as it
+			// stands in the text.
+			$segments[] = array(
+				'text' => mb_substr( $rest, $hit, mb_strlen( $search ) ),
+				'mark' => true,
+			);
+			$rest       = mb_substr( $rest, $hit + mb_strlen( $search ) );
+		}
+
+		if ( $start + $length < mb_strlen( $text ) ) {
+			$segments[] = array(
+				'text' => ' …',
+				'mark' => false,
+			);
+		}
+
+		return $segments;
 	}
 
 	/**
@@ -244,20 +364,56 @@ final class Filters {
 	 * Carries the active facet selections as hidden fields so a no-JS search
 	 * submit keeps the current filters.
 	 *
-	 * @param WP_Term $term Handbook term.
+	 * The options are what the search-bar block offers: label on or off, its
+	 * wording, the placeholder, the button's wording and where it sits. They are
+	 * deliberately the same set the core search block has, minus the collapsible
+	 * variant, because everything visual (colour, border, typography, spacing)
+	 * comes from the block supports rather than from options here.
+	 *
+	 * @param WP_Term              $term    Handbook term.
+	 * @param array<string, mixed> $options show_label, label, placeholder, button_text, button_position, wrapper_attributes.
 	 * @return string
 	 */
-	public static function search_form( WP_Term $term ): string {
+	public static function search_form( WP_Term $term, array $options = array() ): string {
 		$action = get_term_link( $term );
 		if ( is_wp_error( $action ) ) {
 			return '';
 		}
 
-		return '<form class="living-handbook-start__search" role="search" method="get" action="' . esc_url( (string) $action ) . '">'
-			. '<label class="screen-reader-text" for="living-handbook-search">' . esc_html__( 'Search this handbook', 'living-handbook' ) . '</label>'
-			. '<input type="search" id="living-handbook-search" name="' . esc_attr( self::SEARCH_PARAM ) . '" value="' . esc_attr( self::search_value() ) . '" class="living-handbook-search__input" placeholder="' . esc_attr__( 'Search this handbook …', 'living-handbook' ) . '" autocomplete="off">'
-			. self::hidden_facet_fields()
-			. '<button type="submit">' . esc_html__( 'Search', 'living-handbook' ) . '</button></form>';
+		$label       = isset( $options['label'] ) && '' !== $options['label']
+			? (string) $options['label']
+			: __( 'Search this handbook', 'living-handbook' );
+		$placeholder = isset( $options['placeholder'] ) && '' !== $options['placeholder']
+			? (string) $options['placeholder']
+			: __( 'Search this handbook …', 'living-handbook' );
+		$button      = isset( $options['button_text'] ) && '' !== $options['button_text']
+			? (string) $options['button_text']
+			: __( 'Search', 'living-handbook' );
+
+		$position = isset( $options['button_position'] ) ? (string) $options['button_position'] : 'button-outside';
+		if ( ! in_array( $position, array( 'button-outside', 'button-inside', 'no-button' ), true ) ) {
+			$position = 'button-outside';
+		}
+
+		// The label is in the document either way: a search field with nothing but
+		// a placeholder loses its accessible name the moment something is typed
+		// into it. Showing it is a visual choice, leaving it out is not.
+		$id         = wp_unique_id( 'living-handbook-search-' );
+		$attributes = isset( $options['wrapper_attributes'] ) && '' !== $options['wrapper_attributes']
+			? (string) $options['wrapper_attributes']
+			: 'class="living-handbook-start__search"';
+
+		$out = '<form ' . $attributes . ' data-button-position="' . esc_attr( $position ) . '" role="search" method="get" action="' . esc_url( (string) $action ) . '">'
+			. '<label class="' . ( empty( $options['show_label'] ) ? 'living-handbook-visually-hidden' : 'living-handbook-start__search-label' ) . '" for="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</label>'
+			. '<span class="living-handbook-start__search-field">'
+			. '<input type="search" id="' . esc_attr( $id ) . '" name="' . esc_attr( self::SEARCH_PARAM ) . '" value="' . esc_attr( self::search_value() ) . '" class="living-handbook-search__input" placeholder="' . esc_attr( $placeholder ) . '" autocomplete="off">'
+			. self::hidden_facet_fields();
+
+		if ( 'no-button' !== $position ) {
+			$out .= '<button type="submit">' . esc_html( $button ) . '</button>';
+		}
+
+		return $out . '</span></form>';
 	}
 
 	/**
@@ -272,10 +428,11 @@ final class Filters {
 	 * parent and are indented, instead of the flat alphabetical order that
 	 * get_terms() returns, which would put a child above its own parent.
 	 *
-	 * @param WP_Term $term Handbook term.
+	 * @param WP_Term $term               Handbook term.
+	 * @param string  $wrapper_attributes Attributes for the form element, when it is rendered as its own block.
 	 * @return string
 	 */
-	public static function facets( WP_Term $term ): string {
+	public static function facets( WP_Term $term, string $wrapper_attributes = '' ): string {
 		$action = get_term_link( $term );
 		if ( is_wp_error( $action ) ) {
 			return '';
@@ -330,7 +487,9 @@ final class Filters {
 			return '';
 		}
 
-		return '<form class="living-handbook-filterform" method="get" action="' . esc_url( $action ) . '">'
+		$attributes = '' !== $wrapper_attributes ? $wrapper_attributes : 'class="living-handbook-filterform"';
+
+		return '<form ' . $attributes . ' method="get" action="' . esc_url( $action ) . '">'
 			. self::hidden_search_field()
 			. $fields
 			. '<p class="living-handbook-filterform__actions">'

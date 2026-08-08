@@ -11,6 +11,12 @@ Zwei Empfehlungen für lesbare Seiten:
 * **Beginne mit einem kurzen Einleitungssatz.** Er sagt, was die Seite leistet und für wen sie ist. Derselbe Satz eignet sich als Kurztext auf den Übersichts-Kacheln.
 * **Gliedere mit Zwischentiteln.** Nutze dafür Überschriften der Ebene 2 und tiefer. Aus ihnen baut sich das Verzeichnis „Auf dieser Seite“ automatisch auf.
 
+### Auf einen Abschnitt verlinken
+
+Überschriften der Ebenen 2 bis 4 bekommen eine eigene Adresse, gebildet aus ihrem Text. Fährst du mit der Maus über eine Überschrift, erscheint rechts daneben ein `#`. Ein Klick darauf springt zum Abschnitt, und in der Adresszeile steht dann die Adresse, die du weitergeben kannst, etwa `.../zugriff-verstehen/#drei-stufen`.
+
+Die Adresse hängt am Text der Überschrift, nicht an ihrer Position. Fügst du weiter oben einen Abschnitt ein, bleiben alle Links darunter gültig. Änderst du dagegen den Text einer Überschrift, ändert sich ihre Adresse, und alte Links laufen ins Leere. Willst du das verhindern, trage im Editor unter **Erweitert** einen festen **HTML-Anker** ein: der gilt dann, egal wie die Überschrift heisst.
+
 ## Diagramme einsetzen
 
 Hat ein Ablauf mehrere Schritte oder Entscheidungen? Dann zeigt ein Diagramm oft mehr als ein langer Absatz. Living Handbook zeichnet Diagramme selbst, direkt auf der Seite. Beschrieben werden sie in [Mermaid](https://mermaid.js.org/), einer einfachen Textsprache für Diagramme. Füge im Editor den Block **Mermaid** ein und schreibe die Diagramm-Beschreibung hinein. Wie der Block funktioniert, steht mit einem Beispiel auf [Die Blöcke des Plugins](../oberflaeche/bloecke.md); ein größeres Diagramm siehst du auf [Der Prüfzyklus](../pflege/der-pruefzyklus.md).

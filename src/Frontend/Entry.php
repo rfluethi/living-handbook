@@ -83,18 +83,22 @@ final class Entry {
 	 * so the frontend script can filter through the REST route; the result
 	 * column is a polite live region so screen readers announce AJAX updates.
 	 *
-	 * @param WP_Term $term    Handbook term.
-	 * @param string  $display 'cards' (grid) or 'list' (single column).
+	 * @param WP_Term $term         Handbook term.
+	 * @param string  $display      'cards' (grid) or 'list' (single column).
+	 * @param bool    $with_search  Whether to draw the search bar; off when a template places it as its own block.
+	 * @param bool    $with_filters Whether to draw the filter bar; off for the same reason.
 	 * @return string
 	 */
-	public static function render_entry( WP_Term $term, string $display = 'cards' ): string {
+	public static function render_entry( WP_Term $term, string $display = 'cards', bool $with_search = true, bool $with_filters = true ): string {
 		$selections = Filters::current_selections();
 		$search     = Filters::search_value();
 		$paged      = Filters::current_paged();
 
 		$modifier = 'list' === $display ? ' living-handbook-entry--list' : '';
 		$out      = '<div class="living-handbook-entry' . $modifier . '" data-term-id="' . esc_attr( (string) $term->term_id ) . '">';
-		$out     .= Filters::search_form( $term );
+		if ( $with_search ) {
+			$out .= Filters::search_form( $term );
+		}
 		// A status line, not a live list. The main column holds up to two dozen
 		// cards, and announcing all of them after every keystroke is unusable. The
 		// status line sits outside the column, so replacing the list does not
@@ -103,8 +107,11 @@ final class Entry {
 		$out .= '<p class="living-handbook-visually-hidden living-handbook-entry__status" role="status"></p>';
 		$out .= '<div class="living-handbook-layout"><div class="living-handbook-main">';
 		$out .= self::main_body( $term, $selections, $search, $paged );
-		$out .= '</div><aside class="living-handbook-aside">' . Filters::facets( $term ) . '</aside></div>';
-		return $out . '</div>';
+		$out .= '</div>';
+		if ( $with_filters ) {
+			$out .= '<aside class="living-handbook-aside">' . Filters::facets( $term ) . '</aside>';
+		}
+		return $out . '</div></div>';
 	}
 
 	/**

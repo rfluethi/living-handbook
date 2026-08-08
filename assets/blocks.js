@@ -9,6 +9,7 @@
 	var SelectControl = components ? components.SelectControl : null;
 	var ToggleControl = components ? components.ToggleControl : null;
 	var RangeControl = components ? components.RangeControl : null;
+	var TextControl = components ? components.TextControl : null;
 
 	// Block metadata (title, category, icon, keywords, attributes, supports) comes
 	// from each block's blocks/<name>/block.json, registered server-side; this
@@ -160,14 +161,95 @@
 		}
 	} );
 
+	function toggle( props, attribute, label ) {
+		if ( ! ToggleControl ) {
+			return null;
+		}
+		return el( ToggleControl, {
+			key: attribute,
+			label: label,
+			checked: props.attributes[ attribute ],
+			onChange: function ( value ) {
+				var change = {};
+				change[ attribute ] = value;
+				props.setAttributes( change );
+			}
+		} );
+	}
+
+	function text( props, attribute, label, help ) {
+		if ( ! TextControl ) {
+			return null;
+		}
+		return el( TextControl, {
+			key: attribute,
+			label: label,
+			help: help,
+			value: props.attributes[ attribute ],
+			onChange: function ( value ) {
+				var change = {};
+				change[ attribute ] = value;
+				props.setAttributes( change );
+			}
+		} );
+	}
+
 	blocks.registerBlockType( 'living-handbook/entry', {
 		edit: function ( props ) {
 			return el(
 				Fragment,
 				{},
-				panel( __( 'Entry', 'living-handbook' ), displayControl( props ) ),
-				note( __( 'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook.', 'living-handbook' ) )
+				panel( __( 'Entry', 'living-handbook' ), [
+					displayControl( props ),
+					toggle( props, 'showSearch', __( 'Show the search bar', 'living-handbook' ) ),
+					toggle( props, 'showFilters', __( 'Show the filter bar', 'living-handbook' ) )
+				] ),
+				note( __( 'Handbook entry: on a handbook page it shows the search, filters, areas and recently updated pages of that handbook. Turn the search bar or the filter bar off here to place them as their own blocks.', 'living-handbook' ) )
 			);
+		},
+		save: function () {
+			return null;
+		}
+	} );
+
+	blocks.registerBlockType( 'living-handbook/search-form', {
+		edit: function ( props ) {
+			var controls = [
+				toggle( props, 'showLabel', __( 'Show the label', 'living-handbook' ) ),
+				text( props, 'label', __( 'Label', 'living-handbook' ), __( 'Read out to screen readers even when it is not shown.', 'living-handbook' ) ),
+				text( props, 'placeholder', __( 'Placeholder', 'living-handbook' ) ),
+				text( props, 'buttonText', __( 'Button text', 'living-handbook' ) )
+			];
+			if ( SelectControl ) {
+				controls.push( el( SelectControl, {
+					key: 'buttonPosition',
+					label: __( 'Button position', 'living-handbook' ),
+					value: props.attributes.buttonPosition,
+					options: [
+						{ label: __( 'Outside the field', 'living-handbook' ), value: 'button-outside' },
+						{ label: __( 'Inside the field', 'living-handbook' ), value: 'button-inside' },
+						{ label: __( 'No button', 'living-handbook' ), value: 'no-button' }
+					],
+					onChange: function ( value ) {
+						props.setAttributes( { buttonPosition: value } );
+					}
+				} ) );
+			}
+			return el(
+				Fragment,
+				{},
+				panel( __( 'Search bar', 'living-handbook' ), controls ),
+				note( __( 'Handbook search bar: searches the handbook this page belongs to. Colours, border, typography and spacing are in the block settings; the wording is here.', 'living-handbook' ) )
+			);
+		},
+		save: function () {
+			return null;
+		}
+	} );
+
+	blocks.registerBlockType( 'living-handbook/filters', {
+		edit: function () {
+			return note( __( 'Handbook filter bar: page type, topic, responsibility and audience of the pages in this handbook. It only offers terms that are actually used, so it is empty until pages carry them.', 'living-handbook' ) );
 		},
 		save: function () {
 			return null;
@@ -193,8 +275,21 @@
 		__( 'Handbook feedback: the "Was this helpful?" prompt for the current page.', 'living-handbook' )
 	);
 
-	dynamic(
-		'living-handbook/search',
-		__( 'Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type.', 'living-handbook' )
-	);
+	blocks.registerBlockType( 'living-handbook/search', {
+		edit: function ( props ) {
+			return el(
+				Fragment,
+				{},
+				panel( __( 'Search', 'living-handbook' ), [
+					toggle( props, 'showLabel', __( 'Show the label', 'living-handbook' ) ),
+					text( props, 'label', __( 'Label', 'living-handbook' ), __( 'Read out to screen readers even when it is not shown.', 'living-handbook' ) ),
+					text( props, 'placeholder', __( 'Placeholder', 'living-handbook' ) )
+				] ),
+				note( __( 'Handbook search: a search-as-you-type box for the current handbook, for a single page. It lists matching pages as you type, with the sentence each match was found in.', 'living-handbook' ) )
+			);
+		},
+		save: function () {
+			return null;
+		}
+	} );
 }( window.wp.blocks, window.wp.element, window.wp.serverSideRender, window.wp.i18n, window.wp.blockEditor, window.wp.components ) );

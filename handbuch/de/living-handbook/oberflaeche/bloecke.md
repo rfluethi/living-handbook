@@ -56,6 +56,20 @@ Die folgenden Blöcke sitzen schon an der richtigen Stelle in den mitgelieferten
 
 Baut die Einstiegsseite eines Handbuchs: Suche, Filter, Bereichs-Kacheln und die zuletzt aktualisierten Seiten. Wirkt nur auf der Einstiegsseite.
 
+In den Block-Einstellungen kannst du **Suchleiste anzeigen** und **Filterleiste anzeigen** einzeln abschalten. Das brauchst du, wenn du eine der beiden woanders auf der Seite haben willst: hier abschalten, den passenden Block (siehe unten) an die gewünschte Stelle setzen. Lass sie nicht beides gleichzeitig zeichnen, sonst stehen zwei Suchfelder auf einer Seite.
+
+### Handbuch-Suchleiste
+
+Dieselbe Suchleiste wie im Block „Handbuch-Eintrag“, aber frei platzierbar. Sie sucht immer in dem Handbuch, zu dem die Seite gehört, und nimmt die gesetzten Filter mit.
+
+In den Block-Einstellungen: Beschriftung ein oder aus und ihr Wortlaut, der Platzhaltertext, die Aufschrift der Schaltfläche und ob diese neben dem Feld, im Feld oder gar nicht erscheint. Ohne Schaltfläche sucht die Eingabetaste. Farben, Rahmen, Schrift und Abstände stellst du wie bei den Kern-Blöcken in der Seitenleiste ein.
+
+Die Beschriftung steht immer im Dokument, auch wenn du sie ausblendest. Ein Suchfeld mit blossem Platzhalter verliert seinen Namen für Screenreader, sobald jemand etwas hineinschreibt.
+
+### Handbuch-Filterleiste
+
+Die Facetten-Filter eines Handbuchs als eigener Block: Seitentyp, Thema, Verantwortung, Zielgruppe. Angeboten wird nur, was die Seiten dieses Handbuchs wirklich tragen; solange nichts gesetzt ist, bleibt der Block leer. Er steuert die Ergebnisliste des Blocks „Handbuch-Eintrag“, auch wenn er an einer ganz anderen Stelle der Seite sitzt.
+
 ### Handbuch-Navigation
 
 ![Icon des Blocks „Handbuch-Navigation“](../assets/bloecke-navigation.webp)
@@ -79,6 +93,10 @@ Baut „Auf dieser Seite“ aus den Überschriften der Seite und markiert beim L
 ![Icon des Blocks „Handbuch-Suche“](../assets/bloecke-suche.webp)
 
 Ein Suchfeld, das schon beim Tippen passende Seiten des Handbuchs vorschlägt. Wirkt nur auf Einzelseiten.
+
+Unter jedem Treffer steht der Satz, in dem die Wörter gefunden wurden, mit den Wörtern hervorgehoben. Das ist der Text der Seite rund um die Fundstelle, nicht ihr Textauszug: der wäre bei jeder Suche derselbe und würde nicht verraten, warum diese Seite passt. Traf die Suche nur den Titel, steht kein Satz darunter, weil es keinen gibt.
+
+In den Block-Einstellungen: Beschriftung ein oder aus und ihr Wortlaut, dazu der Platzhaltertext. Farben, Rahmen, Schrift und Abstände wie bei den Kern-Blöcken in der Seitenleiste.
 
 ### Handbuch-Feedback
 

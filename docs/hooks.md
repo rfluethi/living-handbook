@@ -248,6 +248,18 @@ Parameters:
 
 Return a string.
 
+### `living_handbook_heading_anchors`
+
+Filters whether the h2, h3 and h4 of a handbook page get an id built from the heading text and a small link to that section. Default true.
+
+Switching it off leaves the headings exactly as the editor wrote them, which also means links into a section stop working: the table of contents then falls back to ids made in the browser from the heading's position, which are not addresses to pass on. An id set by hand in the editor always wins over the generated one, so a single collision is better solved there than with this filter.
+
+Parameters:
+
+- `bool $enabled` Whether to add ids and anchor links.
+
+Return a bool.
+
 ## Actions
 
 _None. The three that were listed here as planned, after an import, on the metadata and on the freshness evaluation, were removed in 0.60.0 rather than left standing as a promise: a hook is a commitment whose signature cannot be changed later without breaking whoever uses it, and these three came from a list rather than from a use. They are kept as a note in the project's own workspace, with signature and purpose, and will be built when something actually needs them._
