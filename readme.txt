@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.73.0
+Stable tag: 0.74.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.74.0 =
+* The website export now looks like your site: it takes your theme's colours, fonts and spacing along, and it renders the pages through the same block template the site uses, so blocks you moved in the Site Editor sit where you put them in the export too.
 
 = 0.73.0 =
 * The website export gained three things: a look you choose when exporting (like this site, plain, dark, or paper for printing), Mermaid diagrams that are actually drawn, and images and diagrams that enlarge on a click, as they do on the site.

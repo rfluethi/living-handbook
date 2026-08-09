@@ -370,6 +370,158 @@ final class StaticExportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The page comes out of the block template, not out of a layout decided here.
+	 *
+	 * This is the whole point of the second attempt at the export: a site that
+	 * moved the navigation, the badges or the metadata footer in the Site Editor
+	 * had those decisions ignored, because the export built its own page. Now it
+	 * renders the same template the front end renders, so the blocks are where
+	 * the site put them.
+	 *
+	 * @return void
+	 */
+	public function test_the_page_is_rendered_from_the_block_template(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One', 'Text.' );
+
+		$zip  = $this->export( $term );
+		$html = (string) $zip->getFromName( 'one.html' );
+
+		$this->assertStringContainsString( 'wp-block-post-title', $html, 'The title comes from the core block, as on the site.' );
+		$this->assertStringContainsString( 'living-handbook-nav', $html, 'And the handbook navigation the template places beside it.' );
+		$this->assertStringContainsString( 'wp-block-columns', $html, 'In the columns the template arranges them in.' );
+		$this->assertStringContainsString( 'living-handbook-meta', $html, 'Down to the metadata footer.' );
+	}
+
+	/**
+	 * And when the template was edited, the edited one is what gets rendered.
+	 * Anything else would mean the export shows a page nobody has.
+	 *
+	 * @return void
+	 */
+	public function test_an_edited_template_wins(): void {
+		$edited = (int) self::factory()->post->create(
+			array(
+				'post_type'    => 'wp_template',
+				'post_status'  => 'publish',
+				'post_name'    => 'single-handbook',
+				'post_title'   => 'Handbook page',
+				'post_content' => '<!-- wp:paragraph --><p>Rearranged by hand.</p><!-- /wp:paragraph --><!-- wp:post-title /-->',
+			)
+		);
+		wp_set_object_terms( $edited, get_stylesheet(), 'wp_theme' );
+
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One', 'Text.' );
+
+		$zip  = $this->export( $term );
+		$html = (string) $zip->getFromName( 'one.html' );
+
+		$this->assertStringContainsString( 'Rearranged by hand.', $html );
+	}
+
+	/**
+	 * What cannot work in a file is cut from the template before rendering,
+	 * rather than rendered and then hidden: a feedback prompt whose buttons do
+	 * nothing, a comment form with nowhere to post, a typeahead search that asks
+	 * a server. The theme's header and footer go too, because their menus lead
+	 * back to a site the reader may not be able to open.
+	 *
+	 * @return void
+	 */
+	public function test_what_needs_a_server_is_not_in_the_export(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One', 'Text.' );
+
+		$zip  = $this->export( $term );
+		$html = (string) $zip->getFromName( 'one.html' );
+
+		$this->assertStringNotContainsString( 'living-handbook-feedback', $html );
+		$this->assertStringNotContainsString( 'living-handbook-page-search', $html );
+		$this->assertStringNotContainsString( 'wp-block-comments', $html );
+	}
+
+	/**
+	 * The people are left out of the metadata footer, avatars above all: that is
+	 * a request to an external service from a file that may be read offline, in
+	 * a mail attachment, or somewhere the names have no business being.
+	 *
+	 * @return void
+	 */
+	public function test_no_names_and_no_avatars_travel(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One', 'Text.' );
+
+		$zip  = $this->export( $term );
+		$html = (string) $zip->getFromName( 'one.html' );
+
+		$this->assertStringNotContainsString( 'gravatar.com', $html );
+		$this->assertStringNotContainsString( 'living-handbook-person', $html );
+		$this->assertStringContainsString( 'living-handbook-meta', $html, 'The dates and the responsible role stay.' );
+	}
+
+	/**
+	 * The stylesheet carries what makes the export look like the site: the core
+	 * block styles and the theme's own global styles, which is where its palette,
+	 * its fonts and its spacing live.
+	 *
+	 * @return void
+	 */
+	public function test_the_stylesheet_carries_the_theme(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$zip   = $this->export( $term );
+		$style = (string) $zip->getFromName( 'assets/style.css' );
+
+		// A declaration, not a reference: the core stylesheet is full of
+		// var(--wp--preset--color--…) and would satisfy a laxer check while the
+		// palette itself was missing.
+		$this->assertSame( 1, preg_match( '#--wp--preset--color--[a-z-]+:\s*#i', $style ), "The theme's palette, as the properties everything else falls back to." );
+		$this->assertStringContainsString( 'wp-block-columns', $style, 'And the core block styles, or a columns block is two stacked divs.' );
+	}
+
+	/**
+	 * A file the stylesheet points at travels with the export and is pointed at
+	 * inside the folder. Fonts above all: a @font-face left pointing at the
+	 * server turns into a fallback font on the reader's machine, silently.
+	 *
+	 * @return void
+	 */
+	public function test_files_a_stylesheet_points_at_travel_too(): void {
+		$uploads  = wp_upload_dir();
+		$relative = 'lh-test/font.woff2';
+		$file     = $uploads['basedir'] . '/' . $relative;
+		wp_mkdir_p( dirname( $file ) );
+		file_put_contents( $file, 'not really a font' ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- writing a fixture.
+		$this->files[] = $file;
+
+		$url  = $uploads['baseurl'] . '/' . $relative;
+		$look = static function ( array $themes ) use ( $url ): array {
+			$themes['fonted'] = array(
+				'label' => 'With a font',
+				'css'   => '@font-face { font-family: "Test"; src: url(' . $url . ') format("woff2"); }',
+			);
+			return $themes;
+		};
+		add_filter( 'living_handbook_static_export_themes', $look );
+
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$zip   = $this->export( $term, 0, 'fonted' );
+		$style = (string) $zip->getFromName( 'assets/style.css' );
+
+		remove_filter( 'living_handbook_static_export_themes', $look );
+
+		$this->assertStringNotContainsString( $url, $style, 'No address that only works on the server it came from.' );
+		$this->assertSame( 1, preg_match( '#url\("(site/[^"]*font\.woff2)"\)#', $style, $found ), 'The rule points at a path inside the export.' );
+		// And that path is a file in the archive: the stylesheet and the archive
+		// have to agree, or the font is quietly missing on the reader's machine.
+		$this->assertNotFalse( $zip->locateName( 'assets/' . $found[1] ), 'The file the stylesheet names is in the archive.' );
+	}
+
+	/**
 	 * A handbook the exporting user may not read is refused, rather than
 	 * exported empty or exported anyway.
 	 *
@@ -450,8 +602,8 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$zip  = $this->export( $term );
 		$html = (string) $zip->getFromName( 'review-pages.html' );
 
-		$this->assertStringContainsString( 'class="lh-toc"', $html );
-		$this->assertStringContainsString( 'href="#why-review"', $html, 'Which needs the heading to carry that id in the file.' );
+		$this->assertStringContainsString( 'living-handbook-toc__list', $html, 'The template\'s own table-of-contents block.' );
+		$this->assertStringContainsString( 'href="#why-review"', $html, 'Filled here rather than in the browser, so it survives without scripting.' );
 		$this->assertStringContainsString( '>Why review</a>', $html, 'And the entry reads as the heading does, without the anchor link that sits in it.' );
 	}
 

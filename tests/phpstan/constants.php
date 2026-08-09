@@ -12,3 +12,5 @@
 
 define( 'LIVING_HANDBOOK_DIR', '' );
 define( 'LIVING_HANDBOOK_URL', '' );
+
+define( 'WPINC', 'wp-includes' );

@@ -17,6 +17,24 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.74.0] - 2026-08-09
+
+### Changed
+
+* **The export looks like the site now, because it takes the site's own stylesheet and the site's own template.** Rico's verdict on 0.73.0 was that the looks were beside the point: why can the export not simply use the theme's colours and fonts, and why does it ignore where the blocks were placed. Both were my mistake, not a limit. I had solved "there is no theme in a ZIP" by inventing one, instead of writing the theme out of WordPress.
+
+  **The theme travels.** `wp_get_global_stylesheet()` is the theme.json layer: the palette, the font families and sizes, the spacing scale, the layout rules, all as `--wp--preset--*` custom properties. That is exactly what the plugin's stylesheet already falls back to, so putting it in the export recolours everything without a single duplicated rule. The core block stylesheet comes with it, or a columns block is two stacked divs and a separator is an unstyled line. So do the block supports the style engine collects while rendering, which live in no stylesheet at all and are what keeps columns side by side. Every URL in the result is resolved against this installation, copied into `assets/site/` and rewritten: fonts above all, because a `@font-face` still pointing at the server turns into a fallback font on the reader's machine, silently and without an error anywhere.
+
+  **The page is the template.** The export renders `living-handbook//single-handbook`, the edited copy when the Site Editor has one, instead of assembling a page from a layout decided in the plugin. Blocks that were moved sit where they were moved to, because it is the same markup going through the same renderers.
+
+  That needed one thing that is easy to miss: a real single-post query around the render. Half the blocks ask `is_singular()` or read the current post, and rendered outside a query they return an empty string and nothing else, so the first attempt produced a page with an empty navigation, an empty table of contents, no badges and no metadata footer, and no error to show for it.
+
+  What cannot travel is cut from the markup before rendering rather than rendered and hidden with CSS: the theme's header and footer template parts, whose menus lead back to a site the reader may not be able to open, and the feedback prompt, the comments and the typeahead search, which all need a server. The table of contents block is filled here, from the heading anchors, instead of in the browser, so it survives with scripting off and on paper. The people are dropped from the metadata footer; the dates and the responsible role stay.
+
+  The hand-built page remains as the fallback for an installation whose templates cannot be read, so an export is never empty for want of a template.
+
+  The four looks stay. "Like this site" is now what its name says; the other three are for the copy that deliberately should not look like the site.
+
 ## [0.73.0] - 2026-08-09
 
 ### Added

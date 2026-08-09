@@ -276,6 +276,8 @@ final class StaticSite {
 			'entries'  => array(),
 			'media'    => array(),
 			'mermaid'  => false,
+			'template' => TemplateRender::markup(),
+			'supports' => array(),
 			'zip'      => '',
 			'theme'    => SiteThemes::normalize( $theme ),
 			'site'     => array(
@@ -433,10 +435,30 @@ final class StaticSite {
 		$index = (array) $state['index'];
 		$path  = SiteRenderer::path_for( (int) $post->ID, $index );
 
-		$content = self::render_content( $post );
+		// The template first: it puts the blocks where this site put them. The
+		// hand-built page stays as the fallback for an installation whose
+		// templates cannot be read, so an export is never empty for want of one.
+		$content       = TemplateRender::render( $post, (string) $state['template'] );
+		$from_template = '' !== trim( $content );
+		if ( ! $from_template ) {
+			$content = self::render_content( $post );
+		}
+
 		$content = self::rewrite( $zip, $content, $state, $path );
 
-		$html = SiteRenderer::page( $post, $content, $index, (array) $state['site'] );
+		$html = $from_template
+			? SiteRenderer::page_from_template( $post, $content, $index, (array) $state['site'] )
+			: SiteRenderer::page( $post, $content, $index, (array) $state['site'] );
+
+		// What the style engine gathered while rendering: the flex rules behind a
+		// columns block and the like, which live in no stylesheet and would
+		// otherwise stack every column on top of the next.
+		$supports = (array) $state['supports'];
+		$rules    = TemplateRender::block_support_css();
+		if ( '' !== $rules ) {
+			$supports[ md5( $rules ) ] = $rules;
+		}
+		$state['supports'] = $supports;
 
 		/**
 		 * Filter the HTML of one page of a static export.
@@ -528,6 +550,14 @@ final class StaticSite {
 			}
 		}
 
+		// The handbook's own address, which the navigation links to as its top
+		// entry. In the export that place is the start page, so it goes there
+		// rather than back to a site the reader may not be able to open.
+		$term_link = get_term_link( (int) $state['term'], Handbooks::TAXONOMY );
+		if ( is_string( $term_link ) && '' !== $term_link ) {
+			$links[ untrailingslashit( $term_link ) ] = $prefix . 'index.html';
+		}
+
 		$media = (array) $state['media'];
 
 		$content = (string) preg_replace_callback(
@@ -617,7 +647,9 @@ final class StaticSite {
 		$site  = (array) $state['site'];
 
 		$zip->addFromString( 'index.html', SiteRenderer::start_page( $index, $site ) );
-		$zip->addFromString( 'assets/style.css', SiteRenderer::stylesheet( (string) $state['theme'] ) );
+
+		$style = SiteRenderer::stylesheet( (string) $state['theme'], implode( "\n", (array) $state['supports'] ) );
+		$zip->addFromString( 'assets/style.css', self::localise_css( $zip, $style ) );
 		$zip->addFromString( 'assets/site.js', SiteRenderer::script() );
 		// The plugin's own frontend script, for one thing it does that an export
 		// wants: images and diagrams that enlarge on a click, with the focus
@@ -642,6 +674,96 @@ final class StaticSite {
 		$size = filesize( $path );
 
 		return is_int( $size ) ? $size : 0;
+	}
+
+	/**
+	 * Copy everything a stylesheet points at into the archive, and point at the
+	 * copies instead.
+	 *
+	 * Fonts above all: a theme's typography is half its look, and a `@font-face`
+	 * whose file stayed on the server turns into a fallback font on the reader's
+	 * machine, silently. Background images from theme.json travel the same way.
+	 * Anything that does not resolve to a readable file under this installation
+	 * is left alone, so a font from a CDN keeps pointing at the CDN.
+	 *
+	 * @param ZipArchive $zip The open archive.
+	 * @param string     $css The stylesheet.
+	 * @return string
+	 */
+	private static function localise_css( ZipArchive $zip, string $css ): string {
+		$copied = array();
+
+		return (string) preg_replace_callback(
+			'#url\(\s*([\'"]?)(https?://[^\'")]+)\1\s*\)#i',
+			static function ( array $found ) use ( $zip, &$copied ): string {
+				$url  = (string) $found[2];
+				$file = self::local_path_for( $url );
+				if ( '' === $file ) {
+					return $found[0];
+				}
+
+				$name = 'assets/site/' . ltrim( self::asset_name( $url ), '/' );
+				if ( ! isset( $copied[ $name ] ) ) {
+					$data = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file, not a request.
+					if ( ! is_string( $data ) ) {
+						return $found[0];
+					}
+					$zip->addFromString( $name, $data );
+					$copied[ $name ] = true;
+				}
+
+				// The stylesheet sits in assets/, so the path is relative to that.
+				return 'url("' . str_replace( 'assets/', '', $name ) . '")';
+			},
+			$css
+		);
+	}
+
+	/**
+	 * The file on disk an absolute URL of this installation points at.
+	 *
+	 * @param string $url Absolute URL.
+	 * @return string Empty when it is not one of ours, or not readable.
+	 */
+	private static function local_path_for( string $url ): string {
+		$bare = (string) strtok( $url, '?#' );
+
+		$roots = array(
+			content_url()   => WP_CONTENT_DIR,
+			includes_url()  => ABSPATH . WPINC,
+			site_url( '/' ) => ABSPATH,
+		);
+
+		foreach ( $roots as $base_url => $base_dir ) {
+			$base_url = untrailingslashit( (string) $base_url );
+			if ( '' === $base_url || ! str_starts_with( $bare, $base_url ) ) {
+				continue;
+			}
+			$path = untrailingslashit( (string) $base_dir ) . substr( $bare, strlen( $base_url ) );
+			$path = str_replace( '..', '', $path );
+			if ( is_readable( $path ) && ! is_dir( $path ) ) {
+				return $path;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * A path inside the export for an asset URL, keeping the folders it came in.
+	 *
+	 * @param string $url Absolute URL.
+	 * @return string
+	 */
+	private static function asset_name( string $url ): string {
+		$path  = (string) wp_parse_url( (string) strtok( $url, '?#' ), PHP_URL_PATH );
+		$parts = array_filter( explode( '/', $path ) );
+		$safe  = array();
+		foreach ( $parts as $part ) {
+			$safe[] = sanitize_file_name( $part );
+		}
+
+		return implode( '/', $safe );
 	}
 
 	/**
@@ -822,7 +944,7 @@ final class StaticSite {
 							<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $theme['label'] ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<p class="description"><?php esc_html_e( 'The export brings its own styling, because there is no theme in a ZIP. "Like this site" uses the colours and text size set under Appearance; the others leave them behind, which is usually the better choice for a copy that goes outside the team.', 'living-handbook' ); ?></p>
+					<p class="description"><?php esc_html_e( '"Like this site" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other three leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team.', 'living-handbook' ); ?></p>
 				</td>
 			</tr>
 		</table>

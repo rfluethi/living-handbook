@@ -20,7 +20,7 @@ Typical cases: an audit that wants the wording as it stood on a date; an externa
 1. Open **Handbook → Export**. The section is called **Export as a website**, below the bundle export.
 2. Pick the **handbook**, and optionally a single area in the second field.
 3. Pick the **look**. There are four:
-   * **Like this site:** the colours and text size you set under Settings, Appearance.
+   * **Like this site:** your theme travels along. Colours, fonts and spacing come from its `theme.json`, the font files sit in the ZIP, and what you set under Appearance comes on top. This is the default.
    * **Plain, neutral:** no house colours. Usually the better choice for a copy that leaves the team.
    * **Dark:** light text on a dark page, for reading at night.
    * **Paper, for printing:** serif text, a narrower measure, high contrast.
@@ -39,7 +39,9 @@ Inside the ZIP sits a complete little website:
 
 What is inside are the pages **you** may read. Links between handbook pages lead to the files beside them, images travel along, and the search box at the top searches every page in the browser. Links to the outside world stay what they were.
 
-Two things work as they do on the site: **images and diagrams enlarge on a click**, and **Mermaid diagrams are drawn**. The library that draws them is 3.5 MB, so it travels only when the export holds a diagram at all, and it loads only on the pages that have one.
+**The pages come out of the same template as on the site.** If you rearranged the handbook page in the Site Editor, moved the navigation or put the badges somewhere else, the export looks the same way. Only what cannot work without a server is taken out first: your theme's header and footer, the feedback prompt, the comments and the quick search in the sidebar. The table of contents is filled during the export rather than in the browser, so it is there without JavaScript and on paper.
+
+Two more things work as they do on the site: **images and diagrams enlarge on a click**, and **Mermaid diagrams are drawn**. The library that draws them is 3.5 MB, so it travels only when the export holds a diagram at all, and it loads only on the pages that have one.
 
 <details>
 <summary>Pitfalls: What a copy cannot do</summary>

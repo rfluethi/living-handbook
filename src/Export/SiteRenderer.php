@@ -134,6 +134,30 @@ final class SiteRenderer {
 	}
 
 	/**
+	 * A page whose body was rendered from the block template.
+	 *
+	 * The template already carries the title, the content and everything the site
+	 * arranged around them, so nothing is added here but the trail back to the
+	 * start page: a breadcrumb is navigation between files in a folder, and no
+	 * template on a website has a reason to contain one.
+	 *
+	 * @param WP_Post                          $post     The page.
+	 * @param string                           $rendered The rendered template, links already rewritten.
+	 * @param array<int, array<string, mixed>> $index    The export index.
+	 * @param array<string, mixed>             $site     Site-wide values.
+	 * @return string
+	 */
+	public static function page_from_template( WP_Post $post, string $rendered, array $index, array $site ): string {
+		$path     = self::path_for( (int) $post->ID, $index );
+		$rendered = self::fill_toc( self::strip_people( $rendered ) );
+
+		$body = '<nav class="lh-crumbs">' . self::crumbs( (int) $post->ID, $index, $path ) . '</nav>'
+			. '<div class="wp-site-blocks">' . $rendered . '</div>';
+
+		return self::document( get_the_title( $post ), $body, self::root_prefix( $path ), $index, (int) $post->ID, $site, self::has_diagram( $rendered ) );
+	}
+
+	/**
 	 * The start page: what the handbook is, and everything in it.
 	 *
 	 * @param array<int, array<string, mixed>> $index The export index.
@@ -321,6 +345,75 @@ final class SiteRenderer {
 	}
 
 	/**
+	 * Fill the table-of-contents block the template rendered empty.
+	 *
+	 * On the site that list is built in the browser, from the headings in the
+	 * document. In an export it is built here instead, from the same anchors, so
+	 * a reader who opened the folder with scripting switched off still gets it,
+	 * and so the printed copy has it too.
+	 *
+	 * @param string $html The rendered template.
+	 * @return string
+	 */
+	public static function fill_toc( string $html ): string {
+		if ( ! str_contains( $html, 'living-handbook-toc__list' ) ) {
+			return $html;
+		}
+
+		$items = self::toc_items( $html );
+		if ( '' === $items ) {
+			return $html;
+		}
+
+		$html = (string) preg_replace(
+			'#(<ul class="living-handbook-toc__list">)\s*(</ul>)#',
+			'$1' . str_replace( '$', '\$', $items ) . '$2',
+			$html
+		);
+
+		// The block ships hidden and the script unhides it once it has something
+		// to show; here it has something to show already.
+		return (string) preg_replace( '#(<details class="living-handbook-toc[^"]*")([^>]*)\shidden#', '$1$2', $html );
+	}
+
+	/**
+	 * Drop the people from the metadata footer.
+	 *
+	 * An avatar is a request to an external service and a name is a name. Both
+	 * belong on the site, not in a file that gets mailed around. The dates and
+	 * the responsible role stay: they are what the footer is for.
+	 *
+	 * @param string $html The rendered template.
+	 * @return string
+	 */
+	public static function strip_people( string $html ): string {
+		return (string) preg_replace( '#<span class="living-handbook-person">.*?</span>\s*</span>#s', '', $html );
+	}
+
+	/**
+	 * The list items of a table of contents, from the headings in the content.
+	 *
+	 * @param string $content Rendered content.
+	 * @return string
+	 */
+	private static function toc_items( string $content ): string {
+		preg_match_all( '#<h([23])[^>]*\sid="([^"]+)"[^>]*>(.*?)</h\1>#is', $content, $matches, PREG_SET_ORDER );
+		if ( count( $matches ) < 2 ) {
+			return '';
+		}
+
+		$items = '';
+		foreach ( $matches as $match ) {
+			$level  = 3 === (int) $match[1] ? ' living-handbook-toc__item--sub' : '';
+			$text   = (string) preg_replace( '#<a class="living-handbook-anchor".*?</a>#is', '', $match[3] );
+			$items .= '<li class="living-handbook-toc__item' . $level . '"><a href="#' . esc_attr( $match[2] ) . '">'
+				. esc_html( trim( wp_strip_all_tags( $text ) ) ) . '</a></li>';
+		}
+
+		return $items;
+	}
+
+	/**
 	 * A table of contents from the headings the content already carries.
 	 *
 	 * Built here rather than by a script: the anchors are added on the server by
@@ -431,24 +524,87 @@ final class SiteRenderer {
 	 * The stylesheet: the plugin's own frontend CSS, a small layout that stands
 	 * in for the theme, and the colours of the chosen look.
 	 *
-	 * @param string $theme The look the export was given.
+	 * @param string $theme         The look the export was given.
+	 * @param string $block_support The layout rules the style engine collected while rendering.
 	 * @return string
 	 */
-	public static function stylesheet( string $theme = SiteThemes::DEFAULT_THEME ): string {
+	public static function stylesheet( string $theme = SiteThemes::DEFAULT_THEME, string $block_support = '' ): string {
 		$frontend = '';
 		$path     = LIVING_HANDBOOK_DIR . 'assets/frontend.css';
 		if ( is_readable( $path ) ) {
 			$frontend = (string) file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a file shipped with this plugin, not a request.
 		}
 
-		// Order matters and is the whole trick: the plugin's stylesheet declares
-		// every colour as var(--lh-user-*, fallback), so whatever sets those
-		// properties last wins. The site's own settings for the default look, a
-		// theme's block for the others, and neither for both, because a dark page
-		// carrying half of a light palette is worse than either on its own.
+		// Order matters, and every layer earns its place.
+		//
+		// The core block stylesheet and the theme's global styles come first,
+		// because the exported pages are block markup: without them a columns
+		// block is two stacked divs and a separator is a horizontal line nobody
+		// styled. The global styles are also where the theme's palette, its fonts
+		// and its spacing live, as --wp--preset--* properties, which is exactly
+		// what the plugin's own stylesheet falls back to. That is why an export
+		// can look like the site at all, and it is why they are here even for the
+		// looks that do not want the site's colours: those override the handful of
+		// properties they care about, further down, rather than starting from
+		// nothing.
+		//
+		// Then the block supports collected while rendering, then the plugin's
+		// stylesheet, then the export's own layout, then the colours of the chosen
+		// look, then print.
 		$colours = SiteThemes::uses_site_colours( $theme ) ? Appearance::css() : SiteThemes::css( $theme );
 
-		return $frontend . "\n" . self::layout_css() . "\n" . $colours . "\n" . SiteThemes::print_css();
+		return self::block_library_css() . "\n"
+			. self::global_styles() . "\n"
+			. $block_support . "\n"
+			. $frontend . "\n"
+			. self::layout_css() . "\n"
+			. $colours . "\n"
+			. SiteThemes::print_css();
+	}
+
+	/**
+	 * WordPress's own stylesheet for the core blocks.
+	 *
+	 * @return string
+	 */
+	private static function block_library_css(): string {
+		$path = ABSPATH . WPINC . '/css/dist/block-library/style.min.css';
+		if ( ! is_readable( $path ) ) {
+			$path = ABSPATH . WPINC . '/css/dist/block-library/style.css';
+		}
+		if ( ! is_readable( $path ) ) {
+			return '';
+		}
+
+		return (string) file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a core file, not a request.
+	}
+
+	/**
+	 * The theme's global styles, and the font faces that go with them.
+	 *
+	 * This is the theme.json layer: the palette, the font families and sizes, the
+	 * spacing scale and the layout rules, as the custom properties everything
+	 * else reads. The font faces are fetched separately because WordPress prints
+	 * them separately; the files they point at are copied into the export by the
+	 * caller, which also rewrites these URLs.
+	 *
+	 * @return string
+	 */
+	public static function global_styles(): string {
+		$css = '';
+		if ( function_exists( 'wp_get_global_stylesheet' ) ) {
+			$css .= (string) wp_get_global_stylesheet();
+		}
+
+		if ( function_exists( 'wp_print_font_faces' ) ) {
+			ob_start();
+			wp_print_font_faces();
+			$fonts = (string) ob_get_clean();
+			// What comes back is a style element; only its rules are wanted.
+			$css .= "\n" . (string) preg_replace( '#</?style[^>]*>#i', '', $fonts );
+		}
+
+		return $css;
 	}
 
 	/**

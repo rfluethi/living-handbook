@@ -20,7 +20,7 @@ Typische Fälle: eine Prüfung oder ein Audit, das eine Fassung zum Stichtag wil
 1. Öffne **Handbuch → Export**. Der Abschnitt heisst **Als Website exportieren**, unterhalb des Paket-Exports.
 2. Wähle das **Handbuch**, und im zweiten Feld wahlweise einen einzelnen Bereich.
 3. Wähle die **Gestaltung**. Zur Wahl stehen vier:
-   * **Wie diese Website:** die Farben und die Schriftgrösse, die du unter Einstellungen, Darstellung gesetzt hast.
+   * **Wie diese Website:** dein Theme reist mit. Farben, Schriften und Abstände kommen aus seiner `theme.json`, die Schriftdateien liegen im ZIP, dazu kommen deine Einstellungen unter Darstellung. Das ist die Voreinstellung.
    * **Schlicht, neutral:** ohne Hausfarben. Meist die bessere Wahl für eine Kopie, die das Team verlässt.
    * **Dunkel:** helle Schrift auf dunklem Grund, zum Lesen am Abend.
    * **Papier, zum Drucken:** Serifenschrift, schmalere Spalte, hoher Kontrast.
@@ -39,7 +39,9 @@ In der ZIP-Datei liegt eine vollständige kleine Website:
 
 Enthalten sind die Seiten, die **du** lesen darfst. Links zwischen Handbuch-Seiten führen zu den Dateien daneben, Bilder liegen mit im Paket, und die Suche oben rechts durchsucht alle Seiten im Browser. Links nach draussen bleiben, was sie waren.
 
-Zwei Dinge funktionieren wie auf der Website: **Bilder und Diagramme vergrössern sich per Klick**, und **Mermaid-Diagramme werden gezeichnet**. Die Bibliothek dafür ist 3,5 MB gross und reist nur mit, wenn im Export überhaupt ein Diagramm vorkommt; geladen wird sie nur auf den Seiten, die eins haben.
+**Die Seiten entstehen aus derselben Vorlage wie auf der Website.** Hast du im Website-Editor die Handbuch-Seite umgebaut, etwa die Navigation verschoben oder die Abzeichen woanders hingestellt, sieht der Export genauso aus. Nur was ohne Server nicht funktioniert, fällt vorher heraus: Kopf- und Fussbereich deines Themes, die Feedback-Frage, die Kommentare und die Schnellsuche in der Seitenleiste. Das Inhaltsverzeichnis wird beim Export gefüllt statt im Browser, es steht also auch ohne JavaScript und auf Papier.
+
+Zwei weitere Dinge funktionieren wie auf der Website: **Bilder und Diagramme vergrössern sich per Klick**, und **Mermaid-Diagramme werden gezeichnet**. Die Bibliothek dafür ist 3,5 MB gross und reist nur mit, wenn im Export überhaupt ein Diagramm vorkommt; geladen wird sie nur auf den Seiten, die eins haben.
 
 <details>
 <summary>Stolpersteine: Was eine Kopie nicht kann</summary>
