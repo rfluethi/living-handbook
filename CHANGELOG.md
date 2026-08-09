@@ -17,6 +17,26 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.72.0] - 2026-08-09
+
+### Added
+
+* **A handbook can leave as a website**, under **Handbook → Export**, below the bundle: a ZIP of plain HTML files that opens by double-clicking `index.html`, with no server, no installation and no network. One file per page in folders that follow the hierarchy, the uploads it references alongside, a page tree, a table of contents, and a search. For the reader who has no access to the site at all: an audit that wants the wording as it stood on a date, an external team nobody wants to hand accounts to, a copy for the archive, a laptop on a train.
+
+  This is the export the work list has carried since the plugin got its first one, deliberately parked until it was clear what it was for. It is not the bundle: the bundle carries a handbook as data to another WordPress, this carries it as finished pages to a person. The two now sit on the same screen and say which is which.
+
+  **Not fetched over HTTP.** The obvious implementation, and the one a comparable plugin uses, asks the site for each page with `wp_remote_get()`. That request arrives as a logged-out visitor, so against a fail-closed handbook it exports thirty pages of "no access" and reports success. The pages are rendered in process instead, and every one of them is checked with `AccessController::can_view_post()` against the person who pressed the button. An export therefore holds exactly what its author may read, which is also the only rule that can be defended: the alternative, exporting everything, would turn a static copy into a way around the access rules.
+
+  **It runs in passes.** A handbook of two thousand pages does not render in one request, and `set_time_limit( 0 )` only moves the failure into the web server. A pass renders until its budget is up, writes what it has into the archive, saves the job and answers with how many pages are left; the browser asks for the next one and shows the count. The same shape as the folder import, and `living_handbook_static_export_time_budget` moves the budget.
+
+  **Everything inside is a path, not a URL.** Links between pages become relative paths to the file next door, uploads are copied into `assets/media/` and pointed at from there, and a page's file sits at the slug path of its ancestors, the key the bundle export already uses. Links to the outside world stay absolute, and so does a link to a page that was not exported: better an address that still works than a file that is not there.
+
+  **The search works without a server**, which decided its form. The index is a JavaScript file setting a global rather than JSON the page fetches, because a document opened over `file://` is its own origin in most browsers and may not read the file lying beside it. For the same reason the table of contents is built on the server from the heading anchors instead of in the browser from the DOM.
+
+  Four things are deliberately not in the export. Comments and "Was this helpful?" need a server. The facet filters need queries. Names and avatars are dropped from the metadata footer, because the file leaves the building and an avatar is a request to an external service; the dates and the responsible role stay. And the copy says twice what it is: the screen warns before the export, and a `README.txt` in the ZIP tells whoever finds it in a year that this copy has no access rules and stops being current the moment it is made.
+
+  One bug found while building it, worth writing down because it is not obvious. The job id was passed through `sanitize_key()`, which lower-cases. The transient name then went through a database column whose collation ignores case, so the row was still found, and through an object cache that does not, so a pass read a stale copy of its own state and rendered the same page forever. The id keeps its case now, the way the import's does, and `StaticExportTest` pins the resume across three passes.
+
 ## [0.71.2] - 2026-08-09
 
 ### Fixed

@@ -63,6 +63,19 @@ Unter **Handbuch → Export** kann jede Person mit `edit_others_posts` (Redaktio
 
 Das Bündel enthält die Konfiguration des Handbuchs (Sichtbarkeit und erlaubte Rollen), jede Seite als Abbild ihres Block-Markups samt Platz in der Hierarchie, die vier Einordnungs-Taxonomien, die Prüf-Metadaten und die referenzierten Medien. Es trägt bewusst **nicht** die Liste einzeln erlaubter Personen: Das sind E-Mail-Adressen, ein Bündel ist eine Datei, die heruntergeladen und weitergegeben wird, und die Zielseite hat ohnehin andere Benutzer. Ist ein Handbuch auf benannte Personen beschränkt, setze sie nach dem Import neu. Eine aus GitHub gespeiste Seite behält ihre Quell-URL und nimmt auf der Zielseite den Sync aus demselben Repository wieder auf. Lokale, seitenspezifische Daten bleiben draussen: Die Feedback-Zähler und der Sync-Status gehören der jeweiligen Seite.
 
+## Ein Handbuch als statische Website exportieren
+
+Derselbe Bildschirm bietet einen zweiten Export, für Leserinnen und Leser ganz ohne WordPress: **Als Website exportieren** baut ein ZIP aus reinen HTML-Dateien, das sich aus dem Dateisystem heraus öffnen lässt, ohne Server und ohne Netz. Wieder `edit_others_posts`, und der Bildschirm nennt die Folge beim Namen: eine statische Kopie trägt keine Zugriffsregeln mehr, wer die Datei hat, liest jede Seite darin.
+
+Vier Entscheidungen sollte kennen, wer den Code liest (`Export/StaticSite.php`, `Export/SiteRenderer.php`):
+
+- **Im Prozess gerendert, nicht über HTTP geholt.** Die naheliegende Umsetzung, ein `wp_remote_get()` je Seite, kommt als abgemeldeter Besucher an und exportiert bei einem fail-closed-Handbuch einen Ordner voller Seiten «kein Zugriff», technisch erfolgreich. Stattdessen wird hier gerendert, und jede Seite läuft durch `AccessController::can_view_post()` gegen die exportierende Person. Ein Export enthält damit genau das, was seine Urheberin lesen darf.
+- **Durchgänge mit Zeitbudget.** Ein grosses Handbuch passt nicht in eine Anfrage. Ein Durchgang rendert, bis `living_handbook_static_export_time_budget` aufgebraucht ist, schreibt das Fertige ins Archiv, sichert den Auftrag in einem Transient und meldet, was übrig ist; der Browser holt den nächsten. Ein Auftrag gehört der Person, die ihn gestartet hat. Die Auftrags-ID behält ihre Gross- und Kleinschreibung: der Transient-Name geht durch eine Datenbankspalte, die Schreibweise ignoriert, und durch einen Objekt-Cache, der sie nicht ignoriert; kleingeschrieben liest ein Durchgang einen veralteten Stand seines eigenen Auftrags.
+- **Pfade statt URLs.** Jeder Link zwischen Seiten und jedes Bild wird auf einen relativen Pfad im ZIP umgeschrieben; die Datei einer Seite liegt am Slug-Pfad ihrer Vorfahren (`pflege/seiten-pruefen.html`), demselben Schlüssel, den schon der Bündel-Export benutzt. Links nach draussen bleiben absolut, mit Absicht.
+- **Eine Suche ohne Server.** Der Index ist eine JavaScript-Datei, die eine globale Variable setzt, kein JSON, das eine Seite nachladen müsste: ein über `file://` geöffnetes Dokument ist in den meisten Browsern seine eigene Herkunft und darf die Datei daneben nicht lesen. Das Inhaltsverzeichnis entsteht serverseitig aus den Überschriften-Ankern, nicht im Browser aus dem DOM.
+
+Weggelassen, jedes mit Grund: Kommentare und die Frage «War das hilfreich?» brauchen einen Server, die Facettenfilter brauchen Abfragen, und Namen und Profilbilder fallen aus der Fusszeile, weil die Datei das Haus verlässt.
+
 ## Ein Bündel importieren
 
 Auf dem Import-Bildschirm nimmt der Reiter **Bündel** eine Datei entgegen, die auf einer anderen Seite exportiert wurde. Lade das ZIP hoch und wähle, was passieren soll, wenn eine Seite schon existiert:

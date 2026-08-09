@@ -28,6 +28,7 @@ The modules under `src/`:
 
 - **`PostType/`** defines the handbook page type. `Handbook.php` registers it and keeps it out of search engines, sitemaps and feeds, so an internal handbook does not leak.
 - **`Taxonomy/`** defines the four classifying taxonomies (page type, topic, role, audience) in `Taxonomies.php`.
+- **`Export/`** is the static website export: `StaticSite.php` plans a job, renders it in passes with a time budget and packs the ZIP; `SiteRenderer.php` builds the HTML, the page tree, the table of contents, the search index and the stylesheet that stands in for the theme.
 - **`Handbook/`** defines the handbook grouping. `Handbooks.php` registers the grouping and its access settings; `HandbookAdmin.php` is the small editor screen where you set a handbook's visibility, roles and people.
 - **`Access/`** is the gate. `AccessController.php` answers one question, "may this user read this page?", and every read path in the whole plugin asks it here. It is deliberately strict: a page that belongs to no handbook is not readable. It also closes the side doors, so comments and REST requests cannot reveal a page the visitor may not see.
 - **`Meta/`** registers the per-page fields in `Metadata.php`: last updated, last reviewed, review interval, reviewer, a "hide from AI" flag, and the on-this-page depth. It also exposes a single read-only summary of a page's freshness over the REST API.

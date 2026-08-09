@@ -230,7 +230,7 @@ Parameter:
 - `bool $enabled` Ob IDs und Anker gesetzt werden.
 
 Gibt einen bool zurück.
-## `living_handbook_enabled_taxonomies`
+### `living_handbook_enabled_taxonomies`
 
 Bestimmt, welche der vier klassifizierenden Taxonomien diese Website nutzt: Seitentyp, Thema, Verantwortung, Zielgruppe. Standard ist das, was die Ankreuzfelder unter **Handbuch → Einstellungen → Einordnung** sagen, und alle vier, solange nichts gespeichert wurde.
 
@@ -243,6 +243,30 @@ Parameter:
 - `array<int, string> $enabled` Namen der Taxonomien, die genutzt werden.
 
 Gibt ein Array von Taxonomie-Namen zurück; alles, was keines der vier ist, wird ignoriert.
+
+### `living_handbook_static_export_time_budget`
+
+Bestimmt, wie viele Sekunden ein Durchgang des Website-Exports rendern darf, bevor er seinen Stand sichert und den nächsten Durchgang abwartet. Standard sind 15 Sekunden, begrenzt auf 60 Prozent von `max_execution_time`, falls gesetzt. Auf einem Server, der Anfragen früh abschneidet, senken; höher setzen als der Server erlaubt macht aus einem pausierten Export einen fehlgeschlagenen.
+
+Parameter:
+
+- `float $budget` Das Zeitbudget in Sekunden.
+
+Gibt einen float zurück.
+
+### `living_handbook_static_export_page`
+
+Filtert das vollständige HTML-Dokument einer Seite im Website-Export, nachdem Links und Bilder darin auf die Dateien im ZIP zeigen. Hier hängt eine Website einen eigenen Kopf, einen Vertraulichkeitshinweis, ein Druck-Stylesheet oder eine eigene Fusszeile an einen Export, ohne das Plugin anzufassen.
+
+Das Dokument wird genau so ins Archiv geschrieben, wie es zurückkommt: Was hier dazukommt, wird danach nicht mehr escaped, bereinigt oder geprüft.
+
+Parameter:
+
+- `string $html` Das vollständige Dokument.
+- `WP_Post $post` Die Seite, aus der es gebaut wurde.
+- `string $path` Sein Pfad im Export, zum Beispiel `pflege/seiten-pruefen.html`.
+
+Gibt einen String zurück.
 
 ## Actions
 

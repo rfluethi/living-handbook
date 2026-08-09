@@ -43,6 +43,7 @@ The pages are on the target site. Links between the pages lead to the new pages.
 ## Related pages
 
 * [Import Markdown](import-markdown.md)
+* [Hand a handbook on as a website](export-as-a-website.md)
 * [Set visibility](../access/set-visibility.md)
 
 ## Transport-Metadaten

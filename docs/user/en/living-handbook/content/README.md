@@ -10,6 +10,7 @@ For that you need two terms. **Markdown** is a simple text format. You write nor
 | [Import Markdown](import-markdown.md) | You have Markdown files and want them as pages. |
 | [GitHub sync](github-sync.md) | Pages should stay permanently connected to files on GitHub. |
 | [Move a handbook](move-a-handbook.md) | A whole handbook should move to another website. |
+| [Hand a handbook on as a website](export-as-a-website.md) | Somebody should be able to read the handbook who has no WordPress and no access. |
 
 Do you only write in WordPress? Then the first page of this area is all you need.
 

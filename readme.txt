@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.71.2
+Stable tag: 0.72.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,7 @@ Core features:
 * A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder; a folder is read with its subfolders and the folder structure becomes the page hierarchy. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
+* Two exports: a bundle that moves a handbook to another site running the plugin, and a static website (a ZIP of plain HTML with the pages, their images, a page list and a search) for readers who have no access to your site at all. Both work on a single area too.
 * The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and shipped inside the plugin. One click on the import screen loads it into the site, in English or German, always matching the installed version; the living_handbook_app_handbook_url filter points it at your own GitHub repository instead.
 * Fully translatable (English source), with a German and a Swiss German translation included.
 * No external WordPress plugin is required; a block theme is. The import and sync require three Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/ together with their own dependencies, all under GPL-compatible licenses (BSD-3-Clause, MIT, GPL-2.0-or-later). Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
@@ -86,6 +87,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.72.0 =
+* New: export a handbook as a website. A ZIP of plain HTML files that opens by double-clicking index.html, with the pages, their images, a page list and a search, and no server or internet connection needed. For readers who have no access to your site. It contains what you can read, and it carries no access rules of its own, so pass it on the way you would pass on a printout.
 
 = 0.71.2 =
 * Nothing changed in the plugin: this release only makes the build script readable again, which on PHP 8.4 drowned in deprecation warnings from wp-cli itself.

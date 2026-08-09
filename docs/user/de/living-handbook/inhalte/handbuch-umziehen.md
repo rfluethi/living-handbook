@@ -43,6 +43,7 @@ Die Seiten stehen auf der Ziel-Website. Links zwischen den Seiten führen zu den
 ## Verwandte Seiten
 
 * [Markdown importieren](markdown-importieren.md)
+* [Handbuch als Website weitergeben](handbuch-als-website-exportieren.md)
 * [Sichtbarkeit einstellen](../zugriff/sichtbarkeit-einstellen.md)
 
 ## Transport-Metadaten

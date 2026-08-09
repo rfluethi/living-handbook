@@ -64,6 +64,19 @@ Under **Handbook → Export**, anyone with `edit_others_posts` (an editor or abo
 
 The bundle carries the handbook's configuration (visibility and allowed roles), every page as a block-markup snapshot with its place in the hierarchy, the four classifying taxonomies, the freshness metadata, and the referenced media. It deliberately does **not** carry the list of individually allowed people: those are e-mail addresses, a bundle is a file that gets downloaded and passed on, and the target site has a different set of users anyway. If a handbook is restricted to named people, set them again after importing. A GitHub-sourced page keeps its source URL, so on the target site it resumes syncing from the same repository. Local, site-specific data is deliberately left out: the feedback counts and the sync status belong to each site.
 
+## Exporting a handbook as a static website
+
+The same screen offers a second export, for readers who have no WordPress at all: **Export as a website** builds a ZIP of plain HTML files that opens from the file system, no server and no network required. `edit_others_posts` again, and the screen states the consequence plainly: a static copy carries no access rules, so whoever holds the file reads every page in it.
+
+Four decisions are worth knowing when reading the code (`Export/StaticSite.php`, `Export/SiteRenderer.php`):
+
+- **Rendered in process, not fetched over HTTP.** The obvious implementation, `wp_remote_get()` per page, arrives as a logged-out visitor, which against a fail-closed handbook exports a folder of "no access" pages and reports success. The pages are rendered here instead, and every page is checked with `AccessController::can_view_post()` against the exporting user, so an export holds exactly what its author may read.
+- **Passes with a time budget.** Rendering a large handbook does not fit in one request. A pass renders until `living_handbook_static_export_time_budget` is up, writes what it has into the archive, saves the job in a transient and answers with what is left; the browser asks for the next pass. A job belongs to the user who started it. The job id keeps its case: the transient name goes through a case-insensitive database column but a case-sensitive object cache, and lower-casing it makes a pass read a stale copy of its own state.
+- **Paths, not URLs.** Every link between pages, and every image, is rewritten to a relative path inside the ZIP; a page's file sits at the slug path of its ancestors (`upkeep/review-pages.html`), which is the key the bundle export already uses. Links pointing anywhere else are left absolute on purpose.
+- **A search without a server.** The index is a JavaScript file that sets a global, not JSON that a page would fetch: a document opened over `file://` is its own origin in most browsers and may not read the file beside it. The table of contents is built on the server from the heading anchors, rather than in the browser from the DOM.
+
+Left out, and each for a reason: comments and the "Was this helpful?" prompt need a server; the facet filters need queries; and names and avatars are dropped from the page footer because the file leaves the building.
+
 ## Importing a bundle
 
 On the import screen, the **Bundle** tab takes a bundle exported from another site. Upload the ZIP and choose what should happen when a page already exists:

@@ -60,6 +60,34 @@ final class Headings {
 		if ( ! is_singular( Handbook::POST_TYPE ) || ! in_the_loop() || ! is_main_query() ) {
 			return $content;
 		}
+
+		return self::anchor( $content );
+	}
+
+	/**
+	 * Add the ids and anchor links to a piece of rendered content, whatever the
+	 * request looks like.
+	 *
+	 * The filter above asks where it is before doing anything, which is right for
+	 * a page being served and wrong for the static export: that one renders pages
+	 * in a back-end request, outside the loop, and would get a table of contents
+	 * with nothing to point at. So the decision "should this content get anchors"
+	 * and the work of adding them are two things now.
+	 *
+	 * @param string $content Rendered content.
+	 * @return string
+	 */
+	public static function anchor( string $content ): string {
+		return ( new self() )->apply( $content );
+	}
+
+	/**
+	 * Add an id and an anchor link to every h2, h3 and h4 in the content.
+	 *
+	 * @param string $content Rendered content.
+	 * @return string
+	 */
+	private function apply( string $content ): string {
 		if ( '' === trim( $content ) || ! str_contains( $content, '<h' ) ) {
 			return $content;
 		}

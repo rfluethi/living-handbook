@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T11:49:26+00:00\n"
+"POT-Creation-Date: 2026-08-09T12:58:29+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -98,7 +98,8 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:256 src/Admin/Maintenance.php:260
-#: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:114
+#: src/Export/SiteRenderer.php:205 src/Export/StaticSite.php:754
+#: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:115
 #: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
 #: src/Setup/Onboarding.php:100
 msgid "Handbook"
@@ -214,6 +215,174 @@ msgstr "Diese Seite wird auf GitHub gepflegt und automatisch aktualisiert."
 #: src/Blocks/SourceNoteBlock.php:83
 msgid "View the source file"
 msgstr "Quelldatei ansehen"
+
+#. translators: 1: number of pages, 2: date of the export.
+#: src/Export/SiteRenderer.php:155
+#, php-format
+msgid "A copy of %1$d page, exported on %2$s."
+msgid_plural "A copy of %1$d pages, exported on %2$s."
+msgstr[0] "Eine Kopie von %1$d Seite, exportiert am %2$s."
+msgstr[1] "Eine Kopie von %1$d Seiten, exportiert am %2$s."
+
+#: src/Export/SiteRenderer.php:161
+msgid "Contents"
+msgstr "Inhalt"
+
+#: src/Export/SiteRenderer.php:194
+msgid "Skip to content"
+msgstr "Zum Inhalt springen"
+
+#: src/Export/SiteRenderer.php:198 src/Export/SiteRenderer.php:199
+#: src/Frontend/Filters.php:392 assets/blocks.js:248
+msgid "Search"
+msgstr "Suchen"
+
+#: src/Export/SiteRenderer.php:201
+msgid "Pages"
+msgstr "Seiten"
+
+#. translators: %s: date of the export.
+#: src/Export/SiteRenderer.php:217
+#, php-format
+msgid ""
+"Exported from a Living Handbook on %s. This copy is not kept up to date."
+msgstr ""
+"Exportiert aus einem Living Handbook am %s. Diese Kopie wird nicht "
+"aktualisiert."
+
+#: src/Export/SiteRenderer.php:297
+msgid "Start"
+msgstr "Start"
+
+# On this page (table of contents)
+#: src/Export/SiteRenderer.php:334
+msgid "On this page"
+msgstr "Auf dieser Seite"
+
+#: src/Export/SiteRenderer.php:466
+msgid "Nothing found."
+msgstr "Nichts gefunden."
+
+#. translators: %d: number of results.
+#: src/Export/SiteRenderer.php:468
+#, php-format
+msgid "%d pages found"
+msgstr "%d Seiten gefunden"
+
+#: src/Export/SiteRenderer.php:469
+msgid "Clear the search"
+msgstr "Suche zurücksetzen"
+
+#. translators: %s: date of the export.
+#: src/Export/SiteRenderer.php:577
+#, php-format
+msgid "A copy of a handbook, exported on %s."
+msgstr "Eine Kopie eines Handbuchs, exportiert am %s."
+
+#: src/Export/SiteRenderer.php:581
+msgid ""
+"Open index.html in a browser. No server, no installation and no internet "
+"connection are needed."
+msgstr ""
+"Öffne index.html in einem Browser. Es braucht keinen Server, keine "
+"Installation und keine Internetverbindung."
+
+#: src/Export/SiteRenderer.php:583
+msgid ""
+"This copy is not kept up to date, and it carries no access rules: whoever "
+"holds this folder can read every page in it. Pass it on accordingly."
+msgstr ""
+"Diese Kopie wird nicht aktualisiert, und sie trägt keine Zugriffsregeln: Wer "
+"diesen Ordner hat, liest jede Seite darin. Gib sie entsprechend weiter."
+
+#. translators: %s: source site URL.
+#: src/Export/SiteRenderer.php:587
+#, php-format
+msgid "Source: %s"
+msgstr "Quelle: %s"
+
+#: src/Export/StaticSite.php:149
+msgid ""
+"This server has no ZIP support (the PHP zip extension), so an export cannot "
+"be packed."
+msgstr ""
+"Dieser Server hat keine ZIP-Unterstützung (die PHP-Erweiterung zip), ein "
+"Export lässt sich deshalb nicht packen."
+
+#: src/Export/StaticSite.php:160
+msgid "This export has expired or belongs to somebody else. Start it again."
+msgstr ""
+"Dieser Export ist abgelaufen oder gehört jemand anderem. Starte ihn neu."
+
+#: src/Export/StaticSite.php:172 assets/js/static-export.js:90
+msgid "Choose a handbook to export."
+msgstr "Wähle ein Handbuch zum Exportieren."
+
+#: src/Export/StaticSite.php:179
+msgid "You cannot read this handbook, so you cannot export it either."
+msgstr ""
+"Du darfst dieses Handbuch nicht lesen und deshalb auch nicht exportieren."
+
+#: src/Export/StaticSite.php:188
+msgid "There is nothing to export: this handbook has no pages you can read."
+msgstr ""
+"Es gibt nichts zu exportieren: Dieses Handbuch hat keine Seiten, die du "
+"lesen darfst."
+
+#: src/Export/StaticSite.php:335
+msgid "The export file could not be written on this server."
+msgstr "Die Export-Datei konnte auf diesem Server nicht geschrieben werden."
+
+#: src/Export/StaticSite.php:648 src/Import/HandbookExport.php:263
+msgid "You are not allowed to export handbooks."
+msgstr "Du darfst keine Handbücher exportieren."
+
+#: src/Export/StaticSite.php:656
+msgid "This export is no longer available. Start it again."
+msgstr "Dieser Export ist nicht mehr verfügbar. Starte ihn neu."
+
+#: src/Export/StaticSite.php:746
+msgid "Export as a website"
+msgstr "Als Website exportieren"
+
+#: src/Export/StaticSite.php:747
+msgid ""
+"A ZIP of plain HTML files: the pages, their images, a page list and a "
+"search. It opens by double-clicking index.html, with no server and no "
+"internet connection. For readers who have no access to this site at all."
+msgstr ""
+"Ein ZIP aus reinen HTML-Dateien: die Seiten, ihre Bilder, eine Seitenliste "
+"und eine Suche. Es öffnet sich per Doppelklick auf index.html, ohne Server "
+"und ohne Internetverbindung. Für Leserinnen und Leser, die gar keinen Zugang "
+"zu dieser Website haben."
+
+#: src/Export/StaticSite.php:749
+msgid ""
+"A static copy has no access rules. It contains every page you can read in "
+"the handbook you choose, and whoever holds the file can read all of it. It "
+"also stops being current the moment it is made."
+msgstr ""
+"Eine statische Kopie hat keine Zugriffsregeln. Sie enthält jede Seite, die "
+"du im gewählten Handbuch lesen darfst, und wer die Datei hat, liest alles "
+"davon. Außerdem veraltet sie ab dem Moment, in dem sie entsteht."
+
+#: src/Export/StaticSite.php:757 src/Import/HandbookExport.php:118
+#: src/Import/MarkdownImportPage.php:914
+msgid "— select a handbook —"
+msgstr "— Handbuch wählen —"
+
+#: src/Export/StaticSite.php:767 src/Import/HandbookExport.php:128
+msgid "What to export"
+msgstr "Was exportieren"
+
+#: src/Export/StaticSite.php:769 src/Export/StaticSite.php:770
+#: src/Import/HandbookExport.php:130 src/Import/HandbookExport.php:131
+msgid "— the whole handbook —"
+msgstr "— das ganze Handbuch —"
+
+#: src/Export/StaticSite.php:776
+msgid "Build the website"
+msgstr "Website erzeugen"
 
 #: src/Frontend/Appearance.php:70
 msgid "Surface"
@@ -399,10 +568,6 @@ msgstr "Dieses Handbuch hat noch keine Seiten."
 msgid "Log in to see more."
 msgstr "Melde dich an, um mehr zu sehen."
 
-#: src/Frontend/Filters.php:392 assets/blocks.js:248
-msgid "Search"
-msgstr "Suchen"
-
 #: src/Frontend/Filters.php:497
 msgid "Apply filters"
 msgstr "Filter anwenden"
@@ -482,7 +647,7 @@ msgid "%d matching pages"
 msgstr "%d passende Seiten"
 
 #. translators: %s: the heading's text.
-#: src/Frontend/Headings.php:126
+#: src/Frontend/Headings.php:154
 #, php-format
 msgid "Link to this section: %s"
 msgstr "Link zu diesem Abschnitt: %s"
@@ -548,7 +713,7 @@ msgstr ""
 "Seite» rechts."
 
 #: src/Git/ArchiveSource.php:96 src/Git/ArchiveSource.php:128
-#: src/Import/HandbookExport.php:286 src/Import/HandbookImport.php:144
+#: src/Import/HandbookExport.php:300 src/Import/HandbookImport.php:144
 #: src/Import/MarkdownImportPage.php:249 src/Import/MarkdownImportPage.php:334
 msgid "ZipArchive is not available on the server."
 msgstr "ZipArchive ist auf dem Server nicht verfügbar."
@@ -950,17 +1115,17 @@ msgstr "Technische Dokumentation (Englisch)"
 msgid "That handbook is not available in this build."
 msgstr "Dieses Handbuch ist in dieser Fassung nicht enthalten."
 
-#: src/Import/HandbookExport.php:77
+#: src/Import/HandbookExport.php:78
 msgid "Export handbooks"
 msgstr "Handbücher exportieren"
 
 # Handbook export (bundle). Source strings live in
 # src/Import/HandbookExport.php and MarkdownImportPage.php.
-#: src/Import/HandbookExport.php:78 src/Import/HandbookExport.php:103
+#: src/Import/HandbookExport.php:79 src/Import/HandbookExport.php:104
 msgid "Export"
 msgstr "Export"
 
-#: src/Import/HandbookExport.php:104
+#: src/Import/HandbookExport.php:105
 msgid ""
 "Download a handbook, or a single area within it, as a bundle: one ZIP with "
 "its pages, configuration and media. Import it on another site running the "
@@ -970,23 +1135,11 @@ msgstr ""
 "ein ZIP mit den Seiten, der Konfiguration und den Medien. Importiere es auf "
 "einer anderen Seite mit dem Plugin."
 
-#: src/Import/HandbookExport.php:107
+#: src/Import/HandbookExport.php:108
 msgid "There are no handbooks yet, so there is nothing to export."
 msgstr "Es gibt noch keine Handbücher, also nichts zu exportieren."
 
-#: src/Import/HandbookExport.php:117 src/Import/MarkdownImportPage.php:914
-msgid "— select a handbook —"
-msgstr "— Handbuch wählen —"
-
-#: src/Import/HandbookExport.php:127
-msgid "What to export"
-msgstr "Was exportieren"
-
-#: src/Import/HandbookExport.php:129 src/Import/HandbookExport.php:130
-msgid "— the whole handbook —"
-msgstr "— das ganze Handbuch —"
-
-#: src/Import/HandbookExport.php:132
+#: src/Import/HandbookExport.php:133
 msgid ""
 "Lists the areas of the handbook chosen above. An area is a top-level page; "
 "it exports with its subpages."
@@ -994,23 +1147,19 @@ msgstr ""
 "Zeigt die Bereiche des oben gewählten Handbuchs. Ein Bereich ist eine "
 "oberste Seite; er wird mit seinen Unterseiten exportiert."
 
-#: src/Import/HandbookExport.php:136
+#: src/Import/HandbookExport.php:137
 msgid "Export bundle"
 msgstr "Bündel exportieren"
 
-#: src/Import/HandbookExport.php:249
-msgid "You are not allowed to export handbooks."
-msgstr "Du darfst keine Handbücher exportieren."
-
-#: src/Import/HandbookExport.php:270
+#: src/Import/HandbookExport.php:284
 msgid "That page is not in a handbook."
 msgstr "Diese Seite gehört keinem Handbuch an."
 
-#: src/Import/HandbookExport.php:282
+#: src/Import/HandbookExport.php:296
 msgid "Choose what to export."
 msgstr "Wähle, was exportiert werden soll."
 
-#: src/Import/HandbookExport.php:291
+#: src/Import/HandbookExport.php:305
 msgid "The export bundle could not be created."
 msgstr "Das Export-Bündel konnte nicht erstellt werden."
 
@@ -2312,6 +2461,24 @@ msgstr "Diagramm-Titel (Bildunterschrift)"
 msgid "Diagram description (for screen readers)"
 msgstr "Diagramm-Beschreibung (für Screenreader)"
 
+#. translators: 1: pages already rendered, 2: pages in total.
+#: assets/js/static-export.js:64
+msgid "Rendering page %1$d of %2$d …"
+msgstr "Seite %1$d von %2$d wird erzeugt …"
+
+#. translators: %s: file size, for example "4 MB".
+#: assets/js/static-export.js:78
+msgid "Download the website (%s)"
+msgstr "Website herunterladen (%s)"
+
+#: assets/js/static-export.js:84
+msgid "The export failed."
+msgstr "Der Export ist fehlgeschlagen."
+
+#: assets/js/static-export.js:94
+msgid "Starting …"
+msgstr "Wird gestartet …"
+
 #: blocks/badges/block.json
 msgctxt "block title"
 msgid "Handbook badges"
@@ -2919,10 +3086,6 @@ msgstr ""
 
 #~ msgid "Filter"
 #~ msgstr "Filtern"
-
-# On this page (table of contents)
-#~ msgid "On this page"
-#~ msgstr "Auf dieser Seite"
 
 #~ msgid "Error: "
 #~ msgstr "Fehler: "

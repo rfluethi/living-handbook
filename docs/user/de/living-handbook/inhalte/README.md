@@ -10,6 +10,7 @@ Dafür musst du zwei Begriffe kennen. **Markdown** ist ein einfaches Textformat.
 | [Markdown importieren](markdown-importieren.md) | Du hast Markdown-Dateien und willst sie als Seiten übernehmen. |
 | [GitHub-Synchronisation](github-synchronisation.md) | Seiten sollen dauerhaft mit Dateien auf GitHub verbunden bleiben. |
 | [Handbuch umziehen](handbuch-umziehen.md) | Ein ganzes Handbuch soll auf eine andere Website. |
+| [Handbuch als Website weitergeben](handbuch-als-website-exportieren.md) | Jemand soll das Handbuch lesen können, der kein WordPress und keinen Zugang hat. |
 
 Schreibst du nur in WordPress? Dann reicht dir aus diesem Bereich die erste Seite.
 

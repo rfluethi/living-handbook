@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Import;
 
 use LivingHandbook\Git\GitSync;
+use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -136,6 +137,19 @@ final class HandbookExport {
 					<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Export bundle', 'living-handbook' ); ?></button></p>
 				</form>
 			<?php endif; ?>
+
+			<?php
+			StaticSite::render_form(
+				array_values(
+					array_filter(
+						$handbooks,
+						static function ( $term ) {
+							return $term instanceof WP_Term;
+						}
+					)
+				)
+			);
+			?>
 		</div>
 		<?php
 		if ( ! empty( $handbooks ) ) {

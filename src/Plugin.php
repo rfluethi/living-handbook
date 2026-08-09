@@ -15,6 +15,7 @@ use LivingHandbook\Admin\MoveToHandbook;
 use LivingHandbook\Blocks\Blocks;
 use LivingHandbook\Blocks\MermaidBlock;
 use LivingHandbook\Blocks\SourceNoteBlock;
+use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\Filters;
 use LivingHandbook\Frontend\FrontendRenderer;
@@ -97,6 +98,7 @@ final class Plugin {
 		( new MoveToHandbook() )->register();
 		( new MarkdownImportPage() )->register();
 		( new HandbookExport() )->register();
+		( new StaticSite() )->register();
 		( new HandbookImport() )->register();
 		( new GitSync() )->register();
 		( new Settings() )->register();

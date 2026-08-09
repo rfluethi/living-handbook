@@ -274,6 +274,30 @@ Parameters:
 
 Return an array of taxonomy names; anything not one of the four is ignored.
 
+### `living_handbook_static_export_time_budget`
+
+Filters how many seconds one pass of a static website export may spend rendering, before it saves its place and lets the browser ask for the next one. The default is 15 seconds, capped at 60 percent of `max_execution_time` where there is one. Lower it on a host that cuts requests short; raising it above what the host allows only turns a paused export into a failed one.
+
+Parameters:
+
+- `float $budget` The default budget in seconds.
+
+Return a float.
+
+### `living_handbook_static_export_page`
+
+Filters the complete HTML document of one page in a static website export, after the links and images in it have been pointed at the files inside the ZIP. This is where a site adds its own header, a confidentiality note, a print stylesheet or an analytics-free footer to an export without touching the plugin.
+
+The document is written to the archive exactly as returned, so whatever is added here is not escaped, sanitised or checked afterwards.
+
+Parameters:
+
+- `string $html` The complete document.
+- `WP_Post $post` The page it was built from.
+- `string $path` Its path inside the export, for example `upkeep/review-pages.html`.
+
+Return a string.
+
 ## Actions
 
 _None. The three that were listed here as planned, after an import, on the metadata and on the freshness evaluation, were removed in 0.60.0 rather than left standing as a promise: a hook is a commitment whose signature cannot be changed later without breaking whoever uses it, and these three came from a list rather than from a use. They are kept as a note in the project's own workspace, with signature and purpose, and will be built when something actually needs them._
