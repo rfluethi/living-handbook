@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.72.0
+Stable tag: 0.72.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.72.1 =
+* Fixed: the download button of the website export led to "the link you followed has expired" instead of the file.
 
 = 0.72.0 =
 * New: export a handbook as a website. A ZIP of plain HTML files that opens by double-clicking index.html, with the pages, their images, a page list and a search, and no server or internet connection needed. For readers who have no access to your site. It contains what you can read, and it carries no access rules of its own, so pass it on the way you would pass on a printout.

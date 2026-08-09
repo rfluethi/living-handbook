@@ -58,8 +58,20 @@ version to SVN is what satisfies that; no change here is needed for it.
    This runs PHPCS, PHPStan and the unit tests, regenerates the translation
    files, builds `living-handbook-<version>.zip` and, if a WordPress with the
    Plugin Check plugin is reachable, runs Plugin Check on the zip. Install that
-   zip and try the change before going further. Run `composer test:integration`
-   too; `check-and-build.sh` does not.
+   zip and try the change before going further. Run the integration tests too;
+   `check-and-build.sh` does not, and they are four fifths of the suite:
+
+   ```bash
+   export WP_TESTS_CONFIG_FILE_PATH="$(pwd)/wp-tests-config.php"
+   LH_INTEGRATION=1 composer test:integration
+   ```
+
+   Both are needed: without `LH_INTEGRATION` the bootstrap does not load the
+   WordPress test suite at all and PHPUnit stops at `Class "WP_UnitTestCase" not
+   found`, which reads like a broken install and is not one. The database and the
+   config file are set up once, per machine; `CONTRIBUTING.md` walks through it.
+   On a machine where that is not set up, push and let CI run them, and wait for
+   green before tagging.
 
    Every `wp` call in the script is filtered: on PHP 8.4, wp-cli 2.12 raises a
    deprecation inside its own `php-cli-tools` on every table it prints, and

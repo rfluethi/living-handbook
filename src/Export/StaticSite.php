@@ -368,15 +368,21 @@ final class StaticSite {
 			'job'   => (string) $state['job'],
 			'done'  => true,
 			'total' => $total,
-			'url'   => wp_nonce_url(
-				add_query_arg(
-					array(
-						'action' => self::ACTION,
-						'job'    => (string) $state['job'],
-					),
-					admin_url( 'admin-post.php' )
+			// The nonce is added by hand rather than with wp_nonce_url(), which
+			// runs its result through esc_html(): right for an href written into
+			// HTML, wrong for a URL that travels as JSON and is assigned to
+			// link.href in the browser. The "&" would arrive as "&#038;", the
+			// browser would read everything from the "#" on as the fragment, and
+			// the job and the nonce would never reach admin-post.php. The screen
+			// then shows "the link you followed has expired", which is true and
+			// says nothing about the actual cause.
+			'url'   => add_query_arg(
+				array(
+					'action'   => self::ACTION,
+					'job'      => (string) $state['job'],
+					'_wpnonce' => wp_create_nonce( self::ACTION ),
 				),
-				self::ACTION
+				admin_url( 'admin-post.php' )
 			),
 			'name'  => self::file_name( $state ),
 			'size'  => size_format( self::zip_size( $state ) ),

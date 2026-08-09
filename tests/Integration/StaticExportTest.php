@@ -410,6 +410,43 @@ final class StaticExportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The download link works when a browser follows it.
+	 *
+	 * This one is here because it did not. The URL was built with
+	 * wp_nonce_url(), which escapes its result for HTML; the answer travels as
+	 * JSON, the script assigns it to link.href, and "&#038;" turned everything
+	 * after the first parameter into the fragment. WordPress then answered "the
+	 * link you followed has expired", which is what a missing nonce looks like
+	 * from the outside and told nobody where to look.
+	 *
+	 * @return void
+	 */
+	public function test_the_download_link_carries_its_parameters(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$data = $this->pass( array( 'handbook' => $term ) );
+		$this->assertTrue( (bool) ( $data['done'] ?? false ) );
+
+		$url = (string) $data['url'];
+		$this->assertStringNotContainsString( '&#038;', $url, 'An HTML-escaped ampersand does not survive the trip through JSON.' );
+		$this->assertStringNotContainsString( '&amp;', $url );
+
+		$query = (string) wp_parse_url( $url, PHP_URL_QUERY );
+		parse_str( $query, $params );
+
+		$this->assertSame( 'living_handbook_static_download', $params['action'] ?? '' );
+		$this->assertSame( (string) $data['job'], $params['job'] ?? '' );
+		$this->assertNotFalse(
+			wp_verify_nonce( (string) ( $params['_wpnonce'] ?? '' ), 'living_handbook_static_download' ),
+			'And the nonce has to be the one the download handler checks.'
+		);
+
+		$state         = get_transient( 'living_handbook_static_' . (string) $data['job'] );
+		$this->files[] = (string) $state['zip'];
+	}
+
+	/**
 	 * A job belongs to the person who started it. Anything else would let one
 	 * editor pick up another's export, which is a copy of pages they may never
 	 * have been allowed to read.

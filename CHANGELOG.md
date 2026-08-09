@@ -17,6 +17,20 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.72.1] - 2026-08-09
+
+### Fixed
+
+* **The download button of the website export answered "the link you followed has expired".** The export itself was fine, the file was written, and the link to it was broken: the URL was built with `wp_nonce_url()`, which runs its result through `esc_html()`. That is right for an `href` written into HTML and wrong for a URL that travels back as JSON and is assigned to `link.href` in the browser. The `&` arrived as `&#038;`, so the browser read everything from the `#` onwards as the fragment, and neither the job nor the nonce ever reached `admin-post.php`. WordPress then said what a missing nonce always says, which is true and points nowhere near the cause.
+
+  The nonce is added by hand now, with `wp_create_nonce()` and `add_query_arg()`. `StaticExportTest` checks the answer for an escaped ampersand, pulls the parameters back out of the URL and verifies the nonce against the action the download handler checks; with `wp_nonce_url()` back in place, it fails.
+
+  Found by Rico on the first real export, which is also the answer to the note in 0.72.0 about what no test here covers: the tests built the archive correctly every time, and nobody had clicked the button.
+
+### Changed
+
+* The release documentation now says what running the integration tests requires: `LH_INTEGRATION=1` and a `WP_TESTS_CONFIG_FILE_PATH`, set up once per machine as `CONTRIBUTING.md` describes. Without the variable, PHPUnit stops at `Class "WP_UnitTestCase" not found`, which reads like a broken installation and is not one. Where that setup does not exist, the honest instruction is to push and wait for CI to go green before tagging, and the page says that too.
+
 ## [0.72.0] - 2026-08-09
 
 ### Added

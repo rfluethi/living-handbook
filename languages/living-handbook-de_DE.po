@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T12:58:29+00:00\n"
+"POT-Creation-Date: 2026-08-09T14:20:25+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -98,7 +98,7 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:256 src/Admin/Maintenance.php:260
-#: src/Export/SiteRenderer.php:205 src/Export/StaticSite.php:754
+#: src/Export/SiteRenderer.php:205 src/Export/StaticSite.php:760
 #: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:115
 #: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
 #: src/Setup/Onboarding.php:100
@@ -333,19 +333,19 @@ msgstr ""
 msgid "The export file could not be written on this server."
 msgstr "Die Export-Datei konnte auf diesem Server nicht geschrieben werden."
 
-#: src/Export/StaticSite.php:648 src/Import/HandbookExport.php:263
+#: src/Export/StaticSite.php:654 src/Import/HandbookExport.php:263
 msgid "You are not allowed to export handbooks."
 msgstr "Du darfst keine Handbücher exportieren."
 
-#: src/Export/StaticSite.php:656
+#: src/Export/StaticSite.php:662
 msgid "This export is no longer available. Start it again."
 msgstr "Dieser Export ist nicht mehr verfügbar. Starte ihn neu."
 
-#: src/Export/StaticSite.php:746
+#: src/Export/StaticSite.php:752
 msgid "Export as a website"
 msgstr "Als Website exportieren"
 
-#: src/Export/StaticSite.php:747
+#: src/Export/StaticSite.php:753
 msgid ""
 "A ZIP of plain HTML files: the pages, their images, a page list and a "
 "search. It opens by double-clicking index.html, with no server and no "
@@ -356,7 +356,7 @@ msgstr ""
 "und ohne Internetverbindung. Für Leserinnen und Leser, die gar keinen Zugang "
 "zu dieser Website haben."
 
-#: src/Export/StaticSite.php:749
+#: src/Export/StaticSite.php:755
 msgid ""
 "A static copy has no access rules. It contains every page you can read in "
 "the handbook you choose, and whoever holds the file can read all of it. It "
@@ -366,21 +366,21 @@ msgstr ""
 "du im gewählten Handbuch lesen darfst, und wer die Datei hat, liest alles "
 "davon. Außerdem veraltet sie ab dem Moment, in dem sie entsteht."
 
-#: src/Export/StaticSite.php:757 src/Import/HandbookExport.php:118
+#: src/Export/StaticSite.php:763 src/Import/HandbookExport.php:118
 #: src/Import/MarkdownImportPage.php:914
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
-#: src/Export/StaticSite.php:767 src/Import/HandbookExport.php:128
+#: src/Export/StaticSite.php:773 src/Import/HandbookExport.php:128
 msgid "What to export"
 msgstr "Was exportieren"
 
-#: src/Export/StaticSite.php:769 src/Export/StaticSite.php:770
+#: src/Export/StaticSite.php:775 src/Export/StaticSite.php:776
 #: src/Import/HandbookExport.php:130 src/Import/HandbookExport.php:131
 msgid "— the whole handbook —"
 msgstr "— das ganze Handbuch —"
 
-#: src/Export/StaticSite.php:776
+#: src/Export/StaticSite.php:782
 msgid "Build the website"
 msgstr "Website erzeugen"
 
