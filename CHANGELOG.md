@@ -17,6 +17,14 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.74.1] - 2026-08-09
+
+### Changed
+
+* **The export screen clears itself after the download.** The finished export left its download button standing, and that button works exactly once: the file is handed over and deleted in the same request, so a second click could only ever answer "this export is no longer available". A control whose only possible outcome is an error message should not be on screen. It disappears once the download has started, the screen says the file has been fetched, and a moment later it is back to how it started, ready for the next export.
+
+  The message behind that link is friendlier too, and more accurate: the likely reason somebody reaches it is that the file was already downloaded, not that anything expired or broke.
+
 ## [0.74.0] - 2026-08-09
 
 ### Changed

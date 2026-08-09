@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T16:34:21+00:00\n"
+"POT-Creation-Date: 2026-08-09T16:56:11+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -98,7 +98,7 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:256 src/Admin/Maintenance.php:260
-#: src/Export/SiteRenderer.php:233 src/Export/StaticSite.php:919
+#: src/Export/SiteRenderer.php:233 src/Export/StaticSite.php:922
 #: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:115
 #: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
 #: src/Setup/Onboarding.php:100
@@ -342,7 +342,7 @@ msgid "This export has expired or belongs to somebody else. Start it again."
 msgstr ""
 "Dieser Export ist abgelaufen oder gehört jemand anderem. Starte ihn neu."
 
-#: src/Export/StaticSite.php:172 assets/js/static-export.js:91
+#: src/Export/StaticSite.php:172 assets/js/static-export.js:106
 msgid "Choose a handbook to export."
 msgstr "Wähle ein Handbuch zum Exportieren."
 
@@ -365,15 +365,19 @@ msgstr "Die Export-Datei konnte auf diesem Server nicht geschrieben werden."
 msgid "You are not allowed to export handbooks."
 msgstr "Du darfst keine Handbücher exportieren."
 
-#: src/Export/StaticSite.php:821
-msgid "This export is no longer available. Start it again."
-msgstr "Dieser Export ist nicht mehr verfügbar. Starte ihn neu."
+#: src/Export/StaticSite.php:824
+msgid ""
+"This file has already been downloaded, or the export has expired. Build the "
+"website again if you need another copy."
+msgstr ""
+"Diese Datei wurde bereits heruntergeladen, oder der Export ist abgelaufen. "
+"Erzeuge die Website neu, wenn du eine weitere Kopie brauchst."
 
-#: src/Export/StaticSite.php:911
+#: src/Export/StaticSite.php:914
 msgid "Export as a website"
 msgstr "Als Website exportieren"
 
-#: src/Export/StaticSite.php:912
+#: src/Export/StaticSite.php:915
 msgid ""
 "A ZIP of plain HTML files: the pages, their images, a page list and a "
 "search. It opens by double-clicking index.html, with no server and no "
@@ -384,7 +388,7 @@ msgstr ""
 "und ohne Internetverbindung. Für Leserinnen und Leser, die gar keinen Zugang "
 "zu dieser Website haben."
 
-#: src/Export/StaticSite.php:914
+#: src/Export/StaticSite.php:917
 msgid ""
 "A static copy has no access rules. It contains every page you can read in "
 "the handbook you choose, and whoever holds the file can read all of it. It "
@@ -394,25 +398,25 @@ msgstr ""
 "du im gewählten Handbuch lesen darfst, und wer die Datei hat, liest alles "
 "davon. Ausserdem veraltet sie ab dem Moment, in dem sie entsteht."
 
-#: src/Export/StaticSite.php:922 src/Import/HandbookExport.php:118
+#: src/Export/StaticSite.php:925 src/Import/HandbookExport.php:118
 #: src/Import/MarkdownImportPage.php:914
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
-#: src/Export/StaticSite.php:932 src/Import/HandbookExport.php:128
+#: src/Export/StaticSite.php:935 src/Import/HandbookExport.php:128
 msgid "What to export"
 msgstr "Was exportieren"
 
-#: src/Export/StaticSite.php:934 src/Export/StaticSite.php:935
+#: src/Export/StaticSite.php:937 src/Export/StaticSite.php:938
 #: src/Import/HandbookExport.php:130 src/Import/HandbookExport.php:131
 msgid "— the whole handbook —"
 msgstr "— das ganze Handbuch —"
 
-#: src/Export/StaticSite.php:940
+#: src/Export/StaticSite.php:943
 msgid "Look"
 msgstr "Gestaltung"
 
-#: src/Export/StaticSite.php:947
+#: src/Export/StaticSite.php:950
 msgid ""
 "\"Like this site\" takes your theme along: its palette, its fonts, its "
 "spacing, plus what you set under Appearance. The other three leave all of "
@@ -424,7 +428,7 @@ msgstr ""
 "lassen all das hinter sich und bringen ihr eigenes mit, was für eine Kopie, "
 "die das Team verlässt, oft die bessere Wahl ist."
 
-#: src/Export/StaticSite.php:952
+#: src/Export/StaticSite.php:955
 msgid "Build the website"
 msgstr "Website erzeugen"
 
@@ -2503,11 +2507,15 @@ msgstr "Seite %1$d von %2$d wird erzeugt …"
 msgid "Download the website (%s)"
 msgstr "Website herunterladen (%s)"
 
-#: assets/js/static-export.js:85
+#: assets/js/static-export.js:90
+msgid "Downloaded. Check your downloads folder."
+msgstr "Heruntergeladen. Schau in deinem Download-Ordner nach."
+
+#: assets/js/static-export.js:100
 msgid "The export failed."
 msgstr "Der Export ist fehlgeschlagen."
 
-#: assets/js/static-export.js:95
+#: assets/js/static-export.js:110
 msgid "Starting …"
 msgstr "Wird gestartet …"
 
@@ -2713,6 +2721,9 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#~ msgid "This export is no longer available. Start it again."
+#~ msgstr "Dieser Export ist nicht mehr verfügbar. Starte ihn neu."
 
 #~ msgid ""
 #~ "The export brings its own styling, because there is no theme in a ZIP. "

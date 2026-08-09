@@ -79,6 +79,21 @@
 					__( 'Download the website (%s)', 'living-handbook' ),
 					result.size
 				);
+
+				// The file is handed over once and deleted in the same request, so
+				// this link works exactly once. Leaving it on screen afterwards
+				// offers a button whose only possible answer is an error message.
+				// The screen goes back to how it started instead, ready for the
+				// next export.
+				link.addEventListener( 'click', function () {
+					window.setTimeout( function () {
+						status.textContent = __( 'Downloaded. Check your downloads folder.', 'living-handbook' );
+						window.setTimeout( function () {
+							status.textContent = '';
+						}, 6000 );
+					}, 1200 );
+				} );
+
 				status.appendChild( link );
 				button.disabled = false;
 			} ).catch( function ( error ) {

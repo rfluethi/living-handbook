@@ -818,7 +818,10 @@ final class StaticSite {
 		$raw   = isset( $_GET['job'] ) ? wp_unslash( $_GET['job'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- clean_job_id() below is the sanitisation, and it keeps case on purpose.
 		$state = self::load_job( self::clean_job_id( is_string( $raw ) ? $raw : '' ) );
 		if ( null === $state || '' === (string) $state['zip'] || ! is_readable( (string) $state['zip'] ) ) {
-			wp_die( esc_html__( 'This export is no longer available. Start it again.', 'living-handbook' ), 404 );
+			// The likeliest reason by far is that it was already fetched: the file
+			// is deleted as it is handed over. Saying so beats "no longer
+			// available", which reads like something broke.
+			wp_die( esc_html__( 'This file has already been downloaded, or the export has expired. Build the website again if you need another copy.', 'living-handbook' ), 404 );
 		}
 
 		$path = (string) $state['zip'];
