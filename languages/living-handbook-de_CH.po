@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T09:00:22+00:00\n"
+"POT-Creation-Date: 2026-08-09T10:17:13+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -928,23 +928,23 @@ msgstr ""
 "Geschlossen blendet das Kommentarformular aus; bereits geschriebene "
 "Kommentare bleiben lesbar und werden nicht gelöscht."
 
-#: src/Import/AppHandbook.php:73
+#: src/Import/AppHandbook.php:68
 msgid "User handbook (German)"
 msgstr "Benutzerhandbuch (Deutsch)"
 
-#: src/Import/AppHandbook.php:78
+#: src/Import/AppHandbook.php:73
 msgid "User handbook (English)"
 msgstr "Benutzerhandbuch (Englisch)"
 
-#: src/Import/AppHandbook.php:83
+#: src/Import/AppHandbook.php:78
 msgid "Technical documentation (German)"
 msgstr "Technische Dokumentation (Deutsch)"
 
-#: src/Import/AppHandbook.php:88
+#: src/Import/AppHandbook.php:83
 msgid "Technical documentation (English)"
 msgstr "Technische Dokumentation (Englisch)"
 
-#: src/Import/AppHandbook.php:199
+#: src/Import/AppHandbook.php:194
 msgid "That handbook is not available in this build."
 msgstr "Dieses Handbuch ist in dieser Fassung nicht enthalten."
 
@@ -1889,7 +1889,9 @@ msgstr "Seitentitel pro Handbuch"
 msgid ""
 "Zero shows none. The list is the first pages of the handbook, plus a link to "
 "the rest."
-msgstr "Null zeigt keine. Aufgelistet werden die ersten Seiten des Handbuchs, dazu ein Link auf den Rest."
+msgstr ""
+"Null zeigt keine. Aufgelistet werden die ersten Seiten des Handbuchs, dazu "
+"ein Link auf den Rest."
 
 #: assets/blocks.js:79
 msgid "Overview"

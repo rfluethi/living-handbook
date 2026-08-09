@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.68.0
+Stable tag: 0.69.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,11 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.69.0 =
+* All four handbooks now live under one folder: docs/user/de, docs/user/en, docs/technical/de, docs/technical/en. Nothing changes for a WordPress site; this is where the files sit in the repository and in the ZIP.
+* Removed a second copy of the German technical documentation that had shipped in 0.67.0 and 0.68.0 and would have created duplicate pages on import.
+* The German technical documentation shows its images again, and every folder has a README so it reads on GitHub.
 
 = 0.68.0 =
 * The overview lists the first page titles under each handbook, so you see what is in one and not only what it is called. The length is a block setting, three by default.

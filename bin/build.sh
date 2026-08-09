@@ -47,15 +47,12 @@ cp -R src "$dest"/
 cp -R assets "$dest"/
 if [ -d blocks ]; then cp -R blocks "$dest"/; fi
 cp -R languages "$dest"/
-# The app handbook ships with the plugin: its Markdown and images are imported
-# from here by the "App handbook" tab, so it always matches the installed version.
-if [ -d handbuch ]; then cp -R handbuch "$dest"/; fi
-# The technical documentation ships for the same two reasons, decided 2026-08-08:
-# the version always matches the installed plugin, and no installation depends on a
-# repository staying reachable. Measured before deciding: docs/ is 184 KB against
-# the 1.6 MB handbuch/ already contributes.
+# The four handbooks ship with the plugin, as Markdown under docs/: the user
+# handbook in docs/user/, the technical documentation in docs/technical/, each in
+# German and English. The "App handbook" tab imports them from there, which is
+# what makes the version always match the installed plugin and keeps every
+# installation independent of a repository staying reachable.
 if [ -d docs ]; then cp -R docs "$dest"/; fi
-if [ -d docs-de ]; then cp -R docs-de "$dest"/; fi
 cp -R vendor "$dest"/
 if [ -f readme.txt ]; then cp readme.txt "$dest"/; fi
 if [ -f README.md ]; then cp README.md "$dest"/; fi

@@ -21,7 +21,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 /**
- * docs/hooks.md against src/.
+ * docs/technical/en/hooks.md against src/.
  */
 final class HookDocumentationTest extends TestCase {
 
@@ -72,12 +72,12 @@ final class HookDocumentationTest extends TestCase {
 	}
 
 	/**
-	 * Every hook name docs/hooks.md mentions.
+	 * Every hook name docs/technical/en/hooks.md mentions.
 	 *
 	 * @return array<int, string>
 	 */
 	private function hooks_in_docs(): array {
-		$path = $this->root() . '/docs/hooks.md';
+		$path = $this->root() . '/docs/technical/en/hooks.md';
 		$this->assertFileExists( $path );
 
 		preg_match_all( '/living_handbook_[a-z_]+/', (string) file_get_contents( $path ), $matches );
@@ -99,7 +99,7 @@ final class HookDocumentationTest extends TestCase {
 		$this->assertSame(
 			array(),
 			$missing,
-			"These hooks exist but docs/hooks.md does not mention them:\n  " . implode( "\n  ", $missing )
+			"These hooks exist but docs/technical/en/hooks.md does not mention them:\n  " . implode( "\n  ", $missing )
 		);
 	}
 
@@ -114,7 +114,7 @@ final class HookDocumentationTest extends TestCase {
 		$this->assertSame(
 			array(),
 			$phantom,
-			"docs/hooks.md names these, and the code does not fire them:\n  " . implode( "\n  ", $phantom )
+			"docs/technical/en/hooks.md names these, and the code does not fire them:\n  " . implode( "\n  ", $phantom )
 		);
 	}
 
@@ -125,7 +125,7 @@ final class HookDocumentationTest extends TestCase {
 	 * @return void
 	 */
 	public function test_every_hook_has_a_heading_of_its_own(): void {
-		$doc      = (string) file_get_contents( $this->root() . '/docs/hooks.md' );
+		$doc      = (string) file_get_contents( $this->root() . '/docs/technical/en/hooks.md' );
 		$headless = array();
 
 		foreach ( $this->hooks_in_code() as $hook ) {

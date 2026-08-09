@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.68.0\n"
+"Project-Id-Version: Living Handbook 0.69.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-09T09:00:22+00:00\n"
+"POT-Creation-Date: 2026-08-09T10:17:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -825,23 +825,23 @@ msgstr ""
 msgid "Open and Closed override the setting on each page. Closing hides the comment form; comments already written stay readable and are not deleted."
 msgstr ""
 
-#: src/Import/AppHandbook.php:73
+#: src/Import/AppHandbook.php:68
 msgid "User handbook (German)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:78
+#: src/Import/AppHandbook.php:73
 msgid "User handbook (English)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:83
+#: src/Import/AppHandbook.php:78
 msgid "Technical documentation (German)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:88
+#: src/Import/AppHandbook.php:83
 msgid "Technical documentation (English)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:199
+#: src/Import/AppHandbook.php:194
 msgid "That handbook is not available in this build."
 msgstr ""
 

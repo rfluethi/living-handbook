@@ -52,9 +52,9 @@ Continuous integration runs the coding standards, the static analysis, the unit 
 
 ## Documentation
 
-New to the plugin? Start with [getting started](docs/getting-started.md): from install to your first page that visitors can see. Then [maintenance and freshness](docs/maintenance.md), the feature the plugin is built around.
+New to the plugin? Start with [getting started](docs/technical/en/getting-started.md): from install to your first page that visitors can see. Then [maintenance and freshness](docs/technical/en/maintenance.md), the feature the plugin is built around.
 
-Developer documentation lives in [`docs/`](docs/README.md), which has an index and a reading order: a plain-language [code overview](docs/code-overview.md) to start, then [blocks](docs/blocks.md), [templates](docs/templates.md), [customization](docs/customization.md), [architecture](docs/architecture.md), [hooks](docs/hooks.md), [import and sync](docs/import-and-sync.md) and [releasing](docs/releasing.md).
+Developer documentation lives in [`docs/`](docs/README.md), which has an index and a reading order: a plain-language [code overview](docs/technical/en/code-overview.md) to start, then [blocks](docs/technical/en/blocks.md), [templates](docs/technical/en/templates.md), [customization](docs/technical/en/customization.md), [architecture](docs/technical/en/architecture.md), [hooks](docs/technical/en/hooks.md), [import and sync](docs/technical/en/import-and-sync.md) and [releasing](docs/technical/en/releasing.md).
 
 ## License
 

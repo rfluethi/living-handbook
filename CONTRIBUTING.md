@@ -142,17 +142,17 @@ bash bin/build.sh
 
 The build needs [PHP-Scoper](https://github.com/humbug/php-scoper): it moves the bundled Composer libraries into `LivingHandbook\Vendor\`, so a second plugin shipping the same library in a different version cannot decide which copy this one uses. Put the phar in `tools/php-scoper.phar` (ignored by git) or install it on your PATH; use 0.18.19 or newer, older releases quietly leave the PHP files unprefixed on PHP 8.5. The build refuses to run without it; `LH_SKIP_SCOPER=1 bash bin/build.sh` builds anyway for a quick local test, and such a zip must not be released. After prefixing, the build proves the prefix took and the libraries still work, with `bin/verify-vendor-prefix.php`.
 
-The build packages the current working tree, so you can build, install and test in WordPress before committing. Only the runtime files ship (the main file, `uninstall.php`, `composer.json`, `src`, `assets`, `blocks`, `languages`, `handbuch`, the production `vendor`, `readme.txt`, `README`, `LICENSE`); development files (tests, CI config, tooling, `docs`) are left out. The result is `living-handbook-<version>.zip`.
+The build packages the current working tree, so you can build, install and test in WordPress before committing. Only the runtime files ship (the main file, `uninstall.php`, `composer.json`, `src`, `assets`, `blocks`, `languages`, `docs`, the production `vendor`, `readme.txt`, `README`, `LICENSE`); development files (tests, CI config, tooling) are left out. `docs` is in that list since 0.67.0: all four handbooks ship, so the version a site reads matches the version it runs. The result is `living-handbook-<version>.zip`.
 
 Do not extract the zip inside the repository; that would commit a second copy of the plugin. Install it in WordPress under Plugins, Add new, Upload plugin.
 
 ## Conventions
 
-- **English is the language of the repository.** Code, comments, commit messages, pull request and issue text, `readme.txt` and the English `docs/` are written in English, so the project stays open to contributors who do not speak German. The German files in the repository are the localisation files `languages/*-de_DE.*` and the German app handbook under `handbuch/de/`, whose pages and image names are German too. The German source of the developer docs is kept in the project's own workspace, not in this repository; the English `docs/` here is produced from it.
+- **English is the language of the repository.** Code, comments, commit messages, pull request and issue text, `readme.txt` and the English `docs/` are written in English, so the project stays open to contributors who do not speak German. The German files in the repository are the localisation files `languages/*-de_DE.*` and the German app handbook under `docs/user/de/`, whose pages and image names are German too. The German source of the developer docs is kept in the project's own workspace, not in this repository; the English `docs/` here is produced from it.
 - Target PHP 8.1 and WordPress 6.8 or newer.
 - Follow the WordPress coding standards (enforced by PHPCS).
 - All user-facing strings use the `living-handbook` text domain, and English is the source language, so the plugin is translatable into any language.
-- **German content that ships with the plugin uses German spelling, with `ß`.** That is the app handbook under `handbuch/de/` and the `de_DE` translation. `de_CH` is the Swiss variant of the same text with `ß` resolved to `ss`, derived from `de_DE` rather than written separately. Both follow the current rules; they differ only in that Switzerland dropped the `ß`. Neither is the pre-1996 spelling, and no file here uses it.
+- **German content that ships with the plugin uses German spelling, with `ß`.** That is the app handbook under `docs/user/de/`, the technical documentation under `docs/technical/de/`, and the `de_DE` translation. `de_CH` is the Swiss variant of the same text with `ß` resolved to `ss`, derived from `de_DE` rather than written separately. Both follow the current rules; they differ only in that Switzerland dropped the `ß`. Neither is the pre-1996 spelling, and no file here uses it.
 - Escape on output, sanitize on input, check capabilities and nonces.
 - **Two changelogs, and they are not the same file.** `readme.txt` carries the
   short, user-facing entry that WordPress shows in the update dialog; wp.org
@@ -161,7 +161,7 @@ Do not extract the zip inside the repository; that would commit a second copy of
   and why it was decided that way. A user-facing change goes in both, the short
   form in `readme.txt` and the reasoning in `CHANGELOG.md`. An internal change
   goes in `CHANGELOG.md` alone.
-- Releasing is written down in [`docs/releasing.md`](docs/releasing.md). Read it
+- Releasing is written down in [`docs/technical/en/releasing.md`](docs/technical/en/releasing.md). Read it
   before touching a version number: three files have to agree, and a build
   refuses to run when they do not.
 - Branch off `main`, keep pull requests focused, and make sure CI is green.

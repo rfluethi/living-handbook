@@ -17,6 +17,26 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.69.0] - 2026-08-09
+
+### Changed
+
+* **The four handbooks live under one root**: `docs/user/de`, `docs/user/en`, `docs/technical/de`, `docs/technical/en`. They used to sit in three places, `handbuch/` for the user handbook and `docs/` plus `docs-de/` for the technical documentation, which was two roots for the same kind of thing, a German folder name in an English repository, and the language once in the path and once in the folder name. That had grown rather than been designed; once all four shipped and were offered in one dropdown, the reason for it was gone. Rico asked why, which was the right question.
+
+  Moved now rather than after the wp.org submission, because from then on there are published links pointing at `docs/…`. Relative links inside each tree survived the move (the trees moved whole); the links that had to be rewritten are the ones from the handbooks into the technical documentation, `README.md`, `CONTRIBUTING.md`, the customization link on the settings screen, and the path the hook-documentation test reads.
+
+  Nothing changes for a WordPress site: the import offers the same four entries under the same names.
+
+### Fixed
+
+* **A second copy of the German technical documentation was in the package.** `docs-de/` contained a `docs-de/` of its own, nine files older than the ones beside them, from a copy command that ran twice and landed inside the folder rather than next to it. It shipped in 0.67.0 and 0.68.0, and importing the German technical documentation would have created nine duplicate pages under a folder page, because the import walks subfolders.
+
+* **The German technical documentation shows its images again.** Its pages referenced `_attachments/…`, and that folder only ever existed next to the English text, so every image in `bloecke.md` was broken, in the workspace before the move and in the repository after it. They point at the one folder that has them now.
+
+### Added
+
+* **A README in every documentation folder**, so clicking into one on GitHub says what is in it rather than showing a bare file list: an index of all four at `docs/`, one for the user handbook, one for the technical documentation, and a German index beside the English one, which had none. The two import roots under `docs/user/` deliberately have none: the import reads a README at that level as a page, and an extra page called "Readme" at the top of a handbook is not what anyone wants. That reason is written in the folder above them.
+
 ## [0.68.0] - 2026-08-08
 
 ### Added

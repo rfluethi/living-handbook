@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Loads the handbook the plugin's own documentation lives in.
  *
- * The handbook ships inside the plugin, as Markdown under handbuch/, and the
+ * The handbook ships inside the plugin, as Markdown under docs/, and the
  * "App handbook" tab imports it from there. Shipping it means it always matches
  * the installed version and no install ever depends on a repository staying
  * reachable. The Markdown is authored in a public repository and copied into the
@@ -36,21 +36,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class AppHandbook {
 
 	/**
-	 * The bundled folder holding the German handbook, relative to the plugin.
+	 * The bundled folders, all four under docs/ since 0.69.0: the kind of
+	 * handbook, then its language. Before that the user handbook lived under
+	 * handbuch/ and the technical documentation under docs/ and docs-de/, which
+	 * was two roots, a German folder name in an English repository, and the
+	 * language once in the path and once in the folder name.
 	 */
-	private const PATH_DE = 'handbuch/de';
-
-	/**
-	 * The bundled folder holding the English handbook, relative to the plugin.
-	 * Also the fallback for any language without its own folder.
-	 */
-	private const PATH_EN = 'handbuch/en';
-
-	/**
-	 * The bundled folders holding the technical documentation.
-	 */
-	private const PATH_DOCS_DE = 'docs-de';
-	private const PATH_DOCS_EN = 'docs';
+	private const PATH_DE      = 'docs/user/de';
+	private const PATH_EN      = 'docs/user/en';
+	private const PATH_DOCS_DE = 'docs/technical/de';
+	private const PATH_DOCS_EN = 'docs/technical/en';
 
 	/**
 	 * What can be loaded, in the order it is offered.
