@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T10:17:13+00:00\n"
+"POT-Creation-Date: 2026-08-09T11:16:30+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -110,7 +110,7 @@ msgstr "Handbuch"
 msgid "Last reviewed"
 msgstr "Zuletzt geprüft"
 
-#: src/Admin/Maintenance.php:264 src/Setup/Settings.php:50
+#: src/Admin/Maintenance.php:264 src/Setup/Settings.php:52
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -125,12 +125,12 @@ msgid "%1$d yes, %2$d no"
 msgstr "%1$d Ja, %2$d Nein"
 
 #. translators: %s: the plural taxonomy name, for example "Topics".
-#: src/Admin/Maintenance.php:468
+#: src/Admin/Maintenance.php:474
 #, php-format
 msgid "All %s"
 msgstr "Alle %s"
 
-#: src/Admin/Maintenance.php:530
+#: src/Admin/Maintenance.php:536
 msgid "All review statuses"
 msgstr "Alle Prüfstatus"
 
@@ -334,19 +334,19 @@ msgstr ""
 
 # Cards
 #. translators: %s: name of the responsible role.
-#: src/Frontend/Cards.php:69
+#: src/Frontend/Cards.php:71
 #, php-format
 msgid "Role: %s"
 msgstr "Rolle: %s"
 
 #. translators: %s: audience name.
-#: src/Frontend/Cards.php:112
+#: src/Frontend/Cards.php:116
 #, php-format
 msgid "Audience: %s"
 msgstr "Zielgruppe: %s"
 
 #. translators: %d: number of subpages.
-#: src/Frontend/Cards.php:223
+#: src/Frontend/Cards.php:227
 #, php-format
 msgid "%d subpage"
 msgid_plural "%d subpages"
@@ -355,7 +355,7 @@ msgstr[1] "%d Unterseiten"
 
 #. translators: %d: number of pages in a handbook.
 #. translators: %d is a number of pages.
-#: src/Frontend/Cards.php:262 assets/js/markdown-import.js:15
+#: src/Frontend/Cards.php:266 assets/js/markdown-import.js:15
 #, php-format
 msgid "%d page"
 msgid_plural "%d pages"
@@ -363,12 +363,12 @@ msgstr[0] "%d Seite"
 msgstr[1] "%d Seiten"
 
 #. translators: %s: name of the handbook this one belongs to.
-#: src/Frontend/Cards.php:269
+#: src/Frontend/Cards.php:273
 #, php-format
 msgid "in %s"
 msgstr "in %s"
 
-#: src/Frontend/Cards.php:333
+#: src/Frontend/Cards.php:337
 msgid "All pages"
 msgstr "Alle Seiten"
 
@@ -428,20 +428,22 @@ msgstr "Keine Treffer. Passe die Filter oder die Suche an."
 msgid "Handbook pages"
 msgstr "Handbuch-Seiten"
 
-#: src/Frontend/Filters.php:824 src/Taxonomy/Taxonomies.php:52
+#: src/Frontend/Filters.php:834 src/Taxonomy/Taxonomies.php:45
+#: src/Taxonomy/Taxonomies.php:150
 msgid "Page type"
 msgstr "Seitentyp"
 
-#: src/Frontend/Filters.php:826 src/Taxonomy/Taxonomies.php:62
+#: src/Frontend/Filters.php:836 src/Taxonomy/Taxonomies.php:46
+#: src/Taxonomy/Taxonomies.php:161
 msgid "Topics"
 msgstr "Themen"
 
-#: src/Frontend/Filters.php:828 src/Taxonomy/Taxonomies.php:73
-#: src/Taxonomy/Taxonomies.php:74
+#: src/Frontend/Filters.php:838 src/Taxonomy/Taxonomies.php:47
+#: src/Taxonomy/Taxonomies.php:173 src/Taxonomy/Taxonomies.php:174
 msgid "Responsibility"
 msgstr "Verantwortung"
 
-#: src/Frontend/Filters.php:830 src/Taxonomy/Taxonomies.php:85
+#: src/Frontend/Filters.php:840 src/Taxonomy/Taxonomies.php:186
 msgid "Audience"
 msgstr "Zielgruppe"
 
@@ -871,7 +873,7 @@ msgstr "Kommagetrennte Benutzernamen oder IDs."
 msgid "Comments"
 msgstr "Kommentare"
 
-#: src/Handbook/HandbookAdmin.php:153 src/Setup/Settings.php:51
+#: src/Handbook/HandbookAdmin.php:153 src/Setup/Settings.php:53
 msgid "Access"
 msgstr "Zugriff"
 
@@ -1626,24 +1628,28 @@ msgstr "GitHub-Spezialist"
 msgid "General"
 msgstr "Allgemein"
 
-#: src/Setup/Settings.php:48
+#: src/Setup/Settings.php:49
 msgid "GitHub sync"
 msgstr "GitHub-Sync"
 
-#: src/Setup/Settings.php:49
+#: src/Setup/Settings.php:50
+msgid "Vocabularies"
+msgstr "Vokabulare"
+
+#: src/Setup/Settings.php:51
 msgid "Appearance"
 msgstr "Darstellung"
 
-#: src/Setup/Settings.php:52
+#: src/Setup/Settings.php:54
 msgid "Uninstall"
 msgstr "Deinstallation"
 
-#: src/Setup/Settings.php:159 src/Setup/Settings.php:160
-#: src/Setup/Settings.php:667
+#: src/Setup/Settings.php:161 src/Setup/Settings.php:162
+#: src/Setup/Settings.php:727
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: src/Setup/Settings.php:224
+#: src/Setup/Settings.php:226
 msgid ""
 "Add CSS that loads on the handbook pages only. It is stored with the plugin "
 "and removed when you delete the plugin, unlike CSS kept in the theme."
@@ -1652,53 +1658,57 @@ msgstr ""
 "Plugin und wird beim Löschen des Plugins mit entfernt, anders als CSS im "
 "Theme."
 
-#: src/Setup/Settings.php:225
+#: src/Setup/Settings.php:227
 msgid ""
 "Target the plugin classes and the --lh-* custom properties. For example:"
 msgstr "Passe die Plugin-Klassen und die --lh-*-Variablen an. Zum Beispiel:"
 
 #. translators: %s: link to the customization documentation.
-#: src/Setup/Settings.php:229
+#: src/Setup/Settings.php:231
 #, php-format
 msgid "The full reference of variables and class names is in the %s."
 msgstr ""
 "Die vollständige Übersicht der Variablen und Klassennamen findest du in der "
 "%s."
 
-#: src/Setup/Settings.php:230
+#: src/Setup/Settings.php:232
 msgid "customization documentation"
 msgstr "Anpassungs-Dokumentation"
 
-#: src/Setup/Settings.php:235 src/Setup/Settings.php:349
+#: src/Setup/Settings.php:237 src/Setup/Settings.php:360
 msgid "Custom CSS"
 msgstr "Eigenes CSS"
 
-#: src/Setup/Settings.php:314
+#: src/Setup/Settings.php:325
 msgid "Automatic sync"
 msgstr "Automatischer Sync"
 
-#: src/Setup/Settings.php:325
+#: src/Setup/Settings.php:336
 msgid "Text size"
 msgstr "Schriftgrösse"
 
+#: src/Setup/Settings.php:370
+msgid "Vocabularies in use"
+msgstr "Vokabulare in Gebrauch"
+
 # Public feedback setting and per-page reset
-#: src/Setup/Settings.php:359
+#: src/Setup/Settings.php:379
 msgid "Public feedback"
 msgstr "Öffentliches Feedback"
 
-#: src/Setup/Settings.php:368
+#: src/Setup/Settings.php:388
 msgid "No-access page"
 msgstr "Seite bei fehlendem Zugriff"
 
-#: src/Setup/Settings.php:378
+#: src/Setup/Settings.php:398
 msgid "When the plugin is deleted"
 msgstr "Beim Löschen des Plugins"
 
-#: src/Setup/Settings.php:412
+#: src/Setup/Settings.php:432
 msgid "Use the built-in message"
 msgstr "Eingebaute Meldung verwenden"
 
-#: src/Setup/Settings.php:434
+#: src/Setup/Settings.php:454
 msgid ""
 "Where a signed-in visitor lands when they open a handbook they may not read. "
 "Leave this on the built-in message unless you want to explain in your own "
@@ -1708,7 +1718,7 @@ msgstr ""
 "sie nicht lesen dürfen. Lass die eingebaute Meldung stehen, ausser du willst "
 "mit eigenen Worten erklären, wer den Zugriff vergibt."
 
-#: src/Setup/Settings.php:526
+#: src/Setup/Settings.php:546
 msgid ""
 "Leave the colour fields empty and the handbook follows your theme, which is "
 "what it is built to do. Fill one in only where the theme gets it wrong. The "
@@ -1718,11 +1728,11 @@ msgstr ""
 "gebaut. Fülle ein Feld nur dort aus, wo das Theme danebenliegt. Die "
 "Farbtupfer unter jedem Feld sind die Palette deines Themes."
 
-#: src/Setup/Settings.php:545
+#: src/Setup/Settings.php:565
 msgid "percent"
 msgstr "Prozent"
 
-#: src/Setup/Settings.php:548
+#: src/Setup/Settings.php:568
 msgid ""
 "The size of the handbook's own text: navigation, table of contents, badges, "
 "cards and the page details. It does not touch the text of a page itself, "
@@ -1736,11 +1746,11 @@ msgstr ""
 "Plugin entworfen ist. Erhöhe den Wert, wenn dein Theme grösseren Text setzt "
 "und das Handbuch daneben klein wirkt."
 
-#: src/Setup/Settings.php:573
+#: src/Setup/Settings.php:593
 msgid "Empty: the theme decides"
 msgstr "Leer: das Theme entscheidet"
 
-#: src/Setup/Settings.php:593
+#: src/Setup/Settings.php:613
 msgid ""
 "CSS added on the handbook pages only, stored with the plugin. See the Help "
 "tab (top right) for examples."
@@ -1748,13 +1758,44 @@ msgstr ""
 "CSS, das nur auf den Handbuch-Seiten geladen und beim Plugin gespeichert "
 "wird. Beispiele findest du im Hilfe-Tab (oben rechts)."
 
-#: src/Setup/Settings.php:603
+#. translators: %d: number of terms in this vocabulary.
+#: src/Setup/Settings.php:643
+#, php-format
+msgid "(%d term)"
+msgid_plural "(%d terms)"
+msgstr[0] "(%d Begriff)"
+msgstr[1] "(%d Begriffe)"
+
+#: src/Setup/Settings.php:651
+msgid ""
+"All four are on by default. Switching one off hides it: the column and the "
+"filter in the page list, the facet on a handbook's entry page, the badge on "
+"a page and on a card, and the field in the editor sidebar. An import stops "
+"reading its line as well."
+msgstr "Alle vier sind eingeschaltet. Wer eines abschaltet, blendet es aus: die Spalte und den Filter in der Seitenliste, die Facette auf der Einstiegsseite eines Handbuchs, das Abzeichen auf Seite und Karte, und das Feld in der Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr."
+
+#: src/Setup/Settings.php:652
+msgid ""
+"Nothing is deleted. The terms stay, the pages keep them, and switching a "
+"vocabulary back on brings every assignment back exactly as it was. A bundle "
+"export carries all four either way, so moving a handbook to another site "
+"never loses what this site happens to hide."
+msgstr "Gelöscht wird nichts. Die Begriffe bleiben, die Seiten behalten sie, und wer ein Vokabular wieder einschaltet, bekommt jede Zuordnung unverändert zurück. Ein Bündel-Export nimmt ohnehin alle vier mit, damit beim Umzug auf eine andere Website nichts verloren geht, was diese hier nur ausblendet."
+
+#: src/Setup/Settings.php:653
+msgid ""
+"The handbook itself is not in this list and cannot be switched off: access "
+"hangs on it, and a page that belongs to no handbook is invisible on the "
+"front end."
+msgstr "Das Handbuch selbst steht nicht in dieser Liste und lässt sich nicht abschalten: an ihm hängt der Zugriff, und eine Seite ohne Handbuch ist im Frontend unsichtbar."
+
+#: src/Setup/Settings.php:663
 msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
 msgstr ""
 "«War das hilfreich?» auch nicht angemeldeten Besuchenden auf öffentlichen "
 "Seiten zeigen"
 
-#: src/Setup/Settings.php:604
+#: src/Setup/Settings.php:664
 msgid ""
 "Off by default. When on, anyone can vote on a public page. To keep it "
 "privacy-friendly, votes are not tied to a person: no cookie, no IP and "
@@ -1769,7 +1810,7 @@ msgstr ""
 "Auf internen Seiten stimmen nur angemeldete Personen ab, je eine Stimme, "
 "unabhängig von dieser Einstellung."
 
-#: src/Setup/Settings.php:633
+#: src/Setup/Settings.php:693
 msgid ""
 "How often WordPress pulls GitHub pages in the background, in batches. GitHub "
 "pages are always synced when saved and via Sync now, regardless of this "
@@ -1781,19 +1822,19 @@ msgstr ""
 "synchronisieren» synchronisiert. Der Hintergrund-Sync läuft über WordPress-"
 "Cron, der bei Seitenaufrufen feuert."
 
-#: src/Setup/Settings.php:637
+#: src/Setup/Settings.php:697
 msgid "Next scheduled sync:"
 msgstr "Nächster geplanter Sync:"
 
-#: src/Setup/Settings.php:639
+#: src/Setup/Settings.php:699
 msgid "No background sync scheduled."
 msgstr "Kein Hintergrund-Sync geplant."
 
-#: src/Setup/Settings.php:650
+#: src/Setup/Settings.php:710
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr "Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen"
 
-#: src/Setup/Settings.php:651
+#: src/Setup/Settings.php:711
 msgid ""
 "Off by default: your content is kept when the plugin is deleted, only the "
 "plugin settings and caches are removed. Turn this on to remove everything "
@@ -1803,68 +1844,68 @@ msgstr ""
 "nur die Plugin-Einstellungen und Caches werden entfernt. Schalte dies ein, "
 "um alles zu entfernen, was das Plugin erstellt hat."
 
-#: src/Setup/Settings.php:652
+#: src/Setup/Settings.php:712
 msgid "This also removes templates you edited in the Site Editor."
 msgstr "Damit werden auch die im Site-Editor bearbeiteten Vorlagen entfernt."
 
-#: src/Setup/Settings.php:668
+#: src/Setup/Settings.php:728
 msgid "Settings sections"
 msgstr "Abschnitte der Einstellungen"
 
-#: src/Taxonomy/Taxonomies.php:51
-msgid "Page types"
-msgstr "Seitentypen"
-
-#: src/Taxonomy/Taxonomies.php:63
-msgid "Topic"
-msgstr "Thema"
-
-#: src/Taxonomy/Taxonomies.php:84
+#: src/Taxonomy/Taxonomies.php:48 src/Taxonomy/Taxonomies.php:185
 msgid "Audiences"
 msgstr "Zielgruppen"
 
+#: src/Taxonomy/Taxonomies.php:149
+msgid "Page types"
+msgstr "Seitentypen"
+
+#: src/Taxonomy/Taxonomies.php:162
+msgid "Topic"
+msgstr "Thema"
+
 #. translators: %s: singular taxonomy name.
-#: src/Taxonomy/Taxonomies.php:128
+#: src/Taxonomy/Taxonomies.php:237
 #, php-format
 msgid "Edit %s"
 msgstr "%s bearbeiten"
 
 #. translators: %s: singular taxonomy name.
-#: src/Taxonomy/Taxonomies.php:130
+#: src/Taxonomy/Taxonomies.php:239
 #, php-format
 msgid "View %s"
 msgstr "%s ansehen"
 
 #. translators: %s: singular taxonomy name.
-#: src/Taxonomy/Taxonomies.php:132
+#: src/Taxonomy/Taxonomies.php:241
 #, php-format
 msgid "Update %s"
 msgstr "%s aktualisieren"
 
 #. translators: %s: singular taxonomy name.
-#: src/Taxonomy/Taxonomies.php:134
+#: src/Taxonomy/Taxonomies.php:243
 #, php-format
 msgid "Add new %s"
 msgstr "%s hinzufügen"
 
 #. translators: %s: singular taxonomy name.
-#: src/Taxonomy/Taxonomies.php:136
+#: src/Taxonomy/Taxonomies.php:245
 #, php-format
 msgid "New %s name"
 msgstr "%s-Name"
 
 #. translators: %s: plural taxonomy name.
-#: src/Taxonomy/Taxonomies.php:138
+#: src/Taxonomy/Taxonomies.php:247
 #, php-format
 msgid "Search %s"
 msgstr "%s durchsuchen"
 
-#: src/Taxonomy/Taxonomies.php:139
+#: src/Taxonomy/Taxonomies.php:248
 msgid "None found."
 msgstr "Nichts gefunden."
 
 #. translators: %s: plural taxonomy name.
-#: src/Taxonomy/Taxonomies.php:141
+#: src/Taxonomy/Taxonomies.php:250
 #, php-format
 msgid "Back to %s"
 msgstr "Zurück zu %s"

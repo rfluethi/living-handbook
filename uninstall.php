@@ -66,6 +66,7 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Setup\Settings::OPTION_CUSTOM_CSS );
 	delete_option( LivingHandbook\Setup\Settings::OPTION_PUBLIC_FEEDBACK );
 	delete_option( LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE );
+	delete_option( LivingHandbook\Taxonomy\Taxonomies::OPTION_ENABLED );
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_COLORS );
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_BASE_SIZE );
 

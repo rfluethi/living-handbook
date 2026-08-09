@@ -1,10 +1,18 @@
 # The settings
 
-Every option of the plugin at a glance. You find them under **Handbook → Settings**; the screen there has five tabs. Saving always writes the tab you are looking at; the others are left alone.
+Every option of the plugin at a glance. You find them under **Handbook → Settings**; the screen there has six tabs. Saving always writes the tab you are looking at; the others are left alone.
 
 ## GitHub sync
 
 **Automatic sync:** How often WordPress refreshes the [pages connected to GitHub](content/github-sync.md) in the background. The choices: off, hourly, twice daily, daily or weekly (the default). Independently of this, a page always syncs when saved and through the **Sync now** button. The screen also shows when the next automatic sync is scheduled.
+
+## Vocabularies
+
+**Vocabularies in use:** Four checkboxes, one per vocabulary: page type, topic, responsibility, audience. All four are on. If your team only ever uses topics, switch the other three off and they disappear everywhere: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading the matching line as well.
+
+**Nothing is deleted.** The terms stay, the pages keep their assignments, and the moment you switch a vocabulary back on, everything is there unchanged. A bundle export carries all four either way, so moving a handbook to another site never loses what this one only hides.
+
+The handbook itself is not in that list and cannot be switched off. Access hangs on it, and a page without a handbook stays invisible on the front end.
 
 ## Appearance
 

@@ -37,12 +37,14 @@ final class Cards {
 	 * @return string
 	 */
 	public static function page_card( int $post_id ): string {
-		$type_name = self::first_term_name( $post_id, Taxonomies::PAGE_TYPE );
-		$type_slug = self::first_term_slug( $post_id, Taxonomies::PAGE_TYPE );
-		$role_name = self::first_term_name( $post_id, Taxonomies::ROLE );
-		$role_slug = self::first_term_slug( $post_id, Taxonomies::ROLE );
-		$topics    = self::term_slugs( $post_id, Taxonomies::TOPIC );
-		$audiences = self::term_slugs( $post_id, Taxonomies::AUDIENCE );
+		// Same rule as the badges: a vocabulary the site does not use is neither
+		// shown on the card nor written into the data attributes the filter reads.
+		$type_name = Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ? self::first_term_name( $post_id, Taxonomies::PAGE_TYPE ) : '';
+		$type_slug = Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ? self::first_term_slug( $post_id, Taxonomies::PAGE_TYPE ) : '';
+		$role_name = Taxonomies::is_enabled( Taxonomies::ROLE ) ? self::first_term_name( $post_id, Taxonomies::ROLE ) : '';
+		$role_slug = Taxonomies::is_enabled( Taxonomies::ROLE ) ? self::first_term_slug( $post_id, Taxonomies::ROLE ) : '';
+		$topics    = Taxonomies::is_enabled( Taxonomies::TOPIC ) ? self::term_slugs( $post_id, Taxonomies::TOPIC ) : array();
+		$audiences = Taxonomies::is_enabled( Taxonomies::AUDIENCE ) ? self::term_slugs( $post_id, Taxonomies::AUDIENCE ) : array();
 
 		$status = FreshnessStatus::for_post( $post_id );
 		// The freshness status must not rely on colour alone (WCAG 1.4.1) and
@@ -96,9 +98,11 @@ final class Cards {
 	 * @return string
 	 */
 	public static function badges( int $post_id ): string {
-		$type     = self::first_term_name( $post_id, Taxonomies::PAGE_TYPE );
-		$topic    = self::first_term_name( $post_id, Taxonomies::TOPIC );
-		$audience = self::first_term_name( $post_id, Taxonomies::AUDIENCE );
+		// A vocabulary the site does not use has no badge. The terms are still on
+		// the page; nothing here deletes them, this only stops showing them.
+		$type     = Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ? self::first_term_name( $post_id, Taxonomies::PAGE_TYPE ) : '';
+		$topic    = Taxonomies::is_enabled( Taxonomies::TOPIC ) ? self::first_term_name( $post_id, Taxonomies::TOPIC ) : '';
+		$audience = Taxonomies::is_enabled( Taxonomies::AUDIENCE ) ? self::first_term_name( $post_id, Taxonomies::AUDIENCE ) : '';
 
 		$out = '';
 		if ( '' !== $type ) {

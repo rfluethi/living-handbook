@@ -12,6 +12,7 @@ namespace LivingHandbook\Setup;
 use LivingHandbook\Frontend\Appearance;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Taxonomy\Taxonomies;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -46,6 +47,7 @@ final class Settings {
 	public static function tabs(): array {
 		return array(
 			'sync'       => __( 'GitHub sync', 'living-handbook' ),
+			'taxonomies' => __( 'Vocabularies', 'living-handbook' ),
 			'appearance' => __( 'Appearance', 'living-handbook' ),
 			'feedback'   => __( 'Feedback', 'living-handbook' ),
 			'access'     => __( 'Access', 'living-handbook' ),
@@ -272,6 +274,15 @@ final class Settings {
 			)
 		);
 		register_setting(
+			self::group( 'taxonomies' ),
+			Taxonomies::OPTION_ENABLED,
+			array(
+				'type'              => 'array',
+				'sanitize_callback' => array( Taxonomies::class, 'sanitize_enabled' ),
+				'default'           => array(),
+			)
+		);
+		register_setting(
 			self::group( 'feedback' ),
 			self::OPTION_PUBLIC_FEEDBACK,
 			array(
@@ -351,6 +362,15 @@ final class Settings {
 			self::tab_page( 'appearance' ),
 			'living_handbook_appearance_section',
 			array( 'label_for' => self::OPTION_CUSTOM_CSS )
+		);
+
+		add_settings_section( 'living_handbook_taxonomies_section', '', '__return_null', self::tab_page( 'taxonomies' ) );
+		add_settings_field(
+			Taxonomies::OPTION_ENABLED,
+			__( 'Vocabularies in use', 'living-handbook' ),
+			array( $this, 'render_taxonomies_field' ),
+			self::tab_page( 'taxonomies' ),
+			'living_handbook_taxonomies_section'
 		);
 
 		add_settings_section( 'living_handbook_feedback_section', '', '__return_null', self::tab_page( 'feedback' ) );
@@ -591,6 +611,46 @@ final class Settings {
 			esc_textarea( $css )
 		);
 		echo '<p class="description">' . esc_html__( 'CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples.', 'living-handbook' ) . '</p>';
+	}
+
+	/**
+	 * Render the four vocabulary switches.
+	 *
+	 * @return void
+	 */
+	public function render_taxonomies_field(): void {
+		$enabled = Taxonomies::enabled();
+
+		echo '<fieldset>';
+		foreach ( Taxonomies::all() as $taxonomy => $label ) {
+			$count = wp_count_terms(
+				array(
+					'taxonomy'   => $taxonomy,
+					'hide_empty' => false,
+				)
+			);
+			$count = is_wp_error( $count ) ? 0 : (int) $count;
+
+			printf(
+				'<label style="display:block;margin-bottom:0.35rem;"><input type="checkbox" name="%1$s[%2$s]" value="1"%3$s> %4$s <span class="description">%5$s</span></label>',
+				esc_attr( Taxonomies::OPTION_ENABLED ),
+				esc_attr( $taxonomy ),
+				checked( in_array( $taxonomy, $enabled, true ), true, false ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- checked() returns a safe attribute string.
+				esc_html( $label ),
+				esc_html(
+					sprintf(
+						/* translators: %d: number of terms in this vocabulary. */
+						_n( '(%d term)', '(%d terms)', $count, 'living-handbook' ),
+						$count
+					)
+				)
+			);
+		}
+		echo '</fieldset>';
+
+		echo '<p class="description">' . esc_html__( 'All four are on by default. Switching one off hides it: the column and the filter in the page list, the facet on a handbook\'s entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading its line as well.', 'living-handbook' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Nothing is deleted. The terms stay, the pages keep them, and switching a vocabulary back on brings every assignment back exactly as it was. A bundle export carries all four either way, so moving a handbook to another site never loses what this site happens to hide.', 'living-handbook' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'The handbook itself is not in this list and cannot be switched off: access hangs on it, and a page that belongs to no handbook is invisible on the front end.', 'living-handbook' ) . '</p>';
 	}
 
 	/**

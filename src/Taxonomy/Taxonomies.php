@@ -28,6 +28,104 @@ final class Taxonomies {
 	public const AUDIENCE  = 'handbook_audience';
 
 	/**
+	 * Which of the four vocabularies this site uses. An array keyed by taxonomy,
+	 * '1' for on. Absent means all four, which is how every existing site
+	 * behaves after an update.
+	 */
+	public const OPTION_ENABLED = 'living_handbook_taxonomies';
+
+	/**
+	 * The four classifying vocabularies, taxonomy to label, in the order they
+	 * are offered.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function all(): array {
+		return array(
+			self::PAGE_TYPE => __( 'Page type', 'living-handbook' ),
+			self::TOPIC     => __( 'Topics', 'living-handbook' ),
+			self::ROLE      => __( 'Responsibility', 'living-handbook' ),
+			self::AUDIENCE  => __( 'Audiences', 'living-handbook' ),
+		);
+	}
+
+	/**
+	 * Whether this site uses a vocabulary.
+	 *
+	 * Switching one off hides it: the column and the filter in the backend, the
+	 * facet on the entry page, the badge on a page and on a card, the field in
+	 * the editor sidebar, and the line in an import's transport block. What it
+	 * does not do is delete anything. The terms stay, the pages keep them, and
+	 * switching the vocabulary back on brings every assignment back exactly as
+	 * it was. That was decided rather than assumed: a switch that quietly threw
+	 * away work would be a switch nobody dares to touch.
+	 *
+	 * The bundle export and import are deliberately not filtered by this. A
+	 * bundle carries a handbook to another site, and dropping data on the way
+	 * because this site happens to hide it would lose it for good.
+	 *
+	 * @param string $taxonomy Taxonomy name.
+	 * @return bool
+	 */
+	public static function is_enabled( string $taxonomy ): bool {
+		return in_array( $taxonomy, self::enabled(), true );
+	}
+
+	/**
+	 * The vocabularies this site uses, in the order of all().
+	 *
+	 * @return array<int, string>
+	 */
+	public static function enabled(): array {
+		$stored = get_option( self::OPTION_ENABLED, null );
+		$out    = array();
+
+		foreach ( array_keys( self::all() ) as $taxonomy ) {
+			// No option yet means all four: that is what every site had before
+			// the switches existed, and an update must not change a site.
+			if ( ! is_array( $stored ) || ! empty( $stored[ $taxonomy ] ) ) {
+				$out[] = $taxonomy;
+			}
+		}
+
+		/**
+		 * Filter which classifying vocabularies this site uses.
+		 *
+		 * The handbook grouping itself is not among them and cannot be switched
+		 * off: access hangs on it, and a page without a handbook is invisible.
+		 *
+		 * @param array<int, string> $enabled Taxonomy names that are in use.
+		 */
+		$filtered = (array) apply_filters( 'living_handbook_enabled_taxonomies', $out );
+
+		// Intersected with the four this plugin has, so a filter cannot invent a
+		// fifth vocabulary that nothing else in the plugin knows about, and the
+		// order stays the order of all().
+		return array_values( array_intersect( array_keys( self::all() ), $filtered ) );
+	}
+
+	/**
+	 * Sanitize the switches from the settings form.
+	 *
+	 * Written as all four keys, present or absent, rather than as a list of the
+	 * ones that are on: an empty list and "nothing saved yet" would otherwise be
+	 * the same value, and they mean opposite things.
+	 *
+	 * @param mixed $value Raw value from the form.
+	 * @return array<string, string>
+	 */
+	public static function sanitize_enabled( $value ): array {
+		$raw = is_array( $value ) ? $value : array();
+		$out = array();
+
+		foreach ( array_keys( self::all() ) as $taxonomy ) {
+			$out[ $taxonomy ] = empty( $raw[ $taxonomy ] ) ? '0' : '1';
+		}
+
+		return $out;
+	}
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -51,7 +149,8 @@ final class Taxonomies {
 				__( 'Page types', 'living-handbook' ),
 				__( 'Page type', 'living-handbook' ),
 				'handbook-type',
-				true
+				true,
+				self::is_enabled( self::PAGE_TYPE )
 			)
 		);
 
@@ -62,7 +161,8 @@ final class Taxonomies {
 				__( 'Topics', 'living-handbook' ),
 				__( 'Topic', 'living-handbook' ),
 				'handbook-topic',
-				true
+				true,
+				self::is_enabled( self::TOPIC )
 			)
 		);
 
@@ -73,7 +173,8 @@ final class Taxonomies {
 				__( 'Responsibility', 'living-handbook' ),
 				__( 'Responsibility', 'living-handbook' ),
 				'handbook-role',
-				false
+				false,
+				self::is_enabled( self::ROLE )
 			)
 		);
 
@@ -84,7 +185,8 @@ final class Taxonomies {
 				__( 'Audiences', 'living-handbook' ),
 				__( 'Audience', 'living-handbook' ),
 				'handbook-audience',
-				true
+				true,
+				self::is_enabled( self::AUDIENCE )
 			)
 		);
 	}
@@ -97,16 +199,23 @@ final class Taxonomies {
 	 * @param string $singular     Singular label.
 	 * @param string $slug         Rewrite slug.
 	 * @param bool   $hierarchical Whether the taxonomy is hierarchical.
+	 * @param bool   $enabled      Whether this site uses the vocabulary at all.
 	 * @return array<string, mixed>
 	 */
-	private function args( string $name, string $singular, string $slug, bool $hierarchical ): array {
+	private function args( string $name, string $singular, string $slug, bool $hierarchical, bool $enabled = true ): array {
 		return array(
 			'labels'            => self::labels( $name, $singular ),
 			'hierarchical'      => $hierarchical,
 			'public'            => false,
-			'show_ui'           => true,
-			'show_admin_column' => true,
-			'show_in_rest'      => true,
+			// A vocabulary this site does not use stays registered, and only
+			// stops being shown. Unregistering it would orphan the terms and the
+			// assignments, which is exactly what the switch promises not to do;
+			// this way the editor sidebar, the term screen and the admin column
+			// are gone while the data sits untouched, ready for the day somebody
+			// switches it back on.
+			'show_ui'           => $enabled,
+			'show_admin_column' => $enabled,
+			'show_in_rest'      => $enabled,
 			'rewrite'           => array( 'slug' => $slug ),
 		);
 	}

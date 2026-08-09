@@ -803,11 +803,21 @@ final class Filters {
 	 * @return array<string, string>
 	 */
 	private static function facet_map(): array {
-		return array(
+		$all = array(
 			'lh_type'     => Taxonomies::PAGE_TYPE,
 			'lh_topic'    => Taxonomies::TOPIC,
 			'lh_role'     => Taxonomies::ROLE,
 			'lh_audience' => Taxonomies::AUDIENCE,
+		);
+
+		// A vocabulary this site does not use has no facet, and its parameter is
+		// not read either. One map for both, so a switched-off facet cannot come
+		// back through a hand-written URL.
+		return array_filter(
+			$all,
+			static function ( string $taxonomy ): bool {
+				return Taxonomies::is_enabled( $taxonomy );
+			}
 		);
 	}
 

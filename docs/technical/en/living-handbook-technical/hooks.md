@@ -260,6 +260,20 @@ Parameters:
 
 Return a bool.
 
+### `living_handbook_enabled_taxonomies`
+
+Filters which of the four classifying vocabularies this site uses: page type, topic, responsibility, audience. The default is whatever the checkboxes under **Handbook → Settings → Vocabularies** say, and all four when nothing has been saved.
+
+A vocabulary that is not in the list disappears from the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, the field in the editor sidebar, and the line an import reads from a transport block. It is still registered, and nothing is deleted: the terms stay, the pages keep them, and putting it back brings every assignment back as it was.
+
+The handbook grouping (`handbook_set`) is deliberately not among them and cannot be switched off. Access hangs on it, and a page that belongs to no handbook is invisible on the front end.
+
+Parameters:
+
+- `array<int, string> $enabled` Taxonomy names that are in use.
+
+Return an array of taxonomy names; anything not one of the four is ignored.
+
 ## Actions
 
 _None. The three that were listed here as planned, after an import, on the metadata and on the freshness evaluation, were removed in 0.60.0 rather than left standing as a promise: a hook is a commitment whose signature cannot be changed later without breaking whoever uses it, and these three came from a list rather than from a use. They are kept as a note in the project's own workspace, with signature and purpose, and will be built when something actually needs them._

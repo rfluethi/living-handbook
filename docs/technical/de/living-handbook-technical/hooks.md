@@ -230,6 +230,20 @@ Parameter:
 - `bool $enabled` Ob IDs und Anker gesetzt werden.
 
 Gibt einen bool zurück.
+## `living_handbook_enabled_taxonomies`
+
+Bestimmt, welche der vier klassifizierenden Vokabulare diese Website nutzt: Seitentyp, Thema, Verantwortung, Zielgruppe. Standard ist das, was die Ankreuzfelder unter **Handbuch → Einstellungen → Vokabulare** sagen, und alle vier, solange nichts gespeichert wurde.
+
+Ein Vokabular, das nicht in der Liste steht, verschwindet aus Spalte und Filter der Seitenliste, aus der Facette auf der Einstiegsseite, aus dem Abzeichen auf Seite und Karte, aus dem Feld in der Editor-Seitenleiste und aus der Zeile, die ein Import im Transport-Block liest. Registriert bleibt es, und gelöscht wird nichts: die Begriffe bleiben, die Seiten behalten sie, und wer es zurückstellt, bekommt jede Zuordnung unverändert wieder.
+
+Die Handbuch-Gruppierung (`handbook_set`) steht bewusst nicht zur Wahl. An ihr hängt der Zugriff, und eine Seite ohne Handbuch ist im Frontend unsichtbar.
+
+Parameter:
+
+- `array<int, string> $enabled` Namen der Taxonomien, die genutzt werden.
+
+Gibt ein Array von Taxonomie-Namen zurück; alles, was keines der vier ist, wird ignoriert.
+
 ## Actions
 
 _Bisher keine._

@@ -17,6 +17,22 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.71.0] - 2026-08-09
+
+### Added
+
+* **The four classifying vocabularies can be switched off per site**, under **Handbook → Settings → Vocabularies**: page type, topic, responsibility, audience. Four vocabularies are more than many teams want, and a handbook that only ever uses topics still carried the other three in the editor, in the filter bar, on every card and under every page.
+
+  A vocabulary that is off disappears in six places: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, the field in the editor sidebar, and the line an import reads from a transport block. The parameter of a switched-off facet is not read either, so a hand-written URL cannot bring it back.
+
+  **Nothing is deleted, and that is the point.** The taxonomy stays registered, only its `show_ui`, `show_in_rest` and `show_admin_column` go to false: the terms stay, the pages keep their assignments, and switching it back on brings all of it back exactly as it was. A switch that quietly threw away work is a switch nobody dares to touch. The settings screen says so, and shows how many terms each vocabulary holds.
+
+  The bundle export and import are deliberately not filtered by the switches. A bundle leaves this site, and dropping data on the way because this site happens to hide it would lose it for good.
+
+  The handbook grouping itself is not in the list and cannot be switched off: access hangs on it, and a page that belongs to no handbook is invisible on the front end. `living_handbook_enabled_taxonomies` filters the list for a site that would rather decide this in code.
+
+  One detail worth writing down: the stored value carries all four keys, on or off, rather than a list of the ones that are on. An empty list and "nothing saved yet" would otherwise be the same value, and they mean opposite things, so switching everything off would have read as "all four".
+
 ## [0.70.0] - 2026-08-09
 
 ### Changed

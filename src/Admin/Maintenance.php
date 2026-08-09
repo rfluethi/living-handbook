@@ -451,6 +451,12 @@ final class Maintenance {
 			if ( false === $object ) {
 				continue;
 			}
+			// A vocabulary the site does not use has no filter, whatever the
+			// columns say and whatever is in the URL. Unlike a hidden column,
+			// this is a decision about the site, not about one person's view.
+			if ( Handbooks::TAXONOMY !== $taxonomy && ! Taxonomies::is_enabled( $taxonomy ) ) {
+				continue;
+			}
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
 			$active  = '' !== $current;

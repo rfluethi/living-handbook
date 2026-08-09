@@ -1,10 +1,18 @@
 # Die Einstellungen
 
-Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat fünf Reiter. Gespeichert wird immer nur der Reiter, den du gerade siehst, die übrigen bleiben unberührt.
+Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat sechs Reiter. Gespeichert wird immer nur der Reiter, den du gerade siehst, die übrigen bleiben unberührt.
 
 ## GitHub-Sync
 
 **Automatischer Abgleich:** Wie oft WordPress die [mit GitHub verbundenen Seiten](inhalte/github-synchronisation.md) im Hintergrund aktualisiert. Zur Wahl stehen: aus, stündlich, zweimal täglich, täglich oder wöchentlich (Standard). Unabhängig davon wird eine Seite immer beim Speichern und über den Knopf **Jetzt synchronisieren** abgeglichen. Die Seite zeigt auch an, wann der nächste automatische Abgleich geplant ist.
+
+## Vokabulare
+
+**Vokabulare in Gebrauch:** Vier Ankreuzfelder, eines je Vokabular: Seitentyp, Thema, Verantwortung, Zielgruppe. Alle vier sind eingeschaltet. Nutzt dein Team nur Themen, schalte die anderen drei ab, dann verschwinden sie überall: die Spalte und der Filter in der Seitenliste, die Facette auf der Einstiegsseite, das Abzeichen auf Seite und Karte, und das Feld in der Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr.
+
+**Gelöscht wird dabei nichts.** Die Begriffe bleiben bestehen, die Seiten behalten ihre Zuordnung, und sobald du ein Vokabular wieder einschaltest, ist alles unverändert da. Auch ein Bündel-Export nimmt weiterhin alle vier mit, damit beim Umzug auf eine andere Website nichts verloren geht, was diese hier nur ausblendet.
+
+Das Handbuch selbst steht nicht in dieser Liste und lässt sich nicht abschalten. An ihm hängt der Zugriff, und eine Seite ohne Handbuch bleibt im Frontend unsichtbar.
 
 ## Darstellung
 

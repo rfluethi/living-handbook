@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.70.0
+Stable tag: 0.71.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.71.0 =
+* A site can now say which of the four vocabularies it uses: page type, topic, responsibility, audience. Switch one off under Handbook, Settings, Vocabularies and it disappears from the page list, the filters, the badges and the editor. Nothing is deleted: the terms stay and come back the moment you switch it on again.
 
 = 0.70.0 =
 * The technical documentation imports as one handbook with a start page, the way the user handbook already did, instead of as a dozen loose pages side by side. All four handbooks have the same folder shape now.

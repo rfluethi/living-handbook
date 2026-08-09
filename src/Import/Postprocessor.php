@@ -74,19 +74,27 @@ final class Postprocessor {
 
 		$type = trim( (string) ( $transport['page_type'] ?? '' ) );
 		if ( '' !== $type ) {
-			wp_set_object_terms( $post_id, $type, Taxonomies::PAGE_TYPE );
+			if ( Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ) {
+				wp_set_object_terms( $post_id, $type, Taxonomies::PAGE_TYPE );
+			}
 		}
 		$topic = trim( (string) ( $transport['topic'] ?? '' ) );
 		if ( '' !== $topic ) {
-			wp_set_object_terms( $post_id, $topic, Taxonomies::TOPIC );
+			if ( Taxonomies::is_enabled( Taxonomies::TOPIC ) ) {
+				wp_set_object_terms( $post_id, $topic, Taxonomies::TOPIC );
+			}
 		}
 		$role = trim( (string) ( $transport['role'] ?? '' ) );
 		if ( '' !== $role ) {
-			wp_set_object_terms( $post_id, $role, Taxonomies::ROLE );
+			if ( Taxonomies::is_enabled( Taxonomies::ROLE ) ) {
+				wp_set_object_terms( $post_id, $role, Taxonomies::ROLE );
+			}
 		}
 		$audiences = ( isset( $transport['audiences'] ) && is_array( $transport['audiences'] ) ) ? array_map( 'strval', $transport['audiences'] ) : array();
 		if ( ! empty( $audiences ) ) {
-			wp_set_object_terms( $post_id, $audiences, Taxonomies::AUDIENCE );
+			if ( Taxonomies::is_enabled( Taxonomies::AUDIENCE ) ) {
+				wp_set_object_terms( $post_id, $audiences, Taxonomies::AUDIENCE );
+			}
 		}
 
 		wp_update_post(
