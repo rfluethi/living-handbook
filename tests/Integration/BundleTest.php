@@ -282,12 +282,12 @@ final class BundleTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A vocabulary term travels with the page and is created on the target when it
+	 * A taxonomy term travels with the page and is created on the target when it
 	 * is missing there.
 	 *
 	 * @return void
 	 */
-	public function test_vocabulary_terms_travel_with_the_page(): void {
+	public function test_taxonomy_terms_travel_with_the_page(): void {
 		$handbook = $this->make_handbook( 'Source' );
 		$page     = $this->make_page( $handbook, 'Tagged page' );
 

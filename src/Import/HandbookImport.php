@@ -470,7 +470,7 @@ final class HandbookImport {
 		update_post_meta( $post_id, self::META_BUNDLE_KEY, $key );
 
 		if ( $this->as_pages ) {
-			// An ordinary page carries none of what follows: the vocabularies are
+			// An ordinary page carries none of what follows: the taxonomies are
 			// registered on the handbook post type, the review fields are read by
 			// screens a page never reaches, and a sync source on a page would
 			// promise an update path that does not exist for it.
@@ -555,7 +555,7 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Apply the four vocabulary terms, creating a term by slug and name when the
+	 * Apply the four taxonomy terms, creating a term by slug and name when the
 	 * target site does not have it yet.
 	 *
 	 * @param int                  $post_id Page ID.

@@ -9,7 +9,7 @@ Documentation without upkeep goes wrong. And wrong documentation is worse than n
 | [The review cycle](the-review-cycle.md) | Understand how the three states grow out of review date and interval. |
 | [Review pages](review-pages.md) | Get reviews done: in the editor, via Quick Edit, or through the dashboard. |
 | [Reading feedback](reading-feedback.md) | Use "Was this helpful?" to find the pages that need work. |
-| [Tags and roles](tags-and-roles.md) | Extend the four tag groups and manage roles cleanly. |
+| [Classification and roles](tags-and-roles.md) | What the four groups of the classification are for, how you extend them and manage roles cleanly. |
 
 ## Transport-Metadaten
 * Seitentyp: Area overview

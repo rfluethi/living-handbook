@@ -75,7 +75,7 @@ add_filter(
 
 ### `living_handbook_uninstall_remove_content`
 
-Filters whether deleting the plugin also removes all handbook content. By default the uninstall keeps your content and only removes the plugin's own options and caches; the same choice is offered as a checkbox on the settings page. This filter is OR-combined with that checkbox, so returning `true` forces the full removal even when the option is off: the handbook pages, the handbooks and their metadata, the four seeded vocabularies, the overview page created on activation, and any templates you edited in the Site Editor.
+Filters whether deleting the plugin also removes all handbook content. By default the uninstall keeps your content and only removes the plugin's own options and caches; the same choice is offered as a checkbox on the settings page. This filter is OR-combined with that checkbox, so returning `true` forces the full removal even when the option is off: the handbook pages, the handbooks and their metadata, the four seeded classifying taxonomies, the overview page created on activation, and any templates you edited in the Site Editor.
 
 Parameters:
 
@@ -262,9 +262,9 @@ Return a bool.
 
 ### `living_handbook_enabled_taxonomies`
 
-Filters which of the four classifying vocabularies this site uses: page type, topic, responsibility, audience. The default is whatever the checkboxes under **Handbook → Settings → Vocabularies** say, and all four when nothing has been saved.
+Filters which of the four classifying taxonomies this site uses: page type, topic, responsibility, audience. The default is whatever the checkboxes under **Handbook → Settings → Classification** say, and all four when nothing has been saved.
 
-A vocabulary that is not in the list disappears from the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, the field in the editor sidebar, and the line an import reads from a transport block. It is still registered, and nothing is deleted: the terms stay, the pages keep them, and putting it back brings every assignment back as it was.
+A taxonomy that is not in the list disappears from the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, the field in the editor sidebar, and the line an import reads from a transport block. It is still registered, and nothing is deleted: the terms stay, the pages keep them, and putting it back brings every assignment back as it was.
 
 The handbook grouping (`handbook_set`) is deliberately not among them and cannot be switched off. Access hangs on it, and a page that belongs to no handbook is invisible on the front end.
 

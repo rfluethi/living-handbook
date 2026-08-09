@@ -3,7 +3,7 @@
  * Activation test.
  *
  * Proves that the plugin loads, that activation runs, and that it leaves behind
- * what getting-started promises: the seeded vocabulary, the overview page and a
+ * what getting-started promises: the seeded terms, the overview page and a
  * stored database version. It used to assert true after calling activate(),
  * which only caught a fatal error.
  *
@@ -50,15 +50,15 @@ final class ActivationTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Activation seeds the vocabulary, so a fresh site can classify pages right
+	 * Activation seeds the taxonomies, so a fresh site can classify pages right
 	 * away instead of starting with empty taxonomies.
 	 *
-	 * Topics are deliberately not seeded: they are the one vocabulary that is
+	 * Topics are deliberately not seeded: they are the one taxonomy that is
 	 * specific to each team's handbook, so a generic default would be in the way.
 	 *
 	 * @return void
 	 */
-	public function test_activation_seeds_the_vocabulary(): void {
+	public function test_activation_seeds_the_taxonomies(): void {
 		Plugin::activate();
 
 		foreach ( array( Taxonomies::PAGE_TYPE, Taxonomies::ROLE, Taxonomies::AUDIENCE, Handbooks::TAXONOMY ) as $taxonomy ) {

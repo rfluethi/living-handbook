@@ -14,7 +14,7 @@ Lade das Plugin-ZIP unter **Plugins → Installieren → Plugin hochladen** hoch
 
 Die Aktivierung erledigt drei Dinge für dich:
 
-- Sie registriert den Handbuch-Inhaltstyp und die Taxonomien und legt in den vier Vokabularen (Seitentyp, Thema, verantwortliche Rolle, Zielgruppe) Startbegriffe an.
+- Sie registriert den Handbuch-Inhaltstyp und die Taxonomien und legt in den vier Einordnungs-Taxonomien (Seitentyp, Thema, verantwortliche Rolle, Zielgruppe) Startbegriffe an.
 - Sie erstellt eine normale WordPress-Seite namens **Handbuch** mit dem Block **Handbuch-Übersicht** darauf, damit eine frische Installation etwas zeigt statt eines leeren Archivs. Du kannst diese Seite später verschieben, umgestalten oder ersetzen.
 - Sie erneuert die Permalink-Regeln, damit die Handbuch-URLs sofort funktionieren.
 

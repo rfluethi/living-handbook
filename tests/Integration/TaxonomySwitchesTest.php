@@ -1,8 +1,8 @@
 <?php
 /**
- * A site can switch a vocabulary off, and it stays switched off everywhere.
+ * A site can switch a taxonomy off, and it stays switched off everywhere.
  *
- * Four vocabularies are more than many teams want: a small handbook that only
+ * Four taxonomies are more than many teams want: a small handbook that only
  * ever uses topics still had page type, responsibility and audience in the
  * editor, in the filter bar, on every card and on every page. The switches let
  * a site say which ones it uses.
@@ -29,12 +29,12 @@ use LivingHandbook\Taxonomy\Taxonomies;
 use WP_UnitTestCase;
 
 /**
- * Taxonomy\Taxonomies and the six places a switched-off vocabulary disappears.
+ * Taxonomy\Taxonomies and the six places a switched-off taxonomy disappears.
  */
 final class TaxonomySwitchesTest extends WP_UnitTestCase {
 
 	/**
-	 * Reset the registration between tests: switching a vocabulary off changes
+	 * Reset the registration between tests: switching a taxonomy off changes
 	 * the arguments it is registered with.
 	 *
 	 * @return void
@@ -46,7 +46,7 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Switch vocabularies off and re-register, the way a settings save does.
+	 * Switch taxonomies off and re-register, the way a settings save does.
 	 *
 	 * @param array<int, string> $off Taxonomies to switch off.
 	 * @return void
@@ -61,7 +61,7 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A page with a term in every vocabulary.
+	 * A page with a term in every taxonomy.
 	 *
 	 * @return int Post id.
 	 */
@@ -108,11 +108,11 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * The badges of a page skip a vocabulary the site does not use.
+	 * The badges of a page skip a taxonomy the site does not use.
 	 *
 	 * @return void
 	 */
-	public function test_a_switched_off_vocabulary_has_no_badge(): void {
+	public function test_a_switched_off_taxonomy_has_no_badge(): void {
 		$id = $this->page_with_terms();
 
 		$this->assertStringContainsString( 'Everyone', Cards::badges( $id ) );
@@ -130,7 +130,7 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_a_switched_off_vocabulary_is_off_the_card(): void {
+	public function test_a_switched_off_taxonomy_is_off_the_card(): void {
 		$id = $this->page_with_terms();
 
 		$this->switch_off( array( Taxonomies::ROLE ) );
@@ -146,7 +146,7 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_a_switched_off_vocabulary_has_no_facet(): void {
+	public function test_a_switched_off_taxonomy_has_no_facet(): void {
 		$id   = $this->page_with_terms();
 		$term = (int) Handbooks::for_post( $id );
 
@@ -167,7 +167,7 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_a_switched_off_vocabulary_leaves_the_editor(): void {
+	public function test_a_switched_off_taxonomy_leaves_the_editor(): void {
 		$this->switch_off( array( Taxonomies::AUDIENCE ) );
 
 		$object = get_taxonomy( Taxonomies::AUDIENCE );
@@ -205,7 +205,7 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_a_bundle_still_carries_every_vocabulary(): void {
+	public function test_a_bundle_still_carries_every_taxonomy(): void {
 		$id   = $this->page_with_terms();
 		$term = (int) Handbooks::for_post( $id );
 		$this->switch_off( array( Taxonomies::AUDIENCE ) );

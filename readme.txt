@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.71.0
+Stable tag: 0.71.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,7 +47,7 @@ No. The plugin works on its own; it only expects a block theme.
 
 = Does it work on multisite? =
 
-The plugin is built for single-site installations. On a multisite network, activate and uninstall it on each site individually; network-wide activation is not supported, because the one-time setup (the vocabulary, the overview page, the rewrite rules) and the uninstall cleanup run on the current site only.
+The plugin is built for single-site installations. On a multisite network, activate and uninstall it on each site individually; network-wide activation is not supported, because the one-time setup (the starter terms, the overview page, the rewrite rules) and the uninstall cleanup run on the current site only.
 
 = Are images in an internal handbook protected too? =
 
@@ -86,6 +86,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.71.1 =
+* The settings tab is called Classification now, not Vocabularies, and under every checkbox stands one sentence saying what that group is for and what belongs in it. The handbook says the same thing in more detail, on "Classification and roles".
 
 = 0.71.0 =
 * A site can now say which of the four vocabularies it uses: page type, topic, responsibility, audience. Switch one off under Handbook, Settings, Vocabularies and it disappears from the page list, the filters, the badges and the editor. Nothing is deleted: the terms stay and come back the moment you switch it on again.
@@ -126,7 +129,7 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 * In wp-admin the filter bar now follows the column checkboxes while the page stays open, without a reload.
 
 = 0.64.0 =
-* The filter bar above the page list follows the columns: hide a column under "Screen Options" and its filter goes with it, and a vocabulary without a single term gets no filter at all. A filter that is currently narrowing the list stays visible even when its column is hidden, so it can still be taken back.
+* The filter bar above the page list follows the columns: hide a column under "Screen Options" and its filter goes with it, and a group without a single term gets no filter at all. A filter that is currently narrowing the list stays visible even when its column is hidden, so it can still be taken back.
 
 = 0.63.1 =
 * The shipped handbook is brought in line with the team's handbook rules: every page carries a complete transport block, the start pages carry their slug, two diagrams are upright, and the alt texts name four review states instead of three.

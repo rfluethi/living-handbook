@@ -36,7 +36,7 @@ graph TD;
 ## Why it is built this way
 
 * **"Due" does not mean "wrong".** It only means: nobody has confirmed it lately. After twice the interval, the state escalates to "overdue". That way a page does not age quietly.
-* **Responsibility sits with roles, not people.** Every page names a responsible role. Which person currently holds the role is maintained in a single place outside the pages, for example on a page of its own called "Roles in the team". A staffing change therefore does not mean touching a hundred pages. How you create roles is under [Tags and roles](tags-and-roles.md).
+* **Responsibility sits with roles, not people.** Every page names a responsible role. Which person currently holds the role is maintained in a single place outside the pages, for example on a page of its own called "Roles in the team". A staffing change therefore does not mean touching a hundred pages. How you create roles is under [Classification and roles](tags-and-roles.md).
 * **There is no central handbook owner.** Upkeep is distributed: every role keeps its own pages current. Cross-cutting work sits with an editorial role, such as structure, reading feedback and spot checks.
 
 ## What this means for your work

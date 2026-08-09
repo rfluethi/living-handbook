@@ -85,7 +85,7 @@ final class ListScreen {
 	/**
 	 * Whether a taxonomy has any term at all.
 	 *
-	 * A vocabulary nobody has filled cannot narrow anything: its dropdown offers
+	 * A taxonomy nobody has filled cannot narrow anything: its dropdown offers
 	 * exactly one entry, "All topics", and selecting it changes nothing. Counted
 	 * including empty terms, because a term without pages is still a term someone
 	 * created and will use.

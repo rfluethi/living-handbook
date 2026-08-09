@@ -28,14 +28,14 @@ final class Taxonomies {
 	public const AUDIENCE  = 'handbook_audience';
 
 	/**
-	 * Which of the four vocabularies this site uses. An array keyed by taxonomy,
+	 * Which of the four classifying taxonomies this site uses. An array keyed by taxonomy,
 	 * '1' for on. Absent means all four, which is how every existing site
 	 * behaves after an update.
 	 */
 	public const OPTION_ENABLED = 'living_handbook_taxonomies';
 
 	/**
-	 * The four classifying vocabularies, taxonomy to label, in the order they
+	 * The four classifying taxonomies, taxonomy to label, in the order they
 	 * are offered.
 	 *
 	 * @return array<string, string>
@@ -50,13 +50,13 @@ final class Taxonomies {
 	}
 
 	/**
-	 * Whether this site uses a vocabulary.
+	 * Whether this site uses one of the four classifying taxonomies.
 	 *
 	 * Switching one off hides it: the column and the filter in the backend, the
 	 * facet on the entry page, the badge on a page and on a card, the field in
 	 * the editor sidebar, and the line in an import's transport block. What it
 	 * does not do is delete anything. The terms stay, the pages keep them, and
-	 * switching the vocabulary back on brings every assignment back exactly as
+	 * switching it back on brings every assignment back exactly as
 	 * it was. That was decided rather than assumed: a switch that quietly threw
 	 * away work would be a switch nobody dares to touch.
 	 *
@@ -72,7 +72,7 @@ final class Taxonomies {
 	}
 
 	/**
-	 * The vocabularies this site uses, in the order of all().
+	 * The classifying taxonomies this site uses, in the order of all().
 	 *
 	 * @return array<int, string>
 	 */
@@ -89,7 +89,7 @@ final class Taxonomies {
 		}
 
 		/**
-		 * Filter which classifying vocabularies this site uses.
+		 * Filter which classifying taxonomies this site uses.
 		 *
 		 * The handbook grouping itself is not among them and cannot be switched
 		 * off: access hangs on it, and a page without a handbook is invisible.
@@ -99,7 +99,7 @@ final class Taxonomies {
 		$filtered = (array) apply_filters( 'living_handbook_enabled_taxonomies', $out );
 
 		// Intersected with the four this plugin has, so a filter cannot invent a
-		// fifth vocabulary that nothing else in the plugin knows about, and the
+		// fifth taxonomy that nothing else in the plugin knows about, and the
 		// order stays the order of all().
 		return array_values( array_intersect( array_keys( self::all() ), $filtered ) );
 	}
@@ -199,7 +199,7 @@ final class Taxonomies {
 	 * @param string $singular     Singular label.
 	 * @param string $slug         Rewrite slug.
 	 * @param bool   $hierarchical Whether the taxonomy is hierarchical.
-	 * @param bool   $enabled      Whether this site uses the vocabulary at all.
+	 * @param bool   $enabled      Whether this site uses this taxonomy at all.
 	 * @return array<string, mixed>
 	 */
 	private function args( string $name, string $singular, string $slug, bool $hierarchical, bool $enabled = true ): array {
@@ -207,7 +207,7 @@ final class Taxonomies {
 			'labels'            => self::labels( $name, $singular ),
 			'hierarchical'      => $hierarchical,
 			'public'            => false,
-			// A vocabulary this site does not use stays registered, and only
+			// A taxonomy this site does not use stays registered, and only
 			// stops being shown. Unregistering it would orphan the terms and the
 			// assignments, which is exactly what the switch promises not to do;
 			// this way the editor sidebar, the term screen and the admin column

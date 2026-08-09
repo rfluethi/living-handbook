@@ -190,7 +190,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Activation callback: register the data model, seed the vocabulary, create
+	 * Activation callback: register the data model, seed the taxonomies, create
 	 * the overview page, schedule the GitHub sync, record the version, and
 	 * flush rewrite rules.
 	 *

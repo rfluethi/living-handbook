@@ -126,7 +126,7 @@ function living_handbook_run_uninstall(): void {
 	}
 
 	// Delete the terms of every plugin taxonomy: the handbook grouping plus the
-	// four seeded vocabularies, whose terms would otherwise be left orphaned.
+	// four seeded taxonomies, whose terms would otherwise be left orphaned.
 	$taxonomies = array(
 		LivingHandbook\Handbook\Handbooks::TAXONOMY,
 		LivingHandbook\Taxonomy\Taxonomies::PAGE_TYPE,

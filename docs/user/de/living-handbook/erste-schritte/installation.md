@@ -23,7 +23,7 @@ So machst du das Plugin einsatzbereit. Der Weg führt von der ZIP-Datei bis zur 
 Die Aktivierung richtet drei Dinge für dich ein:
 
 * Eine eigene Seiten-Art für Handbuch-Seiten, getrennt von deinen normalen Seiten und Beiträgen.
-* Vier Schlagwort-Gruppen zum Einordnen der Seiten: Seitentyp, Thema, verantwortliche Rolle und Zielgruppe. Alle sind mit Startwerten gefüllt.
+* Vier Gruppen zum Einordnen der Seiten: Seitentyp, Thema, verantwortliche Rolle und Zielgruppe. Alle sind mit Startwerten gefüllt.
 * Eine normale WordPress-Seite namens **Handbuch**. Sie zeigt später die Liste deiner Handbücher. Du kannst sie verschieben, umgestalten oder ersetzen.
 
 Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **Handbuch**, und die Seite **Handbuch** ist auf der Website erreichbar. Sie ist anfangs leer. Das ist normal, denn es gibt noch kein Handbuch.

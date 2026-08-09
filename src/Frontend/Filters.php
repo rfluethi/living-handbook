@@ -810,7 +810,7 @@ final class Filters {
 			'lh_audience' => Taxonomies::AUDIENCE,
 		);
 
-		// A vocabulary this site does not use has no facet, and its parameter is
+		// A taxonomy this site does not use has no facet, and its parameter is
 		// not read either. One map for both, so a switched-off facet cannot come
 		// back through a hand-written URL.
 		return array_filter(

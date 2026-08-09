@@ -16,14 +16,14 @@ use WP_UnitTestCase;
 /**
  * The export must not cost four queries per page.
  *
- * Every exported page is asked for its terms in four vocabularies. Asked one
+ * Every exported page is asked for its terms in four taxonomies. Asked one
  * page at a time that is four queries each, which on a handbook of 2000 pages
  * was 8011 queries and 3.4 seconds, in a request that also has to build a ZIP.
  */
 final class ExportQueryCostTest extends WP_UnitTestCase {
 
 	/**
-	 * Create a handbook with pages that carry vocabulary terms.
+	 * Create a handbook with pages that carry taxonomy terms.
 	 *
 	 * @param int $pages How many pages.
 	 * @return WP_Term The handbook term.
@@ -37,9 +37,9 @@ final class ExportQueryCostTest extends WP_UnitTestCase {
 		);
 		update_term_meta( $term_id, 'living_handbook_visibility', 'public' );
 
-		$vocabularies = array( 'handbook_type', 'handbook_topic', 'handbook_role', 'handbook_audience' );
+		$taxonomies = array( 'handbook_type', 'handbook_topic', 'handbook_role', 'handbook_audience' );
 		$terms        = array();
-		foreach ( $vocabularies as $taxonomy ) {
+		foreach ( $taxonomies as $taxonomy ) {
 			$terms[ $taxonomy ] = (int) self::factory()->term->create(
 				array(
 					'taxonomy' => $taxonomy,
@@ -56,7 +56,7 @@ final class ExportQueryCostTest extends WP_UnitTestCase {
 				)
 			);
 			wp_set_object_terms( $post_id, array( $term_id ), 'handbook_set' );
-			foreach ( $vocabularies as $taxonomy ) {
+			foreach ( $taxonomies as $taxonomy ) {
 				wp_set_object_terms( $post_id, array( $terms[ $taxonomy ] ), $taxonomy );
 			}
 		}
@@ -85,7 +85,7 @@ final class ExportQueryCostTest extends WP_UnitTestCase {
 		$cost     = $wpdb->num_queries - $before;
 
 		$this->assertCount( $pages, $manifest['pages'], 'Every page belongs in the bundle.' );
-		$this->assertNotEmpty( $manifest['pages'][0]['terms']['handbook_topic'], 'And every page brings its vocabulary along.' );
+		$this->assertNotEmpty( $manifest['pages'][0]['terms']['handbook_topic'], 'And every page brings its terms along.' );
 
 		return $cost;
 	}

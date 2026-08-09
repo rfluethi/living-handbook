@@ -47,7 +47,7 @@ final class Settings {
 	public static function tabs(): array {
 		return array(
 			'sync'       => __( 'GitHub sync', 'living-handbook' ),
-			'taxonomies' => __( 'Vocabularies', 'living-handbook' ),
+			'taxonomies' => __( 'Classification', 'living-handbook' ),
 			'appearance' => __( 'Appearance', 'living-handbook' ),
 			'feedback'   => __( 'Feedback', 'living-handbook' ),
 			'access'     => __( 'Access', 'living-handbook' ),
@@ -367,7 +367,7 @@ final class Settings {
 		add_settings_section( 'living_handbook_taxonomies_section', '', '__return_null', self::tab_page( 'taxonomies' ) );
 		add_settings_field(
 			Taxonomies::OPTION_ENABLED,
-			__( 'Vocabularies in use', 'living-handbook' ),
+			__( 'What pages are classified by', 'living-handbook' ),
 			array( $this, 'render_taxonomies_field' ),
 			self::tab_page( 'taxonomies' ),
 			'living_handbook_taxonomies_section'
@@ -614,12 +614,22 @@ final class Settings {
 	}
 
 	/**
-	 * Render the four vocabulary switches.
+	 * Render the four classification switches.
 	 *
 	 * @return void
 	 */
 	public function render_taxonomies_field(): void {
 		$enabled = Taxonomies::enabled();
+
+		// What each one is for, in one sentence with real examples. Somebody about
+		// to switch one off needs to know what they are switching off, and "page
+		// type" alone does not say that.
+		$purpose = array(
+			Taxonomies::PAGE_TYPE => __( 'What kind of page this is, which tells a reader how to read it: guide, process description, background, FAQ, area overview. One per page.', 'living-handbook' ),
+			Taxonomies::TOPIC     => __( 'What the page is about, in your own words: onboarding, invoicing, security. This is the one you fill yourself, and the one people filter by most.', 'living-handbook' ),
+			Taxonomies::ROLE      => __( 'Which role keeps the page current: handbook editors, GitHub specialist. A function, not a person, so it survives someone leaving.', 'living-handbook' ),
+			Taxonomies::AUDIENCE  => __( 'Who the page is written for: all members, content creators, coordination, tech. It says who should read it, not who may: that is the handbook\'s access rule.', 'living-handbook' ),
+		);
 
 		echo '<fieldset>';
 		foreach ( Taxonomies::all() as $taxonomy => $label ) {
@@ -632,24 +642,25 @@ final class Settings {
 			$count = is_wp_error( $count ) ? 0 : (int) $count;
 
 			printf(
-				'<label style="display:block;margin-bottom:0.35rem;"><input type="checkbox" name="%1$s[%2$s]" value="1"%3$s> %4$s <span class="description">%5$s</span></label>',
+				'<p style="margin:0 0 0.75rem;"><label><input type="checkbox" name="%1$s[%2$s]" value="1"%3$s> <strong>%4$s</strong> <span class="description">%5$s</span></label><br><span class="description" style="margin-inline-start:1.7rem;display:inline-block;">%6$s</span></p>',
 				esc_attr( Taxonomies::OPTION_ENABLED ),
 				esc_attr( $taxonomy ),
 				checked( in_array( $taxonomy, $enabled, true ), true, false ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- checked() returns a safe attribute string.
 				esc_html( $label ),
 				esc_html(
 					sprintf(
-						/* translators: %d: number of terms in this vocabulary. */
+						/* translators: %d: number of terms in this group. */
 						_n( '(%d term)', '(%d terms)', $count, 'living-handbook' ),
 						$count
 					)
-				)
+				),
+				esc_html( $purpose[ $taxonomy ] ?? '' )
 			);
 		}
 		echo '</fieldset>';
 
 		echo '<p class="description">' . esc_html__( 'All four are on by default. Switching one off hides it: the column and the filter in the page list, the facet on a handbook\'s entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading its line as well.', 'living-handbook' ) . '</p>';
-		echo '<p class="description">' . esc_html__( 'Nothing is deleted. The terms stay, the pages keep them, and switching a vocabulary back on brings every assignment back exactly as it was. A bundle export carries all four either way, so moving a handbook to another site never loses what this site happens to hide.', 'living-handbook' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Nothing is deleted. The terms stay, the pages keep them, and switching one back on brings every assignment back exactly as it was. A bundle export carries all four either way, so moving a handbook to another site never loses what this site happens to hide.', 'living-handbook' ) . '</p>';
 		echo '<p class="description">' . esc_html__( 'The handbook itself is not in this list and cannot be switched off: access hangs on it, and a page that belongs to no handbook is invisible on the front end.', 'living-handbook' ) . '</p>';
 	}
 

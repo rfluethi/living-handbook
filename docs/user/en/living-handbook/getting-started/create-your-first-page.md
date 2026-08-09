@@ -15,7 +15,7 @@ This guide creates your first handbook page. The steps: write, assign to a handb
 1. Open **Handbook pages → Add new handbook page**. The familiar block editor opens.
 2. Write the page like any other: a clear title, a short opening sentence, then the content.
 3. **Assign the page to a handbook in the sidebar.** Almost everyone misses this step. A page without a handbook stays invisible on the website.
-4. **Classify the page**, also in the sidebar. Pick the page type (for example Guide or Background), a topic, the audience and the responsible role. These produce the badges on the page and the filters on the handbook's entry page. You manage your own terms centrally, see [Tags and roles](../upkeep/tags-and-roles.md).
+4. **Classify the page**, also in the sidebar. Pick the page type (for example Guide or Background), a topic, the audience and the responsible role. These produce the badges on the page and the filters on the handbook's entry page. You manage your own terms centrally, see [Classification and roles](../upkeep/tags-and-roles.md).
 5. Fill in the **Handbook maintenance** box at the bottom of the editor: responsible role, last review, review interval. Rough values are better than none. You can refine them later. What these fields do is explained in [The review cycle](../upkeep/the-review-cycle.md).
 6. Click **Publish**.
 

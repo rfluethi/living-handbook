@@ -75,7 +75,7 @@ add_filter(
 
 ### `living_handbook_uninstall_remove_content`
 
-Filtert, ob beim Löschen des Plugins auch alle Handbuch-Inhalte entfernt werden. Standardmässig behält die Deinstallation deine Inhalte und entfernt nur die eigenen Optionen und Caches des Plugins; dieselbe Wahl gibt es als Häkchen auf der Einstellungsseite. Dieser Filter wird mit dem Häkchen ODER-verknüpft, `true` erzwingt also die vollständige Entfernung auch bei ausgeschalteter Option: die Handbuch-Seiten, die Handbücher und ihre Metadaten, die vier geseedeten Vokabulare, die bei der Aktivierung angelegte Übersichtsseite und alle im Site-Editor bearbeiteten Vorlagen.
+Filtert, ob beim Löschen des Plugins auch alle Handbuch-Inhalte entfernt werden. Standardmässig behält die Deinstallation deine Inhalte und entfernt nur die eigenen Optionen und Caches des Plugins; dieselbe Wahl gibt es als Häkchen auf der Einstellungsseite. Dieser Filter wird mit dem Häkchen ODER-verknüpft, `true` erzwingt also die vollständige Entfernung auch bei ausgeschalteter Option: die Handbuch-Seiten, die Handbücher und ihre Metadaten, die vier geseedeten Einordnungs-Taxonomien, die bei der Aktivierung angelegte Übersichtsseite und alle im Site-Editor bearbeiteten Vorlagen.
 
 Parameter:
 
@@ -232,9 +232,9 @@ Parameter:
 Gibt einen bool zurück.
 ## `living_handbook_enabled_taxonomies`
 
-Bestimmt, welche der vier klassifizierenden Vokabulare diese Website nutzt: Seitentyp, Thema, Verantwortung, Zielgruppe. Standard ist das, was die Ankreuzfelder unter **Handbuch → Einstellungen → Vokabulare** sagen, und alle vier, solange nichts gespeichert wurde.
+Bestimmt, welche der vier klassifizierenden Taxonomien diese Website nutzt: Seitentyp, Thema, Verantwortung, Zielgruppe. Standard ist das, was die Ankreuzfelder unter **Handbuch → Einstellungen → Einordnung** sagen, und alle vier, solange nichts gespeichert wurde.
 
-Ein Vokabular, das nicht in der Liste steht, verschwindet aus Spalte und Filter der Seitenliste, aus der Facette auf der Einstiegsseite, aus dem Abzeichen auf Seite und Karte, aus dem Feld in der Editor-Seitenleiste und aus der Zeile, die ein Import im Transport-Block liest. Registriert bleibt es, und gelöscht wird nichts: die Begriffe bleiben, die Seiten behalten sie, und wer es zurückstellt, bekommt jede Zuordnung unverändert wieder.
+Eine Taxonomie, die nicht in der Liste steht, verschwindet aus Spalte und Filter der Seitenliste, aus der Facette auf der Einstiegsseite, aus dem Abzeichen auf Seite und Karte, aus dem Feld in der Editor-Seitenleiste und aus der Zeile, die ein Import im Transport-Block liest. Registriert bleibt es, und gelöscht wird nichts: die Begriffe bleiben, die Seiten behalten sie, und wer es zurückstellt, bekommt jede Zuordnung unverändert wieder.
 
 Die Handbuch-Gruppierung (`handbook_set`) steht bewusst nicht zur Wahl. An ihr hängt der Zugriff, und eine Seite ohne Handbuch ist im Frontend unsichtbar.
 

@@ -222,7 +222,7 @@ final class GitSync {
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
 		// Priority 20 so the source dropdown renders after the taxonomy filters
 		// (Maintenance, priority 10), keeping the on-screen order in step with the
-		// list columns: the vocabularies, the handbook, then the source.
+		// list columns: the taxonomies, the handbook, then the source.
 		add_action( 'restrict_manage_posts', array( $this, 'source_filter_dropdown' ), 20 );
 		// filter_by_source() merges with any existing meta_query instead of
 		// overwriting it, so the source filter coexists with other list filters.

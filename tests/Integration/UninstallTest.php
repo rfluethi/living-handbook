@@ -62,7 +62,7 @@ final class UninstallTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A handbook with one page, a term in every seeded vocabulary, and a page of
+	 * A handbook with one page, a term in every seeded taxonomy, and a page of
 	 * the site that has nothing to do with the plugin.
 	 *
 	 * @return array<string, int>
@@ -113,7 +113,7 @@ final class UninstallTest extends WP_UnitTestCase {
 
 	/**
 	 * With the option on, the handbook content goes: pages, handbooks, and the
-	 * terms of the seeded vocabularies.
+	 * terms of the seeded taxonomies.
 	 *
 	 * @return void
 	 */

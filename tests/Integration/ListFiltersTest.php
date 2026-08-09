@@ -6,7 +6,7 @@
  * "Screen Options" panel, and it only governs columns. The filters above the
  * list were unaffected, so a list narrowed to title and handbook still offered
  * seven dropdowns. These tests hold the three parts of the rule: a filter is
- * hidden when its column is off, it is left out entirely when its vocabulary
+ * hidden when its column is off, it is left out entirely when its taxonomy
  * has no term, and it stays visible while it is narrowing the list, because a
  * filter nobody can see is a filter nobody can undo.
  *
@@ -45,9 +45,9 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	private const SOURCE_COLUMN   = 'lh_source';
 
 	/**
-	 * Put the code on the handbook list screen and give every vocabulary a term,
+	 * Put the code on the handbook list screen and give every taxonomy a term,
 	 * so a missing dropdown in a test is the rule at work and not an empty
-	 * vocabulary.
+	 * taxonomy.
 	 *
 	 * @return void
 	 */
@@ -151,7 +151,7 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Nothing hidden, every vocabulary filled: all seven dropdowns, on screen.
+	 * Nothing hidden, every taxonomy filled: all seven dropdowns, on screen.
 	 *
 	 * @return void
 	 */
@@ -206,13 +206,13 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A vocabulary without a single term is left out of the document entirely,
+	 * A taxonomy without a single term is left out of the document entirely,
 	 * not just hidden. Unlike a column, that cannot change while the page is
 	 * open, so there is nothing to bring back.
 	 *
 	 * @return void
 	 */
-	public function test_an_empty_vocabulary_has_no_filter(): void {
+	public function test_an_empty_taxonomy_has_no_filter(): void {
 		foreach ( get_terms(
 			array(
 				'taxonomy'   => Taxonomies::ROLE,
@@ -247,12 +247,12 @@ final class ListFiltersTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * An active filter survives even when its vocabulary was emptied in the
+	 * An active filter survives even when its taxonomy was emptied in the
 	 * meantime: the term is gone, the query var is not.
 	 *
 	 * @return void
 	 */
-	public function test_an_active_filter_survives_an_empty_vocabulary(): void {
+	public function test_an_active_filter_survives_an_empty_taxonomy(): void {
 		foreach ( get_terms(
 			array(
 				'taxonomy'   => Taxonomies::ROLE,

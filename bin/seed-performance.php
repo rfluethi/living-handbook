@@ -12,7 +12,7 @@
  *
  * It creates one handbook "Performance-Test" (public, so it renders without a
  * login) with top-level "Bereich" pages, each holding child pages, and assigns
- * random vocabulary terms, a last-updated date and a review date with an
+ * random taxonomy terms, a last-updated date and a review date with an
  * interval, so that all three freshness states occur and the badges are part of
  * what gets measured.
  *

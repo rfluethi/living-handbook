@@ -37,7 +37,7 @@ final class Cards {
 	 * @return string
 	 */
 	public static function page_card( int $post_id ): string {
-		// Same rule as the badges: a vocabulary the site does not use is neither
+		// Same rule as the badges: a taxonomy the site does not use is neither
 		// shown on the card nor written into the data attributes the filter reads.
 		$type_name = Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ? self::first_term_name( $post_id, Taxonomies::PAGE_TYPE ) : '';
 		$type_slug = Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ? self::first_term_slug( $post_id, Taxonomies::PAGE_TYPE ) : '';
@@ -98,7 +98,7 @@ final class Cards {
 	 * @return string
 	 */
 	public static function badges( int $post_id ): string {
-		// A vocabulary the site does not use has no badge. The terms are still on
+		// A taxonomy the site does not use has no badge. The terms are still on
 		// the page; nothing here deletes them, this only stops showing them.
 		$type     = Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ? self::first_term_name( $post_id, Taxonomies::PAGE_TYPE ) : '';
 		$topic    = Taxonomies::is_enabled( Taxonomies::TOPIC ) ? self::first_term_name( $post_id, Taxonomies::TOPIC ) : '';

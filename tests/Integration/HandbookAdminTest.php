@@ -152,7 +152,7 @@ final class HandbookAdminTest extends WP_UnitTestCase {
 
 	/**
 	 * A valid nonce is not enough: whoever saves must be allowed to manage the
-	 * vocabulary. A nonce travels in a page an author may well have open.
+	 * taxonomy. A nonce travels in a page an author may well have open.
 	 *
 	 * @return void
 	 */

@@ -36,7 +36,7 @@ graph TD;
 ## Warum es so gebaut ist
 
 * **„Fällig“ heißt nicht „falsch“.** Es heißt nur: Niemand hat es in letzter Zeit bestätigt. Nach dem doppelten Intervall eskaliert der Status zu „überfällig“. So altert eine Seite nicht leise vor sich hin.
-* **Verantwortung liegt bei Rollen, nicht bei Personen.** Jede Seite nennt eine verantwortliche Rolle. Welche Person die Rolle gerade innehat, pflegt ihr an einer einzigen Stelle außerhalb der Seiten, zum Beispiel auf einer eigenen Seite „Rollen im Team“. Ein Personalwechsel bedeutet darum nicht, hundert Seiten anzufassen. Wie du Rollen anlegst, steht unter [Schlagworte und Rollen pflegen](schlagworte-und-rollen.md).
+* **Verantwortung liegt bei Rollen, nicht bei Personen.** Jede Seite nennt eine verantwortliche Rolle. Welche Person die Rolle gerade innehat, pflegt ihr an einer einzigen Stelle außerhalb der Seiten, zum Beispiel auf einer eigenen Seite „Rollen im Team“. Ein Personalwechsel bedeutet darum nicht, hundert Seiten anzufassen. Wie du Rollen anlegst, steht unter [Einordnung und Rollen pflegen](schlagworte-und-rollen.md).
 * **Es gibt keine zentrale Handbuch-Besitzerin.** Die Pflege ist verteilt: Jede Rolle hält ihre Seiten aktuell. Übergreifendes liegt bei einer redaktionellen Rolle, etwa Struktur, Feedback lesen und Stichproben.
 
 ## Was das für deine Arbeit bedeutet

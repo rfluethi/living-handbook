@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T11:16:30+00:00\n"
+"POT-Creation-Date: 2026-08-09T11:49:26+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -1633,8 +1633,8 @@ msgid "GitHub sync"
 msgstr "GitHub-Sync"
 
 #: src/Setup/Settings.php:50
-msgid "Vocabularies"
-msgstr "Vokabulare"
+msgid "Classification"
+msgstr "Einordnung"
 
 #: src/Setup/Settings.php:51
 msgid "Appearance"
@@ -1645,7 +1645,7 @@ msgid "Uninstall"
 msgstr "Deinstallation"
 
 #: src/Setup/Settings.php:161 src/Setup/Settings.php:162
-#: src/Setup/Settings.php:727
+#: src/Setup/Settings.php:738
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -1688,8 +1688,8 @@ msgid "Text size"
 msgstr "Schriftgröße"
 
 #: src/Setup/Settings.php:370
-msgid "Vocabularies in use"
-msgstr "Vokabulare in Gebrauch"
+msgid "What pages are classified by"
+msgstr "Wonach Seiten eingeordnet werden"
 
 # Public feedback setting and per-page reset
 #: src/Setup/Settings.php:379
@@ -1758,44 +1758,90 @@ msgstr ""
 "CSS, das nur auf den Handbuch-Seiten geladen und beim Plugin gespeichert "
 "wird. Beispiele findest du im Hilfe-Tab (oben rechts)."
 
-#. translators: %d: number of terms in this vocabulary.
-#: src/Setup/Settings.php:643
+#: src/Setup/Settings.php:628
+msgid ""
+"What kind of page this is, which tells a reader how to read it: guide, "
+"process description, background, FAQ, area overview. One per page."
+msgstr ""
+"Welche Art von Seite das ist, und damit, wie man sie liest: Anleitung, "
+"Prozessbeschreibung, Hintergrund, FAQ, Bereichsübersicht. Eine je Seite."
+
+#: src/Setup/Settings.php:629
+msgid ""
+"What the page is about, in your own words: onboarding, invoicing, security. "
+"This is the one you fill yourself, and the one people filter by most."
+msgstr ""
+"Worum es inhaltlich geht, in euren eigenen Worten: Onboarding, "
+"Rechnungsstellung, Sicherheit. Diese Gruppe füllt ihr selbst, und nach ihr "
+"wird am meisten gefiltert."
+
+#: src/Setup/Settings.php:630
+msgid ""
+"Which role keeps the page current: handbook editors, GitHub specialist. A "
+"function, not a person, so it survives someone leaving."
+msgstr ""
+"Welche Rolle die Seite aktuell hält: Handbuch-Redaktion, GitHub-Spezialist. "
+"Eine Funktion, keine Person, damit die Angabe einen Weggang übersteht."
+
+#: src/Setup/Settings.php:631
+msgid ""
+"Who the page is written for: all members, content creators, coordination, "
+"tech. It says who should read it, not who may: that is the handbook's access "
+"rule."
+msgstr ""
+"Für wen die Seite geschrieben ist: Alle Mitglieder, Content-Team, "
+"Koordination, Technik. Wer sie lesen sollte, nicht wer sie lesen darf: das "
+"regelt der Zugriff am Handbuch."
+
+#. translators: %d: number of terms in this group.
+#: src/Setup/Settings.php:653
 #, php-format
 msgid "(%d term)"
 msgid_plural "(%d terms)"
 msgstr[0] "(%d Begriff)"
 msgstr[1] "(%d Begriffe)"
 
-#: src/Setup/Settings.php:651
+#: src/Setup/Settings.php:662
 msgid ""
 "All four are on by default. Switching one off hides it: the column and the "
 "filter in the page list, the facet on a handbook's entry page, the badge on "
 "a page and on a card, and the field in the editor sidebar. An import stops "
 "reading its line as well."
-msgstr "Alle vier sind eingeschaltet. Wer eines abschaltet, blendet es aus: die Spalte und den Filter in der Seitenliste, die Facette auf der Einstiegsseite eines Handbuchs, das Abzeichen auf Seite und Karte, und das Feld in der Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr."
+msgstr ""
+"Alle vier sind eingeschaltet. Wer eines abschaltet, blendet es aus: die "
+"Spalte und den Filter in der Seitenliste, die Facette auf der Einstiegsseite "
+"eines Handbuchs, das Abzeichen auf Seite und Karte, und das Feld in der "
+"Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr."
 
-#: src/Setup/Settings.php:652
+#: src/Setup/Settings.php:663
 msgid ""
-"Nothing is deleted. The terms stay, the pages keep them, and switching a "
-"vocabulary back on brings every assignment back exactly as it was. A bundle "
-"export carries all four either way, so moving a handbook to another site "
-"never loses what this site happens to hide."
-msgstr "Gelöscht wird nichts. Die Begriffe bleiben, die Seiten behalten sie, und wer ein Vokabular wieder einschaltet, bekommt jede Zuordnung unverändert zurück. Ein Bündel-Export nimmt ohnehin alle vier mit, damit beim Umzug auf eine andere Website nichts verloren geht, was diese hier nur ausblendet."
+"Nothing is deleted. The terms stay, the pages keep them, and switching one "
+"back on brings every assignment back exactly as it was. A bundle export "
+"carries all four either way, so moving a handbook to another site never "
+"loses what this site happens to hide."
+msgstr ""
+"Gelöscht wird nichts. Die Begriffe bleiben, die Seiten behalten sie, und wer "
+"eine Gruppe wieder einschaltet, bekommt jede Zuordnung unverändert zurück. "
+"Ein Bündel-Export nimmt ohnehin alle vier mit, damit beim Umzug auf eine "
+"andere Website nichts verloren geht, was diese hier nur ausblendet."
 
-#: src/Setup/Settings.php:653
+#: src/Setup/Settings.php:664
 msgid ""
 "The handbook itself is not in this list and cannot be switched off: access "
 "hangs on it, and a page that belongs to no handbook is invisible on the "
 "front end."
-msgstr "Das Handbuch selbst steht nicht in dieser Liste und lässt sich nicht abschalten: an ihm hängt der Zugriff, und eine Seite ohne Handbuch ist im Frontend unsichtbar."
+msgstr ""
+"Das Handbuch selbst steht nicht in dieser Liste und lässt sich nicht "
+"abschalten: an ihm hängt der Zugriff, und eine Seite ohne Handbuch ist im "
+"Frontend unsichtbar."
 
-#: src/Setup/Settings.php:663
+#: src/Setup/Settings.php:674
 msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
 msgstr ""
 "«War das hilfreich?» auch nicht angemeldeten Besuchenden auf öffentlichen "
 "Seiten zeigen"
 
-#: src/Setup/Settings.php:664
+#: src/Setup/Settings.php:675
 msgid ""
 "Off by default. When on, anyone can vote on a public page. To keep it "
 "privacy-friendly, votes are not tied to a person: no cookie, no IP and "
@@ -1810,7 +1856,7 @@ msgstr ""
 "Auf internen Seiten stimmen nur angemeldete Personen ab, je eine Stimme, "
 "unabhängig von dieser Einstellung."
 
-#: src/Setup/Settings.php:693
+#: src/Setup/Settings.php:704
 msgid ""
 "How often WordPress pulls GitHub pages in the background, in batches. GitHub "
 "pages are always synced when saved and via Sync now, regardless of this "
@@ -1822,19 +1868,19 @@ msgstr ""
 "synchronisieren» synchronisiert. Der Hintergrund-Sync läuft über WordPress-"
 "Cron, der bei Seitenaufrufen feuert."
 
-#: src/Setup/Settings.php:697
+#: src/Setup/Settings.php:708
 msgid "Next scheduled sync:"
 msgstr "Nächster geplanter Sync:"
 
-#: src/Setup/Settings.php:699
+#: src/Setup/Settings.php:710
 msgid "No background sync scheduled."
 msgstr "Kein Hintergrund-Sync geplant."
 
-#: src/Setup/Settings.php:710
+#: src/Setup/Settings.php:721
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr "Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen"
 
-#: src/Setup/Settings.php:711
+#: src/Setup/Settings.php:722
 msgid ""
 "Off by default: your content is kept when the plugin is deleted, only the "
 "plugin settings and caches are removed. Turn this on to remove everything "
@@ -1844,11 +1890,11 @@ msgstr ""
 "nur die Plugin-Einstellungen und Caches werden entfernt. Schalte dies ein, "
 "um alles zu entfernen, was das Plugin erstellt hat."
 
-#: src/Setup/Settings.php:712
+#: src/Setup/Settings.php:723
 msgid "This also removes templates you edited in the Site Editor."
 msgstr "Damit werden auch die im Site-Editor bearbeiteten Vorlagen entfernt."
 
-#: src/Setup/Settings.php:728
+#: src/Setup/Settings.php:739
 msgid "Settings sections"
 msgstr "Abschnitte der Einstellungen"
 
@@ -2468,6 +2514,18 @@ msgstr ""
 "aktuellen Seite, bis zur gewählten Tiefe. Eine Seite kann die Tiefe in ihrer "
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
+
+#~ msgid ""
+#~ "Nothing is deleted. The terms stay, the pages keep them, and switching a "
+#~ "vocabulary back on brings every assignment back exactly as it was. A "
+#~ "bundle export carries all four either way, so moving a handbook to "
+#~ "another site never loses what this site happens to hide."
+#~ msgstr ""
+#~ "Gelöscht wird nichts. Die Begriffe bleiben, die Seiten behalten sie, und "
+#~ "wer eine Gruppe wieder einschaltet, bekommt jede Zuordnung unverändert "
+#~ "zurück. Ein Bündel-Export nimmt ohnehin alle vier mit, damit beim Umzug "
+#~ "auf eine andere Website nichts verloren geht, was diese hier nur "
+#~ "ausblendet."
 
 # App handbook: bundled with the plugin, imported from disk
 #~ msgid "The app handbook is not available in this build."

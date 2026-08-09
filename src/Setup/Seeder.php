@@ -1,6 +1,6 @@
 <?php
 /**
- * Seeds the controlled vocabulary on activation.
+ * Seeds the four classifying taxonomies on activation.
  *
  * @package LivingHandbook
  */
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Inserts the default terms so every author shares the same vocabulary.
+ * Inserts the default terms so every author picks from the same list.
  *
  * Term names use translatable strings, so on a localised site the seeded terms
  * are created in that language.

@@ -6,13 +6,22 @@ Every option of the plugin at a glance. You find them under **Handbook → Setti
 
 **Automatic sync:** How often WordPress refreshes the [pages connected to GitHub](content/github-sync.md) in the background. The choices: off, hourly, twice daily, daily or weekly (the default). Independently of this, a page always syncs when saved and through the **Sync now** button. The screen also shows when the next automatic sync is scheduled.
 
-## Vocabularies
+## Classification
 
-**Vocabularies in use:** Four checkboxes, one per vocabulary: page type, topic, responsibility, audience. All four are on. If your team only ever uses topics, switch the other three off and they disappear everywhere: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading the matching line as well.
+**What pages are classified by:** Four checkboxes, one per group. Under each one, a sentence saying what the group is for, and how many terms it holds:
 
-**Nothing is deleted.** The terms stay, the pages keep their assignments, and the moment you switch a vocabulary back on, everything is there unchanged. A bundle export carries all four either way, so moving a handbook to another site never loses what this one only hides.
+* **Page type:** What kind of page this is, and therefore how to read it: guide, process description, background, FAQ, area overview. One per page.
+* **Topic:** What the page is about, in your own words: onboarding, invoicing, security. The group you fill yourself, and the one people filter by most.
+* **Responsibility:** Which role currently holds the page: handbook editors, GitHub specialist. A function, not a person, so the entry survives someone leaving.
+* **Audience:** Who the page is written for: all members, content team, coordination, tech. Who should read it, not who may; that is the handbook's access rule.
+
+All four are on. If your team only ever uses topics, switch the other three off and they disappear everywhere: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading the matching line as well.
+
+**Nothing is deleted.** The terms stay, the pages keep their assignments, and the moment you switch a group back on, everything is there unchanged. A bundle export carries all four either way, so moving a handbook to another site never loses what this one only hides.
 
 The handbook itself is not in that list and cannot be switched off. Access hangs on it, and a page without a handbook stays invisible on the front end.
+
+In more detail, with examples and pitfalls: [Classification and roles](upkeep/tags-and-roles.md).
 
 ## Appearance
 
@@ -51,6 +60,6 @@ A page carries up to three of these small badges, and they are told apart by col
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
 * Textauszug: Every option of the plugin at a glance: automatic GitHub sync, text size, colours and custom CSS, public feedback, the no-access page and the uninstall behaviour.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-08-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

@@ -149,7 +149,7 @@ final class Handbook {
 
 	/**
 	 * Put the handbook submenu into a task-oriented order: pages, add new,
-	 * import, the handbook types, the four vocabularies, then the settings.
+	 * import, the handbook types, the four taxonomies, then the settings.
 	 *
 	 * @return void
 	 */

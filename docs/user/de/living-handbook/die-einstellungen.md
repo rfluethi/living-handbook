@@ -6,11 +6,20 @@ Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → E
 
 **Automatischer Abgleich:** Wie oft WordPress die [mit GitHub verbundenen Seiten](inhalte/github-synchronisation.md) im Hintergrund aktualisiert. Zur Wahl stehen: aus, stündlich, zweimal täglich, täglich oder wöchentlich (Standard). Unabhängig davon wird eine Seite immer beim Speichern und über den Knopf **Jetzt synchronisieren** abgeglichen. Die Seite zeigt auch an, wann der nächste automatische Abgleich geplant ist.
 
-## Vokabulare
+## Einordnung
 
-**Vokabulare in Gebrauch:** Vier Ankreuzfelder, eines je Vokabular: Seitentyp, Thema, Verantwortung, Zielgruppe. Alle vier sind eingeschaltet. Nutzt dein Team nur Themen, schalte die anderen drei ab, dann verschwinden sie überall: die Spalte und der Filter in der Seitenliste, die Facette auf der Einstiegsseite, das Abzeichen auf Seite und Karte, und das Feld in der Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr.
+**Wonach Seiten eingeordnet werden:** Vier Ankreuzfelder, eines je Gruppe. Unter jedem steht in einem Satz, wofür die Gruppe da ist, und wie viele Begriffe sie enthält:
 
-**Gelöscht wird dabei nichts.** Die Begriffe bleiben bestehen, die Seiten behalten ihre Zuordnung, und sobald du ein Vokabular wieder einschaltest, ist alles unverändert da. Auch ein Bündel-Export nimmt weiterhin alle vier mit, damit beim Umzug auf eine andere Website nichts verloren geht, was diese hier nur ausblendet.
+* **Seitentyp:** Welche Art von Seite das ist, und damit, wie man sie liest: Anleitung, Prozessbeschreibung, Hintergrund, FAQ, Bereichsübersicht. Einer je Seite.
+* **Thema:** Worum es inhaltlich geht, in euren eigenen Worten: Onboarding, Rechnungsstellung, Sicherheit. Die Gruppe, die ihr selbst füllt, und die, nach der am meisten gefiltert wird.
+* **Verantwortung:** Welche Rolle die Seite aktuell hält: Handbuch-Redaktion, GitHub-Fachperson. Eine Funktion, keine Person, damit die Angabe einen Weggang übersteht.
+* **Zielgruppe:** Für wen die Seite geschrieben ist: Alle Mitglieder, Content-Team, Koordination, Technik. Wer sie lesen sollte, nicht wer sie lesen darf; das regelt der Zugriff am Handbuch.
+
+Alle vier sind eingeschaltet. Nutzt dein Team nur Themen, schalte die anderen drei ab, dann verschwinden sie überall: die Spalte und der Filter in der Seitenliste, die Facette auf der Einstiegsseite, das Abzeichen auf Seite und Karte, und das Feld in der Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr.
+
+**Gelöscht wird dabei nichts.** Die Begriffe bleiben bestehen, die Seiten behalten ihre Zuordnung, und sobald du eine Gruppe wieder einschaltest, ist alles unverändert da. Auch ein Bündel-Export nimmt weiterhin alle vier mit, damit beim Umzug auf eine andere Website nichts verloren geht, was diese hier nur ausblendet.
+
+Ausführlicher, mit Beispielen und Stolpersteinen: [Einordnung und Rollen pflegen](pflege/schlagworte-und-rollen.md).
 
 Das Handbuch selbst steht nicht in dieser Liste und lässt sich nicht abschalten. An ihm hängt der Zugriff, und eine Seite ohne Handbuch bleibt im Frontend unsichtbar.
 
@@ -51,6 +60,6 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
 * Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Abgleich, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Seite ohne Zugriff und das Verhalten beim Deinstallieren.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-08-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

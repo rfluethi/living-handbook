@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * The bundle is self-contained, so it can be imported on another site running the
  * plugin without reaching back to this one. It carries the handbook configuration,
  * every page as a block-markup snapshot with a stable hierarchy key, the four
- * vocabulary terms, the freshness metadata, the source per page (a GitHub page
+ * taxonomy terms, the freshness metadata, the source per page (a GitHub page
  * keeps its source URL so the target resumes syncing), and the referenced media.
  * Local operational data (feedback counts, sync status) is deliberately left out.
  *
@@ -45,9 +45,9 @@ final class HandbookExport {
 	private const MENU_SLUG = 'living-handbook-export';
 
 	/**
-	 * The four vocabulary taxonomies carried per page.
+	 * The four classifying taxonomies carried per page.
 	 */
-	private const VOCABULARIES = array(
+	private const TAXONOMIES = array(
 		Taxonomies::PAGE_TYPE,
 		Taxonomies::TOPIC,
 		Taxonomies::ROLE,
@@ -555,7 +555,7 @@ JS;
 	}
 
 	/**
-	 * The four vocabulary terms of a page, each as a list of slug/name pairs, so the
+	 * The four taxonomy terms of a page, each as a list of slug/name pairs, so the
 	 * importer can match by slug and create with the name if the term is missing.
 	 *
 	 * @param int $post_id Page ID.
@@ -563,11 +563,11 @@ JS;
 	 */
 	private function page_terms( int $post_id ): array {
 		$out = array();
-		foreach ( self::VOCABULARIES as $taxonomy ) {
+		foreach ( self::TAXONOMIES as $taxonomy ) {
 			// get_the_terms(), not wp_get_object_terms(): it reads through the
 			// object term cache, which the query in build_manifest() has already
 			// filled for every page of the handbook. Going around that cache costs
-			// four queries per page, one per vocabulary, which on a handbook of two
+			// four queries per page, one per taxonomy, which on a handbook of two
 			// thousand pages was 8011 queries and 3.4 seconds instead of 11 and
 			// 0.5, in the request that also has to build the ZIP.
 			$terms = get_the_terms( $post_id, $taxonomy );

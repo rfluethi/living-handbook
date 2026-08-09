@@ -14,7 +14,7 @@ Upload the plugin zip under **Plugins → Add New → Upload Plugin**, or drop t
 
 Activation does three things for you:
 
-- It registers the handbook content type and the taxonomies, and seeds the four vocabularies (page type, topic, responsible role, audience) with starter terms.
+- It registers the handbook content type and the taxonomies, and seeds the four classifying taxonomies (page type, topic, responsible role, audience) with starter terms.
 - It creates a normal WordPress page called **Handbook** with the **Handbook overview** block on it, so a fresh install shows something instead of an empty archive. You can move, restyle or replace this page later.
 - It flushes rewrite rules, so the handbook URLs work right away.
 

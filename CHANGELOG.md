@@ -17,6 +17,22 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.71.1] - 2026-08-09
+
+### Changed
+
+* **The four groups are called the classification now, and each one says what it is for.** 0.71.0 called them "vocabularies", which was not a matter of taste: the handbook already called them "Schlagwort-Gruppen" and the technical documentation called them taxonomies, so a fifth word for the same four things arrived on the settings screen while the other names stayed. Rico said so plainly, and he was right.
+
+  One word per audience from here on. A reader sees **Einordnung** / **Classification**: the settings tab, the handbook page "Einordnung und Rollen pflegen" / "Classification and roles", and every sentence around them. A developer sees **taxonomy**, which is what WordPress calls it; the code comments, the hook documentation and the technical handbook use that and nothing else. Where a sentence needs a generic word for one of the four, it says "group".
+
+  The four are also described now, which is what the question underneath the naming was actually about. On the settings tab, one sentence under each checkbox with real examples: what kind of page this is (page type), what it is about (topic), which role keeps it current (responsibility), who it is written for (audience). In the handbook, a paragraph each: what the group does, what belongs in it, and when a team can switch it off. Somebody about to switch one off has to know what they are switching off, and a label alone does not say that.
+
+  Two decisions sit in that text, because they are the ones people get wrong: audience says who *should* read a page, not who *may*, since access hangs on the handbook and not on the page; and responsibility names a function rather than a person, so the entry survives someone leaving.
+
+  Nothing about the behaviour changed. The option key, the stored value, the filter `living_handbook_enabled_taxonomies` and the tab slug are all as they were, so a site that saved switches under 0.71.0 keeps them.
+
+  The two handbook files keep their names, `pflege/schlagworte-und-rollen.md` and `upkeep/tags-and-roles.md`, although their titles changed. Renaming them would give every site that syncs this handbook from GitHub a second page next to the old one, which is a worse trade than a filename that no longer matches its title.
+
 ## [0.71.0] - 2026-08-09
 
 ### Added

@@ -414,7 +414,7 @@ final class Maintenance {
 
 	/**
 	 * Add a filter dropdown above the handbook list for the handbook and each
-	 * vocabulary (page type, topic, responsibility, audience). Selecting a term
+	 * taxonomy (page type, topic, responsibility, audience). Selecting a term
 	 * narrows the list through that taxonomy's query var, the same mechanism the
 	 * category filter uses for posts. This is filtering, not sorting: the taxonomy
 	 * columns stay unsortable on purpose, because a page can belong to several
@@ -432,11 +432,11 @@ final class Maintenance {
 		// go straight down from a filter to what it narrows. WordPress prints its
 		// own date dropdown before this hook and cannot be reordered, so the date
 		// stays first; everything after it follows the columns: handbook, then the
-		// four vocabularies, then the review status, then the source (the last two
+		// four taxonomies, then the review status, then the source (the last two
 		// are added at later priorities, by this class and by GitSync).
 		//
 		// The value is the column each filter belongs to. The handbook has one of
-		// this plugin's own, the vocabularies get theirs from WordPress, which
+		// this plugin's own, the taxonomies get theirs from WordPress, which
 		// names a taxonomy column "taxonomy-" plus the taxonomy.
 		$taxonomies = array(
 			Handbooks::TAXONOMY   => 'living_handbook_set',
@@ -451,7 +451,7 @@ final class Maintenance {
 			if ( false === $object ) {
 				continue;
 			}
-			// A vocabulary the site does not use has no filter, whatever the
+			// A taxonomy the site does not use has no filter, whatever the
 			// columns say and whatever is in the URL. Unlike a hidden column,
 			// this is a decision about the site, not about one person's view.
 			if ( Handbooks::TAXONOMY !== $taxonomy && ! Taxonomies::is_enabled( $taxonomy ) ) {
@@ -461,7 +461,7 @@ final class Maintenance {
 			$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
 			$active  = '' !== $current;
 
-			// A vocabulary with no term at all is left out entirely: its dropdown
+			// A taxonomy with no term at all is left out entirely: its dropdown
 			// could only offer "All topics", and unlike a hidden column that cannot
 			// change while the page is open. A hidden column, by contrast, only
 			// hides the control, so switching the column back on brings it back
