@@ -6,14 +6,18 @@ Four handbooks live here, and all four ship inside the plugin. **Handbook → Im
 | --- | --- | --- |
 | [`user/de/`](user/de/living-handbook/README.md) | User handbook, German | The people who write and read a handbook |
 | [`user/en/`](user/en/living-handbook/README.md) | User handbook, English | The same, in English |
-| [`technical/de/`](technical/de/README.md) | Technical documentation, German | Whoever installs, styles or extends the plugin |
-| [`technical/en/`](technical/en/README.md) | Technical documentation, English | The same, in English |
+| [`technical/de/`](technical/de/living-handbook-technical/README.md) | Technical documentation, German | Whoever installs, styles or extends the plugin |
+| [`technical/en/`](technical/en/living-handbook-technical/README.md) | Technical documentation, English | The same, in English |
 
-Start with [`technical/en/README.md`](technical/en/README.md) if you are here to work on the code: it has a reading order, from a plain-language code overview to the release process.
+Start with [`technical/en/`](technical/en/living-handbook-technical/README.md) if you are here to work on the code: it has a reading order, from a plain-language code overview to the release process.
 
-## Why they sit together
+## The shape, and why every folder has it
 
-They did not, until 0.69.0: the user handbook lived under `docs/user/` and the technical documentation under `docs/` and `docs/technical/de/`. That was two roots for the same kind of thing, a German folder name in an English repository, and the language once in the path and once in the folder name. It had grown rather than been designed, and once all four shipped and were offered in one dropdown, the reason for two roots was gone.
+All four have the same form: `docs/<kind>/<language>/<handbook>/`. The last level matters, it is not decoration. The import reads the language folder, and what lies **directly** in it becomes a page of its own at the top level, while a subfolder with a `README.md` becomes **one** page with everything else below it. The last level is therefore the handbook's own start page: `living-handbook` for the user handbook, `living-handbook-technical` for the technical documentation, in both languages.
+
+Until 0.70.0 only the user handbook had that level, so the technical documentation imported as a dozen pages side by side with no entry page, and its `README.md` landed among them instead of above them.
+
+**This is also why the four language folders have no `README.md` of their own.** One there would be read by the import as a page, and a page called "Readme" at the top of a handbook is not what anyone wants. The index of each handbook is one level down, inside the handbook folder. Nothing imports `docs/`, `docs/user/` or `docs/technical/`, so those three do have one.
 
 ## Two rules for editing
 

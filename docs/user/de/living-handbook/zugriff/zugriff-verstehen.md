@@ -40,7 +40,7 @@ Eine Folge davon musst du kennen: Diese Zurückhaltung gilt auch für öffentlic
 <details>
 <summary>Hintergrund: Für Entwicklerinnen und Entwickler</summary>
 
-Die zentrale Prüfung ist filterbar. So bekommt zum Beispiel ein Dienstkonto Lesezugriff auf alles. Eigene Lesepfade müssen immer durch diese Prüfung führen. Wie das geht, steht in der [Entwickler-Dokumentation zu den Hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/hooks.md).
+Die zentrale Prüfung ist filterbar. So bekommt zum Beispiel ein Dienstkonto Lesezugriff auf alles. Eigene Lesepfade müssen immer durch diese Prüfung führen. Wie das geht, steht in der [Entwickler-Dokumentation zu den Hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/hooks.md).
 
 </details>
 

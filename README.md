@@ -52,9 +52,9 @@ Continuous integration runs the coding standards, the static analysis, the unit 
 
 ## Documentation
 
-New to the plugin? Start with [getting started](docs/technical/en/getting-started.md): from install to your first page that visitors can see. Then [maintenance and freshness](docs/technical/en/maintenance.md), the feature the plugin is built around.
+New to the plugin? Start with [getting started](docs/technical/en/living-handbook-technical/getting-started.md): from install to your first page that visitors can see. Then [maintenance and freshness](docs/technical/en/living-handbook-technical/maintenance.md), the feature the plugin is built around.
 
-Developer documentation lives in [`docs/`](docs/README.md), which has an index and a reading order: a plain-language [code overview](docs/technical/en/code-overview.md) to start, then [blocks](docs/technical/en/blocks.md), [templates](docs/technical/en/templates.md), [customization](docs/technical/en/customization.md), [architecture](docs/technical/en/architecture.md), [hooks](docs/technical/en/hooks.md), [import and sync](docs/technical/en/import-and-sync.md) and [releasing](docs/technical/en/releasing.md).
+Developer documentation lives in [`docs/technical/en/`](docs/technical/en/living-handbook-technical/README.md), which has an index and a reading order: a plain-language [code overview](docs/technical/en/living-handbook-technical/code-overview.md) to start, then [blocks](docs/technical/en/living-handbook-technical/blocks.md), [templates](docs/technical/en/living-handbook-technical/templates.md), [customization](docs/technical/en/living-handbook-technical/customization.md), [architecture](docs/technical/en/living-handbook-technical/architecture.md), [hooks](docs/technical/en/living-handbook-technical/hooks.md), [import and sync](docs/technical/en/living-handbook-technical/import-and-sync.md) and [releasing](docs/technical/en/living-handbook-technical/releasing.md).
 
 ## License
 

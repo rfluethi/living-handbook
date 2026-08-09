@@ -41,7 +41,7 @@ A failed sync never empties the page. It simply keeps its last state. A notice i
 <details>
 <summary>Background: Why the page is locked and how the sync runs</summary>
 
-WordPress actively asks GitHub whether the file still exists and what it contains. GitHub does not call in on its own. That is why there are the three triggers above. The automatic sync works in small batches. Even a large handbook does not slow the website down. Technical details are in the [developer documentation on import and sync](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/import-and-sync.md).
+WordPress actively asks GitHub whether the file still exists and what it contains. GitHub does not call in on its own. That is why there are the three triggers above. The automatic sync works in small batches. Even a large handbook does not slow the website down. Technical details are in the [developer documentation on import and sync](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/import-and-sync.md).
 
 </details>
 

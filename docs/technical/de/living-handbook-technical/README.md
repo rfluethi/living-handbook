@@ -1,6 +1,6 @@
 # Technische Dokumentation
 
-Für alle, die das Plugin installieren, gestalten oder erweitern. Die englische Fassung liegt daneben unter [`../en/`](../en/README.md) und trägt die Bilder.
+Für alle, die das Plugin installieren, gestalten oder erweitern. Die englische Fassung liegt daneben unter [`../en/`](../../en/living-handbook-technical/README.md) und trägt die Bilder.
 
 ## Lesereihenfolge
 

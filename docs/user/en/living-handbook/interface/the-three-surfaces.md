@@ -53,7 +53,7 @@ As soon as you save a template in the Site Editor, WordPress keeps your version.
 <details>
 <summary>Background: All blocks in detail</summary>
 
-The plugin ships eleven blocks of its own, from the handbook overview to the Mermaid diagram. Most only render in their intended context. Anywhere else they output nothing. The full reference with every setting is in the [developer documentation on the blocks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/blocks.md).
+The plugin ships eleven blocks of its own, from the handbook overview to the Mermaid diagram. Most only render in their intended context. Anywhere else they output nothing. The full reference with every setting is in the [developer documentation on the blocks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/blocks.md).
 
 </details>
 

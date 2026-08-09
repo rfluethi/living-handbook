@@ -17,6 +17,18 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.70.0] - 2026-08-09
+
+### Changed
+
+* **All four handbooks have the same folder shape**, `docs/<kind>/<language>/<handbook>/`, and the technical documentation gained the level it was missing: `docs/technical/de/living-handbook-technical/` and the same under `en/`. Rico asked why `docs/user/de/living-handbook/` had one level more than `docs/technical/de/` and whether that had to do with the import. It did.
+
+  The import reads the language folder. What lies directly in it becomes a page of its own at the top level; a subfolder with a `README.md` becomes one page with everything else below it. So the user handbook imported as a start page with its areas beneath, while the technical documentation imported as a dozen pages side by side, with its `README.md` among them rather than above them. It now imports the way the user handbook does.
+
+  The level was added rather than removed. Taking `living-handbook/` out of the user handbook would have promoted its areas to top level and broken the parent reference in the transport block of all 56 pages: much work for a worse result.
+
+  The `README.md` of each technical folder moved down with the rest, which is what keeps the rule the same for all four import roots: no `README.md` directly in a language folder, because the import would read it as a page. The three folders nothing imports (`docs/`, `docs/user/`, `docs/technical/`) do have one, and they now say why.
+
 ## [0.69.0] - 2026-08-09
 
 ### Changed

@@ -69,7 +69,7 @@ Die Selektor-Liste bestimmt, wo die neuen Werte gelten; jede aufgeführte Oberfl
 <details>
 <summary>Hintergrund: Alle Variablen und Klassennamen</summary>
 
-Jeder Block bietet unter **Erweitert** zusätzlich eine eigene CSS-Klasse und einen HTML-Anker. Damit stylst oder verlinkst du einzelne Instanzen. Die vollständige Referenz aller `--lh-`-Variablen und stabilen Klassennamen steht in der [Entwickler-Dokumentation zur Gestaltung](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/anpassung.md).
+Jeder Block bietet unter **Erweitert** zusätzlich eine eigene CSS-Klasse und einen HTML-Anker. Damit stylst oder verlinkst du einzelne Instanzen. Die vollständige Referenz aller `--lh-`-Variablen und stabilen Klassennamen steht in der [Entwickler-Dokumentation zur Gestaltung](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/anpassung.md).
 
 </details>
 

@@ -26,17 +26,17 @@ one assumes only the ones above it.
 
 ## Where the other documentation lives
 
-- **The handbooks shipped with the plugin** are under [`docs/user/`](../../user/) and [`docs/technical/`](../),
+- **The handbooks shipped with the plugin** are under [`docs/user/`](../../../user/README.md) and [`docs/technical/`](../../README.md),
   in German and English. It is the documentation of the running application, is
   loaded into WordPress from the settings screen, and is written for people using
   a handbook rather than building one.
 - **Contributing, the local environment and the conventions** are in
-  [`CONTRIBUTING.md`](../../../CONTRIBUTING.md).
-- **The changelog** is in [`readme.txt`](../../../readme.txt) in short form and in
-  [`CHANGELOG.md`](../../../CHANGELOG.md) in full.
+  [`CONTRIBUTING.md`](../../../../CONTRIBUTING.md).
+- **The changelog** is in [`readme.txt`](../../../../readme.txt) in short form and in
+  [`CHANGELOG.md`](../../../../CHANGELOG.md) in full.
 
 These pages are English, because English is the language of the repository. The
-German version sits beside them in [`../de/`](../de/README.md) and is part of
+German version sits beside them in [`../de/`](../../de/living-handbook-technical/README.md) and is part of
 this repository as of 0.67.0; before that it lived in the project's own
 workspace, while `CONTRIBUTING.md` claimed it was the source these were derived
 from. It was not, and that gap caused half the documentation findings of one

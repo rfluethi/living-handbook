@@ -4,7 +4,7 @@ Living Handbook bringt elf dynamische Blöcke mit, im Block-Einfüger unter der 
 
 Jeder von ihnen bietet ausserdem einen **HTML-Anker** und eine **zusätzliche CSS-Klasse** im Bereich **Erweitert** des Blocks: der Anker wird zur ID des Wurzelelements, die Klasse wird ihm hinzugefügt. So kannst du direkt auf einen Block verlinken oder eine einzelne Instanz gestalten. Siehe [Anpassung](anpassung.md#klassen).
 
-![Living Handbook Blocks](../en/_attachments/living-handbook-blocks.png)
+![Living Handbook Blocks](../../en/living-handbook-technical/_attachments/living-handbook-blocks.png)
 
 ## Die drei Oberflächen
 
@@ -20,7 +20,7 @@ Die Einstiegsseite und die Einzelseite kommen mit Block-Templates, die die richt
 
 ## Handbuch-Übersicht (`living-handbook/overview`)
 
-![](../en/_attachments/handbook-overview-en.png)
+![](../../en/living-handbook-technical/_attachments/handbook-overview-en.png)
 
 Listet jedes Handbuch, das die aktuell besuchende Person lesen darf: Name, Beschreibung und Seitenzahl, jeweils verlinkt auf die Einstiegsseite dieses Handbuchs. Handbücher, die sie nicht lesen darf, fehlen vollständig.
 
@@ -42,7 +42,7 @@ Die drei finden einander über die Handbuch-ID an der Ergebnisspalte, Suchleiste
 
 ## Handbuch-Einstieg, Ergebnisse (`living-handbook/entry`)
 
-![](../en/_attachments/handbook-entry-en.png)
+![](../../en/living-handbook-technical/_attachments/handbook-entry-en.png)
 
 Die Ergebnisspalte der Startseite eines Handbuchs: die Bereiche des Handbuchs (seine Seiten oberster Ebene, mit der Zahl der Unterseiten) und die zuletzt geänderten Seiten, oder die passenden Seiten, solange eine Suche oder ein Filter aktiv ist.
 
@@ -98,7 +98,7 @@ Zwei weitere Vorbehalte. Das Einhängen bildet das Markup des Core-Blocks Naviga
 
 ## Handbuch-Navigation (`living-handbook/navigation`)
 
-![](../en/_attachments/handbook-navigation-en.png)
+![](../../en/living-handbook-technical/_attachments/handbook-navigation-en.png)
 
 Der Seitenbaum des aktuellen Handbuchs, als in sich geschlossene, einklappbare Liste, vom Plugin gestaltet. Ein weiteres Plugin ist nicht nötig. Die Titelzeile hat dieselbe Form wie jede Zeile mit Unterseiten: links ein Umschalt-Knopf, daneben der Handbuchname als gewöhnlicher Link auf die Einstiegsseite des Handbuchs. Es ist kein natives `<details>`-Element mehr, und einen kleinen Pfeil zur Startseite gibt es nicht mehr; der Umschalt-Knopf klappt die ganze Navigation auf oder zu, im geschlossenen Zustand trägt sie die Klasse `.living-handbook-nav.is-collapsed`. Auf dem Desktop verhält sie sich gleich wie auf schmalen Bildschirmen (dort startet sie eingeklappt). Die erste Ebene ist unter dem Titel eingerückt wie jede weitere Ebene. Der Baum ist auf das aktuelle Handbuch begrenzt und listet nie Seiten eines anderen, er wird bei jedem Aufruf frisch gebaut, und die aktuelle Seite wird automatisch markiert.
 
@@ -108,7 +108,7 @@ Der Seitenbaum des aktuellen Handbuchs, als in sich geschlossene, einklappbare L
 
 ## Handbuch-Abzeichen (`living-handbook/badges`)
 
-![](../en/_attachments/handbook-badges-en.png)
+![](../../en/living-handbook-technical/_attachments/handbook-badges-en.png)
 
 Die Abzeichenzeile einer Einzelseite: Seitentyp, Thema und Zielgruppe.
 
@@ -116,7 +116,7 @@ Die Abzeichenzeile einer Einzelseite: Seitentyp, Thema und Zielgruppe.
 
 ## Inhaltsverzeichnis (`living-handbook/toc`)
 
-![](../en/_attachments/table-of-contents-en.png)
+![](../../en/living-handbook-technical/_attachments/table-of-contents-en.png)
 
 Ein Inhaltsverzeichnis der aktuellen Seite. Der Block gibt einen leeren, versteckten Behälter aus; ein kleines Skript füllt ihn aus den Überschriften des Inhalts, bis zur eingestellten Tiefe, und hebt beim Scrollen den aktuellen Abschnitt hervor. Ein Klick auf einen Eintrag springt zur Überschrift und setzt den Tastaturfokus dorthin, damit Menschen an Tastatur und Screenreader beim Abschnitt landen und nicht wieder zuoberst. Hat die Seite keine Überschriften innerhalb der Tiefe, bleibt der Behälter versteckt.
 
@@ -128,7 +128,7 @@ Die Templates setzen zwei Instanzen: eine klebende für den Desktop in der Seite
 
 ## Handbuch-Feedback (`living-handbook/feedback`)
 
-![](../en/_attachments/handbook-feedback-en.png)
+![](../../en/living-handbook-technical/_attachments/handbook-feedback-en.png)
 
 Die Frage „War das hilfreich?" mit den Knöpfen Ja und Nein. Standardmässig zählt eine Stimme pro Person und Seite, und nur Personen, die diese Seite lesen dürfen, stimmen ab; die Knöpfe erscheinen dann nur für Angemeldete. Ist in den Einstellungen **Öffentliches Feedback** eingeschaltet, sehen die Knöpfe auch abgemeldete Besuchende auf öffentlichen Seiten. Solche Stimmen speichern nichts Persönliches (kein Cookie, keine IP) und haben deshalb keine Begrenzung auf eine Stimme. Das Wartungs-Dashboard zeigt die Summen.
 
@@ -136,7 +136,7 @@ Die Frage „War das hilfreich?" mit den Knöpfen Ja und Nein. Standardmässig z
 
 ## Handbuch-Seitenmetadaten (`living-handbook/pagemeta`)
 
-![](../en/_attachments/handbook-page-meta-en.png)
+![](../../en/living-handbook-technical/_attachments/handbook-page-meta-en.png)
 
 Die Metadaten-Fusszeile einer Einzelseite: erstellt, zuletzt geändert, zuletzt geprüft und die verantwortliche Rolle, jeweils mit der Person (Avatar und Name), wo eine zugewiesen ist. Das Prüfdatum trägt ein Aktualitäts-Abzeichen mit einem von vier Zuständen:
 
@@ -153,13 +153,13 @@ Die Metadaten-Fusszeile einer Einzelseite: erstellt, zuletzt geändert, zuletzt 
 
 ## Mermaid-Diagramm (`living-handbook/mermaid`)
 
-![](../en/_attachments/mermaid-en.png)
+![](../../en/living-handbook-technical/_attachments/mermaid-en.png)
 
 Rendert ein Diagramm in [Mermaid](https://mermaid.js.org/)-Syntax, gezeichnet im Browser. Der Import erzeugt diesen Block automatisch aus einem ```` ```mermaid ````-Codeblock; du kannst ihn auch von Hand einfügen und den Diagrammtext hineinkopieren. Ein **Diagrammtitel** erscheint als Bildunterschrift, eine **Diagrammbeschreibung** wird zur Textalternative für Screenreader. Anders als die übrigen Blöcke ist er nicht an einen Zusammenhang gebunden und rendert überall, wo du ihn hinsetzt, auch mitten im Seiteninhalt.
 
 ## GitHub-Quellhinweis (`living-handbook/git-source-note`)
 
-![](../en/_attachments/github-source-notes-en.png)
+![](../../en/living-handbook-technical/_attachments/github-source-notes-en.png)
 
 Ein kurzer Hinweis, der eine Seite als auf GitHub gepflegt und automatisch aktualisiert kennzeichnet, mit einem Link zur Quelldatei auf GitHub daneben (die gespeicherte Raw-URL wird in die passende github.com/blob-URL gewandelt). Er erscheint nur auf einer Seite, deren Quelle GitHub ist; auf einer in WordPress gepflegten Seite rendert er nichts, du kannst ihn also einmal ins Einzelseiten-Template setzen und vergessen.
 

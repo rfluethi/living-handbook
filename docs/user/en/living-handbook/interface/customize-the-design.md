@@ -69,7 +69,7 @@ The selector list decides where the new values apply; every listed surface takes
 <details>
 <summary>Background: All variables and class names</summary>
 
-Every block additionally offers its own CSS class and an HTML anchor under **Advanced**, for styling or linking single instances. The full reference of all `--lh-` variables and stable class names is in the [developer documentation on customization](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/customization.md).
+Every block additionally offers its own CSS class and an HTML anchor under **Advanced**, for styling or linking single instances. The full reference of all `--lh-` variables and stable class names is in the [developer documentation on customization](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/customization.md).
 
 </details>
 

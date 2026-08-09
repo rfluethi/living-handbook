@@ -82,7 +82,7 @@ A second import of the same source creates no copies. It updates the existing pa
 * [Writing content](writing-content.md)
 * [GitHub sync](github-sync.md)
 * [Move a handbook](move-a-handbook.md)
-* [Technical details in the developer documentation](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/import-and-sync.md)
+* [Technical details in the developer documentation](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/import-and-sync.md)
 
 ## Transport-Metadaten
 * Seitentyp: Guide

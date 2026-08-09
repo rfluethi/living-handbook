@@ -161,7 +161,7 @@ Do not extract the zip inside the repository; that would commit a second copy of
   and why it was decided that way. A user-facing change goes in both, the short
   form in `readme.txt` and the reasoning in `CHANGELOG.md`. An internal change
   goes in `CHANGELOG.md` alone.
-- Releasing is written down in [`docs/technical/en/releasing.md`](docs/technical/en/releasing.md). Read it
+- Releasing is written down in [`docs/technical/en/living-handbook-technical/releasing.md`](docs/technical/en/living-handbook-technical/releasing.md). Read it
   before touching a version number: three files have to agree, and a build
   refuses to run when they do not.
 - Branch off `main`, keep pull requests focused, and make sure CI is green.

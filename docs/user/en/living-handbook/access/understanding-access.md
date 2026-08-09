@@ -40,7 +40,7 @@ One consequence you need to know: this restraint also applies to public handbook
 <details>
 <summary>Background: For developers</summary>
 
-The central check is filterable, for example to give a service account read access to everything. Your own read paths must always route through this check. How that works is in the [developer documentation on the hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/hooks.md).
+The central check is filterable, for example to give a service account read access to everything. Your own read paths must always route through this check. How that works is in the [developer documentation on the hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/hooks.md).
 
 </details>
 

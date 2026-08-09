@@ -41,7 +41,7 @@ Ein fehlgeschlagener Abgleich leert die Seite nie. Sie behält einfach ihren let
 <details>
 <summary>Hintergrund: Warum die Seite gesperrt ist und wie der Abgleich läuft</summary>
 
-WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinsteht. GitHub meldet sich nicht von selbst. Darum gibt es die drei Auslöser oben. Der automatische Abgleich arbeitet in kleinen Portionen. Auch ein großes Handbuch bremst die Website so nicht aus. Technische Details stehen in der [Entwickler-Dokumentation zum Import und Sync](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/import-und-sync.md).
+WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinsteht. GitHub meldet sich nicht von selbst. Darum gibt es die drei Auslöser oben. Der automatische Abgleich arbeitet in kleinen Portionen. Auch ein großes Handbuch bremst die Website so nicht aus. Technische Details stehen in der [Entwickler-Dokumentation zum Import und Sync](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/import-und-sync.md).
 
 </details>
 

@@ -117,7 +117,7 @@ Shows Created, Last updated, Last reviewed and the responsible role, including t
 <details>
 <summary>Tip: Styling single blocks deliberately</summary>
 
-Every block offers two fields in the sidebar under **Advanced**: an **additional CSS class** and an **HTML anchor**. With the class you style exactly this one block, with the anchor you link straight to it. The full technical reference of all blocks is in the [developer documentation on the blocks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/blocks.md).
+Every block offers two fields in the sidebar under **Advanced**: an **additional CSS class** and an **HTML anchor**. With the class you style exactly this one block, with the anchor you link straight to it. The full technical reference of all blocks is in the [developer documentation on the blocks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/blocks.md).
 
 </details>
 

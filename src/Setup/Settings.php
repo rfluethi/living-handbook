@@ -220,7 +220,7 @@ final class Settings {
 		if ( null === $screen ) {
 			return;
 		}
-		$doc     = 'https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/customization.md';
+		$doc     = 'https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/customization.md';
 		$content = '<p>' . esc_html__( 'Add CSS that loads on the handbook pages only. It is stored with the plugin and removed when you delete the plugin, unlike CSS kept in the theme.', 'living-handbook' ) . '</p>'
 			. '<p>' . esc_html__( 'Target the plugin classes and the --lh-* custom properties. For example:', 'living-handbook' ) . '</p>'
 			. '<pre>.living-handbook-entry, .living-handbook-nav { --lh-accent: #b30000; }' . "\n" . '.living-handbook-card__dot { display: none; }</pre>'
