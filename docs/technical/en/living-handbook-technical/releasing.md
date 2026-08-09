@@ -60,6 +60,12 @@ version to SVN is what satisfies that; no change here is needed for it.
    Plugin Check plugin is reachable, runs Plugin Check on the zip. Install that
    zip and try the change before going further. Run `composer test:integration`
    too; `check-and-build.sh` does not.
+
+   Every `wp` call in the script is filtered: on PHP 8.4, wp-cli 2.12 raises a
+   deprecation inside its own `php-cli-tools` on every table it prints, and
+   those lines are dropped by file path, so the build's own output stays
+   readable. Warnings and errors from anywhere else, this plugin included, come
+   through untouched. Set `WP_CLI_PHP_ARGS` yourself to see all of it.
 5. **Check that nothing moved.** `git status` must be clean after the build. If
    it is not, the translation files changed and belong in the commit: the point
    of a release is that the zip and the tag are the same code, and that claim

@@ -17,6 +17,20 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.71.2] - 2026-08-09
+
+### Fixed
+
+* **The build script's own output is readable again.** On PHP 8.4, wp-cli 2.12 raises `Using null as an array offset is deprecated` inside its bundled `php-cli-tools` every time it prints a table, so `bin/check-and-build.sh` buried its result under hundreds of lines from code this plugin neither owns nor ships. The danger is not the noise itself: it is that a real error, a failed `make-pot` or a Plugin Check finding, scrolls past unread in the middle of it.
+
+  Every `wp` call in the script now goes through one function, and it does two things because either alone is not enough. It asks wp-cli to run PHP without `E_DEPRECATED`, which works wherever `wp` is a shell wrapper that passes `WP_CLI_PHP_ARGS` on and does nothing where `wp` is the phar itself; and it drops output lines whose file path lies in `php-cli-tools`, which works everywhere.
+
+  Selecting by path is the point. `2>/dev/null` would have been one character of work and would have swallowed every warning and every error along with the noise. A deprecation raised from this plugin's own code still comes through, unchanged, and so does everything Plugin Check says. `BuildScriptTest` holds that shape: a `wp` call that bypasses the filter fails the suite, and so does a filter that silences a stream instead of choosing lines. Counter-checked, both ways.
+
+  Two smaller decisions: the exit status of the `wp` call is captured and returned, or the status of the pipeline would be grep's and a failed `make-pot` would read as a successful one. And `WP_CLI_PHP_ARGS` set in the environment wins, so a developer who suspects the deprecations matter can see all of them without editing the script.
+
+  The price is that a `wp` call no longer streams; its output appears when it finishes. Seconds, for a build whose result can be read.
+
 ## [0.71.1] - 2026-08-09
 
 ### Changed

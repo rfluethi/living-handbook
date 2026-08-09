@@ -49,11 +49,41 @@ keep_if_only_the_stamp_moved() {
 	fi
 }
 
+# wp-cli 2.12 does not keep up with PHP 8.4: its bundled php-cli-tools uses null
+# as an array offset, which is deprecated, so a build can bury its own output
+# under hundreds of "PHP Deprecated" lines raised inside the wp-cli phar, from
+# code this plugin neither owns nor ships. Every wp call in this script goes
+# through wp_quiet, which does two things, because either one alone is not
+# enough:
+#
+# 1. It asks wp-cli to run PHP without E_DEPRECATED. That works only where the
+#    `wp` command is a shell wrapper that passes WP_CLI_PHP_ARGS on; where `wp`
+#    is the phar itself, the variable is ignored.
+# 2. It drops output lines whose file path lies in php-cli-tools. That works
+#    everywhere, and it is chosen by path on purpose: a deprecation raised from
+#    this plugin's own code still gets through, and so does every warning and
+#    every error. `2>/dev/null` would have swallowed those too, which is why it
+#    is not used here.
+#
+# The price is that a wp call no longer streams: its output appears when it
+# finishes. Seconds, for the readable output of a whole build.
+#
+# An explicit WP_CLI_PHP_ARGS from the environment wins, so a developer who
+# wants to see everything can set it and get the noise back.
+wp_quiet() {
+	local out status=0
+	out="$(mktemp)"
+	WP_CLI_PHP_ARGS="${WP_CLI_PHP_ARGS:--d error_reporting=E_ALL^E_DEPRECATED}" wp "$@" >"$out" 2>&1 || status=$?
+	grep -v 'php-cli-tools' "$out" || true
+	rm -f "$out"
+	return "$status"
+}
+
 if command -v wp >/dev/null 2>&1; then
 	pot="languages/living-handbook.pot"
 	pot_before="$(mktemp)"
 	[ -f "$pot" ] && cp "$pot" "$pot_before"
-	wp i18n make-pot . "$pot" --exclude=vendor,node_modules,tests --slug=living-handbook
+	wp_quiet i18n make-pot . "$pot" --exclude=vendor,node_modules,tests --slug=living-handbook
 	keep_if_only_the_stamp_moved "$pot" "$pot_before"
 	rm -f "$pot_before"
 	if command -v msgmerge >/dev/null 2>&1; then
@@ -73,8 +103,8 @@ if command -v wp >/dev/null 2>&1; then
 		echo "Install gettext so the .po gains JS source references and the JS JSON gets the German strings."
 	fi
 	# Per-script JSON for wp_set_script_translations, generated from the .po.
-	wp i18n make-json languages/ --no-purge
-	wp i18n make-php languages/
+	wp_quiet i18n make-json languages/ --no-purge
+	wp_quiet i18n make-php languages/
 else
 	echo "wp-cli not found. A release must not ship translation files that were" >&2
 	echo "not regenerated from source: the .pot would miss new strings and the" >&2
@@ -91,7 +121,11 @@ zip="living-handbook-${version}.zip"
 
 echo "==> Plugin Check (wordpress.org guidelines)"
 if wp plugin list >/dev/null 2>&1 && wp plugin check --help >/dev/null 2>&1; then
-	wp plugin check "$zip" || echo "Plugin Check reported findings; see above." >&2
+	# Plugin Check is where the noise showed up most: it prints its findings as a
+	# table, and the table renderer is exactly the file that raises the
+	# deprecation. Its own findings survive the filter, they do not come from
+	# php-cli-tools.
+	wp_quiet plugin check "$zip" || echo "Plugin Check reported findings; see above." >&2
 else
 	echo "wp plugin check is not available (needs a WordPress install and the"
 	echo "plugin-check plugin). Skipped: run it before submitting to wordpress.org."

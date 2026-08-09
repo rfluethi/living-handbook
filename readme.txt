@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.71.1
+Stable tag: 0.71.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.71.2 =
+* Nothing changed in the plugin: this release only makes the build script readable again, which on PHP 8.4 drowned in deprecation warnings from wp-cli itself.
 
 = 0.71.1 =
 * The settings tab is called Classification now, not Vocabularies, and under every checkbox stands one sentence saying what that group is for and what belongs in it. The handbook says the same thing in more detail, on "Classification and roles".
