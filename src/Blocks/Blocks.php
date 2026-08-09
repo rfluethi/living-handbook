@@ -107,7 +107,26 @@ final class Blocks {
 	 * @return string
 	 */
 	public function render_overview( array $attributes ): string {
-		return self::with_block_attributes( Entry::render_chooser( self::display_mode( $attributes, 'list' ) ), $attributes );
+		return self::with_block_attributes(
+			Entry::render_chooser( self::display_mode( $attributes, 'list' ), self::preview_count( $attributes ) ),
+			$attributes
+		);
+	}
+
+	/**
+	 * How many page titles the overview lists under a handbook, clamped to 0..10.
+	 *
+	 * Ten is not a technical limit, it is where a preview stops being one. The
+	 * value comes from post content and can be anything, so it is bounded here
+	 * rather than trusted.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return int
+	 */
+	private static function preview_count( array $attributes ): int {
+		$count = isset( $attributes['previewCount'] ) ? (int) $attributes['previewCount'] : 3;
+
+		return max( 0, min( 10, $count ) );
 	}
 
 	/**

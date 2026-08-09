@@ -372,9 +372,10 @@ JS;
 				'no_found_rows'  => true,
 				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					array(
-						'taxonomy' => Handbooks::TAXONOMY,
-						'field'    => 'term_id',
-						'terms'    => $term->term_id,
+						'taxonomy'         => Handbooks::TAXONOMY,
+						'field'            => 'term_id',
+						'terms'            => $term->term_id,
+						'include_children' => false,
 					),
 				),
 			)

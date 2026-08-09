@@ -32,7 +32,11 @@ The block works everywhere, including in the middle of page content. If a page c
 
 ![Icon of the Handbook overview block](../assets/bloecke-uebersicht.webp)
 
-Lists every handbook the current visitor may read, with name, description and page count. Activation creates a page with this block. You can also put it on any page you like. Setting: display as **List** or as **Cards**.
+Lists every handbook the current visitor may read, with name, description and page count. Activation creates a page with this block. You can also put it on any page you like.
+
+Under each handbook stand the first page titles, so you see what is in it and not only what it is called. When there is more than is shown, an "All pages" link appears. Settings: display as **List** or as **Cards**, and **Page titles under each handbook** from 0 to 10; 0 turns the preview off.
+
+A handbook that has a parent handbook stands set in below it and names it. One thing matters here: access is not inherited. Every handbook decides for itself who may read it, so a handbook below another is not automatically as protected as the one above. If someone may not see the parent, the child still appears, simply at the top level.
 
 ### Handbook menu
 

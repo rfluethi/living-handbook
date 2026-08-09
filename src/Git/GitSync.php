@@ -440,9 +440,10 @@ final class GitSync {
 		if ( $handbook_id > 0 ) {
 			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				array(
-					'taxonomy' => Handbooks::TAXONOMY,
-					'field'    => 'term_id',
-					'terms'    => $handbook_id,
+					'taxonomy'         => Handbooks::TAXONOMY,
+					'field'            => 'term_id',
+					'terms'            => $handbook_id,
+					'include_children' => false,
 				),
 			);
 		}
@@ -1656,9 +1657,10 @@ final class GitSync {
 		if ( $handbook_id > 0 ) {
 			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				array(
-					'taxonomy' => Handbooks::TAXONOMY,
-					'field'    => 'term_id',
-					'terms'    => $handbook_id,
+					'taxonomy'         => Handbooks::TAXONOMY,
+					'field'            => 'term_id',
+					'terms'            => $handbook_id,
+					'include_children' => false,
 				),
 			);
 		}

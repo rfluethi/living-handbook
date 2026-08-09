@@ -203,6 +203,46 @@
 	margin: 0 0 0.75rem;
 }
 
+/* The page titles under a handbook card, and the handbook a card belongs to.
+ * Outside the card's own link, because a link inside a link is not markup a
+ * browser can make sense of. */
+.living-handbook-card__preview {
+	list-style: none;
+	margin: 0;
+	padding: 0 1rem 1rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.9);
+}
+
+.living-handbook-card__preview li {
+	margin: 0.2rem 0;
+}
+
+.living-handbook-card__preview a {
+	color: inherit;
+}
+
+.living-handbook-card__more a {
+	color: var(--lh-accent);
+}
+
+.living-handbook-card__parent {
+	color: var(--lh-muted);
+}
+
+/* Handbooks that belong to another one: set in, and on a narrow screen only
+ * slightly, because half the width is worse than a small step. */
+.living-handbook-cards--children {
+	display: grid;
+	gap: 1rem;
+	margin: 0 0 1rem 2rem;
+}
+
+@media (max-width: 781px) {
+	.living-handbook-cards--children {
+		margin-left: 0.75rem;
+	}
+}
+
 /* Filter bar. Since 0.66.0 it is a block of its own and may sit anywhere, so
  * the box it used to get from the entry page's sidebar is on the form itself. */
 

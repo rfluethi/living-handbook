@@ -24,7 +24,11 @@ Die Einstiegsseite und die Einzelseite kommen mit Block-Templates, die die richt
 
 Listet jedes Handbuch, das die aktuell besuchende Person lesen darf: Name, Beschreibung und Seitenzahl, jeweils verlinkt auf die Einstiegsseite dieses Handbuchs. Handbücher, die sie nicht lesen darf, fehlen vollständig.
 
-**Einstellungen:** *Darstellung* wechselt zwischen **Liste** (Standard) und **Karten**. Eine Liste liest sich besser für die Handvoll Handbücher, die die meisten Websites haben; Karten passen auf eine Seite, auf der die Übersicht das tragende visuelle Element ist.
+Darunter stehen die ersten Seitentitel, und die sind es, die zwei Handbücher unterscheidbar machen: Name und Seitenzahl sagen, wie ein Handbuch heisst und wie gross es ist, nicht was darin steht. Ein Link „Alle Seiten" erscheint genau dann, wenn es mehr gibt als gezeigt wird.
+
+Ein Handbuch, das zu einem anderen gehört, steht eingerückt darunter und nennt es („in Firma"). Die Gruppierungs-Taxonomie ist seit ihrer Registrierung hierarchisch, gelesen hat das niemand, eine gebaute Struktur war also bis 0.68.0 unsichtbar. Drei Regeln gehören dazu, alle bewusst: **Zugriff wird nicht vererbt**, jedes Handbuch entscheidet für sich, wer es lesen darf; ein Kind, dessen Elternteil die Besucherin nicht sehen darf, rückt auf die oberste Ebene statt mit ihm zu verschwinden, denn sonst gäbe es ein lesbares Handbuch, das niemand erreicht; und die Reihenfolge innerhalb einer Ebene ist der Name.
+
+**Einstellungen:** *Darstellung* wechselt zwischen **Liste** (Standard) und **Karten**. Eine Liste liest sich besser für die Handvoll Handbücher, die die meisten Websites haben; Karten passen auf eine Seite, auf der die Übersicht das tragende visuelle Element ist. *Seitentitel pro Handbuch* ist die Länge der Vorschau, 0 bis 10, standardmässig drei; 0 schaltet sie ab.
 
 **Rendert auf:** jeder Seite oder jedem Template, auf das du ihn setzt. Anders als die übrigen Blöcke braucht er keinen besonderen Zusammenhang.
 

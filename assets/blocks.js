@@ -62,10 +62,21 @@
 
 	blocks.registerBlockType( 'living-handbook/overview', {
 		edit: function ( props ) {
+			var preview = RangeControl ? el( RangeControl, {
+				key: 'previewCount',
+				label: __( 'Page titles under each handbook', 'living-handbook' ),
+				help: __( 'Zero shows none. The list is the first pages of the handbook, plus a link to the rest.', 'living-handbook' ),
+				value: props.attributes.previewCount,
+				min: 0,
+				max: 10,
+				onChange: function ( value ) {
+					props.setAttributes( { previewCount: value } );
+				}
+			} ) : null;
 			return el(
 				Fragment,
 				{},
-				panel( __( 'Overview', 'living-handbook' ), displayControl( props ) ),
+				panel( __( 'Overview', 'living-handbook' ), [ displayControl( props ), preview ] ),
 				el( serverSideRender, { block: 'living-handbook/overview', attributes: props.attributes } )
 			);
 		},

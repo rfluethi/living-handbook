@@ -16,6 +16,10 @@
 		"display": {
 			"type": "string",
 			"default": "list"
+		},
+		"previewCount": {
+			"type": "number",
+			"default": 3
 		}
 	},
 	"supports": {

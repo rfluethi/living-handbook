@@ -136,9 +136,10 @@ final class Cards {
 				'no_found_rows'  => true,
 				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					array(
-						'taxonomy' => Handbooks::TAXONOMY,
-						'field'    => 'term_id',
-						'terms'    => $term_id,
+						'taxonomy'         => Handbooks::TAXONOMY,
+						'field'            => 'term_id',
+						'terms'            => $term_id,
+						'include_children' => false,
 					),
 				),
 			)
@@ -240,14 +241,17 @@ final class Cards {
 	/**
 	 * Render a handbook (grouping term) as a card that links to its entry page.
 	 *
-	 * @param WP_Term $term Handbook term.
+	 * @param WP_Term $term        Handbook term.
+	 * @param int     $preview     How many page titles to list under the card; 0 for none.
+	 * @param string  $parent_name Name of the handbook this one belongs to, when there is one.
 	 * @return string
 	 */
-	public static function handbook_card( WP_Term $term ): string {
+	public static function handbook_card( WP_Term $term, int $preview = 0, string $parent_name = '' ): string {
 		$link = get_term_link( $term );
 		if ( is_wp_error( $link ) ) {
 			return '';
 		}
+		$link = (string) $link;
 
 		$excerpt = '' !== $term->description
 			? '<p class="living-handbook-card__excerpt">' . esc_html( wp_strip_all_tags( $term->description ) ) . '</p>'
@@ -257,15 +261,80 @@ final class Cards {
 		/* translators: %d: number of pages in a handbook. */
 		$count_label = sprintf( _n( '%d page', '%d pages', $count, 'living-handbook' ), $count );
 
+		$meta = '<span>' . esc_html( $count_label ) . '</span>';
+		if ( '' !== $parent_name ) {
+			$meta .= '<span class="living-handbook-card__parent">' . esc_html(
+				sprintf(
+					/* translators: %s: name of the handbook this one belongs to. */
+					__( 'in %s', 'living-handbook' ),
+					$parent_name
+				)
+			) . '</span>';
+		}
+
+		// The card is one link, so the preview cannot sit inside it: a link inside
+		// a link is not markup a browser can make sense of. It follows the card's
+		// link as a sibling, inside the same article.
 		return sprintf(
 			'<article class="living-handbook-card living-handbook-card--book"><a class="living-handbook-card__link" href="%1$s">'
 			. '<h2 class="living-handbook-card__title">%2$s</h2>%3$s'
-			. '<p class="living-handbook-card__meta"><span>%4$s</span></p></a></article>',
-			esc_url( (string) $link ),
+			. '<p class="living-handbook-card__meta">%4$s</p></a>%5$s</article>',
+			esc_url( $link ),
 			esc_html( $term->name ),
 			$excerpt,
-			esc_html( $count_label )
+			$meta,
+			self::handbook_preview( $term, $preview, $link )
 		);
+	}
+
+	/**
+	 * The first pages of a handbook, as links under its card.
+	 *
+	 * A handbook's name and page count say what it is called and how big it is,
+	 * not what is in it. Three page titles do, and they are the fastest way to
+	 * tell two handbooks apart on an overview that lists several.
+	 *
+	 * Deliberately not DocsPress's "all" option: five handbooks of two hundred
+	 * pages would put a thousand links on one page, which is a worse overview
+	 * than no preview at all. The query fetches one page more than is shown, so
+	 * the "more" link appears exactly when there is more.
+	 *
+	 * @param WP_Term $term  Handbook term.
+	 * @param int     $limit How many pages to show; 0 for none.
+	 * @param string  $link  The handbook's entry page.
+	 * @return string
+	 */
+	private static function handbook_preview( WP_Term $term, int $limit, string $link ): string {
+		if ( $limit < 1 ) {
+			return '';
+		}
+
+		$pages = PageTree::top_level( (int) $term->term_id, $limit );
+		if ( array() === $pages ) {
+			return '';
+		}
+
+		$more  = count( $pages ) > $limit;
+		$pages = array_slice( $pages, 0, $limit );
+
+		$items = '';
+		foreach ( $pages as $post ) {
+			$items .= sprintf(
+				'<li><a href="%1$s">%2$s</a></li>',
+				esc_url( (string) get_permalink( $post ) ),
+				esc_html( get_the_title( $post ) )
+			);
+		}
+
+		if ( $more ) {
+			$items .= sprintf(
+				'<li class="living-handbook-card__more"><a href="%1$s">%2$s</a></li>',
+				esc_url( $link ),
+				esc_html__( 'All pages', 'living-handbook' )
+			);
+		}
+
+		return '<ul class="living-handbook-card__preview">' . $items . '</ul>';
 	}
 
 	/**

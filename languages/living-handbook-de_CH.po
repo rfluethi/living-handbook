@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-08T18:07:57+00:00\n"
+"POT-Creation-Date: 2026-08-09T09:00:22+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -193,16 +193,16 @@ msgstr ""
 "Die verschobenen Seiten haben noch kein Prüfdatum und erscheinen darum als "
 "«Nicht geprüft», bis du eines setzt."
 
-#: src/Blocks/Blocks.php:261 src/Blocks/Blocks.php:262 assets/blocks.js:134
+#: src/Blocks/Blocks.php:280 src/Blocks/Blocks.php:281 assets/blocks.js:145
 msgid "Table of Contents"
 msgstr "Inhaltsverzeichnis"
 
 # Search and filters
-#: src/Blocks/Blocks.php:306 src/Frontend/Filters.php:385
+#: src/Blocks/Blocks.php:325 src/Frontend/Filters.php:386
 msgid "Search this handbook"
 msgstr "Dieses Handbuch durchsuchen"
 
-#: src/Blocks/Blocks.php:309 src/Frontend/Filters.php:388
+#: src/Blocks/Blocks.php:328 src/Frontend/Filters.php:389
 msgid "Search this handbook …"
 msgstr "Dieses Handbuch durchsuchen …"
 
@@ -346,7 +346,7 @@ msgid "Audience: %s"
 msgstr "Zielgruppe: %s"
 
 #. translators: %d: number of subpages.
-#: src/Frontend/Cards.php:222
+#: src/Frontend/Cards.php:223
 #, php-format
 msgid "%d subpage"
 msgid_plural "%d subpages"
@@ -355,83 +355,93 @@ msgstr[1] "%d Unterseiten"
 
 #. translators: %d: number of pages in a handbook.
 #. translators: %d is a number of pages.
-#: src/Frontend/Cards.php:258 assets/js/markdown-import.js:15
+#: src/Frontend/Cards.php:262 assets/js/markdown-import.js:15
 #, php-format
 msgid "%d page"
 msgid_plural "%d pages"
 msgstr[0] "%d Seite"
 msgstr[1] "%d Seiten"
 
+#. translators: %s: name of the handbook this one belongs to.
+#: src/Frontend/Cards.php:269
+#, php-format
+msgid "in %s"
+msgstr "in %s"
+
+#: src/Frontend/Cards.php:333
+msgid "All pages"
+msgstr "Alle Seiten"
+
 # Entry page
-#: src/Frontend/Entry.php:41
+#: src/Frontend/Entry.php:67
 msgid "No handbooks available."
 msgstr "Keine Handbücher verfügbar."
 
-#: src/Frontend/Entry.php:69 src/Frontend/Entry.php:71
-#: src/Frontend/FrontendRenderer.php:342 src/Frontend/FrontendRenderer.php:379
-#: src/Handbook/Handbooks.php:278
+#: src/Frontend/Entry.php:151 src/Frontend/Entry.php:153
+#: src/Frontend/Entry.php:269 src/Frontend/FrontendRenderer.php:342
+#: src/Frontend/FrontendRenderer.php:379 src/Handbook/Handbooks.php:278
 msgid "Handbooks"
 msgstr "Handbücher"
 
-#: src/Frontend/Entry.php:144
+#: src/Frontend/Entry.php:250
 msgid "Areas"
 msgstr "Bereiche"
 
-#: src/Frontend/Entry.php:149
+#: src/Frontend/Entry.php:255
 msgid "Recently updated"
 msgstr "Zuletzt aktualisiert"
 
-#: src/Frontend/Entry.php:153
+#: src/Frontend/Entry.php:273
 msgid "This handbook has no pages yet."
 msgstr "Dieses Handbuch hat noch keine Seiten."
 
-#: src/Frontend/Entry.php:158
+#: src/Frontend/Entry.php:278
 msgid "Log in to see more."
 msgstr "Melde dich an, um mehr zu sehen."
 
-#: src/Frontend/Filters.php:391 assets/blocks.js:237
+#: src/Frontend/Filters.php:392 assets/blocks.js:248
 msgid "Search"
 msgstr "Suchen"
 
-#: src/Frontend/Filters.php:496
+#: src/Frontend/Filters.php:497
 msgid "Apply filters"
 msgstr "Filter anwenden"
 
-#: src/Frontend/Filters.php:497
+#: src/Frontend/Filters.php:498
 msgid "Reset"
 msgstr "Zurücksetzen"
 
 #. translators: %d: number of matching pages.
-#: src/Frontend/Filters.php:690
+#: src/Frontend/Filters.php:692
 #, php-format
 msgid "%d page found"
 msgid_plural "%d pages found"
 msgstr[0] "%d Seite gefunden"
 msgstr[1] "%d Seiten gefunden"
 
-#: src/Frontend/Filters.php:693
+#: src/Frontend/Filters.php:695
 msgid "No matches. Adjust the filters or the search."
 msgstr "Keine Treffer. Passe die Filter oder die Suche an."
 
 # Menu labels and taxonomy label set (batch: backend menu and labels)
-#: src/Frontend/Filters.php:708 src/PostType/Handbook.php:98
+#: src/Frontend/Filters.php:710 src/PostType/Handbook.php:98
 msgid "Handbook pages"
 msgstr "Handbuch-Seiten"
 
-#: src/Frontend/Filters.php:821 src/Taxonomy/Taxonomies.php:52
+#: src/Frontend/Filters.php:824 src/Taxonomy/Taxonomies.php:52
 msgid "Page type"
 msgstr "Seitentyp"
 
-#: src/Frontend/Filters.php:823 src/Taxonomy/Taxonomies.php:62
+#: src/Frontend/Filters.php:826 src/Taxonomy/Taxonomies.php:62
 msgid "Topics"
 msgstr "Themen"
 
-#: src/Frontend/Filters.php:825 src/Taxonomy/Taxonomies.php:73
+#: src/Frontend/Filters.php:828 src/Taxonomy/Taxonomies.php:73
 #: src/Taxonomy/Taxonomies.php:74
 msgid "Responsibility"
 msgstr "Verantwortung"
 
-#: src/Frontend/Filters.php:827 src/Taxonomy/Taxonomies.php:85
+#: src/Frontend/Filters.php:830 src/Taxonomy/Taxonomies.php:85
 msgid "Audience"
 msgstr "Zielgruppe"
 
@@ -554,7 +564,7 @@ msgstr ""
 "Versuche es später erneut."
 
 #. translators: %d: HTTP status code returned by the GitHub API.
-#: src/Git/ArchiveSource.php:217 src/Git/GitSync.php:1186
+#: src/Git/ArchiveSource.php:217 src/Git/GitSync.php:1187
 #, php-format
 msgid "GitHub API HTTP %d"
 msgstr "GitHub-API HTTP %d"
@@ -609,7 +619,7 @@ msgstr "Wöchentlich"
 msgid "GitHub page"
 msgstr "GitHub-Seite"
 
-#: src/Git/GitSync.php:484
+#: src/Git/GitSync.php:485
 msgid ""
 "This import cannot be continued: it was paused too long ago and its state is "
 "gone. Start it again, already imported pages are found and updated rather "
@@ -621,15 +631,15 @@ msgstr ""
 
 # GitHub sync: folder import and pull errors. Source strings live in
 # src/Git/GitSync.php.
-#: src/Git/GitSync.php:544
+#: src/Git/GitSync.php:545
 msgid "Not a GitHub folder URL."
 msgstr "Keine GitHub-Ordner-URL."
 
-#: src/Git/GitSync.php:554
+#: src/Git/GitSync.php:555
 msgid "No Markdown files found in that folder."
 msgstr "In diesem Ordner wurden keine Markdown-Dateien gefunden."
 
-#: src/Git/GitSync.php:559
+#: src/Git/GitSync.php:560
 msgid ""
 "The repository is too large for GitHub to return its tree in one piece, so "
 "this import may be incomplete."
@@ -638,7 +648,7 @@ msgstr ""
 "zurückgeben könnte. Dieser Import ist deshalb möglicherweise unvollständig."
 
 #. translators: %d: maximum number of files imported from one folder.
-#: src/Git/GitSync.php:565
+#: src/Git/GitSync.php:566
 #, php-format
 msgid ""
 "Only the first %d files were imported. Import the remaining subfolders "
@@ -648,7 +658,7 @@ msgstr ""
 "Unterordner einzeln."
 
 #. translators: 1: page title the link is on, 2: link target file name.
-#: src/Git/GitSync.php:721 src/Git/GitSync.php:1071
+#: src/Git/GitSync.php:722 src/Git/GitSync.php:1072
 #, php-format
 msgid ""
 "On \"%1$s\": the link to %2$s points at no page, so it was shown as plain "
@@ -658,7 +668,7 @@ msgstr ""
 "reiner Text dargestellt. Lege diese Seite an oder korrigiere den Link."
 
 #. translators: %s: reason the repository archive could not be downloaded.
-#: src/Git/GitSync.php:944
+#: src/Git/GitSync.php:945
 #, php-format
 msgid ""
 "The repository archive could not be downloaded (%s), so every file is "
@@ -668,22 +678,22 @@ msgstr ""
 "jede Datei einzeln geholt. Das ist langsamer und kann an das Anfragelimit "
 "von GitHub stossen."
 
-#: src/Git/GitSync.php:1006
+#: src/Git/GitSync.php:1007
 msgid "The app handbook folder was not found in the plugin."
 msgstr "Der App-Handbuch-Ordner wurde im Plugin nicht gefunden."
 
-#: src/Git/GitSync.php:1011
+#: src/Git/GitSync.php:1012
 msgid "No Markdown files were found in the app handbook folder."
 msgstr "Im App-Handbuch-Ordner wurden keine Markdown-Dateien gefunden."
 
 #. translators: %d: maximum number of files imported from one folder.
-#: src/Git/GitSync.php:1019
+#: src/Git/GitSync.php:1020
 #, php-format
 msgid "Only the first %d files were imported."
 msgstr "Es wurden nur die ersten %d Dateien importiert."
 
 #. translators: 1: pages imported so far, 2: total pages, 3: local time the limit resets.
-#: src/Git/GitSync.php:1137
+#: src/Git/GitSync.php:1138
 #, php-format
 msgid ""
 "GitHub's hourly request limit is used up. The import stopped after %1$d of "
@@ -695,7 +705,7 @@ msgstr ""
 "neu: bereits vorhandene Seiten werden aktualisiert, nicht doppelt angelegt."
 
 #. translators: %s: local time the GitHub request limit resets.
-#: src/Git/GitSync.php:1179
+#: src/Git/GitSync.php:1180
 #, php-format
 msgid ""
 "GitHub's hourly request limit is used up. It allows 60 requests an hour "
@@ -704,40 +714,40 @@ msgstr ""
 "Das Stundenkontingent an Anfragen bei GitHub ist aufgebraucht. Ohne "
 "Anmeldung sind 60 Anfragen pro Stunde erlaubt, ab %s geht es weiter."
 
-#: src/Git/GitSync.php:1191
+#: src/Git/GitSync.php:1192
 msgid "Unexpected GitHub API response."
 msgstr "Unerwartete Antwort der GitHub-API."
 
-#: src/Git/GitSync.php:1548
+#: src/Git/GitSync.php:1549
 msgid "App handbook page"
 msgstr "App-Handbuch-Seite"
 
 # GitHub sync: source box
-#: src/Git/GitSync.php:1850 src/Git/GitSync.php:2451
+#: src/Git/GitSync.php:1852 src/Git/GitSync.php:2453
 msgid "Source"
 msgstr "Quelle"
 
-#: src/Git/GitSync.php:1872
+#: src/Git/GitSync.php:1874
 msgid "Maintained in WordPress"
 msgstr "In WordPress gepflegt"
 
-#: src/Git/GitSync.php:1873
+#: src/Git/GitSync.php:1875
 msgid "Synced from GitHub"
 msgstr "Aus GitHub synchronisiert"
 
-#: src/Git/GitSync.php:1875
+#: src/Git/GitSync.php:1877
 msgid "Markdown source (raw or blob URL)"
 msgstr "Markdown-Quelle (Raw- oder Blob-URL)"
 
-#: src/Git/GitSync.php:1880
+#: src/Git/GitSync.php:1882
 msgid "Sync now"
 msgstr "Jetzt synchronisieren"
 
-#: src/Git/GitSync.php:1884
+#: src/Git/GitSync.php:1886
 msgid "Last sync:"
 msgstr "Letzter Sync:"
 
-#: src/Git/GitSync.php:1886
+#: src/Git/GitSync.php:1888
 msgid ""
 "A GitHub page is pulled when you save it, and its content editor is locked. "
 "Change the source here."
@@ -745,7 +755,7 @@ msgstr ""
 "Eine GitHub-Seite wird beim Speichern gezogen, und ihr Inhalts-Editor ist "
 "gesperrt. Die Quelle änderst du hier."
 
-#: src/Git/GitSync.php:1977
+#: src/Git/GitSync.php:1979
 msgid ""
 "This page is part of the app handbook that ships with the plugin. Its "
 "content is managed there and a re-load replaces it, so it cannot be edited "
@@ -755,7 +765,7 @@ msgstr ""
 "Ihr Inhalt wird dort verwaltet, und ein erneutes Laden ersetzt sie, sie kann "
 "hier also nicht bearbeitet werden."
 
-#: src/Git/GitSync.php:1980
+#: src/Git/GitSync.php:1982
 msgid ""
 "This page is synced from GitHub. Its content is managed in the repository "
 "and cannot be edited here."
@@ -764,7 +774,7 @@ msgstr ""
 "gepflegt und kann hier nicht bearbeitet werden."
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:2019
+#: src/Git/GitSync.php:2021
 #, php-format
 msgid ""
 "Living Handbook: %d GitHub page could not be synced. Open it to see the "
@@ -779,64 +789,64 @@ msgstr[1] ""
 "Living Handbook: %d GitHub-Seiten konnten nicht synchronisiert werden. Öffne "
 "sie, um den Fehler zu sehen."
 
-#: src/Git/GitSync.php:2040 src/Setup/Onboarding.php:332
+#: src/Git/GitSync.php:2042 src/Setup/Onboarding.php:332
 msgid "(no title)"
 msgstr "(ohne Titel)"
 
 #. translators: %d: number of further failed pages not listed.
 #. translators: %d: number of further affected pages not listed.
-#: src/Git/GitSync.php:2050 src/Setup/Onboarding.php:345
+#: src/Git/GitSync.php:2052 src/Setup/Onboarding.php:345
 #, php-format
 msgid "… and %d more."
 msgstr "… und %d weitere."
 
-#: src/Git/GitSync.php:2076
+#: src/Git/GitSync.php:2078
 msgid "You are not allowed to do this."
 msgstr "Dazu bist du nicht berechtigt."
 
 # GitHub sync: status messages
-#: src/Git/GitSync.php:2158
+#: src/Git/GitSync.php:2160
 msgid "Error: CommonMark is not installed."
 msgstr "Fehler: CommonMark ist nicht installiert."
 
-#: src/Git/GitSync.php:2166
+#: src/Git/GitSync.php:2168
 msgid "Error: source host not allowed."
 msgstr "Fehler: Quell-Host nicht erlaubt."
 
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
-#: src/Git/GitSync.php:2189 assets/js/markdown-import.js:234
+#: src/Git/GitSync.php:2191 assets/js/markdown-import.js:234
 #: assets/js/markdown-import.js:324
 #, php-format
 msgid "Error: %s"
 msgstr "Fehler: %s"
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:2195
+#: src/Git/GitSync.php:2197
 #, php-format
 msgid "Error: HTTP %d"
 msgstr "Fehler: HTTP %d"
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:2214
+#: src/Git/GitSync.php:2216
 #, php-format
 msgid "OK %s"
 msgstr "OK %s"
 
-#: src/Git/GitSync.php:2467 src/Git/GitSync.php:2491
+#: src/Git/GitSync.php:2469 src/Git/GitSync.php:2493
 #: src/Import/MarkdownImportPage.php:977
 msgid "GitHub"
 msgstr "GitHub"
 
-#: src/Git/GitSync.php:2467 src/Git/GitSync.php:2492
+#: src/Git/GitSync.php:2469 src/Git/GitSync.php:2494
 msgid "WordPress"
 msgstr "WordPress"
 
-#: src/Git/GitSync.php:2471
+#: src/Git/GitSync.php:2473
 msgid "(sync failed)"
 msgstr "(Sync fehlgeschlagen)"
 
-#: src/Git/GitSync.php:2490
+#: src/Git/GitSync.php:2492
 msgid "All sources"
 msgstr "Alle Quellen"
 
@@ -1350,7 +1360,11 @@ msgid ""
 "The plugin brings its own handbooks: the documentation of the app, written "
 "as a Living Handbook. They ship with the plugin, so this loads them from the "
 "installed version, with their pages, structure and images."
-msgstr "Das Plugin bringt eigene Handbücher mit: die Dokumentation der App, geschrieben als Living Handbook. Sie werden mit dem Plugin ausgeliefert, geladen wird also aus der installierten Fassung, mit Seiten, Struktur und Bildern."
+msgstr ""
+"Das Plugin bringt eigene Handbücher mit: die Dokumentation der App, "
+"geschrieben als Living Handbook. Sie werden mit dem Plugin ausgeliefert, "
+"geladen wird also aus der installierten Fassung, mit Seiten, Struktur und "
+"Bildern."
 
 #: src/Import/MarkdownImportPage.php:1068
 msgid "Which handbook"
@@ -1361,7 +1375,11 @@ msgid ""
 "The user handbook is for the people who write and read the handbook. The "
 "technical documentation is for whoever installs, styles or extends the "
 "plugin. Load one, or load several into handbooks of their own."
-msgstr "Das Benutzerhandbuch richtet sich an alle, die das Handbuch schreiben und lesen. Die technische Dokumentation richtet sich an alle, die das Plugin installieren, gestalten oder erweitern. Lade eines davon, oder mehrere in je ein eigenes Handbuch."
+msgstr ""
+"Das Benutzerhandbuch richtet sich an alle, die das Handbuch schreiben und "
+"lesen. Die technische Dokumentation richtet sich an alle, die das Plugin "
+"installieren, gestalten oder erweitern. Lade eines davon, oder mehrere in je "
+"ein eigenes Handbuch."
 
 #: src/Import/MarkdownImportPage.php:1079
 msgid "Load into"
@@ -1377,7 +1395,12 @@ msgid ""
 "\"App handbook\") if you want them in their own, and set who may read it "
 "there. The pages are published into it; whether anyone sees them is that "
 "handbook's access rule, not this button."
-msgstr "Wähle das Handbuch, zu dem die Seiten gehören sollen. Lege vorher eines an (zum Beispiel „App-Handbuch\"), wenn sie ein eigenes bekommen sollen, und bestimme dort, wer es lesen darf. Die Seiten werden veröffentlicht; ob sie jemand sieht, entscheidet die Zugriffsregel dieses Handbuchs, nicht diese Schaltfläche."
+msgstr ""
+"Wähle das Handbuch, zu dem die Seiten gehören sollen. Lege vorher eines an "
+"(zum Beispiel „App-Handbuch\"), wenn sie ein eigenes bekommen sollen, und "
+"bestimme dort, wer es lesen darf. Die Seiten werden veröffentlicht; ob sie "
+"jemand sieht, entscheidet die Zugriffsregel dieses Handbuchs, nicht diese "
+"Schaltfläche."
 
 #: src/Import/MarkdownImportPage.php:1093
 msgid "Connection to the source"
@@ -1394,7 +1417,12 @@ msgid ""
 "can edit freely, which is what you want when you use them as a template for "
 "your own; the price is that they stay as they are, a plugin update does not "
 "touch them again."
-msgstr "Verbunden sind die Seiten im Editor gesperrt, und ein späteres Laden frischt sie auf; sie folgen also dem Plugin. Ohne Verbindung kommen sie als gewöhnliche Handbuch-Seiten an, die du frei bearbeitest, was du willst, wenn du sie als Vorlage für dein eigenes Handbuch nimmst. Der Preis: sie bleiben, wie sie sind, ein Plugin-Update rührt sie nicht mehr an."
+msgstr ""
+"Verbunden sind die Seiten im Editor gesperrt, und ein späteres Laden frischt "
+"sie auf; sie folgen also dem Plugin. Ohne Verbindung kommen sie als "
+"gewöhnliche Handbuch-Seiten an, die du frei bearbeitest, was du willst, wenn "
+"du sie als Vorlage für dein eigenes Handbuch nimmst. Der Preis: sie bleiben, "
+"wie sie sind, ein Plugin-Update rührt sie nicht mehr an."
 
 #: src/Import/MarkdownImportPage.php:1103
 msgid "Load handbook"
@@ -1517,7 +1545,9 @@ msgstr "Zur Import-Seite"
 msgid ""
 "Create a handbook of your own and set who may read it. Your pages then go "
 "into it."
-msgstr "Lege ein eigenes Handbuch an und bestimme, wer es lesen darf. Deine Seiten kommen dann dort hinein."
+msgstr ""
+"Lege ein eigenes Handbuch an und bestimme, wer es lesen darf. Deine Seiten "
+"kommen dann dort hinein."
 
 #: src/Setup/Onboarding.php:237
 msgid "Create a handbook"
@@ -1839,7 +1869,7 @@ msgstr "Nichts gefunden."
 msgid "Back to %s"
 msgstr "Zurück zu %s"
 
-#: assets/blocks.js:38 assets/blocks.js:80
+#: assets/blocks.js:38 assets/blocks.js:91
 msgid "Display"
 msgstr "Anzeige"
 
@@ -1851,23 +1881,33 @@ msgstr "Karten"
 msgid "List"
 msgstr "Liste"
 
+#: assets/blocks.js:67
+msgid "Page titles under each handbook"
+msgstr "Seitentitel pro Handbuch"
+
 #: assets/blocks.js:68
+msgid ""
+"Zero shows none. The list is the first pages of the handbook, plus a link to "
+"the rest."
+msgstr "Null zeigt keine. Aufgelistet werden die ersten Seiten des Handbuchs, dazu ein Link auf den Rest."
+
+#: assets/blocks.js:79
 msgid "Overview"
 msgstr "Übersicht"
 
-#: assets/blocks.js:83
+#: assets/blocks.js:94
 msgid "Menu"
 msgstr "Menü"
 
-#: assets/blocks.js:84
+#: assets/blocks.js:95
 msgid "Accordion"
 msgstr "Akkordeon"
 
-#: assets/blocks.js:93
+#: assets/blocks.js:104
 msgid "Navigation"
 msgstr "Navigation"
 
-#: assets/blocks.js:94
+#: assets/blocks.js:105
 msgid ""
 "Handbook navigation: the page tree of the current handbook. Choose Menu or "
 "Accordion in the block settings."
@@ -1875,23 +1915,23 @@ msgstr ""
 "Handbuch-Navigation: der Seitenbaum des aktuellen Handbuchs. Wähle in den "
 "Blockeinstellungen Menü oder Akkordeon."
 
-#: assets/blocks.js:108
+#: assets/blocks.js:119
 msgid "Placement"
 msgstr "Platzierung"
 
-#: assets/blocks.js:111
+#: assets/blocks.js:122
 msgid "Desktop (side column, open)"
 msgstr "Desktop (Seitenspalte, offen)"
 
-#: assets/blocks.js:112
+#: assets/blocks.js:123
 msgid "Mobile (above content, collapsed)"
 msgstr "Mobil (über dem Inhalt, eingeklappt)"
 
-#: assets/blocks.js:122
+#: assets/blocks.js:133
 msgid "Heading depth (up to H…)"
 msgstr "Überschriftentiefe (bis H…)"
 
-#: assets/blocks.js:135
+#: assets/blocks.js:146
 msgid ""
 "Table of Contents: a collapsible list built from the headings of the current "
 "page, up to the chosen depth. A page can override the depth in its Handbook "
@@ -1902,15 +1942,15 @@ msgstr ""
 "Box «Handbuch-Wartung» überschreiben. Leer, wenn die Seite keine "
 "Überschriften hat."
 
-#: assets/blocks.js:146
+#: assets/blocks.js:157
 msgid "Show people (avatar and name)"
 msgstr "Personen anzeigen (Avatar und Name)"
 
-#: assets/blocks.js:155
+#: assets/blocks.js:166
 msgid "Page meta"
 msgstr "Seiten-Meta"
 
-#: assets/blocks.js:156
+#: assets/blocks.js:167
 msgid ""
 "Handbook page meta: the created, updated, reviewed and responsible-role "
 "footer. Turn the people on or off in the block settings."
@@ -1919,11 +1959,11 @@ msgstr ""
 "verantwortlicher Rolle. Schalte die Personen in den Blockeinstellungen ein "
 "oder aus."
 
-#: assets/blocks.js:202
+#: assets/blocks.js:213
 msgid "Entry"
 msgstr "Eintrag"
 
-#: assets/blocks.js:203
+#: assets/blocks.js:214
 msgid ""
 "Handbook entry (results): the areas and recently updated pages of this "
 "handbook, or the matches while a search or filter is active. The search bar "
@@ -1933,44 +1973,44 @@ msgstr ""
 "Seiten dieses Handbuchs, oder die Treffer, solange eine Suche oder ein "
 "Filter aktiv ist. Suchleiste und Filterleiste sind eigene Blöcke."
 
-#: assets/blocks.js:214 assets/blocks.js:280
+#: assets/blocks.js:225 assets/blocks.js:291
 msgid "Show the label"
 msgstr "Beschriftung anzeigen"
 
-#: assets/blocks.js:215 assets/blocks.js:281
+#: assets/blocks.js:226 assets/blocks.js:292
 msgid "Label"
 msgstr "Beschriftung"
 
-#: assets/blocks.js:215 assets/blocks.js:281
+#: assets/blocks.js:226 assets/blocks.js:292
 msgid "Read out to screen readers even when it is not shown."
 msgstr ""
 "Wird auch dann von Screenreadern vorgelesen, wenn sie nicht sichtbar ist."
 
-#: assets/blocks.js:216 assets/blocks.js:282
+#: assets/blocks.js:227 assets/blocks.js:293
 msgid "Placeholder"
 msgstr "Platzhaltertext"
 
-#: assets/blocks.js:217
+#: assets/blocks.js:228
 msgid "Button text"
 msgstr "Aufschrift der Schaltfläche"
 
-#: assets/blocks.js:222
+#: assets/blocks.js:233
 msgid "Button position"
 msgstr "Position der Schaltfläche"
 
-#: assets/blocks.js:225
+#: assets/blocks.js:236
 msgid "Outside the field"
 msgstr "Neben dem Feld"
 
-#: assets/blocks.js:226
+#: assets/blocks.js:237
 msgid "Inside the field"
 msgstr "Im Feld"
 
-#: assets/blocks.js:227
+#: assets/blocks.js:238
 msgid "No button"
 msgstr "Keine Schaltfläche"
 
-#: assets/blocks.js:238
+#: assets/blocks.js:249
 msgid ""
 "Handbook search: searches the handbook this page belongs to and narrows the "
 "result column. Colours, border, typography and spacing are in the block "
@@ -1980,7 +2020,7 @@ msgstr ""
 "die Ergebnisspalte ein. Farben, Rahmen, Schrift und Abstände stehen in den "
 "Block-Einstellungen, der Wortlaut hier."
 
-#: assets/blocks.js:248
+#: assets/blocks.js:259
 msgid ""
 "Handbook filter bar: page type, topic, responsibility and audience of the "
 "pages in this handbook. It only offers terms that are actually used, so it "
@@ -1990,21 +2030,21 @@ msgstr ""
 "Seiten dieses Handbuchs. Angeboten wird nur, was wirklich gesetzt ist; "
 "solange nichts gesetzt ist, bleibt sie leer."
 
-#: assets/blocks.js:266
+#: assets/blocks.js:277
 msgid "Handbook badges: page type, topic and audience of the current page."
 msgstr "Handbuch-Badges: Seitentyp, Thema und Zielgruppe der aktuellen Seite."
 
-#: assets/blocks.js:271
+#: assets/blocks.js:282
 msgid ""
 "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 "Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite."
 
-#: assets/blocks.js:279
+#: assets/blocks.js:290
 msgid "Quick search"
 msgstr "Schnellsuche"
 
-#: assets/blocks.js:284
+#: assets/blocks.js:295
 msgid ""
 "Handbook quick search: lists matching pages as you type, each with the "
 "sentence it was found in, so a reader jumps straight to a page. Does not "

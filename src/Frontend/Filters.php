@@ -142,9 +142,10 @@ final class Filters {
 				's'              => $search,
 				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					array(
-						'taxonomy' => Handbooks::TAXONOMY,
-						'field'    => 'term_id',
-						'terms'    => $term_id,
+						'taxonomy'         => Handbooks::TAXONOMY,
+						'field'            => 'term_id',
+						'terms'            => $term_id,
+						'include_children' => false,
 					),
 				),
 			)
@@ -638,9 +639,10 @@ final class Filters {
 		$tax_query = array(
 			'relation' => 'AND',
 			array(
-				'taxonomy' => Handbooks::TAXONOMY,
-				'field'    => 'term_id',
-				'terms'    => $term->term_id,
+				'taxonomy'         => Handbooks::TAXONOMY,
+				'field'            => 'term_id',
+				'terms'            => $term->term_id,
+				'include_children' => false,
 			),
 		);
 		foreach ( $selections as $param => $slugs ) {
@@ -755,9 +757,10 @@ final class Filters {
 				'no_found_rows'  => true,
 				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					array(
-						'taxonomy' => Handbooks::TAXONOMY,
-						'field'    => 'term_id',
-						'terms'    => $term->term_id,
+						'taxonomy'         => Handbooks::TAXONOMY,
+						'field'            => 'term_id',
+						'terms'            => $term->term_id,
+						'include_children' => false,
 					),
 				),
 			)

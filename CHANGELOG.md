@@ -17,6 +17,22 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.68.0] - 2026-08-08
+
+### Added
+
+* **The overview lists the first page titles under each handbook.** A card said a handbook's name and its page count, which is what it is called and how big it is, not what is in it; three titles are what tell two handbooks apart. The length is a block setting, 0 to 10, three by default, and an "All pages" link appears exactly when there is more than is shown.
+
+  The limit is in the query, not in the output: `PageTree::top_level()` fetches one page more than it shows, so five handbooks of two hundred pages cost fifteen rows rather than a thousand. DocsPress's "all" option is deliberately not copied, since it would put those thousand links on one page. The preview names pages, so it goes through the same access check as everything else, and it sits outside the card's own link, because a link inside a link is not markup a browser can make sense of.
+
+* **A handbook can belong to another one, and the overview and the menu show it.** The grouping taxonomy has been hierarchical since the day it was registered and nothing read that, so a structure someone built was invisible: parent and child stood side by side as equals. Children are now set in below their parent, a child card names the handbook it belongs to, and a handbook that holds handbooks rather than pages of its own lists them instead of claiming it has nothing.
+
+  Three rules go with it, each a decision rather than an accident. **Access is not inherited**: every handbook decides for itself who may read it, and a parent's rule says nothing about its children. **A child whose parent the visitor may not see moves up to the top level** rather than disappearing with it, because the alternative is a readable handbook nobody can reach. **The order inside a level is the name**; a sort field of its own can come when someone asks for one.
+
+### Fixed
+
+* **A handbook's pages are its own again.** Every query for the pages of a handbook asked WordPress for a term of a hierarchical taxonomy, and WordPress answers such a question by including the terms below it. Nothing had a term below it until now, so nothing showed; the moment a handbook got a parent, the parent's entry page, its search, its filters and its export all picked up the child's pages and filed them under the parent's name. `include_children` is off in all nine of those queries now. One page belongs to exactly one handbook, so a handbook's list is its own pages.
+
 ## [0.67.0] - 2026-08-08
 
 ### Added

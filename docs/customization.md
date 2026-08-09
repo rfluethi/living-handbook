@@ -151,6 +151,8 @@ Every handbook block also offers, under its **Advanced** panel in the editor, an
 
 - `.living-handbook-cards`, with `--areas` or `--books`: the responsive grid.
 - `.living-handbook-card`, with `--area` or `--book`, plus `.living-handbook-card__link`, `__title`, `__excerpt`, `__meta`.
+- `.living-handbook-card__preview`, `.living-handbook-card__more`, `.living-handbook-card__parent`: the page titles under a handbook card, the link to the rest, and the name of the handbook this one belongs to. The preview sits outside the card's own link, because a link inside a link is not markup a browser can make sense of.
+- `.living-handbook-cards--children`: the handbooks below another one, set in by a margin.
 - `.living-handbook-card__dot`, with `--ok`, `--due` or `--overdue`: the freshness dot. Its shape varies per state (circle, rounded square, diamond) so the status does not rely on colour alone.
 
 In list display the cards lose their box and become flat rows; target them with the parent modifier, for example `.living-handbook-entry--list .living-handbook-card`.

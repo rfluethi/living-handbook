@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.67.0
+Stable tag: 0.68.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,11 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.68.0 =
+* The overview lists the first page titles under each handbook, so you see what is in one and not only what it is called. The length is a block setting, three by default.
+* A handbook can belong to another one and is shown set in below it. Access is not inherited: every handbook still decides for itself who may read it.
+* Fixed: a handbook's page list, search and export used to include the pages of the handbooks below it. Harmless while nobody nested anything, wrong as soon as somebody does.
 
 = 0.67.0 =
 * The technical documentation ships with the plugin, in German and English, so the import screen now offers four handbooks instead of loading one for you: user handbook and technical documentation, each in both languages, each into a handbook you pick.

@@ -149,6 +149,8 @@ Jeder Handbuch-Block bietet ausserdem im Editor unter seinem Bereich **Erweitert
 
 - `.living-handbook-cards`, mit `--areas` oder `--books`: das responsive Raster.
 - `.living-handbook-card`, mit `--area` oder `--book`, dazu `.living-handbook-card__link`, `__title`, `__excerpt`, `__meta`.
+- `.living-handbook-card__preview`, `.living-handbook-card__more`, `.living-handbook-card__parent`: die Seitentitel unter einer Handbuch-Karte, der Link auf den Rest, und der Name des Handbuchs, zu dem dieses gehört. Die Vorschau steht ausserhalb des Karten-Links, denn ein Link in einem Link ist kein Markup, mit dem ein Browser etwas anfangen kann.
+- `.living-handbook-cards--children`: die Handbücher unterhalb eines anderen, per Aussenabstand eingerückt.
 - `.living-handbook-card__dot`, mit `--ok`, `--due`, `--overdue` oder `--none`: der Prüfstatus-Punkt. Seine Form variiert je Zustand (gefüllter Kreis, gerundetes Quadrat, Raute, und ein leerer Kreis für „Nicht geprüft"), damit der Status nicht allein über die Farbe erkennbar ist. Gezeichnet wird er direkt auf die Fläche des Themes, er nimmt deshalb `--lh-ok-on-surface`, `--lh-due-on-surface`, `--lh-overdue-on-surface` beziehungsweise `--lh-none-on-surface`.
 
 In der Anzeige als Liste verlieren die Karten ihren Rahmen und werden zu flachen Zeilen; sprich sie über den Modifikator des Elternelements an, zum Beispiel `.living-handbook-entry--list .living-handbook-card`.

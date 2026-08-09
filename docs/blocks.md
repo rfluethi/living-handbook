@@ -24,7 +24,11 @@ The entry page and the single page come with block templates that already place 
 
 Lists every handbook the current visitor may read: name, description and page count, each linking to that handbook's entry page. Handbooks the visitor may not read are left out entirely.
 
-**Settings:** *Display* switches between **List** (default) and **Cards**. A list reads better for the handful of handbooks most sites have; cards suit a page where the overview is the main visual element.
+Under each one it lists the first few page titles, which is what tells two handbooks apart: a name and a page count say what a handbook is called and how big it is, not what is in it. A "All pages" link appears exactly when there is more than is shown.
+
+A handbook that belongs to another one is set in below it and says which one ("in Company"). The grouping taxonomy has been hierarchical since it was registered and nothing read that, so a structure someone built was invisible until 0.68.0. Three rules go with it, and they are deliberate: **access is not inherited**, every handbook decides for itself who may read it; a child whose parent the visitor may not see moves up to the top level rather than disappearing with it, because the alternative is a readable handbook nobody can reach; and the order inside a level is the name.
+
+**Settings:** *Display* switches between **List** (default) and **Cards**. A list reads better for the handful of handbooks most sites have; cards suit a page where the overview is the main visual element. *Page titles under each handbook* is the length of the preview, 0 to 10, three by default; 0 turns it off.
 
 **Renders on:** any page or template you place it on. Unlike the other blocks it does not need a special context.
 

@@ -32,7 +32,11 @@ Der Block funktioniert überall, auch mitten im Seiteninhalt. Kommt eine Seite a
 
 ![Icon des Blocks „Handbuch-Übersicht“](../assets/bloecke-uebersicht.webp)
 
-Listet alle Handbücher, die die aktuelle Besucherin lesen darf, mit Name, Beschreibung und Seitenzahl. Die Aktivierung legt eine Seite mit diesem Block an. Du kannst ihn aber auf jede beliebige Seite setzen. Einstellung: Anzeige als **Liste** oder als **Karten**.
+Listet alle Handbücher, die die aktuelle Besucherin lesen darf, mit Name, Beschreibung und Seitenzahl. Die Aktivierung legt eine Seite mit diesem Block an. Du kannst ihn aber auf jede beliebige Seite setzen.
+
+Unter jedem Handbuch stehen die ersten Seitentitel, damit man sieht, was drinsteht und nicht nur, wie es heisst. Gibt es mehr, als gezeigt wird, erscheint ein Link „Alle Seiten". Einstellungen: Anzeige als **Liste** oder als **Karten**, und **Seitentitel pro Handbuch** von 0 bis 10; 0 schaltet die Vorschau ab.
+
+Hat ein Handbuch ein übergeordnetes, steht es eingerückt darunter und nennt es. Wichtig dabei: der Zugriff wird nicht vererbt. Jedes Handbuch entscheidet für sich, wer es lesen darf, ein untergeordnetes ist also nicht automatisch so geschützt wie das darüber. Darf jemand das übergeordnete nicht sehen, erscheint das untergeordnete trotzdem, dann einfach auf der obersten Ebene.
 
 ### Handbuch-Menü
 
