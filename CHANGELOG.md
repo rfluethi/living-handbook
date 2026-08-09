@@ -17,6 +17,22 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.74.2] - 2026-08-09
+
+### Fixed
+
+* **The export showed the site's frame and its own at the same time, and then painted over the theme it had just exported.** 0.74.0 said it takes the theme along and renders the site's template. It did neither, visibly. Rico sent two screenshots side by side, and every one of the four faults is mine.
+
+  **The theme's header and footer sailed straight in.** Core blocks are serialised without their namespace: the markup says `wp:template-part`, not `wp:core/template-part`. The list of blocks to cut used the long form for the core ones, so it matched nothing and removed nothing, which is the quietest kind of wrong. Every exported page carried the site's title, its menu and its footer, all pointing at a site the reader may not be able to open. The names are the ones in the markup now, and a test against a real theme holds them there.
+
+  **The page tree was doubled**, the export's own down the left and the template's beside it. When the render moved to the template, the frame around it should have given up its navigation; it did not. A page rendered from the template gets a frame with a title bar and a search box and nothing else.
+
+  **The theme's colours and fonts were overwritten by the very export that fetched them.** The layout set background, colour and font on `body.lh-body`, which is more specific than the theme's own rule on `body`, so the site's palette lost against a white fallback. Nothing about colour or type is set there any more; the theme's global styles decide, and the three looks that bring their own palette set it themselves. The custom properties now fall back through the theme's presets rather than straight to white.
+
+  **The content was squeezed into a strip**, because a two-column grid sat around a template that already brings its own columns. That grid is only used for the fallback page now.
+
+  Why the tests said green: they ran against the empty test theme, which has no header, no footer, no palette and no fonts, so all four faults were invisible. There is now a test that switches to Twenty Twenty-Five and checks the export against a theme that actually has a frame. Counter-checked both ways: put either the wrong block names or the second navigation back, and it fails.
+
 ## [0.74.1] - 2026-08-09
 
 ### Changed

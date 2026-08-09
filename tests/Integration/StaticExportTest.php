@@ -439,6 +439,42 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'living-handbook-feedback', $html );
 		$this->assertStringNotContainsString( 'living-handbook-page-search', $html );
 		$this->assertStringNotContainsString( 'wp-block-comments', $html );
+		$this->assertStringNotContainsString( 'wp-block-template-part', $html );
+	}
+
+	/**
+	 * The same against a theme that actually has a header and a footer.
+	 *
+	 * This test exists because the first version of the cut did nothing at all
+	 * and nobody noticed: core blocks are serialised without their namespace, so
+	 * the markup says `wp:template-part`, not `wp:core/template-part`, and a
+	 * filter that matches nothing removes nothing, silently. Against the empty
+	 * test theme the result looked identical either way. Against a real theme
+	 * the export carried the site's header, its menu and its footer, and its own
+	 * page tree beside the template's, which is what Rico saw and I did not.
+	 *
+	 * @return void
+	 */
+	public function test_a_real_theme_does_not_leak_its_frame_into_the_export(): void {
+		if ( ! wp_get_theme( 'twentytwentyfive' )->exists() ) {
+			$this->markTestSkipped( 'Twenty Twenty-Five is not installed here.' );
+		}
+		switch_theme( 'twentytwentyfive' );
+
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One', 'Text.' );
+
+		$zip   = $this->export( $term );
+		$html  = (string) $zip->getFromName( 'one.html' );
+		$style = (string) $zip->getFromName( 'assets/style.css' );
+
+		$this->assertStringNotContainsString( 'wp-block-template-part', $html, "The theme's header and footer stay behind." );
+		$this->assertStringNotContainsString( 'wp-block-site-title', $html );
+		$this->assertStringNotContainsString( 'id="lh-nav"', $html, 'And the export does not add a second page tree beside the template\'s.' );
+		$this->assertSame( 1, substr_count( $html, 'living-handbook-nav ' ), 'Exactly one navigation, the one the template places.' );
+
+		$this->assertStringContainsString( '--wp--preset--font-family--', $style, "The theme's fonts are in the stylesheet…" );
+		$this->assertSame( 1, preg_match( '#body\.lh-body \{ margin: 0; \}#', $style ), '…and the export sets nothing on body that would paint over them.' );
 	}
 
 	/**

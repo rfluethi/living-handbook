@@ -154,7 +154,7 @@ final class SiteRenderer {
 		$body = '<nav class="lh-crumbs">' . self::crumbs( (int) $post->ID, $index, $path ) . '</nav>'
 			. '<div class="wp-site-blocks">' . $rendered . '</div>';
 
-		return self::document( get_the_title( $post ), $body, self::root_prefix( $path ), $index, (int) $post->ID, $site, self::has_diagram( $rendered ) );
+		return self::document( get_the_title( $post ), $body, self::root_prefix( $path ), $index, (int) $post->ID, $site, self::has_diagram( $rendered ), false );
 	}
 
 	/**
@@ -199,9 +199,10 @@ final class SiteRenderer {
 	 * @param int                              $current_id Current page id, 0 on the start page.
 	 * @param array<string, mixed>             $site       Site-wide values.
 	 * @param bool                             $diagram    Whether this page holds a Mermaid diagram.
+	 * @param bool                             $with_nav   Whether the frame brings its own page tree.
 	 * @return string
 	 */
-	private static function document( string $title, string $body, string $prefix, array $index, int $current_id, array $site, bool $diagram ): string {
+	private static function document( string $title, string $body, string $prefix, array $index, int $current_id, array $site, bool $diagram, bool $with_nav = true ): string {
 		$self       = 0 === $current_id ? 'index.html' : self::path_for( $current_id, $index );
 		$page_title = 0 === $current_id ? $title : $title . ' – ' . (string) $site['title'];
 
@@ -226,13 +227,21 @@ final class SiteRenderer {
 		$out .= '<label class="lh-visually-hidden" for="lh-search">' . esc_html__( 'Search', 'living-handbook' ) . '</label>';
 		$out .= '<input type="search" id="lh-search" autocomplete="off" placeholder="' . esc_attr__( 'Search', 'living-handbook' ) . '">';
 		$out .= '</form>';
-		$out .= '<button type="button" class="lh-menu-toggle" aria-expanded="false" aria-controls="lh-nav">' . esc_html__( 'Pages', 'living-handbook' ) . '</button>';
+		if ( $with_nav ) {
+			$out .= '<button type="button" class="lh-menu-toggle" aria-expanded="false" aria-controls="lh-nav">' . esc_html__( 'Pages', 'living-handbook' ) . '</button>';
+		}
 		$out .= '</header>' . "\n";
 
-		$out .= '<div class="lh-layout">';
-		$out .= '<nav id="lh-nav" class="lh-nav" aria-label="' . esc_attr__( 'Handbook', 'living-handbook' ) . '">';
-		$out .= self::tree( $index, 0, $self, $current_id, 0 );
-		$out .= '</nav>';
+		// With the page rendered from the template, the page tree is already in it,
+		// where the site put it. A second one down the left would be the export
+		// showing its own furniture next to the site's, which is exactly what it
+		// looked like before this was fixed.
+		$out .= $with_nav ? '<div class="lh-layout">' : '<div class="lh-layout lh-layout--plain">';
+		if ( $with_nav ) {
+			$out .= '<nav id="lh-nav" class="lh-nav" aria-label="' . esc_attr__( 'Handbook', 'living-handbook' ) . '">';
+			$out .= self::tree( $index, 0, $self, $current_id, 0 );
+			$out .= '</nav>';
+		}
 		$out .= '<main id="lh-main" class="lh-main">';
 		$out .= '<div class="lh-results" id="lh-results" hidden></div>';
 		$out .= '<div id="lh-body">' . $body . '</div>';
@@ -624,17 +633,26 @@ final class SiteRenderer {
 	--lh-gap: 1.5rem;
 	/* The same formulas the plugin's stylesheet uses, declared here as well
 	   because it scopes them to its own components and this layout is not one of
-	   them. Everything reads --lh-user-*, which is what a chosen look sets. */
-	--lh-surface: var(--lh-user-surface, #ffffff);
-	--lh-surface-text: var(--lh-user-surface-text, #1d2327);
-	--lh-accent: var(--lh-user-accent, #2c5f8a);
+	   them. The theme's own presets sit in the middle of each chain: a chosen
+	   look overrides them through --lh-user-*, and without one the export takes
+	   the colours of the site it came from rather than a white page. Getting
+	   that order wrong is what made the first attempt ignore the theme it had
+	   just gone to the trouble of exporting. */
+	--lh-surface: var(--lh-user-surface, var(--wp--preset--color--base, #ffffff));
+	--lh-surface-text: var(--lh-user-surface-text, var(--wp--preset--color--contrast, #1d2327));
+	--lh-accent: var(--lh-user-accent, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #2c5f8a)));
 	--lh-on-accent: var(--lh-user-on-accent, #ffffff);
 	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
 	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
 	--lh-soft: color-mix(in srgb, var(--lh-surface-text) 5%, var(--lh-surface));
 }
 * { box-sizing: border-box; }
-body.lh-body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; color: var(--lh-surface-text); background: var(--lh-surface); }
+/* Nothing about type or colour here on purpose. The theme's global styles set
+   background, colour, font and line height on `body`, and any rule of ours on
+   `body.lh-body` is more specific and would quietly win: that is how the first
+   attempt managed to export a theme and then paint over it. The looks that
+   bring their own palette set these themselves. */
+body.lh-body { margin: 0; }
 .lh-skip { position: absolute; left: -9999px; }
 .lh-skip:focus { left: 0.5rem; top: 0.5rem; z-index: 10; background: var(--lh-surface); padding: 0.5rem; }
 .lh-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -644,6 +662,11 @@ body.lh-body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", san
 .lh-searchform input { padding: 0.4rem 0.6rem; border: 1px solid var(--lh-border); border-radius: 3px; min-width: 14rem; background: var(--lh-surface); color: var(--lh-surface-text); }
 .lh-menu-toggle { display: none; }
 .lh-layout { display: grid; grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr); gap: var(--lh-gap); max-width: 78rem; margin: 0 auto; padding: var(--lh-gap) 1.25rem 4rem; }
+/* A page that came out of the template brings its own columns; a grid around
+   them squeezes the content into a strip. */
+.lh-layout--plain { display: block; max-width: none; padding: 0 0 3rem; }
+.lh-layout--plain .lh-main > #lh-body > .lh-crumbs { max-width: 78rem; margin: 0 auto; padding: 1rem 1.25rem 0; }
+.lh-layout--plain .lh-results { max-width: 78rem; margin: 0 auto; padding: 0 1.25rem; }
 .lh-nav { font-size: 0.95rem; align-self: start; position: sticky; top: 4.5rem; max-height: calc(100vh - 6rem); overflow-y: auto; }
 .lh-nav ul { list-style: none; margin: 0; padding-left: 0.85rem; }
 .lh-nav > ul { padding-left: 0; }

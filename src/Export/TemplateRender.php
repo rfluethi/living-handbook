@@ -57,15 +57,17 @@ final class TemplateRender {
 	 * @var array<int, string>
 	 */
 	private const DROP = array(
-		// A site header and footer: menus, a search form and a login link, all
-		// pointing at a site the reader of this file may not have access to.
-		'core/template-part',
+		// Core blocks are serialised without their namespace: the markup says
+		// wp:template-part, not wp:core/template-part. Getting that wrong is
+		// silent, because a filter that matches nothing removes nothing, and the
+		// theme's header and footer sailed straight into the export.
+		'template-part',
 		// Everything below needs a server to answer it.
 		'living-handbook/feedback',
 		'living-handbook/search',
-		'core/comments',
-		'core/post-comments-form',
-		'core/comments-query-loop',
+		'comments',
+		'post-comments-form',
+		'comments-query-loop',
 	);
 
 	/**

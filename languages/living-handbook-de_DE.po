@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T16:56:11+00:00\n"
+"POT-Creation-Date: 2026-08-09T17:21:49+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -98,7 +98,7 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:256 src/Admin/Maintenance.php:260
-#: src/Export/SiteRenderer.php:233 src/Export/StaticSite.php:922
+#: src/Export/SiteRenderer.php:241 src/Export/StaticSite.php:922
 #: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:115
 #: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
 #: src/Setup/Onboarding.php:100
@@ -228,21 +228,21 @@ msgstr[1] "Eine Kopie von %1$d Seiten, exportiert am %2$s."
 msgid "Contents"
 msgstr "Inhalt"
 
-#: src/Export/SiteRenderer.php:222
+#: src/Export/SiteRenderer.php:223
 msgid "Skip to content"
 msgstr "Zum Inhalt springen"
 
-#: src/Export/SiteRenderer.php:226 src/Export/SiteRenderer.php:227
+#: src/Export/SiteRenderer.php:227 src/Export/SiteRenderer.php:228
 #: src/Frontend/Filters.php:392 assets/blocks.js:248
 msgid "Search"
 msgstr "Suchen"
 
-#: src/Export/SiteRenderer.php:229
+#: src/Export/SiteRenderer.php:231
 msgid "Pages"
 msgstr "Seiten"
 
 #. translators: %s: date of the export.
-#: src/Export/SiteRenderer.php:245
+#: src/Export/SiteRenderer.php:254
 #, php-format
 msgid ""
 "Exported from a Living Handbook on %s. This copy is not kept up to date."
@@ -250,48 +250,48 @@ msgstr ""
 "Exportiert aus einem Living Handbook am %s. Diese Kopie wird nicht "
 "aktualisiert."
 
-#: src/Export/SiteRenderer.php:338
+#: src/Export/SiteRenderer.php:347
 msgid "Start"
 msgstr "Start"
 
 # On this page (table of contents)
-#: src/Export/SiteRenderer.php:444
+#: src/Export/SiteRenderer.php:453
 msgid "On this page"
 msgstr "Auf dieser Seite"
 
-#: src/Export/SiteRenderer.php:469 src/Frontend/FrontendRenderer.php:109
+#: src/Export/SiteRenderer.php:478 src/Frontend/FrontendRenderer.php:109
 msgid "Enlarge"
 msgstr "Vergrößern"
 
-#: src/Export/SiteRenderer.php:470 src/Frontend/FrontendRenderer.php:108
+#: src/Export/SiteRenderer.php:479 src/Frontend/FrontendRenderer.php:108
 msgid "Close"
 msgstr "Schliessen"
 
-#: src/Export/SiteRenderer.php:471 src/Frontend/FrontendRenderer.php:110
+#: src/Export/SiteRenderer.php:480 src/Frontend/FrontendRenderer.php:110
 msgid "Enlarged diagram"
 msgstr "Vergrössertes Diagramm"
 
-#: src/Export/SiteRenderer.php:693
+#: src/Export/SiteRenderer.php:716
 msgid "Nothing found."
 msgstr "Nichts gefunden."
 
 #. translators: %d: number of results.
-#: src/Export/SiteRenderer.php:695
+#: src/Export/SiteRenderer.php:718
 #, php-format
 msgid "%d pages found"
 msgstr "%d Seiten gefunden"
 
-#: src/Export/SiteRenderer.php:696
+#: src/Export/SiteRenderer.php:719
 msgid "Clear the search"
 msgstr "Suche zurücksetzen"
 
 #. translators: %s: date of the export.
-#: src/Export/SiteRenderer.php:804
+#: src/Export/SiteRenderer.php:827
 #, php-format
 msgid "A copy of a handbook, exported on %s."
 msgstr "Eine Kopie eines Handbuchs, exportiert am %s."
 
-#: src/Export/SiteRenderer.php:808
+#: src/Export/SiteRenderer.php:831
 msgid ""
 "Open index.html in a browser. No server, no installation and no internet "
 "connection are needed."
@@ -299,7 +299,7 @@ msgstr ""
 "Öffne index.html in einem Browser. Es braucht keinen Server, keine "
 "Installation und keine Internetverbindung."
 
-#: src/Export/SiteRenderer.php:810
+#: src/Export/SiteRenderer.php:833
 msgid ""
 "This copy is not kept up to date, and it carries no access rules: whoever "
 "holds this folder can read every page in it. Pass it on accordingly."
@@ -308,7 +308,7 @@ msgstr ""
 "diesen Ordner hat, liest jede Seite darin. Gib sie entsprechend weiter."
 
 #. translators: %s: source site URL.
-#: src/Export/SiteRenderer.php:814
+#: src/Export/SiteRenderer.php:837
 #, php-format
 msgid "Source: %s"
 msgstr "Quelle: %s"

@@ -158,6 +158,8 @@ final class SiteThemes {
 	--lh-user-badge-audience-bg: #e7eef4;
 	--lh-user-badge-audience-text: #24343f;
 }
+body.lh-body { background: var(--lh-surface); color: var(--lh-surface-text); line-height: 1.6; }
+body.lh-body, body.lh-body .wp-site-blocks { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 CSS;
 	}
 
@@ -187,6 +189,8 @@ CSS;
 	--lh-user-none: #9aa4ae;
 	color-scheme: dark;
 }
+body.lh-body { background: var(--lh-surface); color: var(--lh-surface-text); line-height: 1.6; }
+body.lh-body, body.lh-body .wp-site-blocks { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 CSS;
 	}
 
@@ -208,7 +212,8 @@ CSS;
 	--lh-user-badge-audience-bg: #edeeef;
 	--lh-user-badge-audience-text: #2a2a28;
 }
-body.lh-body { font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; }
+body.lh-body { background: var(--lh-surface); color: var(--lh-surface-text); line-height: 1.6; }
+body.lh-body, body.lh-body .wp-site-blocks { font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; }
 .lh-page { max-width: 38rem; }
 .lh-head { border-bottom-width: 2px; }
 .lh-nav { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }

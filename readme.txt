@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.74.1
+Stable tag: 0.74.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.74.2 =
+* Fixed: the website export showed your site's header, footer and menu, a second page tree beside the one from the template, and a white page in the plugin's own font instead of your theme's colours and type. 0.74.0 promised the theme and painted over it.
 
 = 0.74.1 =
 * The export screen goes back to how it started once the file has been downloaded, instead of leaving a button that can only answer with an error.
