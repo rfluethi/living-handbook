@@ -130,7 +130,7 @@ final class SiteRenderer {
 		$body .= PageMeta::render_meta( (int) $post->ID, false );
 		$body .= '</article>';
 
-		return self::document( get_the_title( $post ), $body, $prefix, $index, (int) $post->ID, $site );
+		return self::document( get_the_title( $post ), $body, $prefix, $index, (int) $post->ID, $site, self::has_diagram( $content ) );
 	}
 
 	/**
@@ -162,7 +162,7 @@ final class SiteRenderer {
 		$body .= self::tree( $index, 0, 'index.html', 0, 0 );
 		$body .= '</article>';
 
-		return self::document( (string) $site['title'], $body, '', $index, 0, $site );
+		return self::document( (string) $site['title'], $body, '', $index, 0, $site, false );
 	}
 
 	/**
@@ -174,9 +174,10 @@ final class SiteRenderer {
 	 * @param array<int, array<string, mixed>> $index      The export index.
 	 * @param int                              $current_id Current page id, 0 on the start page.
 	 * @param array<string, mixed>             $site       Site-wide values.
+	 * @param bool                             $diagram    Whether this page holds a Mermaid diagram.
 	 * @return string
 	 */
-	private static function document( string $title, string $body, string $prefix, array $index, int $current_id, array $site ): string {
+	private static function document( string $title, string $body, string $prefix, array $index, int $current_id, array $site, bool $diagram ): string {
 		$self       = 0 === $current_id ? 'index.html' : self::path_for( $current_id, $index );
 		$page_title = 0 === $current_id ? $title : $title . ' – ' . (string) $site['title'];
 
@@ -189,7 +190,10 @@ final class SiteRenderer {
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- written into an exported file, where there is no WordPress to enqueue with.
 		$out .= '<link rel="stylesheet" href="' . esc_attr( $prefix ) . 'assets/style.css">' . "\n";
 		$out .= '</head>' . "\n";
-		$out .= '<body class="lh-body">' . "\n";
+		// living-handbook-page is what the plugin's own frontend script looks for
+		// before it makes content images and diagrams clickable. The export reuses
+		// that script rather than carrying a second copy of the same behaviour.
+		$out .= '<body class="lh-body living-handbook-page">' . "\n";
 
 		$out .= '<a class="lh-skip" href="#lh-main">' . esc_html__( 'Skip to content', 'living-handbook' ) . '</a>';
 		$out .= '<header class="lh-head">';
@@ -219,6 +223,19 @@ final class SiteRenderer {
 			)
 		) . '</p></footer>' . "\n";
 
+		// The labels the plugin's frontend script reads for the enlarged-image
+		// overlay. Only these three: without a REST configuration the script's
+		// search, filter and feedback parts find nothing to bind to and stay out
+		// of the way, which is exactly what an export needs from them.
+		$out .= '<script>window.livingHandbook = ' . self::labels() . ';</script>' . "\n";
+		if ( $diagram ) {
+			// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
+			$out .= '<script src="' . esc_attr( $prefix ) . 'assets/mermaid.js"></script>' . "\n";
+			// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
+			$out .= '<script src="' . esc_attr( $prefix ) . 'assets/mermaid-view.js"></script>' . "\n";
+		}
+		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
+		$out .= '<script src="' . esc_attr( $prefix ) . 'assets/frontend.js"></script>' . "\n";
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
 		$out .= '<script src="' . esc_attr( $prefix ) . 'assets/search-index.js"></script>' . "\n";
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
@@ -335,6 +352,38 @@ final class SiteRenderer {
 	}
 
 	/**
+	 * Whether a page holds a Mermaid diagram.
+	 *
+	 * The block renders its source into `<pre class="mermaid">`, which is already
+	 * in the exported file; all that is missing is the library that draws it. It
+	 * is 3.5 MB, so it travels only with an export that has something to draw.
+	 *
+	 * @param string $content Rendered content.
+	 * @return bool
+	 */
+	public static function has_diagram( string $content ): bool {
+		return str_contains( $content, 'class="mermaid"' );
+	}
+
+	/**
+	 * The handful of labels the plugin's frontend script reads, as JSON.
+	 *
+	 * @return string
+	 */
+	private static function labels(): string {
+		$labels = wp_json_encode(
+			array(
+				'lightboxOpen'    => __( 'Enlarge', 'living-handbook' ),
+				'lightboxClose'   => __( 'Close', 'living-handbook' ),
+				'lightboxDiagram' => __( 'Enlarged diagram', 'living-handbook' ),
+			),
+			JSON_UNESCAPED_UNICODE | JSON_HEX_TAG
+		);
+
+		return is_string( $labels ) ? $labels : '{}';
+	}
+
+	/**
 	 * One entry of the search index.
 	 *
 	 * @param string $title   Page title.
@@ -379,19 +428,27 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The stylesheet: the plugin's own frontend CSS, the colours this site has
-	 * chosen, and a small layout that stands in for the theme.
+	 * The stylesheet: the plugin's own frontend CSS, a small layout that stands
+	 * in for the theme, and the colours of the chosen look.
 	 *
+	 * @param string $theme The look the export was given.
 	 * @return string
 	 */
-	public static function stylesheet(): string {
+	public static function stylesheet( string $theme = SiteThemes::DEFAULT_THEME ): string {
 		$frontend = '';
 		$path     = LIVING_HANDBOOK_DIR . 'assets/frontend.css';
 		if ( is_readable( $path ) ) {
 			$frontend = (string) file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a file shipped with this plugin, not a request.
 		}
 
-		return self::layout_css() . "\n" . Appearance::css() . "\n" . $frontend;
+		// Order matters and is the whole trick: the plugin's stylesheet declares
+		// every colour as var(--lh-user-*, fallback), so whatever sets those
+		// properties last wins. The site's own settings for the default look, a
+		// theme's block for the others, and neither for both, because a dark page
+		// carrying half of a light palette is worse than either on its own.
+		$colours = SiteThemes::uses_site_colours( $theme ) ? Appearance::css() : SiteThemes::css( $theme );
+
+		return $frontend . "\n" . self::layout_css() . "\n" . $colours . "\n" . SiteThemes::print_css();
 	}
 
 	/**
@@ -407,45 +464,59 @@ final class SiteRenderer {
 	 */
 	private static function layout_css(): string {
 		return <<<'CSS'
-:root { --lh-gap: 1.5rem; }
+:root {
+	--lh-gap: 1.5rem;
+	/* The same formulas the plugin's stylesheet uses, declared here as well
+	   because it scopes them to its own components and this layout is not one of
+	   them. Everything reads --lh-user-*, which is what a chosen look sets. */
+	--lh-surface: var(--lh-user-surface, #ffffff);
+	--lh-surface-text: var(--lh-user-surface-text, #1d2327);
+	--lh-accent: var(--lh-user-accent, #2c5f8a);
+	--lh-on-accent: var(--lh-user-on-accent, #ffffff);
+	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
+	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
+	--lh-soft: color-mix(in srgb, var(--lh-surface-text) 5%, var(--lh-surface));
+}
 * { box-sizing: border-box; }
-body.lh-body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; color: #1d2327; background: #fff; }
+body.lh-body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.6; color: var(--lh-surface-text); background: var(--lh-surface); }
 .lh-skip { position: absolute; left: -9999px; }
-.lh-skip:focus { left: 0.5rem; top: 0.5rem; z-index: 10; background: #fff; padding: 0.5rem; }
+.lh-skip:focus { left: 0.5rem; top: 0.5rem; z-index: 10; background: var(--lh-surface); padding: 0.5rem; }
 .lh-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.lh-head { display: flex; align-items: center; gap: var(--lh-gap); flex-wrap: wrap; padding: 0.75rem 1.25rem; border-bottom: 1px solid #dcdcde; position: sticky; top: 0; background: #fff; z-index: 5; }
+.lh-head { display: flex; align-items: center; gap: var(--lh-gap); flex-wrap: wrap; padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--lh-border); position: sticky; top: 0; background: var(--lh-surface); z-index: 5; }
 .lh-home { font-weight: 700; text-decoration: none; color: inherit; }
 .lh-searchform { margin-left: auto; }
-.lh-searchform input { padding: 0.4rem 0.6rem; border: 1px solid #8c8f94; border-radius: 3px; min-width: 14rem; }
+.lh-searchform input { padding: 0.4rem 0.6rem; border: 1px solid var(--lh-border); border-radius: 3px; min-width: 14rem; background: var(--lh-surface); color: var(--lh-surface-text); }
 .lh-menu-toggle { display: none; }
 .lh-layout { display: grid; grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr); gap: var(--lh-gap); max-width: 78rem; margin: 0 auto; padding: var(--lh-gap) 1.25rem 4rem; }
 .lh-nav { font-size: 0.95rem; align-self: start; position: sticky; top: 4.5rem; max-height: calc(100vh - 6rem); overflow-y: auto; }
 .lh-nav ul { list-style: none; margin: 0; padding-left: 0.85rem; }
 .lh-nav > ul { padding-left: 0; }
 .lh-nav li { margin: 0.25rem 0; }
-.lh-nav a { text-decoration: none; color: #2c3338; }
+.lh-nav a { text-decoration: none; color: var(--lh-surface-text); }
 .lh-nav a:hover, .lh-nav a:focus { text-decoration: underline; }
 .lh-nav a[aria-current="page"] { font-weight: 700; }
 .lh-main { min-width: 0; }
 .lh-page { max-width: 46rem; }
 .lh-title { margin-top: 0; }
 .lh-crumbs { font-size: 0.85rem; margin-bottom: 0.5rem; }
-.lh-crumbs a { color: #50575e; }
+.lh-crumbs a { color: var(--lh-muted); }
 .lh-lede { font-size: 1.1rem; }
-.lh-note { color: #50575e; }
-.lh-toc { margin: 1.5rem 0; padding: 0.75rem 1rem; background: #f6f7f7; border-radius: 4px; }
+.lh-note { color: var(--lh-muted); }
+.lh-toc { margin: 1.5rem 0; padding: 0.75rem 1rem; background: var(--lh-soft); border-radius: 4px; }
 .lh-toc ul { list-style: none; margin: 0.5rem 0 0; padding: 0; }
 .lh-toc li { margin: 0.2rem 0; }
 .lh-toc .lh-toc__sub { padding-left: 1rem; }
 .lh-content img { max-width: 100%; height: auto; }
-.lh-content pre { overflow-x: auto; padding: 0.75rem; background: #f6f7f7; }
+.lh-content pre { overflow-x: auto; padding: 0.75rem; background: var(--lh-soft); }
 .lh-content table { border-collapse: collapse; }
-.lh-content th, .lh-content td { border: 1px solid #dcdcde; padding: 0.4rem 0.6rem; }
+.lh-content th, .lh-content td { border: 1px solid var(--lh-border); padding: 0.4rem 0.6rem; }
+.lh-content a { color: var(--lh-accent); }
+.lh-content .mermaid { background: var(--lh-surface); }
 .lh-results { margin-bottom: 2rem; }
 .lh-results ol { list-style: none; padding: 0; }
 .lh-results li { margin: 0 0 1rem; }
-.lh-results mark { background: #f0e68c; }
-.lh-foot { border-top: 1px solid #dcdcde; padding: 1rem 1.25rem; color: #50575e; font-size: 0.9rem; }
+.lh-results mark { background: color-mix(in srgb, var(--lh-accent) 25%, var(--lh-surface)); color: inherit; }
+.lh-foot { border-top: 1px solid var(--lh-border); padding: 1rem 1.25rem; color: var(--lh-muted); font-size: 0.9rem; }
 @media (max-width: 48rem) {
 	.lh-layout { grid-template-columns: minmax(0, 1fr); }
 	.lh-menu-toggle { display: inline-block; }

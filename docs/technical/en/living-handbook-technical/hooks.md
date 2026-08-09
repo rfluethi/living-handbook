@@ -298,6 +298,20 @@ Parameters:
 
 Return a string.
 
+### `living_handbook_static_export_themes`
+
+Filters the looks offered on the export screen for a static website. Each entry is keyed by a slug and carries a `label` and a block of `css` that is appended after the export's own stylesheet, so a site can add its own look, rename the built-in ones, or drop the ones it does not want.
+
+Setting the `--lh-user-*` custom properties is enough to recolour everything the plugin renders: the badges, the cards, the freshness colours and the metadata footer all read them through a fallback chain. A theme that restyles individual components instead will need revisiting whenever those components change.
+
+The `site` entry cannot be removed. It is what an unknown or missing choice falls back to, and a screen with no valid option would be worse than an unwanted one.
+
+Parameters:
+
+- `array<string, array{label: string, css: string}> $themes` The available looks.
+
+Return an array of the same shape; an entry without a label is dropped.
+
 ## Actions
 
 _None. The three that were listed here as planned, after an import, on the metadata and on the freshness evaluation, were removed in 0.60.0 rather than left standing as a promise: a hook is a commitment whose signature cannot be changed later without breaking whoever uses it, and these three came from a list rather than from a use. They are kept as a note in the project's own workspace, with signature and purpose, and will be built when something actually needs them._

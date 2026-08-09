@@ -15,10 +15,11 @@
 	wp.domReady( function () {
 		var handbook = document.getElementById( 'lh-site-handbook' );
 		var area = document.getElementById( 'lh-site-area' );
+		var theme = document.getElementById( 'lh-site-theme' );
 		var button = document.getElementById( 'lh-site-start' );
 		var status = document.getElementById( 'lh-site-status' );
 
-		if ( ! handbook || ! area || ! button || ! status ) {
+		if ( ! handbook || ! area || ! theme || ! button || ! status ) {
 			return;
 		}
 
@@ -92,7 +93,7 @@
 			}
 			button.disabled = true;
 			status.textContent = __( 'Starting …', 'living-handbook' );
-			pass( { handbook: handbook.value, area: area.value } );
+			pass( { handbook: handbook.value, area: area.value, theme: theme.value } );
 		} );
 	} );
 }( window.wp ) );

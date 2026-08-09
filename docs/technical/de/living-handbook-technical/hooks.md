@@ -268,6 +268,20 @@ Parameter:
 
 Gibt einen String zurück.
 
+### `living_handbook_static_export_themes`
+
+Filtert die Gestaltungen, die der Export-Bildschirm für eine statische Website anbietet. Jeder Eintrag hat einen Schlüssel, ein `label` und einen `css`-Block, der hinter das eigene Stylesheet des Exports gehängt wird. So ergänzt eine Website eine eigene Gestaltung, benennt die mitgelieferten um oder wirft weg, was sie nicht braucht.
+
+Es genügt, die `--lh-user-*`-Eigenschaften zu setzen, um alles umzufärben, was das Plugin zeichnet: Abzeichen, Karten, Prüfstatus-Farben und Metadaten-Fusszeile lesen sie über eine Fallback-Kette. Eine Gestaltung, die stattdessen einzelne Bausteine umstylt, muss bei jeder Änderung an diesen Bausteinen nachgezogen werden.
+
+Der Eintrag `site` lässt sich nicht entfernen. Auf ihn fällt eine unbekannte oder fehlende Wahl zurück, und ein Bildschirm ohne gültige Auswahl wäre schlimmer als eine ungewollte.
+
+Parameter:
+
+- `array<string, array{label: string, css: string}> $themes` Die verfügbaren Gestaltungen.
+
+Gibt ein Array derselben Form zurück; ein Eintrag ohne Label fällt weg.
+
 ## Actions
 
 _Bisher keine._

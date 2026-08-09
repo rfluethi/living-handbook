@@ -135,15 +135,17 @@ final class StaticExportTest extends WP_UnitTestCase {
 	/**
 	 * Run an export to the end and return the archive.
 	 *
-	 * @param int $term_id Handbook.
-	 * @param int $area    Area page id, 0 for the whole handbook.
+	 * @param int    $term_id Handbook.
+	 * @param int    $area    Area page id, 0 for the whole handbook.
+	 * @param string $theme   The look, empty for the default.
 	 * @return ZipArchive
 	 */
-	private function export( int $term_id, int $area = 0 ): ZipArchive {
+	private function export( int $term_id, int $area = 0, string $theme = '' ): ZipArchive {
 		$data  = $this->pass(
 			array(
 				'handbook' => $term_id,
 				'area'     => $area,
+				'theme'    => $theme,
 			)
 		);
 		$guard = 50;
@@ -262,6 +264,109 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$this->assertNotFalse( $zip->locateName( 'assets/media/' . $relative ), 'The file itself is in the archive.' );
 		$this->assertStringContainsString( 'src="assets/media/' . $relative . '"', $html );
 		$this->assertStringNotContainsString( $uploads['baseurl'], $html, 'Nothing still points at the site the export came from.' );
+	}
+
+	/**
+	 * A diagram is drawn in the export, which means the library that draws it
+	 * travels along. It is 3.5 MB, so it travels only when there is something to
+	 * draw, and the pages that carry no diagram do not load it either.
+	 *
+	 * @return void
+	 */
+	public function test_a_diagram_brings_the_library_with_it(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'Plain page', 'Nothing to draw here.' );
+		$this->page(
+			$term,
+			'With a diagram',
+			'<!-- wp:living-handbook/mermaid {"code":"graph TD; A--\u003eB;"} /-->'
+		);
+
+		$zip = $this->export( $term );
+
+		$this->assertNotFalse( $zip->locateName( 'assets/mermaid.js' ) );
+		$this->assertNotFalse( $zip->locateName( 'assets/mermaid-view.js' ) );
+
+		$with = (string) $zip->getFromName( 'with-a-diagram.html' );
+		$this->assertStringContainsString( 'class="mermaid"', $with, 'The diagram source is in the file, ready to be drawn.' );
+		$this->assertStringContainsString( 'assets/mermaid.js', $with );
+
+		$plain = (string) $zip->getFromName( 'plain-page.html' );
+		$this->assertStringNotContainsString( 'assets/mermaid.js', $plain, 'A page without a diagram does not load 3.5 MB to draw nothing.' );
+	}
+
+	/**
+	 * An export with no diagram in it does not carry the library at all.
+	 *
+	 * @return void
+	 */
+	public function test_an_export_without_diagrams_stays_small(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'Plain page', 'Nothing to draw here.' );
+
+		$zip = $this->export( $term );
+
+		$this->assertFalse( $zip->locateName( 'assets/mermaid.js' ) );
+	}
+
+	/**
+	 * The images and diagrams enlarge on a click, which the plugin's own frontend
+	 * script does. The export ships it and gives the page the class and the
+	 * labels that script looks for, rather than carrying a second copy of the
+	 * same behaviour that would drift from the first.
+	 *
+	 * @return void
+	 */
+	public function test_the_export_ships_the_script_that_enlarges_images(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$zip  = $this->export( $term );
+		$html = (string) $zip->getFromName( 'one.html' );
+
+		$this->assertNotFalse( $zip->locateName( 'assets/frontend.js' ) );
+		$this->assertStringContainsString( 'assets/frontend.js', $html );
+		$this->assertStringContainsString( 'living-handbook-page', $html, 'The class the script scopes itself to.' );
+		$this->assertStringContainsString( 'lightboxClose', $html, 'And the labels it reads for the overlay.' );
+		$this->assertStringNotContainsString( '"rest"', $html, 'But no REST configuration: there is no server to ask.' );
+	}
+
+	/**
+	 * The look is chosen at export time, and it reaches the stylesheet.
+	 *
+	 * @return void
+	 */
+	public function test_the_chosen_look_is_in_the_stylesheet(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$zip   = $this->export( $term, 0, 'dark' );
+		$style = (string) $zip->getFromName( 'assets/style.css' );
+
+		$this->assertStringContainsString( '--lh-user-surface: #16191d', $style );
+		$this->assertStringContainsString( 'color-scheme: dark', $style );
+		$this->assertStringContainsString( '@media print', $style, 'Every look gets the print rules.' );
+	}
+
+	/**
+	 * A look nobody has falls back to the default rather than to no styling at
+	 * all, and the default is the one that follows the site's own settings.
+	 *
+	 * @return void
+	 */
+	public function test_an_unknown_look_falls_back_to_the_site(): void {
+		update_option( 'living_handbook_colors', array( 'surface' => '#fafafa' ) );
+
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$zip   = $this->export( $term, 0, 'no-such-look' );
+		$style = (string) $zip->getFromName( 'assets/style.css' );
+
+		$this->assertStringContainsString( '--lh-user-surface:#fafafa', $style, 'The site colours, which is what "like this site" means.' );
+		$this->assertStringNotContainsString( '#16191d', $style );
+
+		delete_option( 'living_handbook_colors' );
 	}
 
 	/**

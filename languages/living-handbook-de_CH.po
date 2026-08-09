@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-09T14:20:25+00:00\n"
+"POT-Creation-Date: 2026-08-09T15:35:04+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -98,7 +98,7 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:256 src/Admin/Maintenance.php:260
-#: src/Export/SiteRenderer.php:205 src/Export/StaticSite.php:760
+#: src/Export/SiteRenderer.php:209 src/Export/StaticSite.php:797
 #: src/Handbook/Handbooks.php:279 src/Import/HandbookExport.php:115
 #: src/PostType/Handbook.php:95 src/PostType/Handbook.php:97
 #: src/Setup/Onboarding.php:100
@@ -228,21 +228,21 @@ msgstr[1] "Eine Kopie von %1$d Seiten, exportiert am %2$s."
 msgid "Contents"
 msgstr "Inhalt"
 
-#: src/Export/SiteRenderer.php:194
+#: src/Export/SiteRenderer.php:198
 msgid "Skip to content"
 msgstr "Zum Inhalt springen"
 
-#: src/Export/SiteRenderer.php:198 src/Export/SiteRenderer.php:199
+#: src/Export/SiteRenderer.php:202 src/Export/SiteRenderer.php:203
 #: src/Frontend/Filters.php:392 assets/blocks.js:248
 msgid "Search"
 msgstr "Suchen"
 
-#: src/Export/SiteRenderer.php:201
+#: src/Export/SiteRenderer.php:205
 msgid "Pages"
 msgstr "Seiten"
 
 #. translators: %s: date of the export.
-#: src/Export/SiteRenderer.php:217
+#: src/Export/SiteRenderer.php:221
 #, php-format
 msgid ""
 "Exported from a Living Handbook on %s. This copy is not kept up to date."
@@ -250,36 +250,48 @@ msgstr ""
 "Exportiert aus einem Living Handbook am %s. Diese Kopie wird nicht "
 "aktualisiert."
 
-#: src/Export/SiteRenderer.php:297
+#: src/Export/SiteRenderer.php:314
 msgid "Start"
 msgstr "Start"
 
 # On this page (table of contents)
-#: src/Export/SiteRenderer.php:334
+#: src/Export/SiteRenderer.php:351
 msgid "On this page"
 msgstr "Auf dieser Seite"
 
-#: src/Export/SiteRenderer.php:466
+#: src/Export/SiteRenderer.php:376 src/Frontend/FrontendRenderer.php:109
+msgid "Enlarge"
+msgstr "Vergrössern"
+
+#: src/Export/SiteRenderer.php:377 src/Frontend/FrontendRenderer.php:108
+msgid "Close"
+msgstr "Schliessen"
+
+#: src/Export/SiteRenderer.php:378 src/Frontend/FrontendRenderer.php:110
+msgid "Enlarged diagram"
+msgstr "Vergrössertes Diagramm"
+
+#: src/Export/SiteRenderer.php:537
 msgid "Nothing found."
 msgstr "Nichts gefunden."
 
 #. translators: %d: number of results.
-#: src/Export/SiteRenderer.php:468
+#: src/Export/SiteRenderer.php:539
 #, php-format
 msgid "%d pages found"
 msgstr "%d Seiten gefunden"
 
-#: src/Export/SiteRenderer.php:469
+#: src/Export/SiteRenderer.php:540
 msgid "Clear the search"
 msgstr "Suche zurücksetzen"
 
 #. translators: %s: date of the export.
-#: src/Export/SiteRenderer.php:577
+#: src/Export/SiteRenderer.php:648
 #, php-format
 msgid "A copy of a handbook, exported on %s."
 msgstr "Eine Kopie eines Handbuchs, exportiert am %s."
 
-#: src/Export/SiteRenderer.php:581
+#: src/Export/SiteRenderer.php:652
 msgid ""
 "Open index.html in a browser. No server, no installation and no internet "
 "connection are needed."
@@ -287,7 +299,7 @@ msgstr ""
 "Öffne index.html in einem Browser. Es braucht keinen Server, keine "
 "Installation und keine Internetverbindung."
 
-#: src/Export/SiteRenderer.php:583
+#: src/Export/SiteRenderer.php:654
 msgid ""
 "This copy is not kept up to date, and it carries no access rules: whoever "
 "holds this folder can read every page in it. Pass it on accordingly."
@@ -296,10 +308,26 @@ msgstr ""
 "diesen Ordner hat, liest jede Seite darin. Gib sie entsprechend weiter."
 
 #. translators: %s: source site URL.
-#: src/Export/SiteRenderer.php:587
+#: src/Export/SiteRenderer.php:658
 #, php-format
 msgid "Source: %s"
 msgstr "Quelle: %s"
+
+#: src/Export/SiteThemes.php:46
+msgid "Like this site"
+msgstr "Wie diese Website"
+
+#: src/Export/SiteThemes.php:50
+msgid "Plain, neutral"
+msgstr "Schlicht, neutral"
+
+#: src/Export/SiteThemes.php:54
+msgid "Dark"
+msgstr "Dunkel"
+
+#: src/Export/SiteThemes.php:58
+msgid "Paper, for printing"
+msgstr "Papier, zum Drucken"
 
 #: src/Export/StaticSite.php:149
 msgid ""
@@ -314,7 +342,7 @@ msgid "This export has expired or belongs to somebody else. Start it again."
 msgstr ""
 "Dieser Export ist abgelaufen oder gehört jemand anderem. Starte ihn neu."
 
-#: src/Export/StaticSite.php:172 assets/js/static-export.js:90
+#: src/Export/StaticSite.php:172 assets/js/static-export.js:91
 msgid "Choose a handbook to export."
 msgstr "Wähle ein Handbuch zum Exportieren."
 
@@ -329,23 +357,23 @@ msgstr ""
 "Es gibt nichts zu exportieren: Dieses Handbuch hat keine Seiten, die du "
 "lesen darfst."
 
-#: src/Export/StaticSite.php:335
+#: src/Export/StaticSite.php:338
 msgid "The export file could not be written on this server."
 msgstr "Die Export-Datei konnte auf diesem Server nicht geschrieben werden."
 
-#: src/Export/StaticSite.php:654 src/Import/HandbookExport.php:263
+#: src/Export/StaticSite.php:691 src/Import/HandbookExport.php:263
 msgid "You are not allowed to export handbooks."
 msgstr "Du darfst keine Handbücher exportieren."
 
-#: src/Export/StaticSite.php:662
+#: src/Export/StaticSite.php:699
 msgid "This export is no longer available. Start it again."
 msgstr "Dieser Export ist nicht mehr verfügbar. Starte ihn neu."
 
-#: src/Export/StaticSite.php:752
+#: src/Export/StaticSite.php:789
 msgid "Export as a website"
 msgstr "Als Website exportieren"
 
-#: src/Export/StaticSite.php:753
+#: src/Export/StaticSite.php:790
 msgid ""
 "A ZIP of plain HTML files: the pages, their images, a page list and a "
 "search. It opens by double-clicking index.html, with no server and no "
@@ -356,7 +384,7 @@ msgstr ""
 "und ohne Internetverbindung. Für Leserinnen und Leser, die gar keinen Zugang "
 "zu dieser Website haben."
 
-#: src/Export/StaticSite.php:755
+#: src/Export/StaticSite.php:792
 msgid ""
 "A static copy has no access rules. It contains every page you can read in "
 "the handbook you choose, and whoever holds the file can read all of it. It "
@@ -366,21 +394,37 @@ msgstr ""
 "du im gewählten Handbuch lesen darfst, und wer die Datei hat, liest alles "
 "davon. Ausserdem veraltet sie ab dem Moment, in dem sie entsteht."
 
-#: src/Export/StaticSite.php:763 src/Import/HandbookExport.php:118
+#: src/Export/StaticSite.php:800 src/Import/HandbookExport.php:118
 #: src/Import/MarkdownImportPage.php:914
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
-#: src/Export/StaticSite.php:773 src/Import/HandbookExport.php:128
+#: src/Export/StaticSite.php:810 src/Import/HandbookExport.php:128
 msgid "What to export"
 msgstr "Was exportieren"
 
-#: src/Export/StaticSite.php:775 src/Export/StaticSite.php:776
+#: src/Export/StaticSite.php:812 src/Export/StaticSite.php:813
 #: src/Import/HandbookExport.php:130 src/Import/HandbookExport.php:131
 msgid "— the whole handbook —"
 msgstr "— das ganze Handbuch —"
 
-#: src/Export/StaticSite.php:782
+#: src/Export/StaticSite.php:818
+msgid "Look"
+msgstr "Gestaltung"
+
+#: src/Export/StaticSite.php:825
+msgid ""
+"The export brings its own styling, because there is no theme in a ZIP. "
+"\"Like this site\" uses the colours and text size set under Appearance; the "
+"others leave them behind, which is usually the better choice for a copy that "
+"goes outside the team."
+msgstr ""
+"Der Export bringt seine eigene Gestaltung mit, denn in einem ZIP gibt es "
+"kein Theme. „Wie diese Website“ nimmt die Farben und die Schriftgrösse aus "
+"dem Reiter Darstellung; die anderen lassen sie hinter sich, was für eine "
+"Kopie, die das Team verlässt, meist die bessere Wahl ist."
+
+#: src/Export/StaticSite.php:830
 msgid "Build the website"
 msgstr "Website erzeugen"
 
@@ -627,18 +671,6 @@ msgstr "Die Liste konnte nicht aktualisiert werden. Bitte lade die Seite neu."
 #: src/Frontend/FrontendRenderer.php:107
 msgid "No matches."
 msgstr "Keine Treffer."
-
-#: src/Frontend/FrontendRenderer.php:108
-msgid "Close"
-msgstr "Schliessen"
-
-#: src/Frontend/FrontendRenderer.php:109
-msgid "Enlarge"
-msgstr "Vergrössern"
-
-#: src/Frontend/FrontendRenderer.php:110
-msgid "Enlarged diagram"
-msgstr "Vergrössertes Diagramm"
 
 #. translators: %d: number of matching pages in the page search.
 #: src/Frontend/FrontendRenderer.php:112
@@ -2462,20 +2494,20 @@ msgid "Diagram description (for screen readers)"
 msgstr "Diagramm-Beschreibung (für Screenreader)"
 
 #. translators: 1: pages already rendered, 2: pages in total.
-#: assets/js/static-export.js:64
+#: assets/js/static-export.js:65
 msgid "Rendering page %1$d of %2$d …"
 msgstr "Seite %1$d von %2$d wird erzeugt …"
 
 #. translators: %s: file size, for example "4 MB".
-#: assets/js/static-export.js:78
+#: assets/js/static-export.js:79
 msgid "Download the website (%s)"
 msgstr "Website herunterladen (%s)"
 
-#: assets/js/static-export.js:84
+#: assets/js/static-export.js:85
 msgid "The export failed."
 msgstr "Der Export ist fehlgeschlagen."
 
-#: assets/js/static-export.js:94
+#: assets/js/static-export.js:95
 msgid "Starting …"
 msgstr "Wird gestartet …"
 

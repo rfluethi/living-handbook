@@ -17,6 +17,24 @@ that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
 carry no date, because the repository's history does not record one and a
 plausible date is worse than none.
 
+## [0.73.0] - 2026-08-09
+
+### Added
+
+* **The website export gets a look, chosen when exporting.** There is no theme in a ZIP, so 0.72.0 shipped one small layout and the site's own colours, and that was the only answer it had. Four now: *like this site* (the colours and text size set under Appearance), *plain, neutral* (no house colours, usually the right choice for a copy that leaves the team), *dark*, and *paper, for printing* (serif, a narrower measure, high contrast).
+
+  Each look is a handful of `--lh-user-*` custom properties and nothing else, which is the whole reason this is cheap: the plugin's stylesheet reads every colour through that chain, so setting four properties recolours the badges, the cards, the freshness states and the metadata footer at once. No look restyles a component, which is what keeps them from breaking when a component changes. The export's own layout now declares the same properties, because the plugin scopes them to its own classes and the layout is not one of them.
+
+  Two decisions inside that. A look either takes the site's colours or its own, never both: a dark page carrying half a light palette is worse than either. And `site` cannot be removed by the filter, because it is what an unknown choice falls back to. `living_handbook_static_export_themes` adds a look of your own.
+
+  Every look also carries a print stylesheet, which the export was missing entirely: on paper the page tree, the search box and the footer are gone, links to the outside world print with their address, and a heading stays with the text under it. A static export is the copy people print.
+
+* **Mermaid diagrams are drawn in the export.** They were already in the exported files, as `<pre class="mermaid">` with the diagram source in it, waiting for a library that was not there. The library ships with the plugin, so the export now carries it and its view script. It is 3.5 MB, so it travels only with an export that holds a diagram at all, once however many follow, and it loads only on the pages that have one. The view script picks its light or dark palette from the page background, so a diagram in the dark look comes out dark without being told.
+
+* **Images and diagrams enlarge on a click**, as they do on the site, including the focus handling and Escape. This is `assets/frontend.js`, shipped as it is: the export gives the page the `living-handbook-page` class the script scopes itself to and the three overlay labels it reads, and nothing else. Its search, filter and feedback parts look for elements an export does not have and quietly do nothing, which is why there is no REST configuration in the file either.
+
+  Writing a second, smaller lightbox for the export would have been the safer patch and the worse decision: two implementations of the same visible behaviour drift, and the one nobody looks at is the one that rots.
+
 ## [0.72.1] - 2026-08-09
 
 ### Fixed

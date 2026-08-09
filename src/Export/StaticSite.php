@@ -181,7 +181,7 @@ final class StaticSite {
 				);
 			}
 
-			$state = self::plan( $term, $root_id );
+			$state = self::plan( $term, $root_id, (string) $request->get_param( 'theme' ) );
 			if ( array() === $state['queue'] ) {
 				return new WP_Error(
 					'living_handbook_export_empty',
@@ -199,9 +199,10 @@ final class StaticSite {
 	 *
 	 * @param WP_Term $term    The handbook.
 	 * @param int     $root_id Top-level page to export on its own, 0 for all.
+	 * @param string  $theme   The look the export gets.
 	 * @return array<string, mixed>
 	 */
-	private static function plan( WP_Term $term, int $root_id ): array {
+	private static function plan( WP_Term $term, int $root_id, string $theme ): array {
 		$user_id = get_current_user_id();
 
 		$query = new WP_Query(
@@ -274,7 +275,9 @@ final class StaticSite {
 			'position' => 0,
 			'entries'  => array(),
 			'media'    => array(),
+			'mermaid'  => false,
 			'zip'      => '',
+			'theme'    => SiteThemes::normalize( $theme ),
 			'site'     => array(
 				'title'       => $name,
 				'description' => (string) $term->description,
@@ -444,6 +447,14 @@ final class StaticSite {
 		 */
 		$html = (string) apply_filters( 'living_handbook_static_export_page', $html, $post, $path );
 
+		if ( SiteRenderer::has_diagram( $content ) && empty( $state['mermaid'] ) ) {
+			// 3.5 MB, so it travels only with an export that has something to
+			// draw, and only once however many diagrams follow.
+			self::add_plugin_file( $zip, 'assets/js/mermaid.min.js', 'assets/mermaid.js' );
+			self::add_plugin_file( $zip, 'assets/js/mermaid-view.js', 'assets/mermaid-view.js' );
+			$state['mermaid'] = true;
+		}
+
 		$zip->addFromString( $path, $html );
 
 		$entries          = (array) $state['entries'];
@@ -606,8 +617,13 @@ final class StaticSite {
 		$site  = (array) $state['site'];
 
 		$zip->addFromString( 'index.html', SiteRenderer::start_page( $index, $site ) );
-		$zip->addFromString( 'assets/style.css', SiteRenderer::stylesheet() );
+		$zip->addFromString( 'assets/style.css', SiteRenderer::stylesheet( (string) $state['theme'] ) );
 		$zip->addFromString( 'assets/site.js', SiteRenderer::script() );
+		// The plugin's own frontend script, for one thing it does that an export
+		// wants: images and diagrams that enlarge on a click, with the focus
+		// handling that goes with it. Its search, filter and feedback parts look
+		// for elements this export does not have and quietly do nothing.
+		self::add_plugin_file( $zip, 'assets/frontend.js', 'assets/frontend.js' );
 		$zip->addFromString( 'assets/search-index.js', SiteRenderer::search_index( (array) $state['entries'] ) );
 		$zip->addFromString( 'README.txt', SiteRenderer::readme( $site ) );
 	}
@@ -626,6 +642,27 @@ final class StaticSite {
 		$size = filesize( $path );
 
 		return is_int( $size ) ? $size : 0;
+	}
+
+	/**
+	 * Copy a file shipped with the plugin into the archive.
+	 *
+	 * @param ZipArchive $zip    The open archive.
+	 * @param string     $source Path inside the plugin.
+	 * @param string     $target Path inside the archive.
+	 * @return bool Whether it was there to copy.
+	 */
+	private static function add_plugin_file( ZipArchive $zip, string $source, string $target ): bool {
+		$path = LIVING_HANDBOOK_DIR . $source;
+		if ( ! is_readable( $path ) ) {
+			return false;
+		}
+		$data = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a file shipped with this plugin, not a request.
+		if ( ! is_string( $data ) ) {
+			return false;
+		}
+
+		return $zip->addFromString( $target, $data );
 	}
 
 	/**
@@ -775,6 +812,17 @@ final class StaticSite {
 					<select id="lh-site-area" data-whole="<?php esc_attr_e( '— the whole handbook —', 'living-handbook' ); ?>">
 						<option value="0"><?php esc_html_e( '— the whole handbook —', 'living-handbook' ); ?></option>
 					</select>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row"><label for="lh-site-theme"><?php esc_html_e( 'Look', 'living-handbook' ); ?></label></th>
+				<td>
+					<select id="lh-site-theme">
+						<?php foreach ( SiteThemes::all() as $key => $theme ) : ?>
+							<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $theme['label'] ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<p class="description"><?php esc_html_e( 'The export brings its own styling, because there is no theme in a ZIP. "Like this site" uses the colours and text size set under Appearance; the others leave them behind, which is usually the better choice for a copy that goes outside the team.', 'living-handbook' ); ?></p>
 				</td>
 			</tr>
 		</table>

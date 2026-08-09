@@ -19,8 +19,14 @@ Typical cases: an audit that wants the wording as it stood on a date; an externa
 
 1. Open **Handbook → Export**. The section is called **Export as a website**, below the bundle export.
 2. Pick the **handbook**, and optionally a single area in the second field.
-3. Click **Build the website**. The progress counts the pages, because it is built in several passes: the browser fetches one after another, so a large handbook does not run into a timeout.
-4. When it is done, a button appears with the file size. That downloads the ZIP.
+3. Pick the **look**. There are four:
+   * **Like this site:** the colours and text size you set under Settings, Appearance.
+   * **Plain, neutral:** no house colours. Usually the better choice for a copy that leaves the team.
+   * **Dark:** light text on a dark page, for reading at night.
+   * **Paper, for printing:** serif text, a narrower measure, high contrast.
+   Every look prints cleanly: the page list, the search box and the footer are left off paper, and links to the outside world print with their address.
+4. Click **Build the website**. The progress counts the pages, because it is built in several passes: the browser fetches one after another, so a large handbook does not run into a timeout.
+5. When it is done, a button appears with the file size. That downloads the ZIP.
 
 ## What you get
 
@@ -32,6 +38,8 @@ Inside the ZIP sits a complete little website:
 * **`README.txt`**: a short note saying what the file is, for whoever finds it in a year with no context.
 
 What is inside are the pages **you** may read. Links between handbook pages lead to the files beside them, images travel along, and the search box at the top searches every page in the browser. Links to the outside world stay what they were.
+
+Two things work as they do on the site: **images and diagrams enlarge on a click**, and **Mermaid diagrams are drawn**. The library that draws them is 3.5 MB, so it travels only when the export holds a diagram at all, and it loads only on the pages that have one.
 
 <details>
 <summary>Pitfalls: What a copy cannot do</summary>

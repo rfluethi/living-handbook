@@ -19,8 +19,14 @@ Typische Fälle: eine Prüfung oder ein Audit, das eine Fassung zum Stichtag wil
 
 1. Öffne **Handbuch → Export**. Der Abschnitt heisst **Als Website exportieren**, unterhalb des Paket-Exports.
 2. Wähle das **Handbuch**, und im zweiten Feld wahlweise einen einzelnen Bereich.
-3. Klicke auf **Website erzeugen**. Der Fortschritt zählt die Seiten mit, denn gebaut wird in mehreren Durchgängen: der Browser holt sich einen nach dem anderen ab, damit auch ein grosses Handbuch nicht in eine Zeitüberschreitung läuft.
-4. Wenn es fertig ist, erscheint ein Knopf mit der Dateigrösse. Damit lädst du die ZIP-Datei herunter.
+3. Wähle die **Gestaltung**. Zur Wahl stehen vier:
+   * **Wie diese Website:** die Farben und die Schriftgrösse, die du unter Einstellungen, Darstellung gesetzt hast.
+   * **Schlicht, neutral:** ohne Hausfarben. Meist die bessere Wahl für eine Kopie, die das Team verlässt.
+   * **Dunkel:** helle Schrift auf dunklem Grund, zum Lesen am Abend.
+   * **Papier, zum Drucken:** Serifenschrift, schmalere Spalte, hoher Kontrast.
+   Gedruckt wird jede Gestaltung sauber: Seitenliste, Suchfeld und Fusszeile fallen auf Papier weg, und bei Links nach draussen steht die Adresse dahinter.
+4. Klicke auf **Website erzeugen**. Der Fortschritt zählt die Seiten mit, denn gebaut wird in mehreren Durchgängen: der Browser holt sich einen nach dem anderen ab, damit auch ein grosses Handbuch nicht in eine Zeitüberschreitung läuft.
+5. Wenn es fertig ist, erscheint ein Knopf mit der Dateigrösse. Damit lädst du die ZIP-Datei herunter.
 
 ## Ergebnis
 
@@ -32,6 +38,8 @@ In der ZIP-Datei liegt eine vollständige kleine Website:
 * **`README.txt`**: eine kurze Notiz, was die Datei ist, für den Fall, dass sie in einem Jahr jemand ohne Zusammenhang findet.
 
 Enthalten sind die Seiten, die **du** lesen darfst. Links zwischen Handbuch-Seiten führen zu den Dateien daneben, Bilder liegen mit im Paket, und die Suche oben rechts durchsucht alle Seiten im Browser. Links nach draussen bleiben, was sie waren.
+
+Zwei Dinge funktionieren wie auf der Website: **Bilder und Diagramme vergrössern sich per Klick**, und **Mermaid-Diagramme werden gezeichnet**. Die Bibliothek dafür ist 3,5 MB gross und reist nur mit, wenn im Export überhaupt ein Diagramm vorkommt; geladen wird sie nur auf den Seiten, die eins haben.
 
 <details>
 <summary>Stolpersteine: Was eine Kopie nicht kann</summary>
