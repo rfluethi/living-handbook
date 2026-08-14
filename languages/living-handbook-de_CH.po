@@ -2839,24 +2839,24 @@ msgstr ""
 #: blocks/lessons/block.json
 msgctxt "block title"
 msgid "Learning path lessons"
-msgstr ""
+msgstr "Lektionen eines Lernpfads"
 
 #: blocks/lessons/block.json
 msgctxt "block description"
 msgid ""
 "The ordered lessons of a learning path, with a start button and how far this "
 "browser has read. Renders on a learning path only."
-msgstr ""
+msgstr "Die geordneten Lektionen eines Lernpfads, mit Startknopf und dem Stand, den dieser Browser kennt. Wird nur auf einem Lernpfad dargestellt."
 
 #: blocks/lessons/block.json blocks/path-nav/block.json blocks/paths/block.json
 msgctxt "block keyword"
 msgid "learning path"
-msgstr ""
+msgstr "Lernpfad"
 
 #: blocks/lessons/block.json blocks/path-nav/block.json blocks/paths/block.json
 msgctxt "block keyword"
 msgid "onboarding"
-msgstr ""
+msgstr "Onboarding"
 
 #: blocks/menu/block.json
 msgctxt "block title"
@@ -2916,7 +2916,7 @@ msgstr ""
 #: blocks/path-nav/block.json
 msgctxt "block title"
 msgid "Learning path bar"
-msgstr ""
+msgstr "Lernpfad-Leiste"
 
 #: blocks/path-nav/block.json
 msgctxt "block description"
@@ -2924,19 +2924,19 @@ msgid ""
 "On a handbook page opened from a learning path: which path it is, which "
 "lesson of how many, and the way to the previous and the next one. Renders "
 "nothing otherwise."
-msgstr ""
+msgstr "Auf einer Handbuchseite, die aus einem Lernpfad geöffnet wurde: um welchen Pfad es geht, die wievielte Lektion von wie vielen, und der Weg zur vorherigen und zur nächsten. Sonst wird nichts dargestellt."
 
 #: blocks/paths/block.json
 msgctxt "block title"
 msgid "Learning paths of this handbook"
-msgstr ""
+msgstr "Lernpfade dieses Handbuchs"
 
 #: blocks/paths/block.json
 msgctxt "block description"
 msgid ""
 "The learning paths of the handbook whose entry page this is, with the number "
 "of lessons each one holds. Renders nothing when the handbook has none."
-msgstr ""
+msgstr "Die Lernpfade des Handbuchs, dessen Einstiegsseite das ist, je mit der Anzahl Lektionen. Hat das Handbuch keine, wird nichts dargestellt."
 
 #: blocks/search-form/block.json
 msgctxt "block title"
