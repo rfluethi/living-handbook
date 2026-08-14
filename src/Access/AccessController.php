@@ -15,6 +15,7 @@ namespace LivingHandbook\Access;
 
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Training\Training;
 use LivingHandbook\Setup\Settings;
 use WP_Comment;
 use WP_Post;
@@ -69,6 +70,21 @@ final class AccessController {
 	private static array $term_cache = array();
 
 	/**
+	 * The post types this controller guards.
+	 *
+	 * Handbook pages, and learning paths, which carry the same handbook term and
+	 * are therefore decided by exactly the same rules. The list is not narrowed
+	 * when the learning paths module is switched off: a site that turns the
+	 * module off still has its paths in the database, and an unguarded type would
+	 * be the one moment they are readable.
+	 *
+	 * @return array<int, string>
+	 */
+	public static function guarded_post_types(): array {
+		return array( Handbook::POST_TYPE, Training::POST_TYPE );
+	}
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -80,7 +96,9 @@ final class AccessController {
 		// handbooks independent of suppress_filters, which the_posts cannot reach.
 		add_action( 'pre_get_posts', array( $this, 'restrict_query' ) );
 		add_filter( 'the_posts', array( $this, 'filter_posts' ), 10, 2 );
-		add_filter( 'rest_prepare_' . Handbook::POST_TYPE, array( $this, 'guard_rest_item' ), 10, 2 );
+		foreach ( self::guarded_post_types() as $guarded_type ) {
+			add_filter( 'rest_prepare_' . $guarded_type, array( $this, 'guard_rest_item' ), 10, 2 );
+		}
 
 		// Media is a read channel of its own. An image imported into a handbook
 		// page is an attachment whose parent is that page, and core answers
@@ -116,7 +134,7 @@ final class AccessController {
 	 * @return void
 	 */
 	public function guard_singular(): void {
-		if ( ! is_singular( Handbook::POST_TYPE ) ) {
+		if ( ! is_singular( self::guarded_post_types() ) ) {
 			return;
 		}
 
@@ -299,7 +317,7 @@ final class AccessController {
 			return;
 		}
 		$types = (array) $query->get( 'post_type' );
-		if ( ! in_array( Handbook::POST_TYPE, $types, true ) ) {
+		if ( array() === array_intersect( self::guarded_post_types(), $types ) ) {
 			return;
 		}
 
@@ -383,7 +401,7 @@ final class AccessController {
 					if ( ! $post instanceof WP_Post ) {
 						return true;
 					}
-					if ( Handbook::POST_TYPE === $post->post_type ) {
+					if ( in_array( $post->post_type, self::guarded_post_types(), true ) ) {
 						return self::can_view_post( $post->ID, $user_id );
 					}
 					// An attachment of a handbook page inherits that page's

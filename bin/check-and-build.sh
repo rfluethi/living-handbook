@@ -99,8 +99,13 @@ if command -v wp >/dev/null 2>&1; then
 			rm -f "$po_before"
 		done
 	else
-		echo "msgmerge (gettext) not found; the .po keeps its current references."
-		echo "Install gettext so the .po gains JS source references and the JS JSON gets the German strings."
+		echo "msgmerge (gettext) not found." >&2
+		echo "Without it a string added since the last build never reaches the German" >&2
+		echo "catalogues, and every translation check still passes, because they only" >&2
+		echo "look at what is already in a .po. That is how 0.56.0 shipped a settings" >&2
+		echo "tab in English. Install gettext (brew install gettext, apt install" >&2
+		echo "gettext) and run this again." >&2
+		exit 1
 	fi
 	# Per-script JSON for wp_set_script_translations, generated from the .po.
 	wp_quiet i18n make-json languages/ --no-purge

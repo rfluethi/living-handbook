@@ -177,6 +177,26 @@ Unter jedem Treffer steht der Satz, in dem die Wörter gefunden wurden, mit den 
 
 **Rendert auf:** Einzelseiten und Handbuch-Einstiegsseiten.
 
+## Lektionen eines Lernpfads (`living-handbook/lessons`)
+
+Die nummerierten Lektionen eines Lernpfads, mit Startknopf und, sobald etwas gelesen ist, dem Zähler und einem Haken neben dem Erledigten. Jeder Link trägt den Pfad als `?lh_path=<id>` mit, und nur daraus weiss die nächste Seite, in welchem Pfad sie gelesen wird.
+
+Die Liste wird für die lesende Person aufgelöst: eine Lektion, die gelöscht, in den Entwurf zurückgesetzt, in ein anderes Handbuch verschoben oder für diese Person nicht sichtbar ist, fällt aus Liste und Zähler. Zwei Personen können also unterschiedlich viele Lektionen sehen, und jede sieht einen Zähler über das, was sie tatsächlich hat.
+
+**Rendert auf:** einem einzelnen Lernpfad. Sonst nirgends.
+
+## Lernpfad-Leiste (`living-handbook/path-nav`)
+
+Auf einer Handbuchseite, die aus einem Lernpfad geöffnet wurde: der Name des Pfads, «Lektion 3 von 9», und der Weg zur vorherigen und zur nächsten Lektion. Sie steht in der mitgelieferten Einzelseiten-Vorlage über dem Titel und rendert überhaupt nichts, solange nicht alles zutrifft: die Adresse nennt einen Pfad, dieser Pfad existiert, die lesende Person darf ihn sehen, und diese Seite ist für sie eine seiner Lektionen. Ein veraltetes oder geratenes `lh_path` ergibt darum eine gewöhnliche Seite, keine Fehlermeldung.
+
+**Rendert auf:** Einzelseiten, die über einen Lernpfad geöffnet wurden.
+
+## Lernpfade dieses Handbuchs (`living-handbook/paths`)
+
+Die Lernpfade des Handbuchs, dessen Einstiegsseite das ist, je mit der Anzahl Lektionen, die es für diese Person hat. Der Block steht zuoberst in der mitgelieferten Einstiegs-Vorlage. Ein Lernpfad hat kein Archiv und steht in keiner Navigation, ohne diese Liste wäre er also nur erreichbar, wenn jemand seinen Link herumschickt. Ein Handbuch ohne Pfade rendert nichts.
+
+**Rendert auf:** Handbuch-Einstiegsseiten.
+
 ## Es erscheint nichts?
 
 Drei Ursachen erklären fast jede Meldung „der Block ist leer":

@@ -1344,3 +1344,125 @@ h4:hover > .living-handbook-anchor,
 		}
 	}
 }
+/* ---------- Learning paths ---------- */
+
+/*
+ * Two places show a learning path: its own page, where the lessons are a
+ * numbered list with a start button, and a lesson, where a bar says which path
+ * this is and where the previous and next lesson are. The ticked state comes
+ * from the browser, so nothing here may depend on it being there.
+ */
+
+.living-handbook-path__progress {
+	font-weight: 600;
+	margin: 0 0 0.5em;
+}
+
+.living-handbook-path__list {
+	list-style: none;
+	margin: 0 0 1em;
+	padding: 0;
+}
+
+.living-handbook-path__item {
+	align-items: baseline;
+	border-bottom: 1px solid var(--lh-border);
+	display: flex;
+	gap: 0.6em;
+	padding: 0.5em 0;
+}
+
+.living-handbook-path__number {
+	color: var(--lh-muted);
+	font-variant-numeric: tabular-nums;
+	min-width: 1.6em;
+	text-align: right;
+}
+
+.living-handbook-path__link {
+	flex: 1 1 auto;
+}
+
+.living-handbook-path__state {
+	color: var(--lh-muted);
+	font-size: 0.85em;
+}
+
+.living-handbook-path__item.is-read .living-handbook-path__number::after {
+	content: "\2713";
+	margin-left: 0.3em;
+}
+
+.living-handbook-path__button {
+	display: inline-block;
+	padding: 0.5em 1.2em;
+	border: 1px solid currentColor;
+	border-radius: 4px;
+	text-decoration: none;
+}
+
+.living-handbook-path__note,
+.living-handbook-path__empty {
+	color: var(--lh-muted);
+	font-size: 0.9em;
+}
+
+.living-handbook-pathbar {
+	border: 1px solid var(--lh-border);
+	border-radius: 4px;
+	margin: 0 0 1.5em;
+	padding: 0.75em 1em;
+}
+
+.living-handbook-pathbar__where {
+	margin: 0 0 0.4em;
+}
+
+.living-handbook-pathbar__position {
+	color: var(--lh-muted);
+}
+
+.living-handbook-pathbar__steps {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5em;
+	margin: 0;
+}
+
+.living-handbook-pathbar__step {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.living-handbook-pathbar__step--next {
+	margin-left: auto;
+	text-align: right;
+}
+
+.living-handbook-pathbar__direction {
+	color: var(--lh-muted);
+	font-size: 0.85em;
+}
+
+.living-handbook-paths {
+	border: 1px solid var(--lh-border);
+	border-radius: 4px;
+	margin: 0 0 1.5em;
+	padding: 0.75em 1em;
+}
+
+.living-handbook-paths__title {
+	font-size: 1em;
+	margin: 0 0 0.4em;
+}
+
+.living-handbook-paths__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.living-handbook-paths__count {
+	color: var(--lh-muted);
+	font-size: 0.85em;
+}

@@ -16,6 +16,7 @@ namespace LivingHandbook\Frontend;
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Training\Training;
 use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Settings;
 use WP_HTML_Tag_Processor;
@@ -110,6 +111,9 @@ final class FrontendRenderer {
 				'lightboxDiagram' => __( 'Enlarged diagram', 'living-handbook' ),
 				/* translators: %d: number of matching pages in the page search. */
 				'searchCount'     => __( '%d matching pages', 'living-handbook' ),
+				/* translators: 1: lessons already read, 2: lessons in the learning path. */
+				'pathProgress'    => __( '%1$d of %2$d lessons read', 'living-handbook' ),
+				'pathContinue'    => __( 'Continue', 'living-handbook' ),
 			)
 		);
 
@@ -407,6 +411,7 @@ final class FrontendRenderer {
 	 */
 	private static function is_handbook_view(): bool {
 		return is_singular( Handbook::POST_TYPE )
+			|| is_singular( Training::POST_TYPE )
 			|| is_post_type_archive( Handbook::POST_TYPE )
 			|| is_tax( Handbooks::TAXONOMY )
 			|| has_block( 'living-handbook/overview' )

@@ -2,21 +2,21 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.74.2\n"
+"Project-Id-Version: Living Handbook 0.75.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-09T17:21:49+00:00\n"
+"POT-Creation-Date: 2026-08-14T19:40:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
 
 #. Plugin Name of the plugin
 #: living-handbook.php
-#: src/Blocks/Blocks.php:97
+#: src/Blocks/Blocks.php:101
 msgid "Living Handbook"
 msgstr ""
 
@@ -40,17 +40,17 @@ msgstr ""
 msgid "https://rfluethi.com"
 msgstr ""
 
-#: src/Access/AccessController.php:194
+#: src/Access/AccessController.php:212
 msgid "No access to this handbook"
 msgstr ""
 
 #. translators: %s: display name of the signed-in user.
-#: src/Access/AccessController.php:197
+#: src/Access/AccessController.php:215
 #, php-format
 msgid "You are signed in as %s, but your account does not have access to this handbook. Ask an administrator or the team that maintains the handbook to grant you access."
 msgstr ""
 
-#: src/Access/AccessController.php:217
+#: src/Access/AccessController.php:235
 msgid "Back to the site"
 msgstr ""
 
@@ -88,10 +88,10 @@ msgstr ""
 #: src/Admin/Maintenance.php:260
 #: src/Export/SiteRenderer.php:241
 #: src/Export/StaticSite.php:922
-#: src/Handbook/Handbooks.php:279
+#: src/Handbook/Handbooks.php:329
 #: src/Import/HandbookExport.php:115
-#: src/PostType/Handbook.php:95
-#: src/PostType/Handbook.php:97
+#: src/PostType/Handbook.php:96
+#: src/PostType/Handbook.php:98
 #: src/Setup/Onboarding.php:100
 msgid "Handbook"
 msgstr ""
@@ -105,7 +105,7 @@ msgid "Last reviewed"
 msgstr ""
 
 #: src/Admin/Maintenance.php:264
-#: src/Setup/Settings.php:52
+#: src/Setup/Settings.php:54
 msgid "Feedback"
 msgstr ""
 
@@ -165,18 +165,18 @@ msgstr[1] ""
 msgid "The moved pages have no review date yet, so they show as \"Not reviewed\" until you set one."
 msgstr ""
 
-#: src/Blocks/Blocks.php:280
-#: src/Blocks/Blocks.php:281
+#: src/Blocks/Blocks.php:324
+#: src/Blocks/Blocks.php:325
 #: assets/blocks.js:145
 msgid "Table of Contents"
 msgstr ""
 
-#: src/Blocks/Blocks.php:325
+#: src/Blocks/Blocks.php:369
 #: src/Frontend/Filters.php:386
 msgid "Search this handbook"
 msgstr ""
 
-#: src/Blocks/Blocks.php:328
+#: src/Blocks/Blocks.php:372
 #: src/Frontend/Filters.php:389
 msgid "Search this handbook …"
 msgstr ""
@@ -224,6 +224,7 @@ msgid "Exported from a Living Handbook on %s. This copy is not kept up to date."
 msgstr ""
 
 #: src/Export/SiteRenderer.php:347
+#: src/Training/PathView.php:134
 msgid "Start"
 msgstr ""
 
@@ -232,17 +233,17 @@ msgid "On this page"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:478
-#: src/Frontend/FrontendRenderer.php:109
+#: src/Frontend/FrontendRenderer.php:110
 msgid "Enlarge"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:479
-#: src/Frontend/FrontendRenderer.php:108
+#: src/Frontend/FrontendRenderer.php:109
 msgid "Close"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:480
-#: src/Frontend/FrontendRenderer.php:110
+#: src/Frontend/FrontendRenderer.php:111
 msgid "Enlarged diagram"
 msgstr ""
 
@@ -511,9 +512,9 @@ msgstr ""
 #: src/Frontend/Entry.php:151
 #: src/Frontend/Entry.php:153
 #: src/Frontend/Entry.php:269
-#: src/Frontend/FrontendRenderer.php:342
-#: src/Frontend/FrontendRenderer.php:379
-#: src/Handbook/Handbooks.php:278
+#: src/Frontend/FrontendRenderer.php:346
+#: src/Frontend/FrontendRenderer.php:383
+#: src/Handbook/Handbooks.php:328
 msgid "Handbooks"
 msgstr ""
 
@@ -554,7 +555,7 @@ msgid "No matches. Adjust the filters or the search."
 msgstr ""
 
 #: src/Frontend/Filters.php:710
-#: src/PostType/Handbook.php:98
+#: src/PostType/Handbook.php:99
 msgid "Handbook pages"
 msgstr ""
 
@@ -582,26 +583,36 @@ msgstr ""
 msgid "Audience"
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:104
+#: src/Frontend/FrontendRenderer.php:105
 msgid "Thanks for your feedback."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:105
+#: src/Frontend/FrontendRenderer.php:106
 msgid "Your feedback could not be sent. Please try again."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:106
+#: src/Frontend/FrontendRenderer.php:107
 msgid "The list could not be updated. Please reload the page."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:107
+#: src/Frontend/FrontendRenderer.php:108
 msgid "No matches."
 msgstr ""
 
 #. translators: %d: number of matching pages in the page search.
-#: src/Frontend/FrontendRenderer.php:112
+#: src/Frontend/FrontendRenderer.php:113
 #, php-format
 msgid "%d matching pages"
+msgstr ""
+
+#. translators: 1: lessons already read, 2: lessons in the learning path.
+#: src/Frontend/FrontendRenderer.php:115
+#, php-format
+msgid "%1$d of %2$d lessons read"
+msgstr ""
+
+#: src/Frontend/FrontendRenderer.php:116
+msgid "Continue"
 msgstr ""
 
 #. translators: %s: the heading's text.
@@ -646,21 +657,31 @@ msgstr ""
 msgid "Responsible role"
 msgstr ""
 
-#: src/Frontend/Templates.php:56
+#: src/Frontend/Templates.php:57
 msgid "Handbook entry"
 msgstr ""
 
-#: src/Frontend/Templates.php:57
+#: src/Frontend/Templates.php:58
 msgid "Entry page of a single handbook: navigation, search bar, results, filter bar."
 msgstr ""
 
-#: src/Frontend/Templates.php:65
-#: src/PostType/Handbook.php:96
+#: src/Frontend/Templates.php:66
+#: src/PostType/Handbook.php:97
 msgid "Handbook page"
 msgstr ""
 
-#: src/Frontend/Templates.php:66
+#: src/Frontend/Templates.php:67
 msgid "Single handbook page: navigation left, content centre, on-this-page right."
+msgstr ""
+
+#: src/Frontend/Templates.php:75
+#: src/Training/PathView.php:267
+#: src/Training/Training.php:128
+msgid "Learning path"
+msgstr ""
+
+#: src/Frontend/Templates.php:76
+msgid "A single learning path: navigation left, its own text and the ordered lessons in the centre."
 msgstr ""
 
 #: src/Git/ArchiveSource.php:96
@@ -942,7 +963,7 @@ msgid "Comments"
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:153
-#: src/Setup/Settings.php:53
+#: src/Setup/Settings.php:55
 msgid "Access"
 msgstr ""
 
@@ -1413,19 +1434,19 @@ msgstr ""
 msgid "Empty fields are left as they are on each page."
 msgstr ""
 
-#: src/PostType/Handbook.php:99
+#: src/PostType/Handbook.php:100
 msgid "New pages"
 msgstr ""
 
-#: src/PostType/Handbook.php:100
+#: src/PostType/Handbook.php:101
 msgid "Add new handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:101
+#: src/PostType/Handbook.php:102
 msgid "Edit handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:102
+#: src/PostType/Handbook.php:103
 msgid "Search handbook pages"
 msgstr ""
 
@@ -1513,172 +1534,197 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: src/Setup/Settings.php:49
+#: src/Setup/Settings.php:50
 msgid "GitHub sync"
 msgstr ""
 
-#: src/Setup/Settings.php:50
+#: src/Setup/Settings.php:51
 msgid "Classification"
 msgstr ""
 
-#: src/Setup/Settings.php:51
+#: src/Setup/Settings.php:52
+#: src/Setup/Settings.php:390
+#: src/Training/PathView.php:194
+#: src/Training/Training.php:127
+#: src/Training/Training.php:129
+#: src/Training/Training.php:130
+msgid "Learning paths"
+msgstr ""
+
+#: src/Setup/Settings.php:53
 msgid "Appearance"
 msgstr ""
 
-#: src/Setup/Settings.php:54
+#: src/Setup/Settings.php:56
 msgid "Uninstall"
 msgstr ""
 
-#: src/Setup/Settings.php:161
-#: src/Setup/Settings.php:162
-#: src/Setup/Settings.php:738
+#: src/Setup/Settings.php:163
+#: src/Setup/Settings.php:164
+#: src/Setup/Settings.php:772
 msgid "Settings"
 msgstr ""
 
-#: src/Setup/Settings.php:226
+#: src/Setup/Settings.php:228
 msgid "Add CSS that loads on the handbook pages only. It is stored with the plugin and removed when you delete the plugin, unlike CSS kept in the theme."
 msgstr ""
 
-#: src/Setup/Settings.php:227
+#: src/Setup/Settings.php:229
 msgid "Target the plugin classes and the --lh-* custom properties. For example:"
 msgstr ""
 
 #. translators: %s: link to the customization documentation.
-#: src/Setup/Settings.php:231
+#: src/Setup/Settings.php:233
 #, php-format
 msgid "The full reference of variables and class names is in the %s."
 msgstr ""
 
-#: src/Setup/Settings.php:232
+#: src/Setup/Settings.php:234
 msgid "customization documentation"
 msgstr ""
 
-#: src/Setup/Settings.php:237
-#: src/Setup/Settings.php:360
+#: src/Setup/Settings.php:239
+#: src/Setup/Settings.php:371
 msgid "Custom CSS"
 msgstr ""
 
-#: src/Setup/Settings.php:325
+#: src/Setup/Settings.php:336
 msgid "Automatic sync"
 msgstr ""
 
-#: src/Setup/Settings.php:336
+#: src/Setup/Settings.php:347
 msgid "Text size"
 msgstr ""
 
-#: src/Setup/Settings.php:370
+#: src/Setup/Settings.php:381
 msgid "What pages are classified by"
 msgstr ""
 
-#: src/Setup/Settings.php:379
+#: src/Setup/Settings.php:399
 msgid "Public feedback"
 msgstr ""
 
-#: src/Setup/Settings.php:388
+#: src/Setup/Settings.php:408
 msgid "No-access page"
 msgstr ""
 
-#: src/Setup/Settings.php:398
+#: src/Setup/Settings.php:418
 msgid "When the plugin is deleted"
 msgstr ""
 
-#: src/Setup/Settings.php:432
+#: src/Setup/Settings.php:452
 msgid "Use the built-in message"
 msgstr ""
 
-#: src/Setup/Settings.php:454
+#: src/Setup/Settings.php:474
 msgid "Where a signed-in visitor lands when they open a handbook they may not read. Leave this on the built-in message unless you want to explain in your own words who grants access."
 msgstr ""
 
-#: src/Setup/Settings.php:546
+#: src/Setup/Settings.php:566
 msgid "Leave the colour fields empty and the handbook follows your theme, which is what it is built to do. Fill one in only where the theme gets it wrong. The swatches under each picker are your theme's own palette."
 msgstr ""
 
-#: src/Setup/Settings.php:565
+#: src/Setup/Settings.php:585
 msgid "percent"
 msgstr ""
 
-#: src/Setup/Settings.php:568
+#: src/Setup/Settings.php:588
 msgid "The size of the handbook's own text: navigation, table of contents, badges, cards and the page details. It does not touch the text of a page itself, which belongs to your theme. 100 percent is 16 pixels, the size the plugin was designed at. Raise it if your theme sets larger text than that and the handbook looks small beside it."
 msgstr ""
 
-#: src/Setup/Settings.php:593
+#: src/Setup/Settings.php:613
 msgid "Empty: the theme decides"
 msgstr ""
 
-#: src/Setup/Settings.php:613
+#: src/Setup/Settings.php:633
 msgid "CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples."
 msgstr ""
 
-#: src/Setup/Settings.php:628
+#: src/Setup/Settings.php:648
 msgid "What kind of page this is, which tells a reader how to read it: guide, process description, background, FAQ, area overview. One per page."
 msgstr ""
 
-#: src/Setup/Settings.php:629
+#: src/Setup/Settings.php:649
 msgid "What the page is about, in your own words: onboarding, invoicing, security. This is the one you fill yourself, and the one people filter by most."
 msgstr ""
 
-#: src/Setup/Settings.php:630
+#: src/Setup/Settings.php:650
 msgid "Which role keeps the page current: handbook editors, GitHub specialist. A function, not a person, so it survives someone leaving."
 msgstr ""
 
-#: src/Setup/Settings.php:631
+#: src/Setup/Settings.php:651
 msgid "Who the page is written for: all members, content creators, coordination, tech. It says who should read it, not who may: that is the handbook's access rule."
 msgstr ""
 
 #. translators: %d: number of terms in this group.
-#: src/Setup/Settings.php:653
+#: src/Setup/Settings.php:673
 #, php-format
 msgid "(%d term)"
 msgid_plural "(%d terms)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Setup/Settings.php:662
+#: src/Setup/Settings.php:682
 msgid "All four are on by default. Switching one off hides it: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading its line as well."
 msgstr ""
 
-#: src/Setup/Settings.php:663
+#: src/Setup/Settings.php:683
 msgid "Nothing is deleted. The terms stay, the pages keep them, and switching one back on brings every assignment back exactly as it was. A bundle export carries all four either way, so moving a handbook to another site never loses what this site happens to hide."
 msgstr ""
 
-#: src/Setup/Settings.php:664
+#: src/Setup/Settings.php:684
 msgid "The handbook itself is not in this list and cannot be switched off: access hangs on it, and a page that belongs to no handbook is invisible on the front end."
 msgstr ""
 
-#: src/Setup/Settings.php:674
-msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
+#: src/Setup/Settings.php:695
+msgid "Use learning paths in this handbook installation"
 msgstr ""
 
-#: src/Setup/Settings.php:675
-msgid "Off by default. When on, anyone can vote on a public page. To keep it privacy-friendly, votes are not tied to a person: no cookie, no IP and nothing else personal is stored, so the same visitor can vote again after reloading. On internal pages only logged-in users vote, one vote each, regardless of this setting."
+#: src/Setup/Settings.php:696
+msgid "Off by default. A learning path is an ordered selection of pages that already exist in a handbook, for onboarding or for a piece of required reading. The pages stay where they are: a path only says which of them to read in which order."
 msgstr ""
 
-#: src/Setup/Settings.php:704
-msgid "How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits."
+#: src/Setup/Settings.php:697
+msgid "This first stage keeps no progress on the server. How far somebody has read is remembered in their browser and nowhere else, so nothing personal is stored, and the record is gone when they clear their browser data or change device. It is a guided path, not a record of attendance."
+msgstr ""
+
+#: src/Setup/Settings.php:698
+msgid "Switching it off hides the learning paths and their menu entry. Nothing is deleted: the paths, their texts and their lesson lists stay, and switching it back on brings them back unchanged."
 msgstr ""
 
 #: src/Setup/Settings.php:708
+msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
+msgstr ""
+
+#: src/Setup/Settings.php:709
+msgid "Off by default. When on, anyone can vote on a public page. To keep it privacy-friendly, votes are not tied to a person: no cookie, no IP and nothing else personal is stored, so the same visitor can vote again after reloading. On internal pages only logged-in users vote, one vote each, regardless of this setting."
+msgstr ""
+
+#: src/Setup/Settings.php:738
+msgid "How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits."
+msgstr ""
+
+#: src/Setup/Settings.php:742
 msgid "Next scheduled sync:"
 msgstr ""
 
-#: src/Setup/Settings.php:710
+#: src/Setup/Settings.php:744
 msgid "No background sync scheduled."
 msgstr ""
 
-#: src/Setup/Settings.php:721
+#: src/Setup/Settings.php:755
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr ""
 
-#: src/Setup/Settings.php:722
+#: src/Setup/Settings.php:756
 msgid "Off by default: your content is kept when the plugin is deleted, only the plugin settings and caches are removed. Turn this on to remove everything the plugin created."
 msgstr ""
 
-#: src/Setup/Settings.php:723
+#: src/Setup/Settings.php:757
 msgid "This also removes templates you edited in the Site Editor."
 msgstr ""
 
-#: src/Setup/Settings.php:739
+#: src/Setup/Settings.php:773
 msgid "Settings sections"
 msgstr ""
 
@@ -1739,6 +1785,103 @@ msgstr ""
 #: src/Taxonomy/Taxonomies.php:250
 #, php-format
 msgid "Back to %s"
+msgstr ""
+
+#: src/Training/LessonPicker.php:224
+msgid "Lessons"
+msgstr ""
+
+#: src/Training/LessonPicker.php:249
+msgid "Choose a handbook for this learning path and save it once. The lessons are searched inside that handbook, so there is nothing to search in yet."
+msgstr ""
+
+#: src/Training/LessonPicker.php:253
+msgid "Add a lesson"
+msgstr ""
+
+#: src/Training/LessonPicker.php:255
+msgid "Search pages of this handbook"
+msgstr ""
+
+#: src/Training/LessonPicker.php:259
+msgid "Only published pages of the handbook this learning path belongs to can be added. A page stays an ordinary handbook page; the path only says in which order to read."
+msgstr ""
+
+#: src/Training/LessonPicker.php:261
+msgid "Search results"
+msgstr ""
+
+#: src/Training/LessonPicker.php:264
+msgid "Lessons in this learning path"
+msgstr ""
+
+#. translators: %d: id of a page that no longer exists.
+#: src/Training/LessonPicker.php:271
+#, php-format
+msgid "Page %d is gone"
+msgstr ""
+
+#: src/Training/LessonPicker.php:280
+msgid "No lessons yet."
+msgstr ""
+
+#: src/Training/LessonPicker.php:283
+msgid "Choosing lessons needs JavaScript. The list above shows what is stored, and saving the page keeps it unchanged."
+msgstr ""
+
+#: src/Training/PathView.php:92
+msgid "This learning path has no lessons yet."
+msgstr ""
+
+#: src/Training/PathView.php:111
+msgid "read"
+msgstr ""
+
+#. translators: %d: number of lessons in a learning path.
+#: src/Training/PathView.php:120
+#: src/Training/PathView.php:181
+#, php-format
+msgid "%d lesson"
+msgid_plural "%d lessons"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Training/PathView.php:135
+msgid "What you have read is remembered in this browser only, so it is gone when you clear the browser data or switch device."
+msgstr ""
+
+#: src/Training/PathView.php:254
+msgid "Previous"
+msgstr ""
+
+#: src/Training/PathView.php:257
+msgid "Next"
+msgstr ""
+
+#. translators: 1: position of this lesson, 2: number of lessons.
+#: src/Training/PathView.php:273
+#, php-format
+msgid "Lesson %1$d of %2$d"
+msgstr ""
+
+#: src/Training/Training.php:131
+msgid "New learning path"
+msgstr ""
+
+#: src/Training/Training.php:132
+msgid "Add new learning path"
+msgstr ""
+
+#: src/Training/Training.php:133
+msgid "Edit learning path"
+msgstr ""
+
+#: src/Training/Training.php:134
+msgid "Search learning paths"
+msgstr ""
+
+#: src/Training/Training.php:135
+msgid "No learning paths yet."
 msgstr ""
 
 #: assets/blocks.js:38
@@ -2087,6 +2230,44 @@ msgstr ""
 msgid "Starting …"
 msgstr ""
 
+#: assets/js/training-lessons.js:122
+msgid "Move up"
+msgstr ""
+
+#: assets/js/training-lessons.js:123
+msgid "Move down"
+msgstr ""
+
+#: assets/js/training-lessons.js:124
+msgid "Remove"
+msgstr ""
+
+#. translators: %s is the title of a lesson.
+#: assets/js/training-lessons.js:127
+#, js-format
+msgid "Move %s up"
+msgstr ""
+
+#. translators: %s is the title of a lesson.
+#: assets/js/training-lessons.js:129
+#, js-format
+msgid "Move %s down"
+msgstr ""
+
+#. translators: %s is the title of a lesson.
+#: assets/js/training-lessons.js:131
+#, js-format
+msgid "Remove %s"
+msgstr ""
+
+#: assets/js/training-lessons.js:184
+msgid "No matching pages."
+msgstr ""
+
+#: assets/js/training-lessons.js:221
+msgid "The search failed. Please try again."
+msgstr ""
+
 #: blocks/badges/block.json
 msgctxt "block title"
 msgid "Handbook badges"
@@ -2101,10 +2282,13 @@ msgstr ""
 #: blocks/entry/block.json
 #: blocks/feedback/block.json
 #: blocks/filters/block.json
+#: blocks/lessons/block.json
 #: blocks/menu/block.json
 #: blocks/navigation/block.json
 #: blocks/overview/block.json
 #: blocks/pagemeta/block.json
+#: blocks/path-nav/block.json
+#: blocks/paths/block.json
 #: blocks/search-form/block.json
 #: blocks/search/block.json
 #: blocks/toc/block.json
@@ -2116,10 +2300,13 @@ msgstr ""
 #: blocks/entry/block.json
 #: blocks/feedback/block.json
 #: blocks/filters/block.json
+#: blocks/lessons/block.json
 #: blocks/menu/block.json
 #: blocks/navigation/block.json
 #: blocks/overview/block.json
 #: blocks/pagemeta/block.json
+#: blocks/path-nav/block.json
+#: blocks/paths/block.json
 #: blocks/search-form/block.json
 #: blocks/search/block.json
 #: blocks/toc/block.json
@@ -2187,6 +2374,30 @@ msgctxt "block description"
 msgid "Shows a note on pages synced from GitHub; renders nothing on other pages."
 msgstr ""
 
+#: blocks/lessons/block.json
+msgctxt "block title"
+msgid "Learning path lessons"
+msgstr ""
+
+#: blocks/lessons/block.json
+msgctxt "block description"
+msgid "The ordered lessons of a learning path, with a start button and how far this browser has read. Renders on a learning path only."
+msgstr ""
+
+#: blocks/lessons/block.json
+#: blocks/path-nav/block.json
+#: blocks/paths/block.json
+msgctxt "block keyword"
+msgid "learning path"
+msgstr ""
+
+#: blocks/lessons/block.json
+#: blocks/path-nav/block.json
+#: blocks/paths/block.json
+msgctxt "block keyword"
+msgid "onboarding"
+msgstr ""
+
 #: blocks/menu/block.json
 msgctxt "block title"
 msgid "Handbook menu"
@@ -2230,6 +2441,26 @@ msgstr ""
 #: blocks/pagemeta/block.json
 msgctxt "block description"
 msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
+msgstr ""
+
+#: blocks/path-nav/block.json
+msgctxt "block title"
+msgid "Learning path bar"
+msgstr ""
+
+#: blocks/path-nav/block.json
+msgctxt "block description"
+msgid "On a handbook page opened from a learning path: which path it is, which lesson of how many, and the way to the previous and the next one. Renders nothing otherwise."
+msgstr ""
+
+#: blocks/paths/block.json
+msgctxt "block title"
+msgid "Learning paths of this handbook"
+msgstr ""
+
+#: blocks/paths/block.json
+msgctxt "block description"
+msgid "The learning paths of the handbook whose entry page this is, with the number of lessons each one holds. Renders nothing when the handbook has none."
 msgstr ""
 
 #: blocks/search-form/block.json

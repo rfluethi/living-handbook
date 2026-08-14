@@ -11,6 +11,7 @@ Dafür musst du zwei Begriffe kennen. **Markdown** ist ein einfaches Textformat.
 | [GitHub-Synchronisation](github-synchronisation.md) | Seiten sollen dauerhaft mit Dateien auf GitHub verbunden bleiben. |
 | [Handbuch umziehen](handbuch-umziehen.md) | Ein ganzes Handbuch soll auf eine andere Website. |
 | [Handbuch als Website weitergeben](handbuch-als-website-exportieren.md) | Jemand soll das Handbuch lesen können, der kein WordPress und keinen Zugang hat. |
+| [Lernpfade anlegen](lernpfade-anlegen.md) | Neue Leute sollen bestimmte Seiten in einer bestimmten Reihenfolge durcharbeiten. |
 
 Schreibst du nur in WordPress? Dann reicht dir aus diesem Bereich die erste Seite.
 
@@ -23,6 +24,6 @@ Schreibst du nur in WordPress? Dann reicht dir aus diesem Bereich die erste Seit
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 4
 * Textauszug: Dieser Bereich erklärt, wie Inhalte in dein Handbuch kommen: direkt geschrieben, importiert aus Markdown oder synchronisiert von GitHub.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-08-14
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

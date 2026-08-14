@@ -21,6 +21,7 @@ use LivingHandbook\Frontend\PageMeta;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Training\PathView;
 use WP_Block_Supports;
 use WP_HTML_Tag_Processor;
 use WP_Term;
@@ -76,6 +77,9 @@ final class Blocks {
 			'search'      => array( $this, 'render_search' ),
 			'search-form' => array( $this, 'render_search_form' ),
 			'filters'     => array( $this, 'render_filters' ),
+			'lessons'     => array( $this, 'render_lessons' ),
+			'path-nav'    => array( $this, 'render_path_nav' ),
+			'paths'       => array( $this, 'render_paths' ),
 		);
 		foreach ( $blocks as $dir => $callback ) {
 			register_block_type(
@@ -98,6 +102,46 @@ final class Blocks {
 			'icon'  => null,
 		);
 		return $categories;
+	}
+
+	/**
+	 * Render the lesson list of a learning path.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_lessons( array $attributes ): string {
+		$markup = PathView::render_lessons();
+
+		return '' === $markup ? '' : self::with_block_attributes( $markup, $attributes );
+	}
+
+	/**
+	 * Render the learning paths of a handbook on its entry page.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_paths( array $attributes ): string {
+		$markup = PathView::render_paths();
+
+		return '' === $markup ? '' : self::with_block_attributes( $markup, $attributes );
+	}
+
+	/**
+	 * Render the path bar on a handbook page read as a lesson.
+	 *
+	 * Returns an empty string on every page that is not being read through a
+	 * learning path, which is nearly all of them: the block sits in the shipped
+	 * single-page template and has to be invisible until it is not needed.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return string
+	 */
+	public function render_path_nav( array $attributes ): string {
+		$markup = PathView::render_path_nav();
+
+		return '' === $markup ? '' : self::with_block_attributes( $markup, $attributes );
 	}
 
 	/**

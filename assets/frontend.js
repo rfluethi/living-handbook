@@ -766,11 +766,117 @@
 		} );
 	}
 
+	/* ---------- Learning paths: how far this browser has read ---------- */
+
+	/*
+	 * The first stage of the learning paths keeps no progress on the server, so
+	 * there is nothing personal to store, export or delete. What it does keep is
+	 * a list of lesson ids per path in this browser's local storage, which is
+	 * enough to tick off a list and to say "3 of 8", and honest about the price:
+	 * clearing the browser data or switching device starts over. The page says
+	 * so, and this code does not pretend otherwise.
+	 *
+	 * Storage can be unavailable (a locked-down profile, private mode in some
+	 * browsers), so every access is wrapped: a failure means no ticks, never a
+	 * broken page.
+	 */
+
+	function pathStorageKey( pathId ) {
+		return 'living-handbook-path-' + pathId;
+	}
+
+	function readPath( pathId ) {
+		try {
+			var raw = window.localStorage.getItem( pathStorageKey( pathId ) );
+			var parsed = raw ? JSON.parse( raw ) : [];
+			return Array.isArray( parsed ) ? parsed.filter( function ( id ) {
+				return 'number' === typeof id;
+			} ) : [];
+		} catch ( e ) {
+			return [];
+		}
+	}
+
+	function writePath( pathId, ids ) {
+		try {
+			window.localStorage.setItem( pathStorageKey( pathId ), JSON.stringify( ids ) );
+		} catch ( e ) {
+			// No storage, no ticks. Nothing else depends on this.
+		}
+	}
+
+	function markLessonRead() {
+		var bar = document.querySelector( '.living-handbook-pathbar' );
+		if ( ! bar ) {
+			return;
+		}
+		var pathId = parseInt( bar.getAttribute( 'data-path' ), 10 );
+		var lessonId = parseInt( bar.getAttribute( 'data-lesson' ), 10 );
+		if ( ! pathId || ! lessonId ) {
+			return;
+		}
+		var done = readPath( pathId );
+		if ( done.indexOf( lessonId ) === -1 ) {
+			done.push( lessonId );
+			writePath( pathId, done );
+		}
+	}
+
+	function showPathProgress() {
+		var path = document.querySelector( '.living-handbook-path' );
+		if ( ! path ) {
+			return;
+		}
+		var pathId = parseInt( path.getAttribute( 'data-path' ), 10 );
+		var total = parseInt( path.getAttribute( 'data-total' ), 10 );
+		if ( ! pathId || ! total ) {
+			return;
+		}
+
+		var done = readPath( pathId );
+		var read = 0;
+		var next = null;
+
+		path.querySelectorAll( '.living-handbook-path__item' ).forEach( function ( item ) {
+			var lessonId = parseInt( item.getAttribute( 'data-lesson' ), 10 );
+			var state = item.querySelector( '.living-handbook-path__state' );
+			if ( done.indexOf( lessonId ) !== -1 ) {
+				read += 1;
+				item.classList.add( 'is-read' );
+				if ( state ) {
+					state.textContent = state.getAttribute( 'data-done-label' ) || '';
+				}
+				return;
+			}
+			if ( ! next ) {
+				next = item.querySelector( '.living-handbook-path__link' );
+			}
+		} );
+
+		var progress = path.querySelector( '.living-handbook-path__progress' );
+		if ( progress && window.livingHandbook && livingHandbook.pathProgress ) {
+			progress.textContent = livingHandbook.pathProgress
+				.replace( '%1$d', read )
+				.replace( '%2$d', total );
+		}
+
+		// The button says Start on an untouched path and Continue as soon as
+		// something has been read, and it then points at the first lesson that
+		// has not been: somebody coming back wants the next one, not the first.
+		var start = path.querySelector( '.living-handbook-path__button' );
+		if ( start && read > 0 && next && window.livingHandbook && livingHandbook.pathContinue ) {
+			start.textContent = livingHandbook.pathContinue;
+			start.setAttribute( 'href', next.getAttribute( 'href' ) );
+		}
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		buildToc();
 		wireNav();
 		wireMenus();
 		initLightbox();
+		markLessonRead();
+		showPathProgress();
 
 		wireEntry( entryElement() );
 		document.querySelectorAll( '.living-handbook-page-search' ).forEach( wirePageSearch );

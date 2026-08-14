@@ -1,21 +1,46 @@
 # Changelog
 
-Full version history of Living Handbook, in the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
-format. This file is the long version: what was wrong, what changed, and why it
-was decided that way. `readme.txt` carries the short entry a person reads in the
-WordPress update dialog, written by hand rather than generated, because the two
-are deliberately different lengths. Both must have an entry for the released
-version; a test checks that.
+Full version history of Living Handbook, in the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format. This file is the long version: what was wrong, what changed, and why it was decided that way. `readme.txt` carries the short entry a person reads in the WordPress update dialog, written by hand rather than generated, because the two are deliberately different lengths. Both must have an entry for the released version; a test checks that.
 
-From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**,
-**Fixed** and **Removed**. Older entries are left as they were written: their
-bullets are narrative rather than categorised, and sorting them after the fact
-would mean guessing what each one was.
+From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **Fixed** and **Removed**. Older entries are left as they were written: their bullets are narrative rather than categorised, and sorting them after the fact would mean guessing what each one was.
 
-Dates come from the release tag where there is one, otherwise from the commit
-that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0)
-carry no date, because the repository's history does not record one and a
-plausible date is worse than none.
+Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
+
+## [0.75.0] - 2026-08-14
+
+### Added
+
+* **A handbook can now put its pages in an order and call it a learning path**, under **Handbook → Learning paths**, off until a site switches it on under **Settings → Learning paths**. A path is a title, a few sentences of its own, and a chosen sequence of pages that already exist in the handbook. On the path they are a numbered list with a Start button; on a page they are a bar saying which lesson of how many this is, with the way to the previous and the next one.
+
+  This is the first of four stages from the concept, and the only one that runs before the wordpress.org submission, because it is the one that makes onboarding possible and the only one with no personal data in it.
+
+  **What it deliberately is not.** Not a course system: no lessons of its own, no quiz, no grade book, no certificate, no SCORM. That market is taken, ten times over, and none of those products can do the one thing this can, which is to know when a page was last changed and last reviewed. A path adds an order on top of pages that are maintained anyway; it does not become a second place where content lives. A lesson is an ordinary handbook page, and it stays one.
+
+  **The lessons are chosen with a search field, not a list.** A handbook of two thousand pages rendered into a select box is the mistake the core page-parent dropdown makes, and it was measured on this plugin: 2441 ms against 20 ms. The field asks a REST route scoped to the handbook of the path, which checks access for every hit before it answers, so it cannot offer a page the editor may not read.
+
+  **The order is changed with Move up and Move down, not by dragging.** A drag needs a pointer, and WCAG 2.2 asks for a single-pointer alternative anyway (SC 2.5.7), so buttons that work with a mouse, a keyboard and a screen reader alike are the whole feature rather than half of it. The focus stays on the button that was pressed, which is the part that makes it usable without a mouse at all. Dragging can be added on top later; nothing in the data model or the markup is in its way. This answers the question the concept left open for the build.
+
+  **Nothing about the path is maintained twice.** The stored value is a list of ids and an order, and everything else is derived when the page is read: a lesson that was deleted, unpublished, moved to another handbook or hidden from this particular reader drops out of the list, out of the numbering and out of the Next link, without anybody editing the path. The consequence is deliberate: the same path can be six lessons long for one person and eight for another, and the counter says what that person sees rather than what exists.
+
+  **How a page knows which path it is being read in:** the links out of a path carry it, as `?lh_path=<id>`. A page can sit in several paths, and nothing on the page itself could say which one the reader came through. Remembering it in the browser instead would make one URL mean different things for different people and break the moment somebody shares a link.
+
+  **No progress is stored on the server in this stage.** What has been read is a list of ids in that browser's local storage, which is enough to tick a list off and to say "3 of 8", and gone when the browser data is cleared or the device changes. So there is nothing personal to protect, export or delete, and no privacy hooks are needed yet. The settings page and the path itself both say so in plain words rather than letting somebody discover it. A record of attendance is the second stage, and it is a different promise.
+
+  **Access was the part that had to be got right.** A learning path is a second post type carrying the same handbook term, so every read channel that was closed for handbook pages had to be closed for it in the same movement: the coarse query layer, the precise result filter, the single-page guard and the single-item REST guard now name a list of guarded types instead of the one type they knew about. A path that slipped through any one of them would publish the table of contents of an internal handbook, which is most of what a handbook is trying to keep to itself. That list is not narrowed when the module is switched off, because a site that switches it off still has its paths in the database.
+
+  **One thing that would have been wrong and quiet:** a handbook's card on the overview counts its pages, and core counts every published object in a term. Learning paths sit in the same term, so the card would have started reporting twelve pages for ten pages and two paths, correctly by core's reckoning and wrongly by the card's. The taxonomy counts pages itself now.
+
+  Switching the module off hides the type, its menu entry and its pages, and deletes nothing: the same promise the taxonomy switches make, and checked the same way.
+
+  Nineteen tests came with it, in `TrainingTest` and `TrainingAccessTest`. Five of them guard a change to code that already existed, and those five were counter-checked by putting the old code back one at a time: without the guarded type list, two access tests and the REST guard fail; without the taxonomy's own count callback, the page count fails; without the one-handbook rule extended to the new type, a path keeps two handbooks. The other fourteen cover behaviour that has no older version to revert to.
+
+### Changed
+
+* **The translation check now sees the gap it could not see.** `TranslationCoverageTest` compared the catalogues against themselves: every entry in a `.po` has a translation. A string that never reached the `.po` was invisible to it, and that is exactly what happens when the build runs without gettext, because `msgmerge` is what carries a new string from the template into the catalogue. English would ship on a German site and every check would stay green, which is the 0.56.0 story again with a different cause.
+
+  Two things close it. The test compares `living-handbook.pot` against both catalogues and names what is missing. And `bin/check-and-build.sh` stops with an error when `msgmerge` is not installed, instead of printing a note and carrying on: a release must not be built from catalogues that were not refreshed. Counter-checked by removing one translated entry from `de_DE`, which fails the test with that entry named.
+
+  This is the threshold in the build the work list asked for, arrived at differently than the `msgattrib --untranslated` proposal it suggested: counting untranslated entries measures the same blind spot, because an entry that is not in the file cannot be counted as untranslated.
 
 ## [0.74.2] - 2026-08-09
 

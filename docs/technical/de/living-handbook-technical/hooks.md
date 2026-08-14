@@ -244,6 +244,39 @@ Parameter:
 
 Gibt ein Array von Taxonomie-Namen zurück; alles, was keines der vier ist, wird ignoriert.
 
+### `living_handbook_training_enabled`
+
+Bestimmt, ob das Modul Lernpfade aktiv ist. Standard ist das Ankreuzfeld unter **Handbuch → Einstellungen → Lernpfade**, und das ist aus.
+
+Ausschalten blendet den Beitragstyp, seinen Menüeintrag und seine Seiten aus, gelöscht wird nichts: die Pfade, ihre Texte und ihre Lektionslisten bleiben, und Einschalten bringt sie unverändert zurück. Was es nicht berührt: die Zugriffsregeln schützen Lernpfade in beiden Fällen, denn eine Website, die das Modul ausschaltet, hat ihre Pfade weiterhin in der Datenbank.
+
+Parameter:
+
+- `bool $enabled` Ob das Modul eingeschaltet ist.
+
+Gibt einen Wahrheitswert zurück.
+
+```php
+add_filter( 'living_handbook_training_enabled', '__return_true' );
+```
+
+### `living_handbook_training_slug`
+
+Bestimmt die URL-Basis eines Lernpfads, standardmässig `/learning-path/<slug>`. Gleicher Grund und gleicher Vorbehalt wie bei `living_handbook_post_type_slug`.
+
+Parameter:
+
+- `string $slug` Die Rewrite-Basis. Standard `'learning-path'`.
+
+```php
+add_filter(
+	'living_handbook_training_slug',
+	function (): string {
+		return 'lernpfad';
+	}
+);
+```
+
 ### `living_handbook_static_export_time_budget`
 
 Bestimmt, wie viele Sekunden ein Durchgang des Website-Exports rendern darf, bevor er seinen Stand sichert und den nächsten Durchgang abwartet. Standard sind 15 Sekunden, begrenzt auf 60 Prozent von `max_execution_time`, falls gesetzt. Auf einem Server, der Anfragen früh abschneidet, senken; höher setzen als der Server erlaubt macht aus einem pausierten Export einen fehlgeschlagenen.

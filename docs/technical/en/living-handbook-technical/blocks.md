@@ -175,6 +175,26 @@ Under each result stands the sentence the words were found in, with the words ma
 
 **Renders on:** single handbook pages and handbook entry pages.
 
+## Learning path lessons (`living-handbook/lessons`)
+
+The numbered lessons of a learning path, with a Start button and, once something has been read, the count and a tick beside what is done. Every link carries the path along as `?lh_path=<id>`, which is how the next page knows which path it is being read in.
+
+The list is resolved for the person reading it: a lesson that was deleted, unpublished, moved to another handbook or is not visible to them drops out of the list and out of the count. Two people can therefore see a different number of lessons, and each sees a count of what they actually have.
+
+**Renders on:** a single learning path. Nothing anywhere else.
+
+## Learning path bar (`living-handbook/path-nav`)
+
+On a handbook page that was opened from a learning path: the name of the path, "Lesson 3 of 9", and the way to the previous and the next lesson. It stands in the shipped single-page template above the title and renders nothing at all unless the URL names a path, that path exists, the reader may view it, and this page is one of its lessons for this reader. A stale or guessed `lh_path` therefore produces an ordinary page rather than an error.
+
+**Renders on:** single handbook pages opened through a learning path.
+
+## Learning paths of this handbook (`living-handbook/paths`)
+
+The learning paths of the handbook whose entry page this is, each with the number of lessons it holds for this reader. It stands at the top of the shipped entry template. A learning path has no archive and appears in no navigation, so without this list a path could only be reached by somebody sending its link around. A handbook with no paths renders nothing.
+
+**Renders on:** handbook entry pages.
+
 ## Nothing shows up?
 
 Three causes account for almost every "the block is empty" report:

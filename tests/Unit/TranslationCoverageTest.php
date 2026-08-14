@@ -122,6 +122,44 @@ final class TranslationCoverageTest extends TestCase {
 	}
 
 	/**
+	 * Every string the template knows is in both catalogues.
+	 *
+	 * This is the gap the other tests cannot see. They check the catalogues
+	 * against themselves: every entry that is in a .po has a translation. A
+	 * string that never reached the .po is therefore invisible to them, and
+	 * that is exactly what happens when the build runs without gettext, because
+	 * `msgmerge` is what carries a new string from the template into the
+	 * catalogue. The result ships in English on a German site and nothing says a
+	 * word, which is the 0.56.0 story again with a different cause.
+	 *
+	 * So the template is compared against the catalogues here. The build fails
+	 * before a release rather than a screenshot finding it afterwards.
+	 *
+	 * @dataProvider locales
+	 * @param string $locale Locale to check.
+	 * @return void
+	 */
+	public function test_the_catalogue_covers_every_string_of_the_template( string $locale ): void {
+		$template = dirname( __DIR__, 2 ) . '/languages/living-handbook.pot';
+		$this->assertFileExists( $template );
+
+		$missing = array_values(
+			array_diff(
+				array_keys( $this->entries( $template ) ),
+				array_keys( $this->entries( $this->catalogue( $locale ) ) )
+			)
+		);
+
+		$this->assertSame(
+			array(),
+			$missing,
+			count( $missing ) . ' string(s) are in living-handbook.pot but not in ' . $locale
+			. ". Run bin/check-and-build.sh with gettext installed so msgmerge carries them over, then translate them:\n  "
+			. implode( "\n  ", array_slice( $missing, 0, 20 ) )
+		);
+	}
+
+	/**
 	 * The path of a shipped catalogue.
 	 *
 	 * @param string $locale Locale, e.g. de_DE.

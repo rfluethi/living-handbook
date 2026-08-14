@@ -67,6 +67,8 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Setup\Settings::OPTION_PUBLIC_FEEDBACK );
 	delete_option( LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE );
 	delete_option( LivingHandbook\Taxonomy\Taxonomies::OPTION_ENABLED );
+	delete_option( LivingHandbook\Training\Training::OPTION_ENABLED );
+	delete_option( LivingHandbook\Training\Training::OPTION_FLUSH );
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_COLORS );
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_BASE_SIZE );
 
@@ -102,6 +104,7 @@ function living_handbook_run_uninstall(): void {
 	// (init has not fired during uninstall). All taxonomies must be registered
 	// before their terms can be deleted. The plugin is already loaded above.
 	( new LivingHandbook\PostType\Handbook() )->register_post_type();
+	( new LivingHandbook\Training\Training() )->register_post_type();
 	$handbooks = new LivingHandbook\Handbook\Handbooks();
 	$handbooks->register_taxonomy();
 	( new LivingHandbook\Taxonomy\Taxonomies() )->register_taxonomies();
@@ -113,7 +116,10 @@ function living_handbook_run_uninstall(): void {
 	$handbook_ids = get_posts(
 		LivingHandbook\Access\AccessController::internal(
 			array(
-				'post_type'      => 'handbook',
+				// Learning paths are handbook content too: they carry a handbook
+				// term, they are useless without their lessons, and leaving them
+				// behind would leave rows nothing can reach.
+				'post_type'      => array( 'handbook', LivingHandbook\Training\Training::POST_TYPE ),
 				'post_status'    => 'any',
 				'posts_per_page' => -1,
 				'fields'         => 'ids',

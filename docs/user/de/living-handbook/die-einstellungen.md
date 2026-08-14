@@ -1,6 +1,6 @@
 # Die Einstellungen
 
-Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat sechs Reiter. Gespeichert wird immer nur der Reiter, den du gerade siehst, die übrigen bleiben unberührt.
+Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → Einstellungen**; die Seite dort hat sieben Reiter. Gespeichert wird immer nur der Reiter, den du gerade siehst, die übrigen bleiben unberührt.
 
 ## GitHub-Sync
 
@@ -33,6 +33,10 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 
 **Eigenes CSS:** Gestaltungsregeln, die nur auf den Handbuch-Seiten laden. Sie werden mit dem Plugin gespeichert und beim Löschen des Plugins mit entfernt. Eigenes CSS gewinnt gegen die Farbfelder darüber, du kannst also beides mischen. Wie du damit die Farben änderst, zeigt [Gestaltung anpassen](oberflaeche/gestaltung-anpassen.md). Beispiele stehen direkt auf der Einstellungs-Seite im Reiter **Hilfe** oben rechts.
 
+## Lernpfade
+
+**Lernpfade verwenden:** Standardmäßig aus. Ein Lernpfad ist eine geordnete Auswahl von Seiten, die es im Handbuch schon gibt, für das Onboarding oder für eine Pflichtlektüre. Ist das Häkchen gesetzt, erscheint im Handbuch-Menü der Eintrag **Lernpfade**. Der Stand einer lesenden Person wird in dieser ersten Etappe nur in ihrem Browser gemerkt, es werden also keine Personendaten gespeichert. Ausschalten blendet alles wieder aus und löscht nichts. Wie du einen Pfad anlegst, steht unter [Lernpfade anlegen](inhalte/lernpfade-anlegen.md).
+
 ## Feedback
 
 **Öffentliches Feedback:** Standardmäßig aus. Ist es an, sehen auch abgemeldete Besucherinnen und Besucher die Frage „War das hilfreich?“ auf öffentlichen Seiten und können abstimmen. Zum Schutz der Privatsphäre wird eine solche Stimme keiner Person zugeordnet: kein Cookie, keine IP, nichts anderes Persönliches. Dafür gibt es dort keine Begrenzung auf eine Stimme, dieselbe Person kann nach dem Neuladen erneut abstimmen. Auf internen Seiten stimmen unabhängig davon nur angemeldete Personen ab, je eine Stimme. Wie du die Stimmen auswertest und zurücksetzt, steht unter [Feedback auswerten](pflege/feedback-auswerten.md).
@@ -59,7 +63,7 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 * Zielgruppe: Technik
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
-* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Abgleich, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Seite ohne Zugriff und das Verhalten beim Deinstallieren.
-* Letzte Aktualisierung: 2026-08-09
+* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Abgleich, Schriftgröße, Farben und eigenes CSS, Lernpfade, öffentliches Feedback, Seite ohne Zugriff und das Verhalten beim Deinstallieren.
+* Letzte Aktualisierung: 2026-08-14
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

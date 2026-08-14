@@ -274,6 +274,39 @@ Parameters:
 
 Return an array of taxonomy names; anything not one of the four is ignored.
 
+### `living_handbook_training_enabled`
+
+Filters whether the learning paths module is active. The default is the checkbox under **Handbook → Settings → Learning paths**, which is off.
+
+Switching the module off hides the post type, its menu entry and its pages, and deletes nothing: the paths, their texts and their lesson lists stay, and switching it back on brings them back unchanged. Note what it does not touch: the access rules keep guarding learning paths either way, because a site that switches the module off still has its paths in the database.
+
+Parameters:
+
+- `bool $enabled` Whether the module is switched on.
+
+Return a boolean.
+
+```php
+add_filter( 'living_handbook_training_enabled', '__return_true' );
+```
+
+### `living_handbook_training_slug`
+
+Filters the URL base of a learning path, at `/learning-path/<slug>` by default. Same reason and same caveat as `living_handbook_post_type_slug`.
+
+Parameters:
+
+- `string $slug` The rewrite base. Default `'learning-path'`.
+
+```php
+add_filter(
+	'living_handbook_training_slug',
+	function (): string {
+		return 'lernpfad';
+	}
+);
+```
+
 ### `living_handbook_static_export_time_budget`
 
 Filters how many seconds one pass of a static website export may spend rendering, before it saves its place and lets the browser ask for the next one. The default is 15 seconds, capped at 60 percent of `max_execution_time` where there is one. Lower it on a host that cuts requests short; raising it above what the host allows only turns a paused export into a failed one.

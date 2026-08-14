@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\PostType;
 
 use LivingHandbook\Setup\Settings;
+use LivingHandbook\Training\Training;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -166,6 +167,7 @@ final class Handbook {
 			'post-new.php?post_type=' . self::POST_TYPE,
 			'living-handbook-import',
 			'living-handbook-export',
+			'post_type=' . Training::POST_TYPE,
 			'taxonomy=handbook_set',
 			'taxonomy=handbook_type',
 			'taxonomy=handbook_topic',

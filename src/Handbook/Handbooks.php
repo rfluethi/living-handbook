@@ -11,6 +11,7 @@ namespace LivingHandbook\Handbook;
 
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
+use LivingHandbook\Training\Training;
 use WP_REST_Response;
 use WP_Term;
 
@@ -223,7 +224,7 @@ final class Handbooks {
 		}
 
 		$object_id = (int) $object_id;
-		if ( Handbook::POST_TYPE !== get_post_type( $object_id ) ) {
+		if ( ! in_array( (string) get_post_type( $object_id ), array( Handbook::POST_TYPE, Training::POST_TYPE ), true ) ) {
 			return;
 		}
 
@@ -265,6 +266,51 @@ final class Handbooks {
 	}
 
 	/**
+	 * Count only handbook pages towards a handbook's page count.
+	 *
+	 * Core counts every published object in a term, and since learning paths sit
+	 * in the same term, the overview card would report "12 pages" for ten pages
+	 * and two paths. The card does not lie about it; the count is simply not the
+	 * number core would compute, so it is computed here.
+	 *
+	 * This mirrors _update_post_term_count() with the post type pinned. The
+	 * attachment branch of the core function has no equivalent here: attachments
+	 * are never assigned a handbook term, they inherit their parent page.
+	 *
+	 * @param array<int, int> $terms    Term taxonomy ids to recount.
+	 * @param \WP_Taxonomy    $taxonomy The taxonomy being counted (unused, the
+	 *                                  callback is registered for this one only).
+	 * @return void
+	 */
+	public static function update_page_count( $terms, $taxonomy ): void {
+		global $wpdb;
+		unset( $taxonomy );
+
+		foreach ( (array) $terms as $term ) {
+			$term  = (int) $term;
+			$count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM {$wpdb->term_relationships}, {$wpdb->posts}
+					 WHERE {$wpdb->posts}.ID = {$wpdb->term_relationships}.object_id
+					   AND post_status = 'publish'
+					   AND post_type = %s
+					   AND term_taxonomy_id = %d",
+					Handbook::POST_TYPE,
+					$term
+				)
+			);
+
+			/** This action is documented in wp-includes/taxonomy.php */
+			do_action( 'edit_term_taxonomy', $term, self::TAXONOMY ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- A core hook, fired here because this callback replaces a core one and everything listening for a recount has to hear it.
+			$wpdb->update( $wpdb->term_taxonomy, array( 'count' => $count ), array( 'term_taxonomy_id' => $term ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			/** This action is documented in wp-includes/taxonomy.php */
+			do_action( 'edited_term_taxonomy', $term, self::TAXONOMY ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- See above.
+
+			clean_term_cache( $term, self::TAXONOMY, false );
+		}
+	}
+
+	/**
 	 * Register the grouping taxonomy.
 	 *
 	 * @return void
@@ -272,23 +318,28 @@ final class Handbooks {
 	public function register_taxonomy(): void {
 		register_taxonomy(
 			self::TAXONOMY,
-			array( Handbook::POST_TYPE ),
+			// Learning paths carry the same handbook term as their lessons, which
+			// is what makes their visibility the handbook's visibility without a
+			// second rule. See update_page_count() for the one thing that has to
+			// stay a page count.
+			array( Handbook::POST_TYPE, Training::POST_TYPE ),
 			array(
-				'labels'             => Taxonomies::labels(
+				'labels'                => Taxonomies::labels(
 					__( 'Handbooks', 'living-handbook' ),
 					__( 'Handbook', 'living-handbook' )
 				),
-				'hierarchical'       => true,
-				'public'             => false,
-				'publicly_queryable' => true,
-				'show_ui'            => true,
+				'hierarchical'          => true,
+				'public'                => false,
+				'publicly_queryable'    => true,
+				'update_count_callback' => array( __CLASS__, 'update_page_count' ),
+				'show_ui'               => true,
 				// The list table gets its Handbook column from Maintenance, not from
 				// here. Both at once is what shipped in 0.61.0: two columns saying
 				// the same thing, one of them in the wrong place and neither of
 				// them saying what an empty cell means.
-				'show_admin_column'  => false,
-				'show_in_rest'       => true,
-				'query_var'          => true,
+				'show_admin_column'     => false,
+				'show_in_rest'          => true,
+				'query_var'             => true,
 				/**
 				 * The URL base of a handbook grouping term. English and fixed by
 				 * default; filterable for the same reason and with the same caveat
@@ -296,7 +347,7 @@ final class Handbooks {
 				 *
 				 * @param string $slug The rewrite base. Default 'handbook-set'.
 				 */
-				'rewrite'            => array(
+				'rewrite'               => array(
 					'slug'       => (string) apply_filters( 'living_handbook_taxonomy_slug', 'handbook-set' ),
 					'with_front' => false,
 				),

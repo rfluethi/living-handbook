@@ -13,6 +13,7 @@ use LivingHandbook\Frontend\Appearance;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
+use LivingHandbook\Training\Training;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -48,6 +49,7 @@ final class Settings {
 		return array(
 			'sync'       => __( 'GitHub sync', 'living-handbook' ),
 			'taxonomies' => __( 'Classification', 'living-handbook' ),
+			'training'   => __( 'Learning paths', 'living-handbook' ),
 			'appearance' => __( 'Appearance', 'living-handbook' ),
 			'feedback'   => __( 'Feedback', 'living-handbook' ),
 			'access'     => __( 'Access', 'living-handbook' ),
@@ -283,6 +285,15 @@ final class Settings {
 			)
 		);
 		register_setting(
+			self::group( 'training' ),
+			Training::OPTION_ENABLED,
+			array(
+				'type'              => 'integer',
+				'sanitize_callback' => array( Training::class, 'sanitize_enabled' ),
+				'default'           => 0,
+			)
+		);
+		register_setting(
 			self::group( 'feedback' ),
 			self::OPTION_PUBLIC_FEEDBACK,
 			array(
@@ -371,6 +382,15 @@ final class Settings {
 			array( $this, 'render_taxonomies_field' ),
 			self::tab_page( 'taxonomies' ),
 			'living_handbook_taxonomies_section'
+		);
+
+		add_settings_section( 'living_handbook_training_section', '', '__return_null', self::tab_page( 'training' ) );
+		add_settings_field(
+			Training::OPTION_ENABLED,
+			__( 'Learning paths', 'living-handbook' ),
+			array( $this, 'render_training_field' ),
+			self::tab_page( 'training' ),
+			'living_handbook_training_section'
 		);
 
 		add_settings_section( 'living_handbook_feedback_section', '', '__return_null', self::tab_page( 'feedback' ) );
@@ -662,6 +682,20 @@ final class Settings {
 		echo '<p class="description">' . esc_html__( 'All four are on by default. Switching one off hides it: the column and the filter in the page list, the facet on a handbook\'s entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading its line as well.', 'living-handbook' ) . '</p>';
 		echo '<p class="description">' . esc_html__( 'Nothing is deleted. The terms stay, the pages keep them, and switching one back on brings every assignment back exactly as it was. A bundle export carries all four either way, so moving a handbook to another site never loses what this site happens to hide.', 'living-handbook' ) . '</p>';
 		echo '<p class="description">' . esc_html__( 'The handbook itself is not in this list and cannot be switched off: access hangs on it, and a page that belongs to no handbook is invisible on the front end.', 'living-handbook' ) . '</p>';
+	}
+
+	/**
+	 * Render the learning paths switch.
+	 *
+	 * @return void
+	 */
+	public function render_training_field(): void {
+		$on = Training::is_enabled();
+
+		echo '<label><input type="checkbox" name="' . esc_attr( Training::OPTION_ENABLED ) . '" value="1" ' . checked( $on, true, false ) . '> ' . esc_html__( 'Use learning paths in this handbook installation', 'living-handbook' ) . '</label>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- checked() returns a safe attribute string; the surrounding text is escaped.
+		echo '<p class="description">' . esc_html__( 'Off by default. A learning path is an ordered selection of pages that already exist in a handbook, for onboarding or for a piece of required reading. The pages stay where they are: a path only says which of them to read in which order.', 'living-handbook' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'This first stage keeps no progress on the server. How far somebody has read is remembered in their browser and nowhere else, so nothing personal is stored, and the record is gone when they clear their browser data or change device. It is a guided path, not a record of attendance.', 'living-handbook' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Switching it off hides the learning paths and their menu entry. Nothing is deleted: the paths, their texts and their lesson lists stay, and switching it back on brings them back unchanged.', 'living-handbook' ) . '</p>';
 	}
 
 	/**

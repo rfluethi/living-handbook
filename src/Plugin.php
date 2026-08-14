@@ -33,6 +33,8 @@ use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Setup\Settings;
 use LivingHandbook\Taxonomy\Taxonomies;
+use LivingHandbook\Training\LessonPicker;
+use LivingHandbook\Training\Training;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -84,6 +86,8 @@ final class Plugin {
 	 */
 	public function boot(): void {
 		( new Handbook() )->register();
+		( new Training() )->register();
+		( new LessonPicker() )->register();
 		( new Taxonomies() )->register();
 		( new Handbooks() )->register();
 		( new HandbookAdmin() )->register();
@@ -200,6 +204,7 @@ final class Plugin {
 	 */
 	public static function activate(): void {
 		( new Handbook() )->register_post_type();
+		( new Training() )->register_post_type();
 		( new Taxonomies() )->register_taxonomies();
 		$handbooks = new Handbooks();
 		$handbooks->register_taxonomy();

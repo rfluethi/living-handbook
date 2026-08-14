@@ -2,12 +2,13 @@
 
 Living Handbook registriert Block-Vorlagen (WordPress 6.8 und neuer, nur Block-Themes). Sie fügen sich automatisch in die Vorlagen-Hierarchie ein und nutzen Kopf- und Fussbereich des aktiven Themes, das Handbuch passt sich also in den Rest deiner Website ein. Öffnen und bearbeiten kannst du sie im Site-Editor unter **Design → Editor → Vorlagen**.
 
-Zwei davon machen die Arbeit:
+Drei davon machen die Arbeit:
 
 | Vorlage | Gilt für |
 | --- | --- |
 | **Handbuch-Einstieg** | Die Einstiegsseite jedes Handbuchs, das Term-Archiv von `handbook_set`, zum Beispiel `/handbook-set/allgemein/` |
 | **Handbuch-Seite** | Eine einzelne Handbuch-Seite, zum Beispiel `/handbook/onboarding/` |
+| **Lernpfad** | Ein einzelner Lernpfad, zum Beispiel `/learning-path/onboarding/`, sobald das Modul eingeschaltet ist |
 
 Für die **Übersicht gibt es keine Vorlage**. Die Übersicht ist eine normale WordPress-Seite mit dem Block „Handbuch-Übersicht" darauf; die Aktivierung legt eine für dich an, und du kannst sie verschieben, umgestalten oder ersetzen. Siehe [bloecke.md](bloecke.md).
 
@@ -18,19 +19,28 @@ Ein Hinweis zum Bearbeiten: Sobald du Änderungen an einer dieser Vorlagen im Si
 Gilt für die Einstiegsseite jedes Handbuchs. Ihr Aufbau:
 
 - der Titel des Handbuchs (`core/query-title`) und seine Beschreibung (`core/term-description`),
-- eine zweispaltige Zeile: die Handbuch-Navigation (`living-handbook/navigation`, auf *Akkordeon* gestellt) in einer schmalen linken Spalte, und der Einstiegs-Block (`living-handbook/entry`, mit Suche, Filtern, Bereichen und zuletzt aktualisierten Seiten) in der breiten rechten Spalte.
+- eine zweispaltige Zeile: die Handbuch-Navigation (`living-handbook/navigation`, auf *Akkordeon* gestellt) in einer schmalen linken Spalte, und in der breiten rechten Spalte die Lernpfade dieses Handbuchs (`living-handbook/paths`, das nichts rendert, wenn es keine gibt), die Suchleiste und der Einstiegs-Block (`living-handbook/entry`, mit Filtern, Bereichen und zuletzt aktualisierten Seiten).
 
 ## Handbuch-Seite
 
 Gilt für eine einzelne Handbuch-Seite. Ein dreispaltiger Aufbau, 22 / 54 / 22 Prozent:
 
 - **Links (schmal):** die Handbuch-Navigation (`living-handbook/navigation`, auf *Akkordeon* gestellt) und darunter die Handbuch-Suche (`living-handbook/search`).
-- **Mitte (breit):** der Titel (`core/post-title`), das mobile Inhaltsverzeichnis (`living-handbook/toc` auf *mobil* gestellt, auf kleinen Bildschirmen über dem Inhalt) und der Inhalt (`core/post-content`). Danach alles, was über die Seite Auskunft gibt, am Fuss: die Feedback-Frage (`living-handbook/feedback`), eine Trennlinie, der Herkunftshinweis (`living-handbook/git-source-note`), die Badges (`living-handbook/badges`), eine zweite Trennlinie, die Metadaten-Fusszeile (`living-handbook/pagemeta`) und zuunterst der Kommentarblock des Kerns (`core/comments`), der nichts rendert, solange die Kommentare einer Seite geschlossen sind.
+- **Mitte (breit):** die Lernpfad-Leiste (`living-handbook/path-nav`, die nichts rendert, solange die Seite nicht aus einem Lernpfad geöffnet wurde), der Titel (`core/post-title`), das mobile Inhaltsverzeichnis (`living-handbook/toc` auf *mobil* gestellt, auf kleinen Bildschirmen über dem Inhalt) und der Inhalt (`core/post-content`). Danach alles, was über die Seite Auskunft gibt, am Fuss: die Feedback-Frage (`living-handbook/feedback`), eine Trennlinie, der Herkunftshinweis (`living-handbook/git-source-note`), die Badges (`living-handbook/badges`), eine zweite Trennlinie, die Metadaten-Fusszeile (`living-handbook/pagemeta`) und zuunterst der Kommentarblock des Kerns (`core/comments`), der nichts rendert, solange die Kommentare einer Seite geschlossen sind.
 - **Rechts (schmal):** das Desktop-Inhaltsverzeichnis (`living-handbook/toc`, klebend, auf breiten Bildschirmen sichtbar).
 
 Die beiden Trennlinien sind statische `core/separator`-Blöcke mit der Klasse `living-handbook-divider`. Statisch sind sie mit Absicht: zwei ihrer Nachbarn rendern in manchen Fällen nichts, eine Besucherin ohne öffentliches Feedback bekommt keine Frage und eine in WordPress gepflegte Seite keinen Herkunftshinweis, und der Fuss soll in beiden Fällen gleich aussehen.
 
 Die beiden Inhaltsverzeichnisse sind derselbe Block mit unterschiedlicher Einstellung **Platzierung**; CSS zeigt nur das, welches zur aktuellen Bildschirmbreite passt, du musst dich also nicht entscheiden.
+
+## Lernpfad
+
+Gilt für einen einzelnen Lernpfad und existiert als erreichbare Seite nur, solange das Modul eingeschaltet ist (**Handbuch → Einstellungen → Lernpfade**). Zwei Spalten, 22 / 78 Prozent:
+
+- **Links (schmal):** die Handbuch-Navigation (`living-handbook/navigation`, auf *Akkordeon* gestellt), derselbe Baum, in dem die Lektionen stehen.
+- **Rechts (breit):** der Titel (`core/post-title`), der eigene Text des Pfads (`core/post-content`) und die Lektionsliste (`living-handbook/lessons`).
+
+Eine Inhaltsverzeichnis-Spalte gibt es bewusst nicht: ein Pfad ist eine Liste, und eine Liste seiner eigenen Überschriften wäre eine Liste einer Liste. Die Lernpfad-Leiste fehlt hier aus demselben Grund, aus dem sie auf jeder Lektion steht: wer den Pfad ansieht, ist noch nicht in ihm drin.
 
 ## Umstellen
 

@@ -21,6 +21,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Frontend;
 
 use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\Training\Training;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -67,6 +68,15 @@ final class Templates {
 				'content'     => self::single_content(),
 			)
 		);
+
+		register_block_template(
+			'living-handbook//single-' . Training::POST_TYPE,
+			array(
+				'title'       => __( 'Learning path', 'living-handbook' ),
+				'description' => __( 'A single learning path: navigation left, its own text and the ordered lessons in the centre.', 'living-handbook' ),
+				'content'     => self::training_content(),
+			)
+		);
 	}
 
 	/**
@@ -100,6 +110,7 @@ final class Templates {
 			// The three parts of an entry page as three blocks, so what the editor
 			// shows is what renders, and each can be moved or removed on its own.
 			// They find each other through the handbook id on the result column.
+			. '<!-- wp:living-handbook/paths /-->'
 			. '<!-- wp:living-handbook/search-form /-->'
 			. '<!-- wp:columns --><div class="wp-block-columns">'
 			. '<!-- wp:column {"width":"70%"} --><div class="wp-block-column" style="flex-basis:70%">'
@@ -135,7 +146,8 @@ final class Templates {
 		// ever rendered them, so a page with comments open showed nothing and the
 		// setting looked broken. It renders nothing on a page whose comments are
 		// closed, which is the default, so nothing appears until a site opens them.
-		$center = '<!-- wp:post-title {"level":1} /-->'
+		$center = '<!-- wp:living-handbook/path-nav /-->'
+			. '<!-- wp:post-title {"level":1} /-->'
 			. '<!-- wp:living-handbook/toc {"variant":"mobile"} /-->'
 			. '<!-- wp:post-content /-->'
 			. '<!-- wp:living-handbook/feedback /-->'
@@ -170,6 +182,33 @@ final class Templates {
 			. '</div><!-- /wp:column -->'
 			. '<!-- wp:column {"width":"22%"} --><div class="wp-block-column" style="flex-basis:22%">'
 			. '<!-- wp:living-handbook/toc /-->'
+			. '</div><!-- /wp:column -->'
+			. '</div><!-- /wp:columns -->';
+
+		return self::wrap( $columns );
+	}
+
+	/**
+	 * The single learning path template markup.
+	 *
+	 * The same two columns as a handbook page, minus the on-this-page column: a
+	 * path is a list, and a list of its own headings would be a list of a list.
+	 * The path bar is not here either, for the same reason it is on every lesson:
+	 * you are not inside the path yet when you are looking at it.
+	 *
+	 * @return string
+	 */
+	private static function training_content(): string {
+		$center = '<!-- wp:post-title {"level":1} /-->'
+			. '<!-- wp:post-content /-->'
+			. '<!-- wp:living-handbook/lessons /-->';
+
+		$columns = '<!-- wp:columns {"align":"wide"} --><div class="wp-block-columns alignwide">'
+			. '<!-- wp:column {"width":"22%"} --><div class="wp-block-column" style="flex-basis:22%">'
+			. '<!-- wp:living-handbook/navigation {"variant":"accordion"} /-->'
+			. '</div><!-- /wp:column -->'
+			. '<!-- wp:column {"width":"78%"} --><div class="wp-block-column" style="flex-basis:78%">'
+			. $center
 			. '</div><!-- /wp:column -->'
 			. '</div><!-- /wp:columns -->';
 

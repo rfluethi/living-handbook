@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 8.1
-Stable tag: 0.74.2
+Stable tag: 0.75.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,12 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.75.0 =
+* New: learning paths. Put existing handbook pages in an order, and people read them one after another with a Next button, a numbered list and a mark for what they have already read. For onboarding, or for a piece of required reading. Off by default, switched on under Settings, Learning paths.
+* The pages stay ordinary handbook pages: a path only says which of them to read in which order, so nothing is copied and nothing has to be maintained twice.
+* The build now refuses to produce a release when the translation tools are missing, instead of quietly shipping new text in English on a German site.
+* This first stage stores no progress on the server. How far somebody has read is remembered in their browser and nowhere else, so nothing personal is stored, and it is gone when they clear their browser data or change device.
 
 = 0.74.2 =
 * Fixed: the website export showed your site's header, footer and menu, a second page tree beside the one from the template, and a white page in the plugin's own font instead of your theme's colours and type. 0.74.0 promised the theme and painted over it.

@@ -1,6 +1,6 @@
 # The settings
 
-Every option of the plugin at a glance. You find them under **Handbook → Settings**; the screen there has six tabs. Saving always writes the tab you are looking at; the others are left alone.
+Every option of the plugin at a glance. You find them under **Handbook → Settings**; the screen there has seven tabs. Saving always writes the tab you are looking at; the others are left alone.
 
 ## GitHub sync
 
@@ -33,6 +33,10 @@ A page carries up to three of these small badges, and they are told apart by col
 
 **Custom CSS:** Styling rules that load on the handbook pages only. They are stored with the plugin and removed when you delete the plugin. Custom CSS wins over the colour fields above, so you can mix the two. How to change the colours with them is shown in [Customize the design](interface/customize-the-design.md). Examples sit right on the settings screen, in the **Help** tab at the top right.
 
+## Learning paths
+
+**Use learning paths:** Off by default. A learning path is an ordered selection of pages that already exist in the handbook, for onboarding or for a piece of required reading. With the box ticked, the handbook menu gains a **Learning paths** entry. In this first stage a reader's progress is remembered in their browser only, so nothing personal is stored. Switching it off hides everything again and deletes nothing. How to create a path is under [Create learning paths](content/learning-paths.md).
+
 ## Feedback
 
 **Public feedback:** Off by default. When on, logged-out visitors also see the question "Was this helpful?" on public pages and can vote. To protect privacy, such a vote is linked to no person: no cookie, no IP address, nothing personal. In return there is no one-vote limit there; the same person can vote again after reloading. On internal pages, independently of this, only logged-in people vote, one vote each. How you read and reset the votes is under [Reading feedback](upkeep/reading-feedback.md).
@@ -59,7 +63,7 @@ A page carries up to three of these small badges, and they are told apart by col
 * Zielgruppe: Tech
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
-* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, text size, colours and custom CSS, public feedback, the no-access page and the uninstall behaviour.
-* Letzte Aktualisierung: 2026-08-09
+* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, text size, colours and custom CSS, learning paths, public feedback, the no-access page and the uninstall behaviour.
+* Letzte Aktualisierung: 2026-08-14
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage
