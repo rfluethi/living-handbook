@@ -574,15 +574,15 @@ final class StaticSite {
 
 				if ( '' !== $baseurl && str_starts_with( $url, $baseurl ) ) {
 					$relative = ltrim( substr( $url, strlen( $baseurl ) ), '/' );
-					$file     = $basedir . '/' . $relative;
-					if ( ! isset( $media[ $relative ] ) && is_readable( $file ) ) {
-						$data = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file, not a request.
+					$entry    = self::upload_entry( $relative, $basedir );
+					if ( '' !== $entry && ! isset( $media[ $entry ] ) ) {
+						$data = file_get_contents( $basedir . '/' . $entry ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file, not a request.
 						if ( is_string( $data ) ) {
-							$zip->addFromString( 'assets/media/' . $relative, $data );
-							$media[ $relative ] = true;
+							$zip->addFromString( 'assets/media/' . $entry, $data );
+							$media[ $entry ] = true;
 						}
 					}
-					if ( isset( $media[ $relative ] ) ) {
+					if ( '' !== $entry && isset( $media[ $entry ] ) ) {
 						return $found[1] . '="' . esc_attr( $prefix . 'assets/media/' . $relative ) . '"';
 					}
 				}
@@ -609,15 +609,15 @@ final class StaticSite {
 					$url = (string) array_shift( $bits );
 					if ( '' !== $baseurl && str_starts_with( $url, $baseurl ) ) {
 						$relative = ltrim( substr( $url, strlen( $baseurl ) ), '/' );
-						$file     = $basedir . '/' . $relative;
-						if ( ! isset( $media[ $relative ] ) && is_readable( $file ) ) {
-							$data = file_get_contents( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file, not a request.
+						$entry    = self::upload_entry( $relative, $basedir );
+						if ( '' !== $entry && ! isset( $media[ $entry ] ) ) {
+							$data = file_get_contents( $basedir . '/' . $entry ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file, not a request.
 							if ( is_string( $data ) ) {
-								$zip->addFromString( 'assets/media/' . $relative, $data );
-								$media[ $relative ] = true;
+								$zip->addFromString( 'assets/media/' . $entry, $data );
+								$media[ $entry ] = true;
 							}
 						}
-						if ( isset( $media[ $relative ] ) ) {
+						if ( '' !== $entry && isset( $media[ $entry ] ) ) {
 							$url = $prefix . 'assets/media/' . $relative;
 						}
 					}
@@ -632,6 +632,55 @@ final class StaticSite {
 		$state['media'] = $media;
 
 		return $content;
+	}
+
+	/**
+	 * The path, relative to the uploads folder, of a file a page links to, or ''
+	 * when that link must not be followed into the archive.
+	 *
+	 * The part after the uploads URL comes from page content, which any author
+	 * writes. Appended to the uploads folder unchecked, "../../wp-config.php"
+	 * put the site's database password into the ZIP (0.75.0). So the path is
+	 * decoded, may not climb out with "..", must resolve to a regular file that
+	 * really lies inside the uploads folder (which also catches a symlink
+	 * pointing out of it), and must have a file type this site accepts as an
+	 * upload: whatever a page may link to there, only media is copied.
+	 *
+	 * The decoded form is what is returned, so a file named "a b.png", linked
+	 * as "a%20b.png", is found on disk and lands in the archive under the name
+	 * the browser will ask for.
+	 *
+	 * @param string $relative The link with the uploads URL removed.
+	 * @param string $basedir  The uploads folder.
+	 * @return string
+	 */
+	private static function upload_entry( string $relative, string $basedir ): string {
+		$relative = (string) preg_replace( '/[?#].*$/', '', $relative );
+		$decoded  = rawurldecode( $relative );
+		if ( '' === $decoded || str_contains( $decoded, "\0" ) || str_contains( $decoded, '\\' ) ) {
+			return '';
+		}
+		foreach ( explode( '/', $decoded ) as $segment ) {
+			if ( '..' === $segment || '.' === $segment ) {
+				return '';
+			}
+		}
+
+		$root = realpath( $basedir );
+		$file = realpath( $basedir . '/' . $decoded );
+		if ( false === $root || false === $file || ! is_file( $file ) || ! is_readable( $file ) ) {
+			return '';
+		}
+		if ( ! str_starts_with( $file, rtrim( $root, '/' ) . '/' ) ) {
+			return '';
+		}
+
+		$type = wp_check_filetype( $file, get_allowed_mime_types() );
+		if ( empty( $type['ext'] ) ) {
+			return '';
+		}
+
+		return $decoded;
 	}
 
 	/**

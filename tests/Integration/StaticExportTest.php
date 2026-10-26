@@ -267,6 +267,70 @@ final class StaticExportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A link that climbs out of the uploads folder does not take the file it
+	 * names into the archive. In 0.75.0 "uploads/../wp-config.php" did: the
+	 * part after the uploads URL was appended to the folder unchecked, so any
+	 * author could put the database password into the next export.
+	 *
+	 * @return void
+	 */
+	public function test_a_link_out_of_the_uploads_folder_takes_nothing_along(): void {
+		$uploads = wp_upload_dir();
+		$secret  = dirname( $uploads['basedir'] ) . '/lh-test-secret.txt';
+		file_put_contents( $secret, 'DB_PASSWORD' ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- writing a fixture.
+		$this->files[] = $secret;
+
+		$term = $this->handbook( 'Company' );
+		$this->page(
+			$term,
+			'Harmless',
+			'<p><a href="' . $uploads['baseurl'] . '/../lh-test-secret.txt">a</a>'
+			. ' <a href="' . $uploads['baseurl'] . '/%2e%2e/lh-test-secret.txt">b</a>'
+			. ' <img src="x.png" srcset="' . $uploads['baseurl'] . '/../lh-test-secret.txt 2x"></p>'
+		);
+
+		$zip = $this->export( $term );
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+			$name = (string) $zip->getNameIndex( $i );
+			$this->assertStringNotContainsString( '..', $name, 'No entry may climb out of the archive either.' );
+			$this->assertStringNotContainsString( 'DB_PASSWORD', (string) $zip->getFromIndex( $i ), 'The file outside the uploads folder is not in the archive: ' . $name );
+		}
+	}
+
+	/**
+	 * Only media is copied: a PHP file somebody placed under uploads stays out,
+	 * while an image whose name needs percent-encoding in a link is found.
+	 *
+	 * @return void
+	 */
+	public function test_only_media_from_the_uploads_folder_is_copied(): void {
+		$uploads = wp_upload_dir();
+		$dir     = $uploads['basedir'] . '/lh-test';
+		wp_mkdir_p( $dir );
+		$script = $dir . '/shell.php';
+		$image  = $dir . '/a picture.png';
+		file_put_contents( $script, '<?php echo "x";' ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- writing a fixture.
+		file_put_contents( $image, base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==' ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- writing a fixture.
+		$this->files[] = $script;
+		$this->files[] = $image;
+
+		$term = $this->handbook( 'Company' );
+		$this->page(
+			$term,
+			'Files',
+			'<p><a href="' . $uploads['baseurl'] . '/lh-test/shell.php">s</a>'
+			. ' <img src="' . $uploads['baseurl'] . '/lh-test/a%20picture.png" alt=""></p>'
+		);
+
+		$zip  = $this->export( $term );
+		$html = (string) $zip->getFromName( 'files.html' );
+
+		$this->assertFalse( $zip->locateName( 'assets/media/lh-test/shell.php' ), 'A script is not media.' );
+		$this->assertNotFalse( $zip->locateName( 'assets/media/lh-test/a picture.png' ), 'The image is stored under the name the browser asks for.' );
+		$this->assertStringContainsString( 'src="assets/media/lh-test/a%20picture.png"', $html );
+	}
+
+	/**
 	 * A diagram is drawn in the export, which means the library that draws it
 	 * travels along. It is 3.5 MB, so it travels only when there is something to
 	 * draw, and the pages that carry no diagram do not load it either.
