@@ -62,7 +62,7 @@ final class MkDocsImport {
 		}
 
 		$specs = array();
-		self::walk( $nav, '', $files, $image_map, $converter, $specs );
+		self::walk( $nav, '', $files, $image_map, $converter, $specs, $notes );
 		return $specs;
 	}
 
@@ -183,16 +183,35 @@ final class MkDocsImport {
 	 * @param array<string, string> $image_map   Image map.
 	 * @param MarkdownConverter     $converter   Converter.
 	 * @param array<int, mixed>     $specs       Collected specs, by reference.
+	 * @param array<int, string>    $notes       Filled with what was left out, by reference.
 	 * @return void
 	 */
-	private static function walk( array $nodes, string $parent_path, array $files, array $image_map, MarkdownConverter $converter, array &$specs ): void {
+	private static function walk( array $nodes, string $parent_path, array $files, array $image_map, MarkdownConverter $converter, array &$specs, array &$notes = array() ): void {
 		$order = 0;
 		foreach ( $nodes as $node ) {
+			// MkDocs allows an entry without a title, "- page.md", and takes the
+			// title from the page itself. Up to 0.75.0 such an entry was not an
+			// array and was skipped, so the page was missing from the import.
+			if ( is_string( $node ) ) {
+				$node = array( '' => $node );
+			}
 			if ( ! is_array( $node ) ) {
 				continue;
 			}
 			$title = (string) array_key_first( $node );
 			$value = $node[ $title ];
+
+			// A nav entry may point somewhere else entirely, a link to the
+			// repository or to another site. There is no file behind it, and it
+			// used to become an empty page with the link's title.
+			if ( is_string( $value ) && self::is_external( $value ) ) {
+				$notes[] = sprintf(
+					/* translators: %s: the navigation entry's title or address. */
+					__( 'The navigation entry "%s" points to another address, not to a file in the ZIP, so it was left out.', 'living-handbook' ),
+					'' !== $title ? $title : $value
+				);
+				continue;
+			}
 
 			if ( is_string( $value ) ) {
 				$specs[] = self::page_spec( $title, $value, $parent_path, $order, $files, $image_map, $converter );
@@ -220,7 +239,7 @@ final class MkDocsImport {
 					$children     = $value;
 				}
 				++$order;
-				self::walk( $children, $section_path, $files, $image_map, $converter, $specs );
+				self::walk( $children, $section_path, $files, $image_map, $converter, $specs, $notes );
 			}
 		}
 	}
@@ -233,12 +252,15 @@ final class MkDocsImport {
 	 */
 	private static function find_index_child( array $children ): ?string {
 		foreach ( $children as $child ) {
+			if ( is_string( $child ) ) {
+				$child = array( '' => $child );
+			}
 			if ( ! is_array( $child ) ) {
 				continue;
 			}
 			$key   = (string) array_key_first( $child );
 			$value = $child[ $key ];
-			if ( is_string( $value ) ) {
+			if ( is_string( $value ) && ! self::is_external( $value ) ) {
 				$base = strtolower( basename( $value ) );
 				if ( 'index.md' === $base || 'readme.md' === $base ) {
 					return $value;
@@ -258,6 +280,9 @@ final class MkDocsImport {
 	private static function without_child( array $children, string $path ): array {
 		$out = array();
 		foreach ( $children as $child ) {
+			if ( is_string( $child ) && $child === $path ) {
+				continue;
+			}
 			if ( is_array( $child ) ) {
 				$key = (string) array_key_first( $child );
 				if ( isset( $child[ $key ] ) && $child[ $key ] === $path ) {
@@ -282,16 +307,33 @@ final class MkDocsImport {
 	 * @return array<string, mixed>
 	 */
 	private static function page_spec( string $title, string $nav_path, string $parent_path, int $order, array $files, array $image_map, MarkdownConverter $converter ): array {
-		$content = self::find_content( $nav_path, $files );
-		$html    = '';
-		$slug    = '';
+		$content   = self::find_content( $nav_path, $files );
+		$html      = '';
+		$slug      = '';
+		$transport = array();
 		if ( null !== $content ) {
 			$result = $converter->convert( $content, $image_map );
 			$html   = (string) $result['html'];
-			if ( is_array( $result['transport'] ) && isset( $result['transport']['slug'] ) ) {
-				$slug = (string) $result['transport']['slug'];
+			if ( is_array( $result['transport'] ) ) {
+				$transport = $result['transport'];
+				$slug      = (string) ( $transport['slug'] ?? '' );
+			}
+			if ( '' === $title ) {
+				$title = (string) $result['title'];
 			}
 		}
+		if ( '' === $title ) {
+			$title = ucfirst( trim( (string) preg_replace( '/[-_]+/', ' ', pathinfo( $nav_path, PATHINFO_FILENAME ) ) ) );
+		}
+
+		// The transport block travels with the page, so page type, role, topic,
+		// audiences, review date and excerpt arrive the way they do on every other
+		// import path. Up to 0.75.0 the screen sent an empty block for a MkDocs
+		// import and all of that was lost. Parent and order stay out: the nav is
+		// what defines the structure here, and a "Eltern-Seite" line would move
+		// the page away from where the nav put it.
+		unset( $transport['parent'], $transport['order'] );
+
 		return array(
 			'navTitle'   => $title,
 			'sourcePath' => $nav_path,
@@ -300,7 +342,18 @@ final class MkDocsImport {
 			'html'       => $html,
 			'slug'       => $slug,
 			'synthetic'  => false,
+			'transport'  => $transport,
 		);
+	}
+
+	/**
+	 * Whether a nav value points outside the ZIP: a scheme or a leading "//".
+	 *
+	 * @param string $value Nav value.
+	 * @return bool
+	 */
+	private static function is_external( string $value ): bool {
+		return 1 === preg_match( '#^(?:[a-z][a-z0-9+.-]*:|//)#i', trim( $value ) );
 	}
 
 	/**

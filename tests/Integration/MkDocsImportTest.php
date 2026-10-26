@@ -180,4 +180,52 @@ YAML;
 		$this->assertCount( 2, $specs );
 		$this->assertSame( array( 'Einführung', '02 Tiefer' ), wp_list_pluck( $specs, 'navTitle' ) );
 	}
+
+	/**
+	 * A page's transport block travels in its spec, without the two lines the
+	 * nav decides. Up to 0.75.0 a MkDocs import lost page type, role, topic,
+	 * review date and excerpt of every page.
+	 *
+	 * @return void
+	 */
+	public function test_the_transport_block_travels_with_the_page(): void {
+		$files                  = $this->files();
+		$files['docs/index.md'] = "# Start\n\nWelcome.\n\n## Transport-Metadaten\n* Seitentyp: Anleitung\n* Textauszug: Kurz.\n* Letzte Prüfung: 2026-07-08\n* Reihenfolge: 9\n* Eltern-Seite: Elsewhere\n";
+
+		$specs = MkDocsImport::build_specs( $this->nav(), $files, array(), new MarkdownConverter() );
+
+		$this->assertSame( 'Anleitung', $specs[0]['transport']['page_type'] ?? '' );
+		$this->assertSame( 'Kurz.', $specs[0]['transport']['excerpt'] ?? '' );
+		$this->assertSame( '2026-07-08', $specs[0]['transport']['reviewed'] ?? '' );
+		$this->assertArrayNotHasKey( 'order', $specs[0]['transport'], 'The nav orders the pages.' );
+		$this->assertArrayNotHasKey( 'parent', $specs[0]['transport'], 'The nav nests the pages.' );
+	}
+
+	/**
+	 * A nav entry without a title is imported, with the page's own heading.
+	 *
+	 * @return void
+	 */
+	public function test_an_entry_without_a_title_is_imported(): void {
+		$yaml  = "nav:\n  - index.md\n  - \"02 Tiefer\":\n    - 02-deeper/index.md\n    - 02-deeper/02-010-first-step.md\n";
+		$specs = $this->specs( $yaml );
+
+		$this->assertSame( array( 'Start', '02 Tiefer', 'First step' ), wp_list_pluck( $specs, 'navTitle' ) );
+		$this->assertSame( '02-deeper/index.md', $specs[1]['sourcePath'], 'An untitled index.md is still the section page.' );
+	}
+
+	/**
+	 * A nav entry that links to another address is no page, and says so.
+	 *
+	 * @return void
+	 */
+	public function test_an_external_entry_is_left_out_and_reported(): void {
+		$notes = array();
+		$yaml  = "nav:\n  - \"Einführung\": index.md\n  - \"Repository\": https://github.com/example/repo\n";
+		$specs = $this->specs( $yaml, $notes );
+
+		$this->assertSame( array( 'Einführung' ), wp_list_pluck( $specs, 'navTitle' ) );
+		$this->assertCount( 1, $notes );
+		$this->assertStringContainsString( 'Repository', $notes[0] );
+	}
 }

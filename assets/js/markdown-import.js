@@ -360,7 +360,9 @@
 							content: markup,
 							slug: spec.slug || '',
 							handbook: handbookId(),
-							transport: {},
+							// The server reads the page's transport block and
+							// hands it along; it used to be dropped here.
+							transport: spec.transport || {},
 							parent: parentId,
 							sourcePath: spec.sourcePath,
 							order: spec.order
