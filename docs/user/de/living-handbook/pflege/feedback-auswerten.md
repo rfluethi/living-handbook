@@ -24,7 +24,7 @@ Du weißt jederzeit, welche Seiten helfen und welche nicht. Dafür brauchst du w
 <details>
 <summary>Hinweis: Feedback bleibt auf der Website</summary>
 
-Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Paket-Import überschreibt sie nie. Nach einer großen Überarbeitung kannst du die Zähler einer Seite zurücksetzen: in der Seitenliste unter **Handbuch-Seiten** erscheint bei einer Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler auf null stellt.
+Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines Handbuchs](../inhalte/handbuch-umziehen.md) reisen sie nicht mit. Ein Bündel-Import überschreibt sie nie. Nach einer großen Überarbeitung kannst du die Zähler einer Seite zurücksetzen: in der Seitenliste unter **Handbuch-Seiten** erscheint bei einer Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler auf null stellt.
 
 </details>
 
@@ -41,6 +41,6 @@ Die Feedback-Zähler sind Betriebsdaten dieser einen Website. Beim [Umzug eines 
 * Eltern-Seite: Pflege
 * Reihenfolge: 3
 * Textauszug: Wo die Stimmen aus „War das hilfreich?“ landen und wie du daraus die Seiten findest, die Arbeit brauchen.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage
