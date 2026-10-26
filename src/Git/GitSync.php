@@ -558,12 +558,27 @@ final class GitSync {
 		// job's lifetime can no longer be continued.
 		ArchiveSource::cleanup_stale( 2 * self::JOB_TTL );
 
-		$parsed = self::parse_tree_url( $tree_url );
-		if ( null === $parsed ) {
+		$candidates = self::tree_url_candidates( $tree_url );
+		if ( array() === $candidates ) {
 			return new WP_Error( 'living_handbook_import', __( 'Not a GitHub folder URL.', 'living-handbook' ), array( 'status' => 400 ) );
 		}
 
-		$tree = $this->fetch_tree( $parsed );
+		// A branch may contain slashes, and the URL does not say where the branch
+		// ends and the folder begins: "tree/feature/x/docs" is branch "feature"
+		// with folder "x/docs", or branch "feature/x" with folder "docs". GitHub
+		// itself decides by looking at its refs. Here every reading is tried,
+		// shortest branch first, and the first the tree API knows wins; a branch
+		// without a slash, the usual case, costs no extra request.
+		$parsed = $candidates[0];
+		$tree   = new WP_Error( 'living_handbook_import', __( 'Not a GitHub folder URL.', 'living-handbook' ), array( 'status' => 400 ) );
+		foreach ( $candidates as $candidate ) {
+			$parsed = $candidate;
+			$tree   = $this->fetch_tree( $parsed );
+			$data   = is_wp_error( $tree ) ? (array) $tree->get_error_data() : array();
+			if ( ! is_wp_error( $tree ) || 404 !== (int) ( $data['github_status'] ?? 0 ) ) {
+				break;
+			}
+		}
 		if ( is_wp_error( $tree ) ) {
 			return $tree;
 		}
@@ -1201,8 +1216,15 @@ final class GitSync {
 					array( 'status' => 429 )
 				);
 			}
-			/* translators: %d: HTTP status code returned by the GitHub API. */
-			return new WP_Error( 'living_handbook_import', sprintf( __( 'GitHub API HTTP %d', 'living-handbook' ), $code ), array( 'status' => 502 ) );
+			return new WP_Error(
+				'living_handbook_import',
+				/* translators: %d: HTTP status code returned by the GitHub API. */
+				sprintf( __( 'GitHub API HTTP %d', 'living-handbook' ), $code ),
+				array(
+					'status'        => 502,
+					'github_status' => $code,
+				)
+			);
 		}
 
 		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
@@ -1797,23 +1819,44 @@ final class GitSync {
 	}
 
 	/**
-	 * Parse a github.com tree URL into owner, repo, branch, and path.
+	 * Every way a tree URL can be read, shortest branch first.
+	 *
+	 * The segments are decoded: a folder with a space or an umlaut arrives as
+	 * "Benutzer%20Handbuch" when the URL is copied from the address bar, and
+	 * the tree lists the plain name. Up to 0.75.0 the encoded form was compared
+	 * and the folder was reported as empty. A branch written as "feature%2Fx"
+	 * decodes to "feature/x" the same way.
+	 *
+	 * Public and static so the parsing can be tested on its own.
 	 *
 	 * @param string $url Tree URL.
-	 * @return array{owner:string, repo:string, branch:string, path:string}|null
+	 * @return array<int, array{owner:string, repo:string, branch:string, path:string}>
 	 */
-	private static function parse_tree_url( string $url ): ?array {
-		$url = trim( $url );
-		if ( 1 !== preg_match( '#^https?://github\.com/([^/]+)/([^/]+)/tree/([^/]+)/(.+)$#', $url, $matches ) ) {
-			return null;
+	public static function tree_url_candidates( string $url ): array {
+		$url = (string) preg_replace( '/[?#].*$/', '', trim( $url ) );
+		if ( 1 !== preg_match( '#^https?://github\.com/([^/]+)/([^/]+)/tree/(.+?)/?$#', $url, $matches ) ) {
+			return array();
 		}
-		$path = (string) preg_replace( '/[?#].*$/', '', $matches[4] );
-		return array(
-			'owner'  => $matches[1],
-			'repo'   => $matches[2],
-			'branch' => $matches[3],
-			'path'   => $path,
-		);
+		$segments = array_map( 'rawurldecode', explode( '/', $matches[3] ) );
+		if ( count( $segments ) < 2 || in_array( '', $segments, true ) || in_array( '..', $segments, true ) ) {
+			return array();
+		}
+
+		$out = array();
+		// At least one segment stays for the folder; importing a whole branch
+		// root is not what a tree URL to a folder asks for. Eight is far more
+		// slashes than any real branch name carries, and keeps a long folder
+		// path from turning into as many API requests.
+		$last = min( count( $segments ) - 1, 8 );
+		for ( $i = 1; $i <= $last; $i++ ) {
+			$out[] = array(
+				'owner'  => rawurldecode( $matches[1] ),
+				'repo'   => rawurldecode( $matches[2] ),
+				'branch' => implode( '/', array_slice( $segments, 0, $i ) ),
+				'path'   => implode( '/', array_slice( $segments, $i ) ),
+			);
+		}
+		return $out;
 	}
 
 	/**
@@ -2421,7 +2464,19 @@ final class GitSync {
 		}
 		$relative = (string) preg_replace( '/[?#].*$/', '', $relative );
 		$dir      = self::dirname_of( (string) $parts['path'] );
-		$path     = self::normalize_path( $dir . '/' . ltrim( $relative, '/' ) );
+		if ( str_starts_with( $relative, '/' ) ) {
+			// A path from the root means the repository root, the way GitHub
+			// shows it, not the folder of the page. Up to 0.75.0 "/assets/x.png"
+			// on docs/guide.md was looked for at docs/assets/x.png. On a raw URL
+			// the root is the first three segments: owner, repository, branch
+			// (a branch with a slash is one encoded segment there).
+			$segments = explode( '/', ltrim( (string) $parts['path'], '/' ) );
+			$dir      = '/' . implode( '/', array_slice( $segments, 0, 3 ) );
+		}
+		$path = self::normalize_path( $dir . '/' . ltrim( $relative, '/' ) );
+		if ( str_starts_with( $relative, '/' ) && 0 !== strpos( $path . '/', $dir . '/' ) ) {
+			return '';
+		}
 		return $parts['scheme'] . '://' . $parts['host'] . $path;
 	}
 

@@ -99,4 +99,41 @@ final class GitSyncTest extends TestCase {
 		$this->assertSame( '', GitSync::normalize_url( '' ) );
 		$this->assertSame( '', GitSync::normalize_url( '   ' ) );
 	}
+
+	/**
+	 * A tree URL is read every way it can be, shortest branch first, so a
+	 * branch with a slash is found. Up to 0.75.0 the branch ended at the first
+	 * slash and "feature/x" could not be imported.
+	 *
+	 * @return void
+	 */
+	public function test_a_tree_url_offers_every_split_of_branch_and_folder(): void {
+		$candidates = GitSync::tree_url_candidates( 'https://github.com/acme/docs/tree/feature/x/handbuch/de' );
+
+		$this->assertSame( array( 'feature', 'feature/x', 'feature/x/handbuch' ), array_column( $candidates, 'branch' ) );
+		$this->assertSame( array( 'x/handbuch/de', 'handbuch/de', 'de' ), array_column( $candidates, 'path' ) );
+	}
+
+	/**
+	 * Encoded segments are decoded, so a folder with a space matches the tree.
+	 *
+	 * @return void
+	 */
+	public function test_a_tree_url_is_decoded(): void {
+		$candidates = GitSync::tree_url_candidates( 'https://github.com/acme/docs/tree/release%2F2/Benutzer%20Handbuch?tab=readme#top' );
+
+		$this->assertSame( 'release/2', $candidates[0]['branch'] );
+		$this->assertSame( 'Benutzer Handbuch', $candidates[0]['path'] );
+	}
+
+	/**
+	 * Something that is not a tree URL to a folder yields nothing.
+	 *
+	 * @return void
+	 */
+	public function test_a_tree_url_without_a_folder_is_refused(): void {
+		$this->assertSame( array(), GitSync::tree_url_candidates( 'https://github.com/acme/docs/tree/main' ) );
+		$this->assertSame( array(), GitSync::tree_url_candidates( 'https://github.com/acme/docs/blob/main/a.md' ) );
+		$this->assertSame( array(), GitSync::tree_url_candidates( 'https://github.com/acme/docs/tree/main/../secret' ) );
+	}
 }
