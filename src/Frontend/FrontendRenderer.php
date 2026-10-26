@@ -101,7 +101,12 @@ final class FrontendRenderer {
 				'rest'            => esc_url_raw( rest_url( 'living-handbook/v1/feedback' ) ),
 				'filter'          => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE ) ),
 				'search'          => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE_SEARCH ) ),
-				'nonce'           => wp_create_nonce( 'wp_rest' ),
+				// Only for a signed-in reader. Core checks a nonce that is sent even
+				// for a guest, and a page cache serves the guest's nonce long after it
+				// expired: on a cached public handbook, search, filters and feedback
+				// answered 403 after a day (0.75.0). A guest needs no nonce, the
+				// endpoints decide on their own what a guest may see.
+				'nonce'           => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 				'thanks'          => __( 'Thanks for your feedback.', 'living-handbook' ),
 				'feedbackError'   => __( 'Your feedback could not be sent. Please try again.', 'living-handbook' ),
 				'filterError'     => __( 'The list could not be updated. Please reload the page.', 'living-handbook' ),

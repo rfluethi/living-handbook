@@ -15,6 +15,18 @@
 		return window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 	}
 
+	/* ---------- REST headers ---------- */
+
+	// The nonce is only there for a signed-in reader. Sending an empty or stale
+	// one makes core refuse the request, so a guest sends none.
+	function restHeaders( extra ) {
+		var headers = extra || {};
+		if ( window.livingHandbook && window.livingHandbook.nonce ) {
+			headers[ 'X-WP-Nonce' ] = window.livingHandbook.nonce;
+		}
+		return headers;
+	}
+
 	/* ---------- Small debounce helper for live search ---------- */
 
 	function debounce( fn, wait ) {
@@ -112,7 +124,7 @@
 
 		main.setAttribute( 'aria-busy', 'true' );
 		fetch( window.livingHandbook.filter + '?' + params.toString(), {
-			headers: { 'X-WP-Nonce': window.livingHandbook.nonce },
+			headers: restHeaders(),
 			credentials: 'same-origin',
 			signal: controller ? controller.signal : undefined
 		} ).then( function ( response ) {
@@ -350,7 +362,7 @@
 			params.set( 'term_id', termId );
 			params.set( 'q', q );
 			fetch( window.livingHandbook.search + '?' + params.toString(), {
-				headers: { 'X-WP-Nonce': window.livingHandbook.nonce },
+				headers: restHeaders(),
 				credentials: 'same-origin',
 				signal: controller ? controller.signal : undefined
 			} ).then( function ( response ) {
@@ -534,10 +546,7 @@
 
 		fetch( window.livingHandbook.rest, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': window.livingHandbook.nonce
-			},
+			headers: restHeaders( { 'Content-Type': 'application/json' } ),
 			body: JSON.stringify( { post_id: postId, value: value } )
 		} ).then( function ( response ) {
 			if ( ! response.ok ) {
