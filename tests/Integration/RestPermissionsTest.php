@@ -371,4 +371,56 @@ final class RestPermissionsTest extends WP_UnitTestCase {
 		$data = $this->server->dispatch( $request )->get_data();
 		$this->assertSame( $own, (int) get_post_field( 'post_parent', (int) $data['id'] ), 'Under a page of their own it works as before.' );
 	}
+
+	/**
+	 * A transport block cannot make a contributor create terms. The page gets
+	 * the terms that exist, and nothing new appears in the taxonomy.
+	 *
+	 * @return void
+	 */
+	public function test_a_contributor_cannot_create_terms_through_the_transport_block(): void {
+		$existing = self::factory()->term->create(
+			array(
+				'taxonomy' => 'handbook_type',
+				'name'     => 'Anleitung',
+			)
+		);
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'contributor' ) ) );
+		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/create' );
+		$request->set_param( 'title', 'Terms' );
+		$request->set_param(
+			'transport',
+			array(
+				'page_type' => 'Anleitung',
+				'topic'     => 'Invented topic',
+				'audiences' => array( 'Invented audience' ),
+			)
+		);
+		$data = $this->server->dispatch( $request )->get_data();
+
+		$this->assertFalse( (bool) term_exists( 'Invented topic', 'handbook_topic' ), 'No new topic.' );
+		$this->assertFalse( (bool) term_exists( 'Invented audience', 'handbook_audience' ), 'No new audience.' );
+		$this->assertSame( array( $existing ), wp_get_object_terms( (int) $data['id'], 'handbook_type', array( 'fields' => 'ids' ) ), 'An existing term is still assigned.' );
+	}
+
+	/**
+	 * An editor, who may manage the terms, still creates them through an
+	 * import, and so does the scheduled sync, which runs without a user.
+	 *
+	 * @return void
+	 */
+	public function test_an_editor_and_the_sync_still_create_terms(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/create' );
+		$request->set_param( 'title', 'Terms' );
+		$request->set_param( 'transport', array( 'topic' => 'Editor topic' ) );
+		$this->server->dispatch( $request );
+		$this->assertTrue( (bool) term_exists( 'Editor topic', 'handbook_topic' ) );
+
+		wp_set_current_user( 0 );
+		$page = self::factory()->post->create( array( 'post_type' => Handbook::POST_TYPE ) );
+		\LivingHandbook\Import\Postprocessor::apply_transport( $page, array( 'topic' => 'Cron topic' ) );
+		$this->assertTrue( (bool) term_exists( 'Cron topic', 'handbook_topic' ), 'Without a user, as in cron, terms are created as before.' );
+	}
 }

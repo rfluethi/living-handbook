@@ -107,27 +107,19 @@ final class Postprocessor {
 
 		$type = trim( (string) ( $transport['page_type'] ?? '' ) );
 		if ( '' !== $type ) {
-			if ( Taxonomies::is_enabled( Taxonomies::PAGE_TYPE ) ) {
-				wp_set_object_terms( $post_id, $type, Taxonomies::PAGE_TYPE );
-			}
+			self::set_terms( $post_id, array( $type ), Taxonomies::PAGE_TYPE );
 		}
 		$topic = trim( (string) ( $transport['topic'] ?? '' ) );
 		if ( '' !== $topic ) {
-			if ( Taxonomies::is_enabled( Taxonomies::TOPIC ) ) {
-				wp_set_object_terms( $post_id, $topic, Taxonomies::TOPIC );
-			}
+			self::set_terms( $post_id, array( $topic ), Taxonomies::TOPIC );
 		}
 		$role = trim( (string) ( $transport['role'] ?? '' ) );
 		if ( '' !== $role ) {
-			if ( Taxonomies::is_enabled( Taxonomies::ROLE ) ) {
-				wp_set_object_terms( $post_id, $role, Taxonomies::ROLE );
-			}
+			self::set_terms( $post_id, array( $role ), Taxonomies::ROLE );
 		}
 		$audiences = ( isset( $transport['audiences'] ) && is_array( $transport['audiences'] ) ) ? array_map( 'strval', $transport['audiences'] ) : array();
 		if ( ! empty( $audiences ) ) {
-			if ( Taxonomies::is_enabled( Taxonomies::AUDIENCE ) ) {
-				wp_set_object_terms( $post_id, $audiences, Taxonomies::AUDIENCE );
-			}
+			self::set_terms( $post_id, $audiences, Taxonomies::AUDIENCE );
 		}
 
 		// Order and excerpt are written only when the transport block carries them,
@@ -183,6 +175,55 @@ final class Postprocessor {
 		} else {
 			delete_post_meta( $post_id, self::PARENT_META );
 		}
+	}
+
+	/**
+	 * Give a page the named terms of one classifying taxonomy.
+	 *
+	 * Called with names, wp_set_object_terms() creates every term it does not
+	 * find. The import route needs only edit_posts, so up to 0.75.0 a contributor could
+	 * add terms to a taxonomy whose term screen they are not allowed to open,
+	 * just by naming them in a transport block. A user who may not edit the
+	 * taxonomy's terms now gets the existing ones assigned and the others left
+	 * out.
+	 *
+	 * The check applies only when a user is logged in. The scheduled sync runs
+	 * from cron with no user at all, and WP-CLI the same way; neither is a
+	 * person who could have smuggled a term in, and the files they apply were
+	 * put there by somebody who could edit the page. Asking current_user_can()
+	 * there would refuse everything and silently stop the sync from creating
+	 * the terms its repository names. Every route that reaches this with a user
+	 * is a request somebody made, so that is where the rule belongs.
+	 *
+	 * @param int      $post_id  Post id.
+	 * @param string[] $names    Term names.
+	 * @param string   $taxonomy Taxonomy.
+	 * @return void
+	 */
+	private static function set_terms( int $post_id, array $names, string $taxonomy ): void {
+		if ( ! Taxonomies::is_enabled( $taxonomy ) ) {
+			return;
+		}
+		$tax = get_taxonomy( $taxonomy );
+		if ( get_current_user_id() > 0 && $tax instanceof \WP_Taxonomy ) {
+			if ( ! current_user_can( $tax->cap->assign_terms ) ) {
+				return;
+			}
+			if ( ! current_user_can( $tax->cap->edit_terms ) ) {
+				$existing = array();
+				foreach ( $names as $name ) {
+					$term = get_term_by( 'name', $name, $taxonomy );
+					if ( $term instanceof WP_Term ) {
+						$existing[] = (int) $term->term_id;
+					}
+				}
+				if ( array() !== $existing ) {
+					wp_set_object_terms( $post_id, $existing, $taxonomy );
+				}
+				return;
+			}
+		}
+		wp_set_object_terms( $post_id, count( $names ) > 1 ? $names : $names[0], $taxonomy );
 	}
 
 	/**
