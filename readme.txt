@@ -27,10 +27,11 @@ Core features:
 * A handbook menu block that lists the handbooks a visitor may read; it can also be injected into the theme's own navigation.
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder; a folder is read with its subfolders and the folder structure becomes the page hierarchy. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
+* Learning paths (optional, off by default): put existing handbook pages in an order for onboarding or required reading, with a numbered lesson list, a Next button and a mark for what has been read. Progress is kept in the reader's browser only; nothing personal is stored on the server.
 * Two exports: a bundle that moves a handbook to another site running the plugin, and a static website (a ZIP of plain HTML with the pages, their images, a page list, a search and a look you pick) for readers who have no access to your site at all. Both work on a single area too.
 * The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and shipped inside the plugin. One click on the import screen loads it into the site, in English or German, always matching the installed version; the living_handbook_app_handbook_url filter points it at your own GitHub repository instead.
 * Fully translatable (English source), with a German and a Swiss German translation included.
-* No external WordPress plugin is required; a block theme is. The import and sync require three Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/ together with their own dependencies, all under GPL-compatible licenses (BSD-3-Clause, MIT, GPL-2.0-or-later). Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/ (see the FAQ for the third-party disclosure).
+* No external WordPress plugin is required; a block theme is. The import and sync require three Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/ together with their own dependencies. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/. All bundled code is under GPL-compatible licenses; see the FAQ for the third-party disclosure.
 
 == Installation ==
 
@@ -60,11 +61,15 @@ Almost always one of two reasons. Either the page is not assigned to a handbook:
 
 = Does the plugin connect to any external services? =
 
-Only when you use the GitHub features, and only to addresses you enter yourself. The Markdown import and the GitHub sync read files from GitHub (github.com, raw.githubusercontent.com and the GitHub contents API at api.github.com). The plugin only reads the public files you point it at; it does not send any of your data anywhere, and it contacts nothing when you do not use those features.
+Yes, two, and both are described under External services below: GitHub, when you import from it or sync a page with it, and Gravatar, through WordPress's own avatars in the page footer.
 
 = What third-party libraries does the plugin bundle? =
 
-The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license, whose full text ships as assets/js/mermaid.LICENSE.txt. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The import and sync also require three PHP libraries, shipped in vendor/ with their own dependencies: league/commonmark (BSD-3-Clause license), symfony/yaml (MIT license), and enshrined/svg-sanitize (GPL-2.0-or-later license), which cleans imported SVG images before they are stored. All bundled libraries use GPL-compatible licenses (BSD-3-Clause, MIT, GPL-2.0-or-later).
+The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js), an open-source diagramming library by the Mermaid project, released under the MIT license, whose full text ships as assets/js/mermaid.LICENSE.txt. Homepage: https://mermaid.js.org. Source: https://github.com/mermaid-js/mermaid. It runs in the browser to draw Mermaid diagrams and makes no network calls. The bundle contains mermaid's own dependencies under their licenses: most are MIT, the d3 modules are ISC or BSD-3-Clause, the parser library chevrotain is Apache-2.0, DOMPurify is dual-licensed under MPL-2.0 or Apache-2.0, and one small geometry module, robust-predicates, is released under the Unlicense.
+
+The import and sync also require three PHP libraries, shipped in vendor/ with their own dependencies: league/commonmark (BSD-3-Clause license), symfony/yaml (MIT license), and enshrined/svg-sanitize (GPL-2.0-or-later license), which cleans imported SVG images before they are stored. Their dependencies are BSD-3-Clause (league/config, and nette/schema and nette/utils, which are also offered under GPL-2.0 or GPL-3.0) and MIT.
+
+All of these licenses are compatible with the plugin's GPL-2.0-or-later. Apache-2.0 is compatible with GPL version 3, which the "or later" in the plugin's license allows.
 
 = Who can see a handbook? =
 
@@ -76,7 +81,27 @@ By default your content is kept and only the plugin's own settings and caches ar
 
 = What does the plugin store about visitors? =
 
-Very little, and nothing is sent anywhere. The "Was this helpful?" feedback records which logged-in users voted on a page (their user IDs) so it can count one vote per user; it accepts no vote from logged-out visitors. The counts and the voter list are stored as post meta in your own database and are removed with the content option when you delete the plugin.
+Very little. The "Was this helpful?" feedback records which logged-in users voted on a page (their user IDs) so it can count one vote per user. By default it accepts no vote from logged-out visitors. If you switch on Public feedback under Handbook, Settings, Feedback, logged-out visitors can vote on pages of public handbooks; such a vote stores no cookie, no IP address and no identifier, it only raises the page's counter. To keep a script from filling that counter, anonymous votes are counted per page and hour in a transient (lh_fb_ followed by the page ID and the hour) that expires after two hours, and a page accepts 200 of them per hour by default. The counts and the voter list are stored as post meta in your own database and are removed with the content option when you delete the plugin.
+
+Learning paths remember which lessons someone has read in that person's browser (localStorage), never on the server. The page footer shows avatars, which WordPress may load from Gravatar; see External services.
+
+== External services ==
+
+The plugin connects to two external services. Neither is contacted unless the feature that needs it is used.
+
+= GitHub =
+
+Used by the Markdown import from GitHub, by pages whose source is set to "Synced from GitHub", and by the App handbook tab only if a developer has pointed it at a repository with the living_handbook_app_handbook_url filter (by default the app handbook is read from the plugin folder and nothing is fetched).
+
+* raw.githubusercontent.com: the Markdown file of a page and the images it references are downloaded when you import it, when you save a synced page, when you press Sync now, and on the background schedule you choose under Handbook, Settings (weekly by default, or off).
+* api.github.com: when you import a folder, the repository's file list is read in one request, and for a folder of more than about twenty files the address of the repository archive is requested.
+* codeload.github.com: that archive is then downloaded once, instead of one request per file.
+
+What is sent: the repository owner, name, branch and file paths contained in the URLs you enter, and a User-Agent header naming the plugin. No content of your site, no user data and no access token is sent; only public repositories can be read. GitHub's terms of service: https://docs.github.com/en/site-policy/github-terms/github-terms-of-service. GitHub's privacy statement: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement.
+
+= Gravatar =
+
+The page footer of a handbook page (the Handbook page meta block) shows the people who created, last updated and last reviewed the page, each with an avatar. The avatar comes from WordPress's own get_avatar(), which by default loads the image from Gravatar (secure.gravatar.com), a service by Automattic. Each reader's browser then requests the image, and the request carries a hash of that person's e-mail address. It happens every time such a page is viewed. To avoid it, untick Show Avatars under Settings, Discussion, which switches avatars off for the whole site, or switch off "Show people (avatar and name)" in the settings of the Handbook page meta block. Gravatar's terms of service: https://wordpress.com/tos/. Automattic's privacy policy: https://automattic.com/privacy/.
 
 == Screenshots ==
 
