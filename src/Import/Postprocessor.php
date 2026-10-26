@@ -73,6 +73,25 @@ final class Postprocessor {
 	private static ?array $index = null;
 
 	/**
+	 * The handbook a page goes into: the one its transport block names, when
+	 * that handbook exists, otherwise the default.
+	 *
+	 * @param array<string, mixed> $transport           Transport values.
+	 * @param int                  $default_handbook_id Handbook to use when the transport names none.
+	 * @return int Term id, or 0.
+	 */
+	public static function transport_handbook( array $transport, int $default_handbook_id = 0 ): int {
+		$handbook_name = trim( (string) ( $transport['handbook'] ?? '' ) );
+		if ( '' !== $handbook_name ) {
+			$term = get_term_by( 'name', $handbook_name, Handbooks::TAXONOMY );
+			if ( $term instanceof WP_Term ) {
+				return (int) $term->term_id;
+			}
+		}
+		return $default_handbook_id;
+	}
+
+	/**
 	 * Apply the transport values to a page.
 	 *
 	 * @param int                  $post_id            Post id.
@@ -81,14 +100,7 @@ final class Postprocessor {
 	 * @return void
 	 */
 	public static function apply_transport( int $post_id, array $transport, int $default_handbook_id = 0 ): void {
-		$handbook_id   = $default_handbook_id;
-		$handbook_name = trim( (string) ( $transport['handbook'] ?? '' ) );
-		if ( '' !== $handbook_name ) {
-			$term = get_term_by( 'name', $handbook_name, Handbooks::TAXONOMY );
-			if ( $term instanceof WP_Term ) {
-				$handbook_id = (int) $term->term_id;
-			}
-		}
+		$handbook_id = self::transport_handbook( $transport, $default_handbook_id );
 		if ( 0 < $handbook_id ) {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}

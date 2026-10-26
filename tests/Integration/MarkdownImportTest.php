@@ -464,4 +464,67 @@ final class MarkdownImportTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'Hidden', $result['html'] );
 		$this->assertStringNotContainsString( '<hr', $result['html'] );
 	}
+
+	/**
+	 * Two sources that share a path ("index.md" in two MkDocs projects) stay two
+	 * pages when they go into two handbooks, also when one handbook sits below
+	 * the other. The lookup used to include the child handbooks, so an import
+	 * into the parent overwrote the child's page of the same path.
+	 *
+	 * @return void
+	 */
+	public function test_a_source_path_match_does_not_reach_into_a_child_handbook(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$page = new MarkdownImportPage();
+
+		$parent = wp_insert_term( 'Parent handbook', Handbooks::TAXONOMY );
+		$child  = wp_insert_term( 'Child handbook', Handbooks::TAXONOMY, array( 'parent' => (int) $parent['term_id'] ) );
+
+		$in_child = $page->create_callback(
+			$this->create_request(
+				array(
+					'title'      => 'Child start',
+					'sourcePath' => 'index.md',
+					'handbook'   => (int) $child['term_id'],
+				)
+			)
+		);
+		$in_parent = $page->create_callback(
+			$this->create_request(
+				array(
+					'title'      => 'Parent start',
+					'sourcePath' => 'index.md',
+					'handbook'   => (int) $parent['term_id'],
+				)
+			)
+		);
+
+		$this->assertNotSame( $in_child['id'], $in_parent['id'], 'The parent import must not take over the child handbook\'s page.' );
+		$this->assertSame( 'Child start', get_the_title( (int) $in_child['id'] ) );
+	}
+
+	/**
+	 * A file that names its handbook in the transport block is matched in that
+	 * handbook, where apply_transport() puts it, not in the one chosen on screen.
+	 *
+	 * @return void
+	 */
+	public function test_a_re_import_is_matched_in_the_handbook_the_file_names(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$page = new MarkdownImportPage();
+
+		$chosen = wp_insert_term( 'Chosen handbook', Handbooks::TAXONOMY );
+		wp_insert_term( 'Named handbook', Handbooks::TAXONOMY );
+		$params = array(
+			'title'      => 'Moves itself',
+			'sourcePath' => 'docs/moves.md',
+			'handbook'   => (int) $chosen['term_id'],
+			'transport'  => array( 'handbook' => 'Named handbook' ),
+		);
+
+		$first  = $page->create_callback( $this->create_request( $params ) );
+		$second = $page->create_callback( $this->create_request( $params ) );
+
+		$this->assertSame( $first['id'], $second['id'], 'The second import refreshes the page instead of doubling it.' );
+	}
 }

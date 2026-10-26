@@ -529,8 +529,14 @@ final class MarkdownImportPage {
 		// by path; a file-based import (an explicit slug) into a chosen handbook
 		// is matched by slug within that handbook. A pasted draft, which carries
 		// neither, always creates a new page.
-		$allow_slug_match = '' !== $explicit_slug && $handbook_id > 0;
-		$existing_id      = self::find_existing_page( $slug, $source_path, $handbook_id, $allow_slug_match );
+		// The lookup is scoped to the handbook the page will end up in, which is
+		// the one the transport block names when it names one: that is what
+		// apply_transport() assigns below. Scoped to the screen's choice instead,
+		// a file that moves itself into another handbook was looked for in the
+		// wrong one, and two sources sharing a path like "index.md" met.
+		$target_handbook  = Postprocessor::transport_handbook( $transport, $handbook_id );
+		$allow_slug_match = '' !== $explicit_slug && $target_handbook > 0;
+		$existing_id      = self::find_existing_page( $slug, $source_path, $target_handbook, $allow_slug_match );
 
 		// Never let a re-import overwrite a page the current user may not edit.
 		// The endpoints only require edit_posts, which a Contributor has, so a
@@ -617,11 +623,16 @@ final class MarkdownImportPage {
 		// internal ones, or a re-import creates duplicates instead of updating.
 		$base = AccessController::internal( $base );
 		if ( $handbook_id > 0 ) {
+			// include_children off, like every other handbook query. A handbook's
+			// pages are its own, not those of the handbooks below it; with the
+			// default, an import into a parent handbook found and overwrote the
+			// page of the same path in a child handbook.
 			$base['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				array(
-					'taxonomy' => Handbooks::TAXONOMY,
-					'field'    => 'term_id',
-					'terms'    => $handbook_id,
+					'taxonomy'         => Handbooks::TAXONOMY,
+					'field'            => 'term_id',
+					'terms'            => $handbook_id,
+					'include_children' => false,
 				),
 			);
 		}
