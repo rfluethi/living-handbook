@@ -39,9 +39,17 @@ final class PageMeta {
 		if ( ! is_user_logged_in() && ! Settings::public_feedback_enabled() ) {
 			return '';
 		}
+
+		// The buttons say "Yes" and "No", which means nothing on its own. Up to
+		// 0.75.1 nothing tied them to the question beside them, so a screen
+		// reader that jumps from button to button announced "Yes, button" with
+		// no question. The container is a group named by the question now.
+		$question = wp_unique_id( 'living-handbook-feedback-' );
+
 		return sprintf(
-			'<div class="living-handbook-feedback" data-post="%d"><span>%s</span> <button type="button" data-value="yes">%s</button> <button type="button" data-value="no">%s</button></div>',
+			'<div class="living-handbook-feedback" data-post="%1$d" role="group" aria-labelledby="%2$s"><span id="%2$s">%3$s</span> <button type="button" data-value="yes">%4$s</button> <button type="button" data-value="no">%5$s</button></div>',
 			$post_id,
+			esc_attr( $question ),
 			esc_html__( 'Was this helpful?', 'living-handbook' ),
 			esc_html__( 'Yes', 'living-handbook' ),
 			esc_html__( 'No', 'living-handbook' )

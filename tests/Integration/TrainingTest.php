@@ -375,6 +375,27 @@ final class TrainingTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Two path lists on one page do not share an id. The id of the heading was
+	 * fixed up to 0.75.1, so a second block repeated it and its label pointed
+	 * at the first heading.
+	 *
+	 * @return void
+	 */
+	public function test_two_path_lists_on_one_page_have_their_own_heading(): void {
+		$this->path( array( $this->page( 'Lesson' ) ) );
+		$this->go_to( (string) get_term_link( $this->handbook, Handbooks::TAXONOMY ) );
+
+		$first  = PathView::render_paths();
+		$second = PathView::render_paths();
+
+		$this->assertSame( 1, preg_match( '/aria-labelledby="([^"]+)"/', $first, $one ) );
+		$this->assertSame( 1, preg_match( '/aria-labelledby="([^"]+)"/', $second, $two ) );
+		$this->assertNotSame( $one[1], $two[1] );
+		$this->assertStringContainsString( 'id="' . $one[1] . '"', $first );
+		$this->assertStringContainsString( 'id="' . $two[1] . '"', $second );
+	}
+
+	/**
 	 * With the module off, none of the three places render anything. A site that
 	 * switched learning paths off must not find a leftover of them on a page.
 	 *

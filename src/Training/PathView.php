@@ -211,8 +211,14 @@ final class PathView {
 			return '';
 		}
 
-		return '<nav class="living-handbook-paths" aria-labelledby="living-handbook-paths-title">'
-			. '<h2 class="living-handbook-paths__title" id="living-handbook-paths-title">'
+		// A unique id per rendering: the block can sit on a page twice (in the
+		// template and in the content, or in two columns), and up to 0.75.1 both
+		// copies carried the same fixed id, so the second label pointed at the
+		// first heading and the page held a duplicate id.
+		$title = wp_unique_id( 'living-handbook-paths-title-' );
+
+		return '<nav class="living-handbook-paths" aria-labelledby="' . esc_attr( $title ) . '">'
+			. '<h2 class="living-handbook-paths__title" id="' . esc_attr( $title ) . '">'
 			. esc_html__( 'Learning paths', 'living-handbook' )
 			. '</h2><ul class="living-handbook-paths__list">' . $items . '</ul></nav>';
 	}

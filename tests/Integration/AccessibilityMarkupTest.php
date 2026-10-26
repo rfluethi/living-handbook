@@ -17,6 +17,7 @@ namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Blocks\Blocks;
 use LivingHandbook\Frontend\Entry;
+use LivingHandbook\Frontend\PageMeta;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use WP_Term;
@@ -130,5 +131,23 @@ final class AccessibilityMarkupTest extends WP_UnitTestCase {
 		$html = ( new Blocks() )->render_search();
 
 		$this->assertMatchesRegularExpression( '/<label[^>]+for="living-handbook-search-[^"]*"/', $html );
+	}
+
+	/**
+	 * The feedback buttons are a group named by the question beside them. On
+	 * their own they say "Yes" and "No", and up to 0.75.1 nothing tied them to
+	 * "Was this helpful?", so a screen reader moving from button to button
+	 * announced an answer without its question.
+	 *
+	 * @return void
+	 */
+	public function test_the_feedback_buttons_are_named_by_their_question(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		$html = PageMeta::render_feedback( 1 );
+
+		$this->assertSame( 1, preg_match( '/<div class="living-handbook-feedback"[^>]*role="group"[^>]*aria-labelledby="([^"]+)"/', $html, $group ), 'The buttons are not a named group.' );
+		$this->assertStringContainsString( '<span id="' . $group[1] . '">Was this helpful?</span>', $html );
+		$this->assertNotSame( $group[1], ( preg_match( '/aria-labelledby="([^"]+)"/', PageMeta::render_feedback( 1 ), $again ) ? $again[1] : '' ), 'Two feedback blocks share an id.' );
 	}
 }
