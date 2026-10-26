@@ -44,6 +44,15 @@ Two limits are intentional: the normal WordPress site search does not find handb
 For the entry page and the single page the plugin ships finished page layouts, so-called templates. All building parts already sit in the right place. You can rebuild the templates in the Site Editor, under **Appearance → Editor → Templates**. Examples: navigation to the right, drop the table of contents, widen the content. The overview, by contrast, is an entirely normal WordPress page. Move or replace it as you like.
 
 <details>
+<summary>Pitfalls: No subpages under the overview</summary>
+
+The overview created on activation is called "Handbook" and lives at `/handbook/`. The handbook pages live under exactly the same word, `/handbook/<page-name>/`. If you hang an ordinary WordPress page under the overview as a subpage, it gets an address like `/handbook/team/`, and WordPress looks for a handbook page called "team" there. The subpage is then unreachable; visitors see "page not found".
+
+So leave the overview without subpages. If you need pages around the handbook, hang them under another page, or give the overview a different address, for example `/handbooks/`.
+
+</details>
+
+<details>
 <summary>Tip: Templates after a plugin update</summary>
 
 As soon as you save a template in the Site Editor, WordPress keeps your version. That holds across plugin updates too. If a template looks outdated after an update, open it in the Site Editor. Choose **Clear customizations** there. Then the plugin's current version applies again.
@@ -53,7 +62,7 @@ As soon as you save a template in the Site Editor, WordPress keeps your version.
 <details>
 <summary>Background: All blocks in detail</summary>
 
-The plugin ships eleven blocks of its own, from the handbook overview to the Mermaid diagram. Most only render in their intended context. Anywhere else they output nothing. The full reference with every setting is in the [developer documentation on the blocks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/blocks.md).
+The plugin ships sixteen blocks of its own, from the handbook overview to the Mermaid diagram. Most only render in their intended context. Anywhere else they output nothing. The full reference with every setting is in the [developer documentation on the blocks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/blocks.md).
 
 </details>
 
@@ -70,6 +79,6 @@ The plugin ships eleven blocks of its own, from the handbook overview to the Mer
 * Eltern-Seite: Interface
 * Reihenfolge: 1
 * Textauszug: On the website a handbook consists of three kinds of pages: the overview, the entry page and the single page; this page explains all three.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

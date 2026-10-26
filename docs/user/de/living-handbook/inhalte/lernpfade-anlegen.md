@@ -54,6 +54,12 @@ Was der Pfad in dieser Etappe **nicht** tut: melden, dass sich eine Lektion wese
 * Ein Pfad kann nur Seiten aus seinem eigenen Handbuch enthalten.
 * Höchstens 200 Lektionen je Pfad.
 * Keine Wissensfragen und keine Abzeichen.
+* Ein Lernpfad reist beim [Umzug eines Handbuchs](handbuch-umziehen.md) nicht mit; auf der Ziel-Website legst du ihn neu an.
+
+## Verwandte Seiten
+
+* [Inhalte schreiben](inhalte-schreiben.md)
+* [Sichtbarkeit einstellen](../zugriff/sichtbarkeit-einstellen.md)
 
 ## Transport-Metadaten
 * Seitentyp: Anleitung
@@ -64,6 +70,6 @@ Was der Pfad in dieser Etappe **nicht** tut: melden, dass sich eine Lektion wese
 * Eltern-Seite: Inhalte
 * Reihenfolge: 6
 * Textauszug: Eine geordnete Auswahl bestehender Handbuchseiten für Onboarding und Pflichtlektüre, mit Weiter-Navigation und einem Stand, den der Browser sich merkt.
-* Letzte Aktualisierung: 2026-08-14
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-08-14
 * Prüfintervall: 180 Tage

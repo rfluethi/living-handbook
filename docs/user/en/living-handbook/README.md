@@ -6,7 +6,7 @@ This is the user handbook for Living Handbook. It explains, step by step, how to
 
 This handbook is for everyone who uses Living Handbook. You do not need any programming knowledge. If you have written a page in WordPress before, that is enough.
 
-Do you develop the plugin itself? Then there is also the [developer documentation on GitHub](https://github.com/rfluethi/living-handbook/tree/main/docs). It describes the technical design and the code. This handbook links there wherever it helps.
+Do you develop the plugin itself? Then there is also the [technical documentation](https://github.com/rfluethi/living-handbook/tree/main/docs/technical/en/living-handbook-technical), in English and in German. It describes the technical design and the code, also ships inside the plugin, and loads like this handbook through the [App handbook](getting-started/load-the-app-handbook.md) tab. This handbook links there wherever it helps.
 
 ## How it is structured
 
@@ -47,7 +47,7 @@ You can also load this handbook into your own WordPress installation. One click 
 <details>
 <summary>Background: Where these pages come from</summary>
 
-The texts of this handbook are written in public on GitHub. GitHub is a website where projects store their files publicly. The [files of this handbook](https://github.com/rfluethi/living-handbook/tree/main/handbuch/en) can be viewed there by anyone. The handbook itself, however, ships with the plugin: when you load it into your installation, it comes from the installed version, not from the network. When you update the plugin, the matching edition comes along. How that works is explained under [Load the app handbook](getting-started/load-the-app-handbook.md).
+The texts of this handbook are written in public on GitHub. GitHub is a website where projects store their files publicly. The [files of this handbook](https://github.com/rfluethi/living-handbook/tree/main/docs/user/en) can be viewed there by anyone. The handbook itself, however, ships with the plugin: when you load it into your installation, it comes from the installed version, not from the network. When you update the plugin, the matching edition comes along. How that works is explained under [Load the app handbook](getting-started/load-the-app-handbook.md).
 
 </details>
 
@@ -60,6 +60,6 @@ The texts of this handbook are written in public on GitHub. GitHub is a website 
 * Eltern-Seite: top level
 * Reihenfolge: 1
 * Textauszug: This user handbook explains, step by step, how to work with Living Handbook, and is at the same time an example of a finished handbook.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 365 Tage

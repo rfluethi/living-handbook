@@ -114,6 +114,14 @@ Stellt die Frage „War das hilfreich?“ mit Ja und Nein. Wirkt nur auf Einzels
 
 Zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle, samt Prüfstatus-Abzeichen. Wirkt nur auf Einzelseiten.
 
+### Die drei Lernpfad-Blöcke
+
+Diese drei gehören zu den [Lernpfaden](../inhalte/lernpfade-anlegen.md) und zeigen nur etwas, wenn Lernpfade eingeschaltet sind und es auch einen Pfad gibt. Sonst bleiben sie unsichtbar, du kannst sie also in den Layouts stehen lassen.
+
+* **Lektionen eines Lernpfads:** Die nummerierte Liste der Lektionen eines Lernpfads, mit dem Knopf **Start** und dem Stand, wie weit dieser Browser schon gelesen hat. Wirkt nur auf der Seite eines Lernpfads.
+* **Lernpfad-Leiste:** Die schmale Leiste über einer Handbuch-Seite, die aus einem Lernpfad heraus geöffnet wurde: welcher Pfad es ist, welche Lektion von wie vielen, und die Wege zur vorherigen und zur nächsten. Auf allen anderen Seiten bleibt sie leer.
+* **Lernpfade dieses Handbuchs:** Die Lernpfade des Handbuchs, dessen Einstiegsseite gerade offen ist, je mit der Anzahl Lektionen. Hat das Handbuch keine Pfade, bleibt der Block leer.
+
 <details>
 <summary>Hinweis: Einzelne Blöcke gezielt gestalten</summary>
 
@@ -135,6 +143,6 @@ Jeder Block bietet in der Seitenleiste unter **Erweitert** zwei Felder: eine **z
 * Eltern-Seite: Oberfläche
 * Reihenfolge: 2
 * Textauszug: Welche Blöcke des Plugins du selbst einsetzt, allen voran das Mermaid-Diagramm, und welche das Plugin von allein platziert.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

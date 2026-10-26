@@ -44,6 +44,15 @@ Zwei Grenzen sind gewollt: Die normale WordPress-Suche der Website findet Handbu
 Für die Einstiegsseite und die Einzelseite bringt das Plugin fertige Seitenlayouts mit, sogenannte Templates. Alle Bausteine stehen darin schon an der richtigen Stelle. Du kannst die Templates im Website-Editor umbauen, unter **Design → Editor → Templates**. Beispiele: Navigation nach rechts, Inhaltsverzeichnis weg, Inhalt breiter. Die Übersicht ist dagegen eine ganz normale WordPress-Seite. Verschiebe oder ersetze sie nach Belieben.
 
 <details>
+<summary>Stolpersteine: Keine Unterseiten unter die Übersicht</summary>
+
+Die automatisch angelegte Übersicht heißt „Handbuch“ und liegt unter `/handbook/`. Unter genau diesem Wortteil liegen aber auch die Handbuch-Seiten, `/handbook/<seitenname>/`. Hängst du eine gewöhnliche WordPress-Seite als Unterseite unter die Übersicht, bekommt sie eine Adresse wie `/handbook/team/`, und WordPress sucht dort eine Handbuch-Seite namens „team“. Die Unterseite ist dann nicht erreichbar, Besucher sehen „Seite nicht gefunden“.
+
+Lass die Übersicht deshalb ohne Unterseiten. Brauchst du Seiten rund um das Handbuch, hänge sie an eine andere Seite, oder gib der Übersicht eine andere Adresse, zum Beispiel `/handbuecher/`.
+
+</details>
+
+<details>
 <summary>Hinweis: Templates nach einem Plugin-Update</summary>
 
 Sobald du ein Template im Website-Editor speicherst, behält WordPress deine Fassung. Das gilt auch über Plugin-Updates hinweg. Wirkt ein Template nach einem Update veraltet, öffne es im Website-Editor. Wähle dort **Anpassungen zurücksetzen**. Dann gilt wieder die aktuelle Fassung des Plugins.
@@ -53,7 +62,7 @@ Sobald du ein Template im Website-Editor speicherst, behält WordPress deine Fas
 <details>
 <summary>Hintergrund: Alle Blöcke im Detail</summary>
 
-Das Plugin bringt elf eigene Blöcke mit, von der Handbuch-Übersicht bis zum Mermaid-Diagramm. Die meisten rendern nur in ihrem vorgesehenen Zusammenhang. Außerhalb davon geben sie nichts aus. Die vollständige Referenz mit allen Einstellungen steht in der [Entwickler-Dokumentation zu den Blöcken](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/bloecke.md).
+Das Plugin bringt sechzehn eigene Blöcke mit, von der Handbuch-Übersicht bis zum Mermaid-Diagramm. Die meisten rendern nur in ihrem vorgesehenen Zusammenhang. Außerhalb davon geben sie nichts aus. Die vollständige Referenz mit allen Einstellungen steht in der [Entwickler-Dokumentation zu den Blöcken](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/bloecke.md).
 
 </details>
 
@@ -70,6 +79,6 @@ Das Plugin bringt elf eigene Blöcke mit, von der Handbuch-Übersicht bis zum Me
 * Eltern-Seite: Oberfläche
 * Reihenfolge: 1
 * Textauszug: Ein Handbuch besteht auf der Website aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

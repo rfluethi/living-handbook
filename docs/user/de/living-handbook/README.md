@@ -6,7 +6,7 @@ Dies ist das Benutzerhandbuch von Living Handbook. Es erklärt Schritt für Schr
 
 Dieses Handbuch richtet sich an alle, die Living Handbook benutzen. Du brauchst keine Programmierkenntnisse. Es reicht, wenn du schon einmal eine Seite in WordPress geschrieben hast.
 
-Du entwickelst selbst am Plugin mit? Dann gibt es für dich zusätzlich die englische [Entwickler-Dokumentation auf GitHub](https://github.com/rfluethi/living-handbook/tree/main/docs). Sie beschreibt den technischen Aufbau und den Code. Dieses Handbuch verlinkt an den passenden Stellen dorthin.
+Du entwickelst selbst am Plugin mit? Dann gibt es für dich zusätzlich die [technische Dokumentation](https://github.com/rfluethi/living-handbook/tree/main/docs/technical/de/living-handbook-technical), auf Deutsch und auf Englisch. Sie beschreibt den technischen Aufbau und den Code, liegt ebenfalls im Plugin und lässt sich wie dieses Handbuch über den Reiter [App-Handbuch](erste-schritte/app-handbuch-laden.md) laden. Dieses Handbuch verlinkt an den passenden Stellen dorthin.
 
 ## Wie es aufgebaut ist
 
@@ -47,7 +47,7 @@ Du kannst dieses Handbuch auch in deine eigene WordPress-Installation holen. Ein
 <details>
 <summary>Hintergrund: Woher diese Seiten kommen</summary>
 
-Die Texte dieses Handbuchs werden öffentlich auf GitHub geschrieben. GitHub ist eine Website, auf der Projekte ihre Dateien öffentlich ablegen können. Die [Dateien dieses Handbuchs](https://github.com/rfluethi/living-handbook/tree/main/handbuch/de) kann dort jede und jeder einsehen. Ausgeliefert wird das Handbuch aber mit dem Plugin: Lädst du es in deine Installation, kommt es aus der installierten Version, nicht aus dem Netz. Aktualisierst du das Plugin, kommt die passende Fassung mit. Wie das funktioniert, steht unter [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
+Die Texte dieses Handbuchs werden öffentlich auf GitHub geschrieben. GitHub ist eine Website, auf der Projekte ihre Dateien öffentlich ablegen können. Die [Dateien dieses Handbuchs](https://github.com/rfluethi/living-handbook/tree/main/docs/user/de) kann dort jede und jeder einsehen. Ausgeliefert wird das Handbuch aber mit dem Plugin: Lädst du es in deine Installation, kommt es aus der installierten Version, nicht aus dem Netz. Aktualisierst du das Plugin, kommt die passende Fassung mit. Wie das funktioniert, steht unter [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
 
 </details>
 
@@ -60,6 +60,6 @@ Die Texte dieses Handbuchs werden öffentlich auf GitHub geschrieben. GitHub ist
 * Eltern-Seite: oberste Ebene
 * Reihenfolge: 1
 * Textauszug: Dieses Benutzerhandbuch erklärt Schritt für Schritt, wie du mit Living Handbook arbeitest, und ist zugleich ein Beispiel für ein fertiges Handbuch.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 365 Tage

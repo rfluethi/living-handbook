@@ -54,6 +54,7 @@ What the path does **not** do in this stage: tell anybody that a lesson has chan
 * A path can only hold pages from its own handbook.
 * At most 200 lessons per path.
 * No knowledge questions and no badges.
+* A learning path does not travel along when you [move a handbook](move-a-handbook.md); create it again on the target site.
 
 ## Related pages
 
@@ -69,6 +70,6 @@ What the path does **not** do in this stage: tell anybody that a lesson has chan
 * Eltern-Seite: Content
 * Reihenfolge: 6
 * Textauszug: An ordered selection of existing handbook pages for onboarding and required reading, with next-lesson navigation and a progress mark the browser remembers.
-* Letzte Aktualisierung: 2026-08-14
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-08-14
 * Prüfintervall: 180 Tage

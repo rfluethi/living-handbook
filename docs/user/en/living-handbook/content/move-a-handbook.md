@@ -5,7 +5,9 @@ You want to move a handbook to another website? Export it as a bundle and import
 <details>
 <summary>Concept: What a bundle is</summary>
 
-A bundle is a single ZIP file. It holds everything that makes up the handbook: all pages with their order, the images, the tags, the review data and the visibility setting. The bundle is complete in itself. The target site needs no contact with the old site. Two things are missing on purpose. First, the individually allowed people, because those are e-mail addresses, and a bundle is a file that gets passed around. Second, the feedback numbers, because they belong to the old site.
+A bundle is a single ZIP file. It holds the handbook's pages: all pages with their order, the images, the classification (page type, topic, responsibility, audience), the review data and the visibility setting. The target site needs no contact with the old site. Two things are missing on purpose. First, the individually allowed people, because that is personal data, and a bundle is a file that gets passed around. Second, the feedback numbers, because they belong to the old site.
+
+And one thing is missing because the bundle only knows handbook pages: the [learning paths](learning-paths.md). They belong to the handbook but do not travel along. Create them again on the target site once the pages have arrived.
 
 </details>
 
@@ -35,6 +37,7 @@ The pages are on the target site. Links between the pages lead to the new pages.
 
 * **An imported handbook always starts with visibility "All members".** That holds even if it was public on the old site. An import must never publish anything by accident. Raise the visibility by hand afterwards.
 * **Individually allowed people must be entered again.** They do not travel along.
+* **Learning paths must be created again.** They do not travel along either.
 * **On update, the target site's upkeep data survives.** Feedback numbers and review data are not overwritten.
 * **Read bundles from others before you publish them.** The content is cleaned on import like any external content. But it remains a text someone else wrote.
 
@@ -54,6 +57,6 @@ The pages are on the target site. Links between the pages lead to the new pages.
 * Eltern-Seite: Content
 * Reihenfolge: 4
 * Textauszug: A handbook can be exported as a self-contained bundle and imported again on another website; here is how.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

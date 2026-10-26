@@ -24,6 +24,13 @@ Das Plugin braucht ein Block-Theme und WordPress 6.8 oder neuer. Ein älteres, k
 </details>
 
 <details>
+<summary>Warum ist eine Unterseite meiner Handbuch-Übersicht nicht erreichbar?</summary>
+
+Die Übersicht liegt unter `/handbook/`, und unter `/handbook/…` sucht WordPress nach Handbuch-Seiten. Eine gewöhnliche Unterseite der Übersicht, etwa `/handbook/team/`, findet es deshalb nicht. Hänge keine Unterseiten unter die Übersicht, oder gib ihr eine andere Adresse. Details: [Die drei Oberflächen](oberflaeche/die-drei-oberflaechen.md).
+
+</details>
+
+<details>
 <summary>Wie lade ich dieses Handbuch in meine eigene Installation?</summary>
 
 Über **Handbuch → Import**, Reiter **App-Handbuch**, mit einem Klick. Das Handbuch liegt im Plugin und passt damit zur installierten Version. Nach einem Plugin-Update lädst du es einfach erneut. Details: [App-Handbuch laden](erste-schritte/app-handbuch-laden.md).
@@ -75,7 +82,7 @@ Nein, standardmäßig bleiben alle Handbücher und Seiten erhalten. Entfernt wer
 <details>
 <summary>Sendet das Plugin Daten an GitHub oder sonst wohin?</summary>
 
-Nein. Es liest nur die Adressen, die du selbst einträgst, beim Import oder in der Quelle einer Seite. Es sendet nichts nach draußen. Nutzt du weder Import noch Synchronisation, macht das Plugin gar keine externen Anfragen. Details: [GitHub-Synchronisation](inhalte/github-synchronisation.md).
+Inhalte deiner Website sendet es nirgendwohin. Zwei Dienste fragt es aber an. GitHub: Beim Import und bei der Synchronisation liest es nur die Adressen, die du selbst einträgst; mitgeschickt wird dabei nur, was in diesen Adressen steht. Und Gravatar: Die Fußzeile einer Handbuch-Seite zeigt Profilbilder, und die lädt WordPress standardmäßig bei Gravatar, also bei jedem Seitenaufruf im Browser der Lesenden. Das schaltest du unter **Einstellungen → Diskussion → Avatare anzeigen** für die ganze Website ab, oder im Block „Handbuch-Seiten-Meta“ mit **Personen anzeigen (Avatar und Name)**. Details: [GitHub-Synchronisation](inhalte/github-synchronisation.md).
 
 </details>
 

@@ -114,6 +114,14 @@ Asks "Was this helpful?" with Yes and No. Works only on single pages. By default
 
 Shows Created, Last updated, Last reviewed and the responsible role, including the review-status badge. Works only on single pages.
 
+### The three learning path blocks
+
+These three belong to the [learning paths](../content/learning-paths.md) and only show something when learning paths are switched on and a path exists. Otherwise they stay invisible, so you can leave them in the layouts.
+
+* **Learning path lessons:** The numbered list of a learning path's lessons, with the **Start** button and how far this browser has already read. Works only on the page of a learning path.
+* **Learning path bar:** The narrow bar above a handbook page that was opened from a learning path: which path it is, which lesson of how many, and the way to the previous and the next one. On every other page it stays empty.
+* **Learning paths of this handbook:** The learning paths of the handbook whose entry page is open, each with its number of lessons. If the handbook has no paths, the block stays empty.
+
 <details>
 <summary>Tip: Styling single blocks deliberately</summary>
 
@@ -135,6 +143,6 @@ Every block offers two fields in the sidebar under **Advanced**: an **additional
 * Eltern-Seite: Interface
 * Reihenfolge: 2
 * Textauszug: Which blocks of the plugin you use yourself, first of all the Mermaid diagram, and which ones the plugin places on its own.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

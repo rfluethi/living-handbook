@@ -24,6 +24,13 @@ The plugin needs a block theme and WordPress 6.8 or newer. An older, classic the
 </details>
 
 <details>
+<summary>Why can a subpage of my handbook overview not be reached?</summary>
+
+The overview lives at `/handbook/`, and under `/handbook/…` WordPress looks for handbook pages. An ordinary subpage of the overview, such as `/handbook/team/`, is therefore not found. Do not hang subpages under the overview, or give it a different address. Details: [The three surfaces](interface/the-three-surfaces.md).
+
+</details>
+
+<details>
 <summary>How do I load this handbook into my own installation?</summary>
 
 Through **Handbook → Import**, tab **App handbook**, with one click. The handbook ships inside the plugin and therefore matches the installed version. After a plugin update, simply load it again. Details: [Load the app handbook](getting-started/load-the-app-handbook.md).
@@ -75,7 +82,7 @@ No, by default all handbooks and pages survive. Only the plugin's settings are r
 <details>
 <summary>Does the plugin send data to GitHub or anywhere else?</summary>
 
-No. It only reads the addresses you enter yourself, during an import or in a page's source. It sends nothing out. If you use neither import nor sync, the plugin makes no external requests at all. Details: [GitHub sync](content/github-sync.md).
+It sends no content of your site anywhere. It does contact two services, though. GitHub: during an import and a sync it only reads the addresses you enter yourself, and all it sends is what those addresses contain. And Gravatar: the footer of a handbook page shows avatars, which WordPress loads from Gravatar by default, in the reader's browser on every page view. Switch that off for the whole site under **Settings → Discussion → Show Avatars**, or in the "Handbook page meta" block with **Show people (avatar and name)**. Details: [GitHub sync](content/github-sync.md).
 
 </details>
 
