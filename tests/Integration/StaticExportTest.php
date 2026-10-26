@@ -848,4 +848,51 @@ final class StaticExportTest extends WP_UnitTestCase {
 
 		$this->assertSame( 403, $response->get_status() );
 	}
+
+	/**
+	 * A page with the slug "index" keeps its own file. It used to be written to
+	 * index.html and then overwritten by the start page.
+	 *
+	 * @return void
+	 */
+	public function test_a_page_named_index_is_not_overwritten_by_the_start_page(): void {
+		$term  = $this->handbook( 'Company' );
+		$index = (int) self::factory()->post->create(
+			array(
+				'post_type'    => Handbook::POST_TYPE,
+				'post_status'  => 'publish',
+				'post_title'   => 'Welcome page',
+				'post_name'    => 'index',
+				'post_content' => 'The text of the index page.',
+			)
+		);
+		wp_set_object_terms( $index, array( $term ), Handbooks::TAXONOMY );
+		$this->page( $term, 'Other', '<a href="' . get_permalink( $index ) . '">to the welcome page</a>' );
+
+		$zip  = $this->export( $term );
+		$file = 'index-' . $index . '.html';
+
+		$this->assertStringContainsString( 'The text of the index page.', (string) $zip->getFromName( $file ) );
+		$this->assertStringContainsString( 'A copy of', (string) $zip->getFromName( 'index.html' ), 'The start page stays the start page.' );
+		$this->assertStringContainsString( 'href="' . $file . '"', (string) $zip->getFromName( 'other.html' ), 'A link to the page leads to its file.' );
+	}
+
+	/**
+	 * The search index holds plain text. An entity left in it was escaped once
+	 * more by the search script, and the reader saw "&amp;" in a snippet.
+	 *
+	 * @return void
+	 */
+	public function test_the_search_index_holds_no_entities(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'Tools & tips', 'Fish &amp; chips, don\'t forget.' );
+
+		$zip   = $this->export( $term );
+		$index = (string) $zip->getFromName( 'assets/search-index.js' );
+
+		$this->assertStringContainsString( '"t":"Tools & tips"', $index );
+		$this->assertStringContainsString( 'Fish & chips', $index );
+		$this->assertStringNotContainsString( '&amp;', $index );
+		$this->assertStringNotContainsString( '&#', $index );
+	}
 }

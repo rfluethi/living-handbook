@@ -63,7 +63,19 @@ final class SiteRenderer {
 			$id = (int) $index[ $id ]['parent'];
 		}
 
-		return implode( '/', $parts ) . '.html';
+		$path = implode( '/', $parts ) . '.html';
+
+		// The start page is index.html. A top-level page with the slug "index",
+		// which a Markdown import produces from an index.md, was written to the
+		// same name and then overwritten by the start page at the end of the
+		// export: the page was simply gone, and every link to it led to the
+		// table of contents. It gets its id appended instead, which no slug can
+		// collide with by accident and which every link takes from here.
+		if ( 'index.html' === $path ) {
+			$path = 'index-' . $post_id . '.html';
+		}
+
+		return $path;
 	}
 
 	/**
@@ -498,8 +510,14 @@ final class SiteRenderer {
 		// the search would show it in the snippet around a hit.
 		$text = (string) preg_replace( '#<a class="living-handbook-anchor".*?</a>#is', '', $content );
 		$text = wp_strip_all_tags( $text );
-		$text = (string) preg_replace( '/\s+/u', ' ', $text );
-		$text = trim( $text );
+		// Plain text, not HTML: the search script escapes what it shows, so an
+		// entity left in here was escaped a second time and the reader saw
+		// "&amp;" and "&#8217;" in titles and snippets. The rendered title
+		// carries the same entities from wptexturize().
+		$text  = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$title = html_entity_decode( $title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$text  = (string) preg_replace( '/\s+/u', ' ', $text );
+		$text  = trim( $text );
 
 		if ( mb_strlen( $text ) > self::INDEX_LENGTH ) {
 			$text = mb_substr( $text, 0, self::INDEX_LENGTH );
