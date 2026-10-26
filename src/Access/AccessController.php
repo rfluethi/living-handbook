@@ -334,7 +334,14 @@ final class AccessController {
 
 		nocache_headers();
 
+		// A no-access page that this visitor may not read either would send them
+		// round in a loop. Settings refuses a guarded page, but a value stored
+		// before that check, or written around it, still reaches this point, so
+		// such a page is skipped here and the built-in message answers instead.
 		$page_id = (int) get_option( Settings::OPTION_DENIED_PAGE, 0 );
+		if ( $page_id > 0 && self::is_guarded( $page_id ) && ! self::can_view_post( $page_id, get_current_user_id() ) ) {
+			$page_id = 0;
+		}
 		if ( $page_id > 0 && 'publish' === get_post_status( $page_id ) ) {
 			$url = get_permalink( $page_id );
 			if ( is_string( $url ) && '' !== $url ) {

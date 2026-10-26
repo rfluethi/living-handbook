@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Setup;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Frontend\Appearance;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
@@ -426,12 +427,23 @@ final class Settings {
 	 * Keep the no-access page a published page of this site, or 0 for the
 	 * built-in message.
 	 *
+	 * A handbook page or a learning path is refused. Their access is decided per
+	 * handbook, so the page meant to explain a refusal could itself be refused,
+	 * and a visitor sent to it would be sent to it again, in a redirect loop. The
+	 * selector offers ordinary pages only, but the option takes any id from a
+	 * crafted form or from update_option(), which runs through this as well.
+	 * AccessController::deny() checks again at the moment of the redirect, for
+	 * a value stored before this check existed.
+	 *
 	 * @param mixed $value Submitted value.
 	 * @return int
 	 */
 	public function sanitize_denied_page( $value ): int {
 		$page_id = absint( $value );
 		if ( 0 === $page_id ) {
+			return 0;
+		}
+		if ( in_array( get_post_type( $page_id ), AccessController::guarded_post_types(), true ) ) {
 			return 0;
 		}
 		return 'publish' === get_post_status( $page_id ) ? $page_id : 0;

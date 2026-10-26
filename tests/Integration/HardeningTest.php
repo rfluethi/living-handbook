@@ -305,6 +305,59 @@ final class HardeningTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A handbook page or a learning path cannot be chosen as the no-access page:
+	 * its own access is decided per handbook, and a visitor refused there would
+	 * be sent to it again, round and round.
+	 *
+	 * @return void
+	 */
+	public function test_a_handbook_page_cannot_be_the_no_access_page(): void {
+		$settings = new \LivingHandbook\Setup\Settings();
+		$handbook = $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_PUBLIC ) );
+		$ordinary = (int) self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'publish',
+			)
+		);
+
+		$this->assertSame( 0, $settings->sanitize_denied_page( $handbook ) );
+		$this->assertSame( $ordinary, $settings->sanitize_denied_page( $ordinary ) );
+	}
+
+	/**
+	 * A no-access page stored before that check, which the visitor may not read
+	 * either, is skipped: the built-in message answers instead of a redirect
+	 * that would lead straight back to the refusal.
+	 *
+	 * @return void
+	 */
+	public function test_a_no_access_page_the_visitor_may_not_read_is_skipped(): void {
+		$restricted = $this->make_handbook( Handbooks::VISIBILITY_RESTRICTED );
+		$page_id    = $this->make_page( $restricted );
+		$denied     = $this->make_page( $restricted, 'Ask for access' );
+		update_option( \LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE, $denied );
+
+		$redirect = static function ( string $location ): string {
+			throw new \RuntimeException( 'Redirected to ' . $location ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- test.
+		};
+		add_filter( 'wp_redirect', $redirect );
+
+		wp_set_current_user( (int) self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+		$this->go_to( (string) get_permalink( $page_id ) );
+
+		try {
+			( new AccessController() )->guard_singular();
+			$this->fail( 'guard_singular() should have stopped the request.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'does not have access', $e->getMessage() );
+		} finally {
+			remove_filter( 'wp_redirect', $redirect );
+			delete_option( \LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE );
+		}
+	}
+
+	/**
 	 * The message of the no-access page can be replaced by a site.
 	 *
 	 * @return void
