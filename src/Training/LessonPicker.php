@@ -265,10 +265,10 @@ final class LessonPicker {
 			<ol class="living-handbook-lessons__list">
 				<?php foreach ( $lessons as $lesson_id ) : ?>
 					<?php
-					$title = get_the_title( $lesson_id );
+					$title = self::stored_title( $lesson_id );
 					if ( '' === $title ) {
-						/* translators: %d: id of a page that no longer exists. */
-						$title = sprintf( __( 'Page %d is gone', 'living-handbook' ), $lesson_id );
+						/* translators: %d: id of a stored lesson that no longer exists or that the editor may not read. */
+						$title = sprintf( __( 'Page %d is not available', 'living-handbook' ), $lesson_id );
 					}
 					?>
 					<li data-id="<?php echo esc_attr( (string) $lesson_id ); ?>">
@@ -284,6 +284,32 @@ final class LessonPicker {
 			</noscript>
 		</div>
 		<?php
+	}
+
+	/**
+	 * The title of a stored lesson, if the editor may see it, or ''.
+	 *
+	 * The stored list is whatever ids arrived in the form field; the search only
+	 * offers handbook pages the editor may read, but the field itself takes any
+	 * number. Up to 0.75.1 the meta box printed get_the_title() for each of them,
+	 * so anybody who may create a learning path (a contributor, for one) could
+	 * put the id of somebody else's private post or draft, or of a page in a
+	 * restricted handbook, into the field, save, and read its title. A title is
+	 * shown now only for a handbook page this editor may read and view; every
+	 * other id gets the same neutral line, so the answer does not tell whether
+	 * something exists behind it.
+	 *
+	 * @param int $lesson_id Stored lesson id.
+	 * @return string
+	 */
+	private static function stored_title( int $lesson_id ): string {
+		if ( Handbook::POST_TYPE !== get_post_type( $lesson_id )
+			|| ! current_user_can( 'read_post', $lesson_id )
+			|| ! AccessController::can_view_post( $lesson_id, get_current_user_id() ) ) {
+			return '';
+		}
+
+		return get_the_title( $lesson_id );
 	}
 
 	/**

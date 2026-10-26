@@ -379,4 +379,56 @@ final class TrainingAccessTest extends WP_UnitTestCase {
 
 		$this->assertSame( array(), $data );
 	}
+
+	/**
+	 * The meta box of a path shows a stored title only for a handbook page the
+	 * editor may read. The field takes any id, and up to 0.75.1 the box printed
+	 * get_the_title() for each, so a contributor could read the title of an
+	 * administrator's private post or a page in a restricted handbook by typing
+	 * its id into the field.
+	 *
+	 * @return void
+	 */
+	public function test_the_meta_box_does_not_show_titles_the_editor_may_not_read(): void {
+		$admin   = (int) self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$private = (int) self::factory()->post->create(
+			array(
+				'post_status' => 'private',
+				'post_author' => $admin,
+				'post_title'  => 'Layoff plan',
+			)
+		);
+
+		$restricted = (int) self::factory()->term->create( array( 'taxonomy' => Handbooks::TAXONOMY ) );
+		update_term_meta( $restricted, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_RESTRICTED );
+		$secret = (int) self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'publish',
+				'post_title'  => 'Salary bands',
+			)
+		);
+		wp_set_object_terms( $secret, array( $restricted ), Handbooks::TAXONOMY );
+
+		$fixture     = $this->internal_path();
+		$contributor = (int) self::factory()->user->create( array( 'role' => 'contributor' ) );
+		$path        = (int) self::factory()->post->create(
+			array(
+				'post_type'   => Training::POST_TYPE,
+				'post_status' => 'draft',
+				'post_author' => $contributor,
+			)
+		);
+		wp_set_object_terms( $path, array( $this->internal ), Handbooks::TAXONOMY );
+		Lessons::store( $path, array( $private, $secret, $fixture['lesson'] ) );
+
+		wp_set_current_user( $contributor );
+		ob_start();
+		( new LessonPicker() )->render( get_post( $path ) );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringNotContainsString( 'Layoff plan', $html );
+		$this->assertStringNotContainsString( 'Salary bands', $html );
+		$this->assertStringContainsString( 'Internal lesson', $html, 'A lesson the editor may read keeps its title.' );
+	}
 }
