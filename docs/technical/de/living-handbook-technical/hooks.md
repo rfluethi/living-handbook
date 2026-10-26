@@ -10,9 +10,13 @@ Filtert die endgültige Entscheidung darüber, ob eine Person eine Handbuch-Seit
 
 Parameter:
 
-- `bool $allowed` Ob die eingebauten Regeln pro Handbuch den Zugriff erlauben.
+- `bool $allowed` Ob die eingebauten Regeln den Zugriff erlauben.
 - `int $post_id` Die ID der Handbuch-Seite.
 - `int $user_id` Die Benutzer-ID (0 für Gäste).
+
+Die eingebauten Regeln beginnen bei der Rolle, nicht beim Handbuch: ein Konto mit `edit_others_posts` (Redaktion, Administration) darf jede Seite lesen, auch in eingeschränkten Handbüchern und auch ohne Handbuch, und `$allowed` kommt für dieses Konto als `true` an. Erst für alle anderen zählen Sichtbarkeit, Rollen und Personen des Handbuchs. Gibst du hier für ein solches Konto `false` zurück, verliert es die Seite überall, wo diese Prüfung läuft, und dazu gehört der Block-Editor, der eine Seite über einen REST-Lesezugriff lädt.
+
+Die Ausnahme gilt pro Seite. Die Prüfung auf Handbuch-Ebene, `AccessController::can_view_term()`, die über Einstiegsseite, Übersicht, Menü sowie den Such- und den Filter-Endpunkt entscheidet, kennt keine Rollen-Abkürzung und läuft nicht durch diesen Filter. Eine Redakteurin liest also jede Seite eines eingeschränkten Handbuchs, in dem sie nicht eingetragen ist, bekommt aber dessen Einstiegsseite nicht und sieht es nicht in der Übersicht.
 
 Gib einen Boolean zurück. Beispiel: Einem Servicekonto Lesezugriff auf alles geben.
 

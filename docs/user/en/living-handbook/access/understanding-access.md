@@ -6,11 +6,13 @@ This page answers one question: why does Living Handbook rather show nothing tha
 
 An internal handbook contains things that should not be public: processes, responsibilities, internal addresses. The most expensive mistake of such a system is not an invisible page. The most expensive mistake is an accidentally public page. Living Handbook therefore follows one simple ground rule: when in doubt, hide. Specialists call this principle "fail-closed".
 
-The diagram shows the decision path when a page is requested: from the handbook assignment through the visibility to display, login or denial.
+The diagram shows the decision path when a page is requested: from the role through the handbook assignment and the visibility to display, login or denial.
 
 ```mermaid
 graph TD;
-  A["Visitor requests a handbook page"] --> B{"Does the page belong to a handbook?"};
+  A["Visitor requests a handbook page"] --> R{"Editor or administrator?"};
+  R -->|"Yes"| Y["Page is shown"];
+  R -->|"No"| B{"Does the page belong to a handbook?"};
   B -->|"No"| X["No access"];
   B -->|"Yes"| C{"Visibility of the handbook?"};
   C -->|"Public"| Y["Page is shown"];
@@ -33,6 +35,7 @@ One consequence you need to know: this restraint also applies to public handbook
 
 ## What this means for your work
 
+* **Editors see everything.** Anyone who may edit other people's posts (the roles Editor and Administrator) reads every handbook page, in restricted handbooks too, and even without a handbook assignment. Visibility protects a handbook from its readers, not from your own editors. That is also why a test with an editor account misleads: check the view with an account that has your readers' role.
 * A new handbook starts on **All members**. It becomes public only through your deliberate decision.
 * An imported handbook also starts on **All members**, whatever the source says.
 * When something does not show up, it is almost never a bug but the protection logic. Check the handbook assignment and the visibility before you look further.
@@ -63,6 +66,6 @@ The file itself is not protected, and no plugin can protect it. WordPress keeps 
 * Eltern-Seite: Access
 * Reihenfolge: 2
 * Textauszug: Living Handbook rather hides than gives something away by accident; this page explains the fail-closed principle.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 365 Tage

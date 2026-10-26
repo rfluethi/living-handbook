@@ -10,9 +10,13 @@ Filters the final decision on whether a user may view a handbook page. This is t
 
 Parameters:
 
-- `bool $allowed` Whether access is granted by the built-in per-handbook rules.
+- `bool $allowed` Whether access is granted by the built-in rules.
 - `int $post_id` The handbook page ID.
 - `int $user_id` The user ID (0 for a guest).
+
+The built-in rules start with the role, not with the handbook: an account with `edit_others_posts` (Editor, Administrator) is allowed every page, restricted handbooks included and pages without a handbook too, and `$allowed` arrives as `true` for it. Only for everyone else are the handbook's visibility, roles and people consulted. Returning `false` here for such an account takes the page away from it wherever this check runs, and that includes the block editor, which loads a page through a REST read.
+
+The bypass is per page. The handbook-level check, `AccessController::can_view_term()`, which decides the entry page, the overview, the menu and the search and filter endpoints, has no role shortcut and does not run this filter, so an editor reads every page of a restricted handbook they are not listed on, but does not get its entry page or see it in the overview.
 
 Return a boolean. Example, grant a service account read access to everything:
 

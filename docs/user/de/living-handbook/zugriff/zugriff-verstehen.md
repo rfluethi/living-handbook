@@ -6,11 +6,13 @@ Diese Seite beantwortet eine Frage: Warum zeigt Living Handbook im Zweifel liebe
 
 Ein internes Handbuch enthält Dinge, die nicht öffentlich sein sollen: Abläufe, Zuständigkeiten, interne Adressen. Der teuerste Fehler eines solchen Systems ist nicht eine unsichtbare Seite. Der teuerste Fehler ist eine versehentlich öffentliche Seite. Living Handbook folgt darum einer einfachen Grundregel: Im Zweifel wird versteckt. Fachleute nennen dieses Prinzip „fail-closed“.
 
-Das Diagramm zeigt den Entscheidungsweg beim Aufruf einer Seite: von der Handbuch-Zuweisung über die Sichtbarkeit bis zur Anzeige, Anmeldung oder Ablehnung.
+Das Diagramm zeigt den Entscheidungsweg beim Aufruf einer Seite: von der Rolle über die Handbuch-Zuweisung und die Sichtbarkeit bis zur Anzeige, Anmeldung oder Ablehnung.
 
 ```mermaid
 graph TD;
-  A["Besucher ruft eine Handbuch-Seite auf"] --> B{"Gehört die Seite zu einem Handbuch?"};
+  A["Besucher ruft eine Handbuch-Seite auf"] --> R{"Redaktion oder Administration?"};
+  R -->|"Ja"| Y["Seite wird angezeigt"];
+  R -->|"Nein"| B{"Gehört die Seite zu einem Handbuch?"};
   B -->|"Nein"| X["Kein Zugriff"];
   B -->|"Ja"| C{"Sichtbarkeit des Handbuchs?"};
   C -->|"Öffentlich"| Y["Seite wird angezeigt"];
@@ -33,6 +35,7 @@ Eine Folge davon musst du kennen: Diese Zurückhaltung gilt auch für öffentlic
 
 ## Was das für deine Arbeit bedeutet
 
+* **Die Redaktion sieht alles.** Wer fremde Beiträge bearbeiten darf (die Rollen Redakteur und Administrator), liest jede Handbuch-Seite, auch in eingeschränkten Handbüchern und auch ohne Handbuch-Zuweisung. Die Sichtbarkeit schützt ein Handbuch also vor Leserinnen und Lesern, nicht vor der eigenen Redaktion. Darum täuscht ein Test mit einem Redaktionskonto: Prüfe die Sicht mit einem Konto, das die Rolle deiner Leserinnen hat.
 * Ein neues Handbuch startet auf **Alle Mitglieder**. Öffentlich wird es nur durch deine bewusste Entscheidung.
 * Ein importiertes Handbuch startet ebenfalls auf **Alle Mitglieder**, egal was die Quelle sagt.
 * Wenn etwas nicht erscheint, ist das fast nie ein Fehler, sondern die Schutzlogik. Prüfe Handbuch-Zuweisung und Sichtbarkeit, bevor du weitersuchst.
@@ -63,6 +66,6 @@ Die Datei selbst ist nicht geschützt, und kein Plugin kann sie schützen. WordP
 * Eltern-Seite: Zugriff
 * Reihenfolge: 2
 * Textauszug: Living Handbook versteckt im Zweifel lieber, als versehentlich etwas preiszugeben; diese Seite erklärt das Fail-closed-Prinzip.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 365 Tage

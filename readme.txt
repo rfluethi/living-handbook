@@ -19,7 +19,7 @@ Core features:
 * A dedicated handbook content type with structured page types (Diataxis plus FAQ).
 * Ownership per page: assign a responsible role to every page, and a reviewer as a WordPress user.
 * Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
-* Frontend access per handbook: public, all members, or restricted to specific roles and/or people.
+* Frontend access per handbook: public, all members, or restricted to specific roles and/or people. Editors and administrators (anyone who may edit other people's posts) read every handbook page regardless.
 * Several handbooks side by side, each with its own access group, its own entry page, and its own navigation.
 * An entry page per handbook with full-text search, taxonomy filters that apply without a reload, area tiles and recently updated pages.
 * A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
@@ -68,7 +68,7 @@ The diagram feature bundles mermaid.js version 11.16.0 (assets/js/mermaid.min.js
 
 = Who can see a handbook? =
 
-Access is set per handbook: public (no login), all logged-in members, or restricted to specific roles and/or people. It is enforced on the entry page and on single pages.
+Access is set per handbook: public (no login), all logged-in members, or restricted to specific roles and/or people. It is enforced on the entry page and on single pages, in the search, the filters, the menu and the REST API. One exception applies everywhere a page is read: accounts that may edit other people's posts (by default Editors and Administrators) read every handbook page, restricted ones included, so a handbook cannot be hidden from the site's editors.
 
 = What happens when I uninstall the plugin? =
 

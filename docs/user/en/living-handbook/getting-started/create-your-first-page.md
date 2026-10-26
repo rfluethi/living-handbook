@@ -6,7 +6,7 @@ This guide creates your first handbook page. The steps: write, assign to a handb
 <summary>Requirements: What must already exist</summary>
 
 * A handbook, see [Create your first handbook](create-your-first-handbook.md).
-* A user account that may edit pages (Editor or Administrator).
+* A user account with the role Editor or Administrator. Authors and contributors can only open a handbook page in the block editor if they may read its handbook. A new page belongs to no handbook yet, so it cannot be started with those roles.
 
 </details>
 
@@ -48,6 +48,6 @@ Almost always it is one of three causes: The page has no handbook assigned. Or t
 * Eltern-Seite: Getting started
 * Reihenfolge: 3
 * Textauszug: This guide creates your first handbook page: write, assign to a handbook, classify, set review data, publish.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage
