@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Taxonomy;
 
+use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -146,9 +147,7 @@ final class Taxonomies {
 			self::PAGE_TYPE,
 			$object,
 			$this->args(
-				__( 'Page types', 'living-handbook' ),
-				__( 'Page type', 'living-handbook' ),
-				'handbook-type',
+				self::PAGE_TYPE,
 				true,
 				self::is_enabled( self::PAGE_TYPE )
 			)
@@ -158,9 +157,7 @@ final class Taxonomies {
 			self::TOPIC,
 			$object,
 			$this->args(
-				__( 'Topics', 'living-handbook' ),
-				__( 'Topic', 'living-handbook' ),
-				'handbook-topic',
+				self::TOPIC,
 				true,
 				self::is_enabled( self::TOPIC )
 			)
@@ -170,9 +167,7 @@ final class Taxonomies {
 			self::ROLE,
 			$object,
 			$this->args(
-				__( 'Responsibility', 'living-handbook' ),
-				__( 'Responsibility', 'living-handbook' ),
-				'handbook-role',
+				self::ROLE,
 				false,
 				self::is_enabled( self::ROLE )
 			)
@@ -182,9 +177,7 @@ final class Taxonomies {
 			self::AUDIENCE,
 			$object,
 			$this->args(
-				__( 'Audiences', 'living-handbook' ),
-				__( 'Audience', 'living-handbook' ),
-				'handbook-audience',
+				self::AUDIENCE,
 				true,
 				self::is_enabled( self::AUDIENCE )
 			)
@@ -195,16 +188,14 @@ final class Taxonomies {
 	 * Build a common taxonomy argument array with a full label set, so the term
 	 * screens do not fall back to the generic category or tag labels.
 	 *
-	 * @param string $name         Plural label.
-	 * @param string $singular     Singular label.
-	 * @param string $slug         Rewrite slug.
+	 * @param string $taxonomy     Taxonomy name.
 	 * @param bool   $hierarchical Whether the taxonomy is hierarchical.
 	 * @param bool   $enabled      Whether this site uses this taxonomy at all.
 	 * @return array<string, mixed>
 	 */
-	private function args( string $name, string $singular, string $slug, bool $hierarchical, bool $enabled = true ): array {
+	private function args( string $taxonomy, bool $hierarchical, bool $enabled = true ): array {
 		return array(
-			'labels'            => self::labels( $name, $singular ),
+			'labels'            => self::labels( $taxonomy ),
 			'hierarchical'      => $hierarchical,
 			'public'            => false,
 			// A taxonomy this site does not use stays registered, and only
@@ -216,38 +207,134 @@ final class Taxonomies {
 			'show_ui'           => $enabled,
 			'show_admin_column' => $enabled,
 			'show_in_rest'      => $enabled,
-			'rewrite'           => array( 'slug' => $slug ),
+			// No addresses of their own. These taxonomies are not public, there
+			// is no archive of a topic, and the front end filters by its own
+			// parameters (lh_type and the others, see Frontend\Filters). A rewrite
+			// slug still made core write a permastruct for each, so every flush
+			// stored rules for /handbook-topic/... and the rest that led nowhere.
+			//
+			// The query var is left at its default on purpose. Core keeps it only
+			// in the admin for a taxonomy that is not publicly queryable, and the
+			// admin needs it: the filter dropdowns above the handbook list and the
+			// term links in its columns send ?handbook_topic=<slug>. Switching it
+			// off turned those filters into no-ops (TaxonomyRewriteTest).
+			'rewrite'           => false,
 		);
 	}
 
 	/**
-	 * A full taxonomy label set derived from the plural and singular names.
+	 * The full label set of one of the plugin's taxonomies.
 	 *
-	 * @param string $name     Plural label.
-	 * @param string $singular Singular label.
+	 * Every label is a whole string of its own. They used to be assembled from
+	 * fragments, sprintf( __( 'Add new %s' ), $singular ), which English gets
+	 * away with and German does not: article and adjective ending follow the
+	 * gender of the noun, so "Add new %s" is "Neues Thema hinzufügen", "Neuen
+	 * Seitentyp hinzufügen" and "Neue Zielgruppe hinzufügen", and no single
+	 * translation of the fragment can be right for all of them. The catalogue
+	 * had settled on "%s hinzufügen" and dropped the "new". Spelled out, each
+	 * string can be translated as what it is.
+	 *
+	 * Hierarchical taxonomies get their parent labels, the one flat one
+	 * (responsibility) the labels of the tag-style box, so neither shows core's
+	 * "Parent Category" or "Popular Tags".
+	 *
+	 * @param string $taxonomy One of the plugin's taxonomies, the handbook grouping included.
 	 * @return array<string, string>
 	 */
-	public static function labels( string $name, string $singular ): array {
-		return array(
-			'name'          => $name,
-			'singular_name' => $singular,
-			'menu_name'     => $name,
-			'all_items'     => $name,
-			/* translators: %s: singular taxonomy name. */
-			'edit_item'     => sprintf( __( 'Edit %s', 'living-handbook' ), $singular ),
-			/* translators: %s: singular taxonomy name. */
-			'view_item'     => sprintf( __( 'View %s', 'living-handbook' ), $singular ),
-			/* translators: %s: singular taxonomy name. */
-			'update_item'   => sprintf( __( 'Update %s', 'living-handbook' ), $singular ),
-			/* translators: %s: singular taxonomy name. */
-			'add_new_item'  => sprintf( __( 'Add new %s', 'living-handbook' ), $singular ),
-			/* translators: %s: singular taxonomy name. */
-			'new_item_name' => sprintf( __( 'New %s name', 'living-handbook' ), $singular ),
-			/* translators: %s: plural taxonomy name. */
-			'search_items'  => sprintf( __( 'Search %s', 'living-handbook' ), $name ),
-			'not_found'     => __( 'None found.', 'living-handbook' ),
-			/* translators: %s: plural taxonomy name. */
-			'back_to_items' => sprintf( __( 'Back to %s', 'living-handbook' ), $name ),
-		);
+	public static function labels( string $taxonomy ): array {
+		switch ( $taxonomy ) {
+			case Handbooks::TAXONOMY:
+				return array(
+					'name'              => __( 'Handbooks', 'living-handbook' ),
+					'singular_name'     => __( 'Handbook', 'living-handbook' ),
+					'menu_name'         => __( 'Handbooks', 'living-handbook' ),
+					'all_items'         => __( 'Handbooks', 'living-handbook' ),
+					'edit_item'         => __( 'Edit handbook', 'living-handbook' ),
+					'view_item'         => __( 'View handbook', 'living-handbook' ),
+					'update_item'       => __( 'Update handbook', 'living-handbook' ),
+					'add_new_item'      => __( 'Add new handbook', 'living-handbook' ),
+					'new_item_name'     => __( 'New handbook name', 'living-handbook' ),
+					'search_items'      => __( 'Search handbooks', 'living-handbook' ),
+					'not_found'         => __( 'No handbooks found.', 'living-handbook' ),
+					'back_to_items'     => __( 'Back to handbooks', 'living-handbook' ),
+					'parent_item'       => __( 'Parent handbook', 'living-handbook' ),
+					'parent_item_colon' => __( 'Parent handbook:', 'living-handbook' ),
+				);
+
+			case self::PAGE_TYPE:
+				return array(
+					'name'              => __( 'Page types', 'living-handbook' ),
+					'singular_name'     => __( 'Page type', 'living-handbook' ),
+					'menu_name'         => __( 'Page types', 'living-handbook' ),
+					'all_items'         => __( 'Page types', 'living-handbook' ),
+					'edit_item'         => __( 'Edit page type', 'living-handbook' ),
+					'view_item'         => __( 'View page type', 'living-handbook' ),
+					'update_item'       => __( 'Update page type', 'living-handbook' ),
+					'add_new_item'      => __( 'Add new page type', 'living-handbook' ),
+					'new_item_name'     => __( 'New page type name', 'living-handbook' ),
+					'search_items'      => __( 'Search page types', 'living-handbook' ),
+					'not_found'         => __( 'No page types found.', 'living-handbook' ),
+					'back_to_items'     => __( 'Back to page types', 'living-handbook' ),
+					'parent_item'       => __( 'Parent page type', 'living-handbook' ),
+					'parent_item_colon' => __( 'Parent page type:', 'living-handbook' ),
+				);
+
+			case self::TOPIC:
+				return array(
+					'name'              => __( 'Topics', 'living-handbook' ),
+					'singular_name'     => __( 'Topic', 'living-handbook' ),
+					'menu_name'         => __( 'Topics', 'living-handbook' ),
+					'all_items'         => __( 'Topics', 'living-handbook' ),
+					'edit_item'         => __( 'Edit topic', 'living-handbook' ),
+					'view_item'         => __( 'View topic', 'living-handbook' ),
+					'update_item'       => __( 'Update topic', 'living-handbook' ),
+					'add_new_item'      => __( 'Add new topic', 'living-handbook' ),
+					'new_item_name'     => __( 'New topic name', 'living-handbook' ),
+					'search_items'      => __( 'Search topics', 'living-handbook' ),
+					'not_found'         => __( 'No topics found.', 'living-handbook' ),
+					'back_to_items'     => __( 'Back to topics', 'living-handbook' ),
+					'parent_item'       => __( 'Parent topic', 'living-handbook' ),
+					'parent_item_colon' => __( 'Parent topic:', 'living-handbook' ),
+				);
+
+			case self::ROLE:
+				return array(
+					'name'                       => __( 'Responsibility', 'living-handbook' ),
+					'singular_name'              => __( 'Responsibility', 'living-handbook' ),
+					'menu_name'                  => __( 'Responsibility', 'living-handbook' ),
+					'all_items'                  => __( 'Responsibility', 'living-handbook' ),
+					'edit_item'                  => __( 'Edit responsibility', 'living-handbook' ),
+					'view_item'                  => __( 'View responsibility', 'living-handbook' ),
+					'update_item'                => __( 'Update responsibility', 'living-handbook' ),
+					'add_new_item'               => __( 'Add new responsibility', 'living-handbook' ),
+					'new_item_name'              => __( 'New responsibility name', 'living-handbook' ),
+					'search_items'               => __( 'Search responsibilities', 'living-handbook' ),
+					'not_found'                  => __( 'No responsibilities found.', 'living-handbook' ),
+					'back_to_items'              => __( 'Back to responsibilities', 'living-handbook' ),
+					'popular_items'              => __( 'Frequently used responsibilities', 'living-handbook' ),
+					'separate_items_with_commas' => __( 'Separate responsibilities with commas', 'living-handbook' ),
+					'add_or_remove_items'        => __( 'Add or remove responsibilities', 'living-handbook' ),
+					'choose_from_most_used'      => __( 'Choose from the most used responsibilities', 'living-handbook' ),
+				);
+
+			case self::AUDIENCE:
+			default:
+				return array(
+					'name'              => __( 'Audiences', 'living-handbook' ),
+					'singular_name'     => __( 'Audience', 'living-handbook' ),
+					'menu_name'         => __( 'Audiences', 'living-handbook' ),
+					'all_items'         => __( 'Audiences', 'living-handbook' ),
+					'edit_item'         => __( 'Edit audience', 'living-handbook' ),
+					'view_item'         => __( 'View audience', 'living-handbook' ),
+					'update_item'       => __( 'Update audience', 'living-handbook' ),
+					'add_new_item'      => __( 'Add new audience', 'living-handbook' ),
+					'new_item_name'     => __( 'New audience name', 'living-handbook' ),
+					'search_items'      => __( 'Search audiences', 'living-handbook' ),
+					'not_found'         => __( 'No audiences found.', 'living-handbook' ),
+					'back_to_items'     => __( 'Back to audiences', 'living-handbook' ),
+					'parent_item'       => __( 'Parent audience', 'living-handbook' ),
+					'parent_item_colon' => __( 'Parent audience:', 'living-handbook' ),
+				);
+		}
 	}
 }
