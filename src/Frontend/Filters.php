@@ -307,7 +307,7 @@ final class Filters {
 		foreach ( array_keys( self::facet_map() ) as $param ) {
 			$raw = $request->get_param( $param );
 			if ( is_array( $raw ) ) {
-				$slugs = array_values( array_filter( array_map( 'sanitize_title', $raw ) ) );
+				$slugs = self::slug_list( $raw );
 				if ( ! empty( $slugs ) ) {
 					$selections[ $param ] = $slugs;
 				}
@@ -793,8 +793,25 @@ final class Filters {
 		if ( empty( $_GET[ $param ] ) ) {
 			return array();
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		return array_map( 'sanitize_title', (array) wp_unslash( $_GET[ $param ] ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized in slug_list().
+		return self::slug_list( wp_unslash( $_GET[ $param ] ) );
+	}
+
+	/**
+	 * Sanitized slugs from a request value, whatever shape it arrived in.
+	 *
+	 * A URL can make a parameter a string, a list, or a list of lists
+	 * (?lh_type[a][]=x). sanitize_title() expects a string, and handed an array
+	 * it threw a TypeError in PHP 8: any visitor could produce the "critical
+	 * error" page, on every request, with one hand-written URL (0.75.0). Only
+	 * strings are kept; anything nested is dropped.
+	 *
+	 * @param mixed $raw Request value.
+	 * @return array<int, string>
+	 */
+	private static function slug_list( $raw ): array {
+		$values = array_filter( (array) $raw, 'is_string' );
+		return array_values( array_filter( array_map( 'sanitize_title', $values ) ) );
 	}
 
 	/**
