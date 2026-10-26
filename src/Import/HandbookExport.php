@@ -351,9 +351,13 @@ JS;
 			return '';
 		}
 		$zip->addFromString( 'manifest.json', $json );
+		// addFile(), not addFromString(): the file is read when the archive is
+		// written, one at a time. Up to 0.75.0 every upload of the handbook was
+		// read into memory first and held there until the end, which on a
+		// handbook with a few hundred screenshots was the memory limit.
 		foreach ( $media as $item ) {
-			if ( isset( $item['_data'] ) && is_string( $item['_data'] ) ) {
-				$zip->addFromString( $item['file'], $item['_data'] );
+			if ( isset( $item['_path'] ) && is_string( $item['_path'] ) ) {
+				$zip->addFile( $item['_path'], (string) $item['file'] );
 			}
 		}
 		$zip->close();
@@ -611,6 +615,7 @@ JS;
 	 */
 	private function collect_page_media( WP_Post $post, array &$media ): array {
 		$ids     = array();
+		$sizes   = array();
 		$uploads = wp_get_upload_dir();
 		$baseurl = isset( $uploads['baseurl'] ) ? (string) $uploads['baseurl'] : '';
 
@@ -623,6 +628,16 @@ JS;
 				$attachment_id = attachment_url_to_postid( $url );
 				if ( $attachment_id > 0 ) {
 					$ids[ $attachment_id ] = $attachment_id;
+					continue;
+				}
+				// An image inserted at a size ("plan-1024x768.png") is not the
+				// attachment's own URL, so the lookup above does not know it, and
+				// up to 0.75.0 the file did not travel: the imported page went on
+				// loading it from the old site. The size is a file of its own, so
+				// it is carried as one, under the URL the content uses.
+				$size = $this->size_file( $url );
+				if ( array() !== $size ) {
+					$sizes[ $size['key'] ] = $size;
 				}
 			}
 		}
@@ -639,7 +654,73 @@ JS;
 				$files[] = $file;
 			}
 		}
+		foreach ( $sizes as $key => $size ) {
+			if ( ! isset( $media[ $key ] ) ) {
+				$media[ $key ] = array(
+					'file'         => $size['file'],
+					'original_url' => $size['url'],
+					'alt'          => (string) get_post_meta( $size['id'], '_wp_attachment_image_alt', true ),
+					'_path'        => $size['path'],
+				);
+			}
+			$files[] = (string) $media[ $key ]['file'];
+		}
 		return $files;
+	}
+
+	/**
+	 * The file behind an upload URL that names an image size, such as
+	 * "plan-1024x768.png", when it really is a size of an attachment.
+	 *
+	 * The name is not trusted on its own: the attachment is found from the name
+	 * without the size suffix, and the file has to be listed among that
+	 * attachment's own sizes, so only a file WordPress generated for it, in its
+	 * folder, is read.
+	 *
+	 * @param string $url Upload URL from the content.
+	 * @return array{key: string, id: int, url: string, file: string, path: string}|array{}
+	 */
+	private function size_file( string $url ): array {
+		$bare = (string) preg_replace( '/[?#].*$/', '', $url );
+		if ( 1 !== preg_match( '/^(.+)-\d+x\d+(\.[A-Za-z0-9]+)$/', $bare, $parts ) ) {
+			return array();
+		}
+		$attachment_id = attachment_url_to_postid( $parts[1] . $parts[2] );
+		if ( $attachment_id <= 0 ) {
+			// A "-scaled" original carries its sizes under the unscaled name.
+			$attachment_id = attachment_url_to_postid( $parts[1] . '-scaled' . $parts[2] );
+		}
+		if ( $attachment_id <= 0 ) {
+			return array();
+		}
+
+		$name = rawurldecode( basename( $bare ) );
+		$meta = wp_get_attachment_metadata( $attachment_id );
+		$ok   = false;
+		$list = is_array( $meta ) ? $meta : array();
+		// A file without sizes (an SVG, a small image) has no 'sizes' entry at all.
+		foreach ( (array) ( $list['sizes'] ?? array() ) as $size ) {
+			if ( is_array( $size ) && ( $size['file'] ?? '' ) === $name ) {
+				$ok = true;
+				break;
+			}
+		}
+		$original = get_attached_file( $attachment_id );
+		if ( ! $ok || ! is_string( $original ) || '' === $original ) {
+			return array();
+		}
+		$path = dirname( $original ) . '/' . $name;
+		if ( ! is_readable( $path ) ) {
+			return array();
+		}
+
+		return array(
+			'key'  => $attachment_id . ':' . $name,
+			'id'   => $attachment_id,
+			'url'  => $bare,
+			'file' => 'media/' . $attachment_id . '-' . sanitize_file_name( $name ),
+			'path' => $path,
+		);
 	}
 
 	/**
@@ -660,10 +741,6 @@ JS;
 		if ( ! is_string( $path ) || ! is_readable( $path ) ) {
 			return '';
 		}
-		$data = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a local upload for the bundle.
-		if ( false === $data ) {
-			return '';
-		}
 
 		$file = 'media/' . $attachment_id . '-' . sanitize_file_name( basename( $path ) );
 		$url  = wp_get_attachment_url( $attachment_id );
@@ -673,7 +750,8 @@ JS;
 			'file'         => $file,
 			'original_url' => is_string( $url ) ? $url : '',
 			'alt'          => $alt,
-			'_data'        => $data,
+			// The path, not the contents: the file is read when the ZIP is written.
+			'_path'        => $path,
 		);
 		return $file;
 	}
