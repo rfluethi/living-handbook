@@ -282,6 +282,26 @@
 		__( 'Handbook feedback: the "Was this helpful?" prompt for the current page.', 'living-handbook' )
 	);
 
+	// The three learning path blocks render from the path or the lesson being
+	// read, which the editor does not have either. Without a client-side
+	// registration the Site Editor showed them as unsupported, and deleting
+	// such a placeholder removed the lesson list or the path bar from the
+	// template (0.75.0).
+	dynamic(
+		'living-handbook/lessons',
+		__( 'Learning path lessons: the ordered lessons of the learning path being read, with the start button.', 'living-handbook' )
+	);
+
+	dynamic(
+		'living-handbook/paths',
+		__( 'Learning paths of this handbook: the paths of the handbook whose entry page this is.', 'living-handbook' )
+	);
+
+	dynamic(
+		'living-handbook/path-nav',
+		__( 'Learning path bar: on a lesson opened from a learning path, which lesson of how many and the way to the previous and next one.', 'living-handbook' )
+	);
+
 	blocks.registerBlockType( 'living-handbook/search', {
 		edit: function ( props ) {
 			return el(

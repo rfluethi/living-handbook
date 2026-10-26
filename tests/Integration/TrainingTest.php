@@ -364,4 +364,34 @@ final class TrainingTest extends WP_UnitTestCase {
 		$terms = wp_get_object_terms( $path, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
 		$this->assertCount( 1, $terms );
 	}
+
+	/**
+	 * The first time the switch is used, the option is added rather than
+	 * updated. The rewrite rules have to be rebuilt in that case too, or
+	 * /learning-path/ answers 404 until somebody saves the permalinks (0.75.0).
+	 *
+	 * @return void
+	 */
+	public function test_switching_on_for_the_first_time_schedules_a_rebuild(): void {
+		delete_option( Training::OPTION_ENABLED );
+		delete_option( Training::OPTION_FLUSH );
+
+		update_option( Training::OPTION_ENABLED, 1 );
+
+		$this->assertNotEmpty( get_option( Training::OPTION_FLUSH, 0 ) );
+	}
+
+	/**
+	 * The three learning path blocks are registered in the editor script, so
+	 * the Site Editor does not show them as unsupported.
+	 *
+	 * @return void
+	 */
+	public function test_the_path_blocks_are_known_to_the_editor(): void {
+		$script = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/blocks.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
+
+		foreach ( array( 'lessons', 'paths', 'path-nav' ) as $name ) {
+			$this->assertMatchesRegularExpression( "#registerBlockType\\(\\s*'living-handbook/{$name}'|dynamic\\(\\s*'living-handbook/{$name}'#", $script, "living-handbook/{$name} has no editor registration." );
+		}
+	}
 }

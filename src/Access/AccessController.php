@@ -85,6 +85,22 @@ final class AccessController {
 	}
 
 	/**
+	 * Whether a post is of a type this class guards.
+	 *
+	 * Every read channel asks this rather than comparing with the handbook type
+	 * alone. The channels that compared with Handbook::POST_TYPE were the ones
+	 * learning paths were missing from in 0.75.0: the media of a restricted
+	 * path was readable through /wp/v2/media, its comments and its oEmbed card
+	 * were not filtered.
+	 *
+	 * @param int $post_id Post id.
+	 * @return bool
+	 */
+	private static function is_guarded( int $post_id ): bool {
+		return in_array( get_post_type( $post_id ), self::guarded_post_types(), true );
+	}
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -408,7 +424,7 @@ final class AccessController {
 					// visibility: the media library of an internal handbook is part
 					// of its content.
 					if ( 'attachment' === $post->post_type && $post->post_parent > 0
-						&& Handbook::POST_TYPE === get_post_type( (int) $post->post_parent ) ) {
+						&& self::is_guarded( (int) $post->post_parent ) ) {
 						return self::can_view_post( (int) $post->post_parent, $user_id );
 					}
 					return true;
@@ -429,7 +445,7 @@ final class AccessController {
 		if ( ! $post instanceof WP_Post || $post->post_parent <= 0 ) {
 			return $response;
 		}
-		if ( Handbook::POST_TYPE !== get_post_type( (int) $post->post_parent ) ) {
+		if ( ! self::is_guarded( (int) $post->post_parent ) ) {
 			return $response;
 		}
 		if ( self::can_view_post( (int) $post->post_parent, get_current_user_id() ) ) {
@@ -448,7 +464,7 @@ final class AccessController {
 	public function guard_oembed_request( $post_id, $url ) {
 		unset( $url );
 		$id = (int) $post_id;
-		if ( $id > 0 && Handbook::POST_TYPE === get_post_type( $id ) && ! self::can_view_post( $id, get_current_user_id() ) ) {
+		if ( $id > 0 && self::is_guarded( $id ) && ! self::can_view_post( $id, get_current_user_id() ) ) {
 			return 0;
 		}
 		return $post_id;
@@ -465,7 +481,7 @@ final class AccessController {
 	 * @return array<string, mixed>|mixed
 	 */
 	public function guard_oembed_data( $data, $post ) {
-		if ( $post instanceof WP_Post && Handbook::POST_TYPE === $post->post_type
+		if ( $post instanceof WP_Post && in_array( $post->post_type, self::guarded_post_types(), true )
 			&& ! self::can_view_post( $post->ID, get_current_user_id() ) ) {
 			return array();
 		}
@@ -533,7 +549,7 @@ final class AccessController {
 			return $response;
 		}
 		$post_id = (int) $comment->comment_post_ID;
-		if ( Handbook::POST_TYPE !== get_post_type( $post_id ) ) {
+		if ( ! self::is_guarded( $post_id ) ) {
 			return $response;
 		}
 		if ( self::can_view_post( $post_id, get_current_user_id() ) ) {
@@ -578,11 +594,11 @@ final class AccessController {
 
 		$viewable = self::viewable_term_ids( get_current_user_id() );
 		$in       = empty( $viewable ) ? '0' : implode( ',', array_map( 'absint', $viewable ) );
-		$type     = esc_sql( Handbook::POST_TYPE );
+		$types    = "'" . implode( "','", array_map( static fn( string $type ): string => (string) esc_sql( $type ), self::guarded_post_types() ) ) . "'";
 		$taxonomy = esc_sql( Handbooks::TAXONOMY );
 
 		return " AND ( {$wpdb->comments}.comment_post_ID NOT IN ("
-			. " SELECT lhp.ID FROM {$wpdb->posts} lhp WHERE lhp.post_type = '{$type}'"
+			. " SELECT lhp.ID FROM {$wpdb->posts} lhp WHERE lhp.post_type IN ({$types})"
 			. " ) OR {$wpdb->comments}.comment_post_ID IN ("
 			. " SELECT lhtr.object_id FROM {$wpdb->term_relationships} lhtr"
 			. " INNER JOIN {$wpdb->term_taxonomy} lhtt ON lhtt.term_taxonomy_id = lhtr.term_taxonomy_id"

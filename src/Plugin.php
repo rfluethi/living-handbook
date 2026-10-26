@@ -132,6 +132,14 @@ final class Plugin {
 		self::rename_meta_keys();
 
 		GitSync::reschedule();
+
+		// An update can bring a post type or a rewrite rule the stored rules do
+		// not know: 0.75.0 added learning paths, and an installation that had
+		// the module switched on before the update had no rule for them. Rebuild
+		// once per version. This runs on admin_init, after init has registered
+		// everything, so the rules are built from the current registrations.
+		flush_rewrite_rules( false );
+
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 	}
 

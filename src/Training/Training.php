@@ -102,6 +102,11 @@ final class Training {
 		add_action( 'init', array( $this, 'register_meta' ) );
 		add_action( 'init', array( $this, 'maybe_flush_rewrites' ), 99 );
 		add_action( 'update_option_' . self::OPTION_ENABLED, array( $this, 'schedule_flush' ) );
+		// The first time the switch is used the option does not exist yet, and
+		// update_option() then adds it: update_option_ never fires, and
+		// /learning-path/ stayed without a rewrite rule until somebody saved the
+		// permalinks (0.75.0).
+		add_action( 'add_option_' . self::OPTION_ENABLED, array( $this, 'schedule_flush' ) );
 		add_filter( 'wp_sitemaps_post_types', array( $this, 'exclude_from_sitemap' ) );
 	}
 

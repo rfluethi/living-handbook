@@ -319,4 +319,64 @@ final class TrainingAccessTest extends WP_UnitTestCase {
 		$this->assertNotContains( $stranger, $ids, 'The search leaves the handbook of the path.' );
 		$this->assertNotContains( $draft, $ids, 'The search offers a draft.' );
 	}
+
+	/**
+	 * An image attached to a path of an internal handbook is not described to a
+	 * guest by /wp/v2/media. The attachment guards asked only whether the
+	 * parent was a handbook page (0.75.0).
+	 *
+	 * @return void
+	 */
+	public function test_the_media_of_a_path_is_guarded(): void {
+		$ids        = $this->internal_path();
+		$attachment = (int) self::factory()->attachment->create(
+			array(
+				'post_parent'    => $ids['path'],
+				'post_mime_type' => 'image/png',
+				'post_title'     => 'Internal diagram',
+				'post_status'    => 'inherit',
+			)
+		);
+
+		wp_set_current_user( 0 );
+		$response = rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/media/' . $attachment ) );
+
+		$this->assertSame( 404, $response->get_status() );
+	}
+
+	/**
+	 * Comments on a path of an internal handbook stay out of a guest's comment
+	 * query, as they do for a handbook page.
+	 *
+	 * @return void
+	 */
+	public function test_the_comments_of_a_path_are_guarded(): void {
+		$ids = $this->internal_path();
+		self::factory()->comment->create(
+			array(
+				'comment_post_ID'  => $ids['path'],
+				'comment_content'  => 'Internal remark',
+				'comment_approved' => 1,
+			)
+		);
+
+		wp_set_current_user( 0 );
+		$found = get_comments( array( 'search' => 'Internal remark' ) );
+
+		$this->assertSame( array(), $found );
+	}
+
+	/**
+	 * The oEmbed card of a path of an internal handbook is empty for a guest.
+	 *
+	 * @return void
+	 */
+	public function test_the_oembed_card_of_a_path_is_guarded(): void {
+		$ids = $this->internal_path();
+
+		wp_set_current_user( 0 );
+		$data = apply_filters( 'oembed_response_data', array( 'title' => 'Internal onboarding' ), get_post( $ids['path'] ), 600, 400 );
+
+		$this->assertSame( array(), $data );
+	}
 }
