@@ -56,6 +56,11 @@ final class Plugin {
 	public const DB_VERSION_OPTION = 'living_handbook_db_version';
 
 	/**
+	 * Lock that keeps two requests from running the same migration at once.
+	 */
+	public const UPGRADE_LOCK = 'living_handbook_upgrade_lock';
+
+	/**
 	 * Singleton instance.
 	 *
 	 * @var Plugin|null
@@ -111,7 +116,20 @@ final class Plugin {
 		( new SourceNoteBlock() )->register();
 		( new Onboarding() )->register();
 
-		add_action( 'admin_init', array( $this, 'maybe_upgrade' ) );
+		// After an update the migrations have to run before anything relies on
+		// them. This used to hang on admin_init, which left it to the next visit
+		// of the dashboard: an update from WP-CLI or a background auto-update
+		// replaces the files, and until an administrator happened by, every
+		// front-end request and every cron run worked against unmigrated data.
+		//
+		// wp_loaded fires on every kind of request, front end, admin, AJAX, REST,
+		// cron and WP-CLI, after init has finished and before the request is
+		// parsed or a cron event runs. Not init itself, even late: maybe_upgrade()
+		// rebuilds the rewrite rules, and a rebuild at init priority 99 would
+		// leave out the rules of every other plugin that registers its types
+		// later than that. On wp_loaded every registration is done. Once the
+		// version is stored this costs one autoloaded option read.
+		add_action( 'wp_loaded', array( $this, 'maybe_upgrade' ) );
 	}
 
 	/**
@@ -129,6 +147,23 @@ final class Plugin {
 			return;
 		}
 
+		// Running on wp_loaded means running on every request that arrives while
+		// the first one is still migrating, and on a busy site that is several
+		// at once. The migrations are idempotent, but a flush and a reschedule
+		// per concurrent request is waste, and two renames racing over the same
+		// rows is worse. add_option() is a single INSERT that fails when the row
+		// exists, which makes it a lock without any extra machinery. The lock
+		// carries its time, so one left behind by a request that died half-way
+		// is taken over after ten minutes instead of blocking the upgrade for
+		// good.
+		if ( ! add_option( self::UPGRADE_LOCK, time(), '', false ) ) {
+			$since = (int) get_option( self::UPGRADE_LOCK, 0 );
+			if ( $since > time() - 10 * MINUTE_IN_SECONDS ) {
+				return;
+			}
+			update_option( self::UPGRADE_LOCK, time(), false );
+		}
+
 		self::rename_meta_keys();
 
 		GitSync::reschedule();
@@ -136,11 +171,13 @@ final class Plugin {
 		// An update can bring a post type or a rewrite rule the stored rules do
 		// not know: 0.75.0 added learning paths, and an installation that had
 		// the module switched on before the update had no rule for them. Rebuild
-		// once per version. This runs on admin_init, after init has registered
-		// everything, so the rules are built from the current registrations.
+		// once per version. This runs on wp_loaded, after every post type and
+		// taxonomy of every plugin is registered, so the rules are built from the
+		// current registrations.
 		flush_rewrite_rules( false );
 
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
+		delete_option( self::UPGRADE_LOCK );
 	}
 
 	/**
@@ -208,9 +245,31 @@ final class Plugin {
 	 * the overview page, schedule the GitHub sync, record the version, and
 	 * flush rewrite rules.
 	 *
+	 * A network activation is refused. WordPress runs this callback once, on
+	 * the main site, and then marks the plugin active on every site of the
+	 * network: none of the others gets its terms, its overview page, its
+	 * schedule or its rewrite rules, and the uninstall cleans only the site it
+	 * runs on. The readme says multisite is not supported; this is where that
+	 * stops being a sentence and becomes a guard. Activating per site still
+	 * works, each site runs its own activation then.
+	 *
+	 * @param bool $network_wide Whether the plugin is being activated for the whole network.
 	 * @return void
 	 */
-	public static function activate(): void {
+	public static function activate( bool $network_wide = false ): void {
+		// WordPress passes true only from the network admin of a multisite, so
+		// the flag alone is the test.
+		if ( $network_wide ) {
+			wp_die(
+				esc_html__( 'Living Handbook cannot be activated for the whole network. Activate it on each site that needs a handbook instead.', 'living-handbook' ),
+				esc_html__( 'Network activation not supported', 'living-handbook' ),
+				array(
+					'response'  => 400,
+					'back_link' => true,
+				)
+			);
+		}
+
 		( new Handbook() )->register_post_type();
 		( new Training() )->register_post_type();
 		( new Taxonomies() )->register_taxonomies();
@@ -229,10 +288,19 @@ final class Plugin {
 	/**
 	 * Deactivation callback.
 	 *
+	 * The rewrite rules have to lose the plugin's addresses. Flushing them here
+	 * did not do that: deactivation runs inside the request that still has the
+	 * plugin loaded, with its post types and taxonomies registered, so
+	 * flush_rewrite_rules() rebuilt exactly the rules it was meant to remove,
+	 * and /handbook/... kept resolving to a type nothing serves any more until
+	 * the permalinks were saved by hand. Deleting the stored rules instead makes
+	 * WordPress build them afresh on the next request, which no longer loads the
+	 * plugin.
+	 *
 	 * @return void
 	 */
 	public static function deactivate(): void {
 		GitSync::unschedule();
-		flush_rewrite_rules();
+		delete_option( 'rewrite_rules' );
 	}
 }

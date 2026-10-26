@@ -60,6 +60,7 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Git\GitSync::OPTION_CRON_OFFSET );
 	delete_option( LivingHandbook\Frontend\Navigation::CACHE_VERSION_OPTION );
 	delete_option( LivingHandbook\Plugin::DB_VERSION_OPTION );
+	delete_option( LivingHandbook\Plugin::UPGRADE_LOCK );
 	delete_option( LivingHandbook\Git\GitSync::OPTION_UNINSTALL );
 	delete_option( LivingHandbook\Setup\Onboarding::OPTION_SETUP_NOTICE );
 	delete_option( LivingHandbook\Setup\Onboarding::OPTION_OVERVIEW_PAGE );
