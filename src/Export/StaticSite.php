@@ -31,6 +31,7 @@ use LivingHandbook\Access\AccessController;
 use LivingHandbook\Frontend\Headings;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Support\TempFiles;
 use WP_Error;
 use WP_Post;
 use WP_Query;
@@ -181,6 +182,12 @@ final class StaticSite {
 				);
 			}
 
+			// An export whose download never happened leaves its file behind. A
+			// new export is the moment to collect those, so a site needs no
+			// scheduled event for it. Twice the job's lifetime: by then the job is
+			// gone and the file belongs to nobody.
+			TempFiles::sweep( 'lh-site', 2 * self::JOB_TTL );
+
 			$state = self::plan( $term, $root_id, (string) $request->get_param( 'theme' ) );
 			if ( array() === $state['queue'] ) {
 				return new WP_Error(
@@ -273,8 +280,6 @@ final class StaticSite {
 			'index'    => $index,
 			'queue'    => array_keys( $index ),
 			'position' => 0,
-			'entries'  => array(),
-			'media'    => array(),
 			'mermaid'  => false,
 			'template' => TemplateRender::markup(),
 			'supports' => array(),
@@ -341,12 +346,18 @@ final class StaticSite {
 			);
 		}
 
+		// Once per pass, not once per page. Every page rewrites its links against
+		// the addresses of all exported pages, and up to 0.75.0 that table was
+		// rebuilt for each of them: a permalink per page per page, four million
+		// on a handbook of two thousand pages.
+		$links = self::link_targets( $state );
+
 		while ( (int) $state['position'] < $total ) {
 			$post_id = (int) $queue[ (int) $state['position'] ];
 			$post    = get_post( $post_id );
 
 			if ( $post instanceof WP_Post ) {
-				self::add_page( $zip, $post, $state );
+				self::add_page( $zip, $post, $state, $links );
 			}
 
 			++$state['position'];
@@ -366,6 +377,7 @@ final class StaticSite {
 
 		self::add_site_files( $zip, $state );
 		$zip->close();
+		wp_delete_file( self::entries_file( $state ) );
 
 		set_transient( self::JOB_PREFIX . (string) $state['job'], $state, self::JOB_TTL );
 
@@ -426,12 +438,13 @@ final class StaticSite {
 	/**
 	 * Render one page into the archive.
 	 *
-	 * @param ZipArchive           $zip   The open archive.
-	 * @param WP_Post              $post  The page.
-	 * @param array<string, mixed> $state Job state, updated in place.
+	 * @param ZipArchive            $zip   The open archive.
+	 * @param WP_Post               $post  The page.
+	 * @param array<string, mixed>  $state Job state, updated in place.
+	 * @param array<string, string> $links Exported addresses to their file, from link_targets().
 	 * @return void
 	 */
-	private static function add_page( ZipArchive $zip, WP_Post $post, array &$state ): void {
+	private static function add_page( ZipArchive $zip, WP_Post $post, array &$state, array $links ): void {
 		$index = (array) $state['index'];
 		$path  = SiteRenderer::path_for( (int) $post->ID, $index );
 
@@ -444,7 +457,7 @@ final class StaticSite {
 			$content = self::render_content( $post );
 		}
 
-		$content = self::rewrite( $zip, $content, $state, $path );
+		$content = self::rewrite( $zip, $content, $path, $links );
 
 		$html = $from_template
 			? SiteRenderer::page_from_template( $post, $content, $index, (array) $state['site'] )
@@ -479,9 +492,74 @@ final class StaticSite {
 
 		$zip->addFromString( $path, $html );
 
-		$entries          = (array) $state['entries'];
-		$entries[]        = SiteRenderer::index_entry( (string) get_the_title( $post ), $path, $content );
-		$state['entries'] = $entries;
+		// The search entry goes to a file beside the archive, not into the job
+		// state. Up to 0.75.0 every page's text piled up in the transient, up to
+		// four thousand characters a page, and a handbook of two thousand pages
+		// made the state larger than the database would take: the next pass found
+		// nothing and reported the export as expired.
+		$entry = wp_json_encode( SiteRenderer::index_entry( (string) get_the_title( $post ), $path, $content ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		if ( is_string( $entry ) ) {
+			file_put_contents( self::entries_file( $state ), $entry . "\n", FILE_APPEND ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a working file beside the export archive, in the temp folder.
+		}
+	}
+
+	/**
+	 * The file the search entries of a job are collected in, beside its archive.
+	 *
+	 * @param array<string, mixed> $state Job state.
+	 * @return string
+	 */
+	private static function entries_file( array $state ): string {
+		return (string) $state['zip'] . '-index';
+	}
+
+	/**
+	 * Read the collected search entries back.
+	 *
+	 * @param array<string, mixed> $state Job state.
+	 * @return array<int, array<string, string>>
+	 */
+	private static function read_entries( array $state ): array {
+		$file = self::entries_file( $state );
+		if ( ! is_readable( $file ) ) {
+			return array();
+		}
+		$entries = array();
+		foreach ( (array) file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES ) as $line ) {
+			$entry = json_decode( (string) $line, true );
+			if ( is_array( $entry ) ) {
+				$entries[] = $entry;
+			}
+		}
+		return $entries;
+	}
+
+	/**
+	 * Every exported page's address, mapped to its file in the export.
+	 *
+	 * The handbook's own address is in it as well, as the start page: the
+	 * navigation links to it as its top entry, and in the export that place is
+	 * index.html rather than a site the reader may not be able to open.
+	 *
+	 * @param array<string, mixed> $state Job state.
+	 * @return array<string, string> Address without trailing slash to file path from the export root.
+	 */
+	private static function link_targets( array $state ): array {
+		$index = (array) $state['index'];
+		$links = array();
+		foreach ( array_keys( $index ) as $id ) {
+			$permalink = get_permalink( (int) $id );
+			if ( is_string( $permalink ) && '' !== $permalink ) {
+				$links[ untrailingslashit( $permalink ) ] = SiteRenderer::path_for( (int) $id, $index );
+			}
+		}
+
+		$term_link = get_term_link( (int) $state['term'], Handbooks::TAXONOMY );
+		if ( is_string( $term_link ) && '' !== $term_link ) {
+			$links[ untrailingslashit( $term_link ) ] = 'index.html';
+		}
+
+		return $links;
 	}
 
 	/**
@@ -529,60 +607,34 @@ final class StaticSite {
 	 * page that was not exported stays absolute rather than pointing at a file
 	 * that is not there.
 	 *
-	 * @param ZipArchive           $zip     The open archive.
-	 * @param string               $content Rendered content.
-	 * @param array<string, mixed> $state   Job state, updated in place.
-	 * @param string               $path    Path of the page being written.
+	 * @param ZipArchive            $zip     The open archive.
+	 * @param string                $content Rendered content.
+	 * @param string                $path    Path of the page being written.
+	 * @param array<string, string> $links   Exported addresses to their file, from link_targets().
 	 * @return string
 	 */
-	private static function rewrite( ZipArchive $zip, string $content, array &$state, string $path ): string {
-		$index   = (array) $state['index'];
+	private static function rewrite( ZipArchive $zip, string $content, string $path, array $links ): string {
 		$uploads = wp_get_upload_dir();
 		$baseurl = (string) $uploads['baseurl'];
 		$basedir = (string) $uploads['basedir'];
 		$prefix  = SiteRenderer::root_prefix( $path );
 
-		$links = array();
-		foreach ( array_keys( $index ) as $id ) {
-			$permalink = get_permalink( (int) $id );
-			if ( is_string( $permalink ) && '' !== $permalink ) {
-				$links[ untrailingslashit( $permalink ) ] = SiteRenderer::relative( $path, SiteRenderer::path_for( (int) $id, $index ) );
-			}
-		}
-
-		// The handbook's own address, which the navigation links to as its top
-		// entry. In the export that place is the start page, so it goes there
-		// rather than back to a site the reader may not be able to open.
-		$term_link = get_term_link( (int) $state['term'], Handbooks::TAXONOMY );
-		if ( is_string( $term_link ) && '' !== $term_link ) {
-			$links[ untrailingslashit( $term_link ) ] = $prefix . 'index.html';
-		}
-
-		$media = (array) $state['media'];
-
 		$content = (string) preg_replace_callback(
 			'#(href|src)="([^"]+)"#i',
-			static function ( array $found ) use ( $links, $baseurl, $basedir, $prefix, $zip, &$media ): string {
+			static function ( array $found ) use ( $links, $baseurl, $basedir, $prefix, $zip, $path ): string {
 				$url   = $found[2];
 				$parts = explode( '#', $url, 2 );
 				$bare  = untrailingslashit( $parts[0] );
 				$hash  = isset( $parts[1] ) ? '#' . $parts[1] : '';
 
 				if ( isset( $links[ $bare ] ) ) {
-					return $found[1] . '="' . esc_attr( $links[ $bare ] . $hash ) . '"';
+					return $found[1] . '="' . esc_attr( SiteRenderer::relative( $path, $links[ $bare ] ) . $hash ) . '"';
 				}
 
 				if ( '' !== $baseurl && str_starts_with( $url, $baseurl ) ) {
 					$relative = ltrim( substr( $url, strlen( $baseurl ) ), '/' );
 					$entry    = self::upload_entry( $relative, $basedir );
-					if ( '' !== $entry && ! isset( $media[ $entry ] ) ) {
-						$data = file_get_contents( $basedir . '/' . $entry ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file, not a request.
-						if ( is_string( $data ) ) {
-							$zip->addFromString( 'assets/media/' . $entry, $data );
-							$media[ $entry ] = true;
-						}
-					}
-					if ( '' !== $entry && isset( $media[ $entry ] ) ) {
+					if ( '' !== $entry && self::add_media( $zip, $basedir, $entry ) ) {
 						return $found[1] . '="' . esc_attr( $prefix . 'assets/media/' . $relative ) . '"';
 					}
 				}
@@ -598,7 +650,7 @@ final class StaticSite {
 		// that wants the sharper one gets it out of the ZIP.
 		$content = (string) preg_replace_callback(
 			'#srcset="([^"]+)"#i',
-			static function ( array $found ) use ( $baseurl, $basedir, $prefix, $zip, &$media ): string {
+			static function ( array $found ) use ( $baseurl, $basedir, $prefix, $zip ): string {
 				$parts = array_map( 'trim', explode( ',', $found[1] ) );
 				$out   = array();
 				foreach ( $parts as $part ) {
@@ -610,14 +662,7 @@ final class StaticSite {
 					if ( '' !== $baseurl && str_starts_with( $url, $baseurl ) ) {
 						$relative = ltrim( substr( $url, strlen( $baseurl ) ), '/' );
 						$entry    = self::upload_entry( $relative, $basedir );
-						if ( '' !== $entry && ! isset( $media[ $entry ] ) ) {
-							$data = file_get_contents( $basedir . '/' . $entry ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file, not a request.
-							if ( is_string( $data ) ) {
-								$zip->addFromString( 'assets/media/' . $entry, $data );
-								$media[ $entry ] = true;
-							}
-						}
-						if ( '' !== $entry && isset( $media[ $entry ] ) ) {
+						if ( '' !== $entry && self::add_media( $zip, $basedir, $entry ) ) {
 							$url = $prefix . 'assets/media/' . $relative;
 						}
 					}
@@ -629,9 +674,29 @@ final class StaticSite {
 			$content
 		);
 
-		$state['media'] = $media;
-
 		return $content;
+	}
+
+	/**
+	 * Put an upload into the archive once, and say whether it is there.
+	 *
+	 * The archive itself is the record of what it already holds, so the job state
+	 * does not carry a list of every file across the passes. And the file goes in
+	 * with addFile(), which reads it when the archive is written: up to 0.75.0
+	 * every image of a pass was read into memory and held until the archive was
+	 * closed.
+	 *
+	 * @param ZipArchive $zip     The open archive.
+	 * @param string     $basedir The uploads folder.
+	 * @param string     $entry   Checked path inside it, from upload_entry().
+	 * @return bool
+	 */
+	private static function add_media( ZipArchive $zip, string $basedir, string $entry ): bool {
+		$name = 'assets/media/' . $entry;
+		if ( false !== $zip->locateName( $name ) ) {
+			return true;
+		}
+		return $zip->addFile( $basedir . '/' . $entry, $name );
 	}
 
 	/**
@@ -705,7 +770,7 @@ final class StaticSite {
 		// handling that goes with it. Its search, filter and feedback parts look
 		// for elements this export does not have and quietly do nothing.
 		self::add_plugin_file( $zip, 'assets/frontend.js', 'assets/frontend.js' );
-		$zip->addFromString( 'assets/search-index.js', SiteRenderer::search_index( (array) $state['entries'] ) );
+		$zip->addFromString( 'assets/search-index.js', SiteRenderer::search_index( self::read_entries( $state ) ) );
 		$zip->addFromString( 'README.txt', SiteRenderer::readme( $site ) );
 	}
 
