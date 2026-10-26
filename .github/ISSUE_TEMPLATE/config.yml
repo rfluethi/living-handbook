@@ -1,0 +1,7 @@
+# The issue chooser. A security problem does not belong in a public issue,
+# so the chooser points to the private report first.
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/rfluethi/living-handbook/security/advisories/new
+    about: Please report security problems privately, not as a public issue. See SECURITY.md.
