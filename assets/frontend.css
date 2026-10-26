@@ -565,13 +565,23 @@
 	transform: rotate(90deg);
 }
 
-/* Accordion variant: sublists are collapsed unless their branch is open. */
-.living-handbook-nav--accordion .living-handbook-nav__sublist {
+/* Accordion variant: sublists are collapsed unless their branch is open. Only
+   once the script has marked the navigation: the toggles need the script, and
+   without it a closed branch could never be opened again. */
+.living-handbook-nav--accordion.living-handbook-nav--js .living-handbook-nav__sublist {
 	display: none;
 }
 
-.living-handbook-nav--accordion .living-handbook-nav__item.is-open > .living-handbook-nav__sublist {
+.living-handbook-nav--accordion.living-handbook-nav--js .living-handbook-nav__item.is-open > .living-handbook-nav__sublist {
 	display: block;
+}
+
+/* Without the script no toggle does anything, the title toggle included, so
+   none is offered: the navigation is shown whole, like the tree variant, and
+   the spacers go with the toggles so the labels still line up. */
+.living-handbook-nav:not(.living-handbook-nav--js) .living-handbook-nav__toggle,
+.living-handbook-nav:not(.living-handbook-nav--js) .living-handbook-nav__spacer {
+	display: none;
 }
 
 /* Tree variant: every branch is shown, so branch toggles and the left gutter go

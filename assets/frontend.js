@@ -201,7 +201,23 @@
 
 	/* ---------- Handbook navigation: accordion toggles and mobile collapse ---------- */
 
+	// The stylesheet collapses closed branches and shows the toggles only on a
+	// navigation this script has marked, because without the script the
+	// toggles do nothing. Marked as soon as the script runs, not on
+	// DOMContentLoaded, so the tree collapses before the reader has a chance
+	// to see it open; and again from wireNav(), for a page where the script
+	// was moved into the head and the navigation did not exist yet.
+	function markNav() {
+		document.querySelectorAll( '.living-handbook-nav' ).forEach( function ( nav ) {
+			nav.classList.add( 'living-handbook-nav--js' );
+		} );
+	}
+
+	markNav();
+
 	function wireNav() {
+		markNav();
+
 		document.querySelectorAll( '.living-handbook-nav__toggle' ).forEach( function ( btn ) {
 			btn.addEventListener( 'click', function () {
 				var item = btn.closest( '.living-handbook-nav__item' );

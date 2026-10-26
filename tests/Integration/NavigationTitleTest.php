@@ -119,4 +119,53 @@ final class NavigationTitleTest extends WP_UnitTestCase {
 			$this->assertStringContainsString( 'living-handbook-nav__top', $html, $variant );
 		}
 	}
+
+	/**
+	 * A branch toggle names the list it opens, as the title toggle does: up to
+	 * 0.75.1 it carried aria-expanded but no aria-controls, and the list had no
+	 * id to point at.
+	 *
+	 * @return void
+	 */
+	public function test_a_branch_toggle_names_its_list(): void {
+		list( $term_id, $parent ) = $this->handbook_with_page();
+		$child                    = (int) self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'publish',
+				'post_title'  => 'Child',
+				'post_parent' => $parent,
+			)
+		);
+		wp_set_object_terms( $child, array( $term_id ), Handbooks::TAXONOMY );
+
+		$html = Navigation::render( $term_id, 'accordion' );
+
+		$this->assertSame(
+			1,
+			preg_match( '/<button type="button" class="living-handbook-nav__toggle" [^>]*aria-controls="([^"]+)"/', $html, $controls ),
+			'The branch toggle names no list.'
+		);
+		$this->assertStringContainsString( '<ul class="living-handbook-nav__sublist" id="' . $controls[1] . '">', $html );
+	}
+
+	/**
+	 * Closed branches are hidden only on a navigation the script has marked.
+	 * Without the script the toggles cannot open anything, and up to 0.75.1 a
+	 * reader without it never reached a page outside the current branch.
+	 *
+	 * @return void
+	 */
+	public function test_closed_branches_need_the_script_to_be_hidden(): void {
+		$css = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/frontend.css' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
+		$js  = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/frontend.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
+
+		$this->assertSame(
+			0,
+			preg_match( '/(^|\})\s*\.living-handbook-nav--accordion \.living-handbook-nav__sublist\s*\{\s*display:\s*none/m', $css ),
+			'A rule hides branches whether the script runs or not.'
+		);
+		$this->assertStringContainsString( '.living-handbook-nav--accordion.living-handbook-nav--js .living-handbook-nav__sublist {', $css );
+		$this->assertStringContainsString( ".classList.add( 'living-handbook-nav--js' )", $js );
+	}
 }

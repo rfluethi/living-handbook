@@ -20,7 +20,11 @@
  * - "sidebar" (Menu): the whole tree is shown, nothing collapses.
  * - "accordion": each branch with children collapses; the branch leading to the
  *   current page starts open, the rest closed, and a toggle on the left of the
- *   branch opens or closes it.
+ *   branch opens or closes it. Only once the script has marked the navigation
+ *   (living-handbook-nav--js): without it the toggles cannot do anything, so
+ *   they are hidden and every branch is shown, as in the "sidebar" variant.
+ *   Up to 0.75.1 the closed branches were hidden by the stylesheet alone, and a
+ *   reader without the script never reached a page outside the current branch.
  *
  * The styling and the toggle behaviour ship with the plugin (frontend.css and
  * frontend.js); the VSN plugin is no longer required.
@@ -204,6 +208,7 @@ final class Navigation {
 			$pid          = (int) $post->ID;
 			$children     = self::branch( $pid, $map, $current, $open_ids );
 			$has_children = '' !== $children;
+			$sublist      = '';
 			$is_open      = $has_children && in_array( $pid, $open_ids, true );
 			$title        = get_the_title( $post );
 
@@ -222,11 +227,16 @@ final class Navigation {
 			// Leaves get a spacer so their labels line up with branch labels.
 			$row = '<div class="living-handbook-nav__row">';
 			if ( $has_children ) {
-				$row .= sprintf(
-					'<button type="button" class="living-handbook-nav__toggle" aria-expanded="%1$s" aria-label="%2$s"><span aria-hidden="true"></span></button>',
+				// The toggle names the list it opens, like the title toggle does.
+				// Up to 0.75.1 it said whether it was expanded but not what, and
+				// the list had no id to point at.
+				$sublist = wp_unique_id( 'living-handbook-nav-branch-' );
+				$row    .= sprintf(
+					'<button type="button" class="living-handbook-nav__toggle" aria-expanded="%1$s" aria-controls="%3$s" aria-label="%2$s"><span aria-hidden="true"></span></button>',
 					$is_open ? 'true' : 'false',
 					/* translators: %s: page title. */
-					esc_attr( sprintf( __( 'Toggle %s', 'living-handbook' ), $title ) )
+					esc_attr( sprintf( __( 'Toggle %s', 'living-handbook' ), $title ) ),
+					esc_attr( $sublist )
 				);
 			} else {
 				$row .= '<span class="living-handbook-nav__spacer" aria-hidden="true"></span>';
@@ -236,7 +246,7 @@ final class Navigation {
 
 			$item = '<li class="' . esc_attr( implode( ' ', $classes ) ) . '">' . $row;
 			if ( $has_children ) {
-				$item .= '<ul class="living-handbook-nav__sublist">' . $children . '</ul>';
+				$item .= '<ul class="living-handbook-nav__sublist" id="' . esc_attr( $sublist ) . '">' . $children . '</ul>';
 			}
 			$item .= '</li>';
 			$out  .= $item;
