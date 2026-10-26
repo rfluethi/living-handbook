@@ -8,19 +8,34 @@ on:
   release:
     types: [ published ]
 
+# Read-only by default. Only the job that attaches the ZIP to the release may
+# write, and only to the repository contents; the tests run with a token that
+# can read and nothing else.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
+  # The integration tests against the minimum and the current WordPress, the
+  # same ones integration.yml runs on every push. A release used to be built
+  # after the unit tests only, so a tag on a commit whose integration run was
+  # red, or never ran, still got a ZIP.
+  integration:
+    name: Integration tests
+    if: ${{ !github.event.release.prerelease }}
+    uses: ./.github/workflows/integration.yml
+
   build:
     name: Build and attach the plugin ZIP
     runs-on: ubuntu-latest
+    needs: integration
     # A prerelease is a deliberate try-out and does not get a built ZIP.
     if: ${{ !github.event.release.prerelease }}
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.1'
           coverage: none
@@ -66,7 +81,7 @@ jobs:
       # composer.json under config.platform, so the shipped vendor is the same
       # either way.
       - name: PHP for the build tooling
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.2'
           coverage: none
@@ -76,11 +91,19 @@ jobs:
       # so it needs PHP-Scoper. The version is pinned: a build tool that changes
       # under a release is a release that cannot be reproduced. It must be 0.18.19
       # or newer, older releases leave the PHP files unprefixed on PHP 8.5.
+      #
+      # And the file is checked against its hash before it runs. A version in a
+      # URL says which release was asked for, not what arrived: a replaced
+      # release asset would otherwise run with this job's write token and
+      # rewrite every library that goes into the ZIP. The hash is of the 0.18.19
+      # phar as published; a new version means a new hash, computed from the
+      # downloaded file and checked against the release page.
       - name: Install PHP-Scoper
         run: |
           mkdir -p tools
           curl -sSfL -o tools/php-scoper.phar \
             https://github.com/humbug/php-scoper/releases/download/0.18.19/php-scoper.phar
+          echo "170fb84bd3390defb30f99f7dc39c9a89d10c29973accc26f31c00abc5b25933  tools/php-scoper.phar" | sha256sum -c -
           php tools/php-scoper.phar --version
 
       # bin/build.sh installs the production dependencies, prefixes them and

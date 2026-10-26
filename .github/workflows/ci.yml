@@ -5,6 +5,16 @@ on:
     branches: [ main ]
   pull_request:
 
+# Read-only by default. Nothing here writes to the repository; a job that ever
+# needs more asks for it itself, so a compromised step in any other job gets a
+# token that can read and nothing else.
+permissions:
+  contents: read
+
+# Actions are pinned to a commit, with the release in the comment. A tag can be
+# moved to other code after the fact, a commit cannot; Dependabot updates the
+# pin and the comment together (see .github/dependabot.yml).
+
 # A new push supersedes a running check of the same branch.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,8 +25,8 @@ jobs:
     name: Lint and static analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.1'
           coverage: none
@@ -46,8 +56,8 @@ jobs:
         # 8.1 is the declared minimum, 8.4 is what current hosts ship.
         php: [ '8.1', '8.2', '8.3', '8.4' ]
     steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
           coverage: none
@@ -56,3 +66,38 @@ jobs:
         run: composer install --no-interaction --prefer-dist
       - name: Unit tests
         run: vendor/bin/phpunit --testsuite unit
+
+  plugin-check:
+    name: Plugin Check (wordpress.org guidelines)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # The build tooling needs PHP 8.2, see release.yml. Composer still
+      # resolves for 8.1, pinned in composer.json under config.platform.
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+      # The same pinned and hash-checked PHP-Scoper as the release, so what is
+      # checked here is what a release would ship.
+      - name: Install PHP-Scoper
+        run: |
+          mkdir -p tools
+          curl -sSfL -o tools/php-scoper.phar \
+            https://github.com/humbug/php-scoper/releases/download/0.18.19/php-scoper.phar
+          echo "170fb84bd3390defb30f99f7dc39c9a89d10c29973accc26f31c00abc5b25933  tools/php-scoper.phar" | sha256sum -c -
+      # Plugin Check runs against the built plugin, not the repository: the
+      # repository holds tests, tooling and CI config that never ship and that
+      # Plugin Check would rightly complain about.
+      - name: Build the plugin ZIP
+        run: |
+          bash bin/build.sh
+          mkdir -p build
+          unzip -q living-handbook-*.zip -d build
+      - name: Plugin Check
+        uses: WordPress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
+        with:
+          build-dir: './build/living-handbook'
