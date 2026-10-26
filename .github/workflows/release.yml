@@ -45,6 +45,11 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
+      # The libraries in the ZIP must not carry a published vulnerability.
+      # 0.75.0 shipped three that did, because nothing asked.
+      - name: Composer audit (shipped packages)
+        run: composer audit --locked --no-dev --abandoned=report
+
       - name: PHPCS
         run: composer lint
 

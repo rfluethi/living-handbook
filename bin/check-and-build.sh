@@ -25,6 +25,12 @@ if [ "$header_version" != "$const_version" ] || [ "$header_version" != "$readme_
 fi
 echo "All three read $header_version."
 
+echo "==> Known vulnerabilities in the shipped libraries (composer audit)"
+# 0.75.0 shipped three libraries with published advisories. The audit asks the
+# advisory database, so it needs the network; without it the build stops here
+# rather than shipping unchecked.
+composer audit --locked --no-dev --abandoned=report
+
 echo "==> Coding standards (phpcs)"
 composer lint
 

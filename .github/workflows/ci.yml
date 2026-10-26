@@ -23,6 +23,10 @@ jobs:
           tools: composer
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
+      # Known vulnerabilities in any locked package, shipped or tooling. The
+      # tooling runs on the code of every pull request, so it counts too.
+      - name: Composer audit
+        run: composer audit --locked --abandoned=report
       # uninstall.php deletes user content and is the most destructive file in
       # the plugin, so it belongs in both the lint and the analysis pass. bin/
       # and scoper.inc.php are build tooling: a syntax error there breaks the
