@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.75.1
+Stable tag: 0.76.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,6 +112,14 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.76.0 =
+* Security: comments can only be written by people who may read the page; previous/next links, attachment pages, cards and search snippets respect access rules and passwords.
+* Security: imports store only real images (and, in bundles, ordinary media files); an imported page cannot be placed under a page you may not edit.
+* New: WordPress's privacy tools export and erase the plugin's personal data, with a suggested privacy policy text.
+* Fixed: a scheduled sync keeps the page order and excerpts the file does not set; links to sections of other pages work; MkDocs imports keep their metadata.
+* Fixed: "delete everything" really removes everything the plugin created; updates migrate without an admin visit.
+* Fixed: dates turn at midnight in the site's time zone, plural forms, anchors on WordPress 6.8, and many smaller things listed in the changelog.
 
 = 0.75.1 =
 * Security: the bundled libraries for SVG cleaning, Markdown and YAML are updated past published vulnerabilities.
@@ -282,6 +290,9 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.76.0 =
+Closes the remaining findings of an independent review: access rules on comments, attachment pages and protected pages, safer imports, privacy tools, and a complete uninstall. Recommended for every site.
 
 = 0.75.1 =
 Security and bug fix release, recommended for every site: updated libraries with published vulnerabilities, a website export that cannot carry files from outside the uploads folder, and learning paths that work without saving the permalinks.

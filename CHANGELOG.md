@@ -6,6 +6,66 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.76.0] - 2026-10-26
+
+The rest of the independent review of 0.75.0: every finding that needed no product decision. Each code fix comes with a test that fails against 0.75.1; those were run against the old code one at a time. The commits carry the reasoning for each one; this entry is the map.
+
+### Fixed
+
+**Access, the channels around the page.**
+
+* Comments could be written on a page the writer may not read, through the comment form and through `POST /wp/v2/comments`; only the answer was a 404. `comments_open` and `pings_open` now close for every guarded type when the reader may not view the page, after the per-handbook switch, so a handbook set to "comments open" cannot reopen it.
+* The previous/next links of a classic theme named pages of handbooks the reader may not view. The adjacent-post queries are filtered like the comment queries.
+* The attachment page of an image on a restricted page was served; it is refused like the page, before core redirects to the file.
+* A password-protected page showed its first words on cards and in search snippets, and a protected learning path listed its lessons.
+* The lesson picker named any post id, private ones of other people included. It names only handbook pages the editor may read.
+* Feedback took votes on drafts and on protected pages, and two votes at the same moment could count as one. Votes need a published page the reader can open, and the counters are raised in one SQL step.
+* The no-access page could itself be a handbook page the visitor may not read, which sent a refused visitor round in a loop.
+
+**Import, sync and export.**
+
+* An import stored any file a page referenced, as long as WordPress allowed the type for the person running it: for an administrator that included HTML. Images are now checked by the name they are stored under and by their content; a bundle's documents and other media go through a separate check of WordPress's own media types. `logo.svg.` no longer slips past the SVG cleaning.
+* A sync set the order and the excerpt of a page to empty when the file did not mention them, so the order of a folder import was lost at the first scheduled sync. Only fields the transport block sets are written; a field it set before and no longer does is still cleared.
+* `page.md#section` links resolve and keep their anchor. The first heading inside a code block is no longer taken as the title. Images with spaces or umlauts in their name are linked. Front matter after a UTF-8 BOM is read.
+* A re-import matched pages across child handbooks and by the handbook of the screen rather than the one the file names.
+* A MkDocs import dropped every transport block, navigation entries without a title, and turned external navigation links into empty pages.
+* A bundle did not carry the intermediate image sizes its pages show, and held all media in memory. It also had no limit on entries or unpacked size; it now has the ZIP import's.
+* An imported page could be placed under any post id, and a transport block could create terms for someone without the right to manage them. The GitHub import needs `upload_files`.
+* Two scheduled syncs could run at once. A lock, taken atomically, lets one run.
+* A GitHub folder on a branch with a slash, or with an encoded name, was not found; a root-relative image was resolved against the page instead of the repository root.
+* An archive exactly at the size limit passed; downloaded archives and export files left behind by an interrupted job were only collected by the scheduled sync.
+* The static export recomputed its link table for every page (N² permalinks) and kept its search texts and media list in one growing transient; a page with the slug `index` was overwritten by the start page; the export search showed HTML entities; an exported page showed its table of contents twice.
+
+**Front end.**
+
+* A page turned due at midnight UTC instead of at midnight in the site's time zone.
+* Heading anchors took a `data-id` for an `id` and could repeat an id set by hand.
+* A handbook name with a dollar sign lost everything after it in the theme menu.
+* The navigation tree loaded the post meta of every page of the handbook on every request.
+* "1 matching pages" and "1 of 1 lessons read": both sentences have plural forms now.
+* Navigation branches name the list they open, and stay reachable when the script does not run. The feedback buttons are grouped under their question, and two path lists on one page keep their own ids.
+
+**Platform.**
+
+* The scoped libraries could still collide with another plugin: the `Composer\InstalledVersions` class map entry, Composer's shared `files` keys, and an unqualified `trigger_deprecation()` in symfony/yaml. The build fixes all three and the vendor check now tests them; the ZIP no longer carries the libraries' tests and tooling.
+* A block's HTML anchor was dropped on save on WordPress 6.8, and set one broke the server-side preview there.
+* "Delete everything" left trashed and auto-draft pages, the templates customised in the Site Editor (stored under the theme since WordPress 6.7) and some options and transients.
+* Migrations after an update by WP-CLI or auto-update waited for the next admin visit; they run on the next request now, behind a lock. Deactivation rebuilt the plugin's rewrite rules instead of removing them, and network activation is refused instead of half-working.
+* The four classifying taxonomies wrote rewrite rules nobody can use, and their labels were sentence fragments that do not translate.
+* The admin's inline CSS and JavaScript go through registered handles and load only where needed.
+
+### Added
+
+* **Privacy tools.** A personal data exporter for feedback votes and for reviews, an eraser that removes a person from the voter lists (the totals stay), the same on deleting a user, and a suggested text for the privacy policy covering feedback, profile pictures from Gravatar, the GitHub requests and the reading progress kept in the browser. Who reviewed a page is exported but kept, as part of the page's editorial record.
+* **Reference pages** for every meta field and every REST route, in English and German.
+
+### Changed
+
+* **mermaid.js 11.17.2**, past a published KaTeX advisory in 11.16.0, with its version and checksum recorded, a script to update it, and the licenses of the libraries bundled inside it.
+* **CI and release.** Fixed WordPress releases (6.8.11, 7.1.3) instead of a trunk that called itself "latest", with trunk as an allowed failure; Actions pinned to commits; the PHP-Scoper download checked against its checksum; the release waits for the integration tests; Plugin Check runs on the built ZIP; permissions read-only unless a job needs more.
+* **Documentation.** It now says that editors and administrators read every handbook, what that means for authors in the block editor, that reloading the app handbook leaves removed pages behind, that learning paths do not travel in a bundle, and what the plugin contacts outside the site. Minimum version, settings, block count, terminology and the bundle's handling of people match the code. The German technical documentation imports with its pictures, and the technical pages load in reading order.
+* `SECURITY.md` names supported versions, a response time and private vulnerability reporting.
+
 ## [0.75.1] - 2026-10-26
 
 A maintenance release from an independent review of 0.75.0. Every fix comes with a test that fails against 0.75.0; those were run against the old code one at a time.
