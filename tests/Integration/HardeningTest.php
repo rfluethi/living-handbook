@@ -207,6 +207,104 @@ final class HardeningTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The attachment page of an image of a page the reader may not view is
+	 * refused like the page itself. Up to 0.75.1 guard_singular() looked at
+	 * handbook pages and learning paths only, so ?attachment_id=N showed the
+	 * title, caption and file of an image of a restricted page.
+	 *
+	 * @return void
+	 */
+	public function test_the_attachment_page_of_a_restricted_page_is_refused(): void {
+		$page_id    = $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_RESTRICTED ) );
+		$attachment = (int) self::factory()->attachment->create(
+			array(
+				'post_parent'    => $page_id,
+				'post_mime_type' => 'image/png',
+				'post_title'     => 'Salary chart',
+				'post_status'    => 'inherit',
+			)
+		);
+		$subscriber = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+
+		wp_set_current_user( (int) $subscriber );
+		$this->go_to( add_query_arg( 'attachment_id', $attachment, home_url( '/' ) ) );
+		$this->assertTrue( is_attachment(), 'The request should be the attachment page.' );
+
+		try {
+			$this->run_access_guards();
+			$this->fail( 'The access guards should have stopped the request.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'does not have access', $e->getMessage() );
+		}
+
+		// Before core's canonical redirect, which would otherwise answer first
+		// with the address of the file.
+		$this->assertLessThan(
+			has_action( 'template_redirect', 'redirect_canonical' ),
+			has_action( 'template_redirect', array( $this->registered_controller(), 'guard_attachment' ) )
+		);
+	}
+
+	/**
+	 * The attachment page of an image of a page the reader may view is left
+	 * alone, and so is an attachment of an ordinary post.
+	 *
+	 * @return void
+	 */
+	public function test_the_attachment_page_of_a_readable_page_is_left_alone(): void {
+		$page_id    = $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_PUBLIC ) );
+		$attachment = (int) self::factory()->attachment->create(
+			array(
+				'post_parent'    => $page_id,
+				'post_mime_type' => 'image/png',
+				'post_status'    => 'inherit',
+			)
+		);
+
+		wp_set_current_user( 0 );
+		$this->go_to( add_query_arg( 'attachment_id', $attachment, home_url( '/' ) ) );
+
+		$this->run_access_guards();
+		$this->assertTrue( is_attachment() );
+	}
+
+	/**
+	 * Run every template_redirect callback of the access controller, in the
+	 * order WordPress would, without core's own redirects (which exit).
+	 *
+	 * @return void
+	 */
+	private function run_access_guards(): void {
+		global $wp_filter;
+		$priorities = $wp_filter['template_redirect']->callbacks;
+		ksort( $priorities );
+		foreach ( $priorities as $callbacks ) {
+			foreach ( $callbacks as $callback ) {
+				if ( is_array( $callback['function'] ) && $callback['function'][0] instanceof AccessController ) {
+					call_user_func( $callback['function'] );
+				}
+			}
+		}
+	}
+
+	/**
+	 * The AccessController instance the plugin registered its hooks with.
+	 *
+	 * @return AccessController
+	 */
+	private function registered_controller(): AccessController {
+		global $wp_filter;
+		foreach ( $wp_filter['template_redirect']->callbacks as $callbacks ) {
+			foreach ( $callbacks as $callback ) {
+				if ( is_array( $callback['function'] ) && $callback['function'][0] instanceof AccessController ) {
+					return $callback['function'][0];
+				}
+			}
+		}
+		$this->fail( 'AccessController is not registered on template_redirect.' );
+	}
+
+	/**
 	 * The message of the no-access page can be replaced by a site.
 	 *
 	 * @return void

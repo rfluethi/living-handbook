@@ -108,6 +108,10 @@ final class AccessController {
 	public function register(): void {
 		add_action( 'template_redirect', array( $this, 'guard_singular' ) );
 		add_action( 'template_redirect', array( $this, 'guard_term_archive' ) );
+		// Priority 9: before redirect_canonical (10), which on a site with
+		// attachment pages switched off answers the attachment page with a
+		// redirect to the file and would hand out its address first.
+		add_action( 'template_redirect', array( $this, 'guard_attachment' ), 9 );
 		// Coarse pre-query layer: restricts handbook queries to the viewable
 		// handbooks independent of suppress_filters, which the_posts cannot reach.
 		add_action( 'pre_get_posts', array( $this, 'restrict_query' ) );
@@ -245,6 +249,40 @@ final class AccessController {
 		}
 
 		if ( self::can_view_post( $post->ID, get_current_user_id() ) ) {
+			return;
+		}
+
+		$this->deny();
+	}
+
+	/**
+	 * Block the attachment page of a file that belongs to a page the user may
+	 * not view.
+	 *
+	 * The REST and query channels already let an attachment inherit the
+	 * visibility of its parent page (guard_rest_attachment(), filter_posts()),
+	 * but the attachment page itself (?attachment_id=N, or its pretty URL) is a
+	 * singular view of type attachment, which guard_singular() does not look at.
+	 * A guest could open it for an image of an internal page and read its title,
+	 * caption and description, see the image, and follow the link back to the
+	 * parent; with attachment pages switched off core redirected them to the file
+	 * instead, which is the address the REST guard keeps to itself. Both now get
+	 * the same answer as the page itself.
+	 *
+	 * @return void
+	 */
+	public function guard_attachment(): void {
+		if ( ! is_attachment() ) {
+			return;
+		}
+
+		$attachment = get_queried_object();
+		if ( ! $attachment instanceof WP_Post || $attachment->post_parent <= 0 ) {
+			return;
+		}
+
+		$parent = (int) $attachment->post_parent;
+		if ( ! self::is_guarded( $parent ) || self::can_view_post( $parent, get_current_user_id() ) ) {
 			return;
 		}
 
