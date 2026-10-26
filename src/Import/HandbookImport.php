@@ -169,6 +169,12 @@ final class HandbookImport {
 			$this->finish( array( 'error' => __( 'Could not open the bundle.', 'living-handbook' ) ) );
 		}
 
+		$too_large = self::check_bounds( $zip );
+		if ( '' !== $too_large ) {
+			$zip->close();
+			$this->finish( array( 'error' => $too_large ) );
+		}
+
 		$raw = $zip->getFromName( 'manifest.json' );
 		if ( false === $raw ) {
 			$zip->close();
@@ -184,6 +190,50 @@ final class HandbookImport {
 		$report = $this->import_bundle( $manifest, $zip, $rule, $chosen, $as_pages );
 		$zip->close();
 		$this->finish( $report );
+	}
+
+	/**
+	 * Check a bundle against the ZIP import's limits before anything is read.
+	 *
+	 * Up to 0.75.0 a bundle was read without any: the manifest and every media
+	 * file were unpacked into memory as the archive named them, so a few
+	 * kilobytes of prepared ZIP could unpack to gigabytes. The limits are the
+	 * Markdown ZIP import's, entry count and uncompressed total, including the
+	 * living_handbook_zip_max_bytes filter. A per-file limit is not applied: a
+	 * bundle carries the PDFs and videos its pages link to, and those are
+	 * larger than any Markdown file.
+	 *
+	 * Public and static so the bounds can be tested without an HTTP upload.
+	 *
+	 * @param ZipArchive $zip The open bundle.
+	 * @return string The reason it is refused, or '' when it is within bounds.
+	 */
+	public static function check_bounds( ZipArchive $zip ): string {
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- ZipArchive::$numFiles is a PHP core property.
+		$count = (int) $zip->numFiles;
+		if ( $count > MarkdownImportPage::ZIP_MAX_ENTRIES ) {
+			return sprintf(
+				/* translators: %d: maximum number of entries. */
+				__( 'The bundle has too many entries (maximum is %d).', 'living-handbook' ),
+				MarkdownImportPage::ZIP_MAX_ENTRIES
+			);
+		}
+
+		/** This filter is documented in src/Import/MarkdownImportPage.php */
+		$max_total = (int) apply_filters( 'living_handbook_zip_max_bytes', MarkdownImportPage::ZIP_MAX_TOTAL_BYTES );
+		$total     = 0;
+		for ( $i = 0; $i < $count; $i++ ) {
+			$stat   = $zip->statIndex( $i );
+			$total += is_array( $stat ) ? (int) $stat['size'] : 0;
+			if ( $total > $max_total ) {
+				return sprintf(
+					/* translators: %d: maximum uncompressed size in whole megabytes. */
+					__( 'The bundle is too large: the uncompressed contents exceed %d MB.', 'living-handbook' ),
+					(int) round( $max_total / MB_IN_BYTES )
+				);
+			}
+		}
+		return '';
 	}
 
 	/**

@@ -70,11 +70,12 @@ final class MarkdownImportPage {
 	private const META_IMPORT_HASH = '_lh_import_hash';
 
 	/**
-	 * ZIP import limits, checked before the archive is read into memory.
+	 * ZIP import limits, checked before the archive is read into memory. Public
+	 * so the bundle import applies the same ones.
 	 */
-	private const ZIP_MAX_ENTRIES     = 2000;
-	private const ZIP_MAX_FILE_BYTES  = 5242880;  // 5 MB uncompressed per file.
-	private const ZIP_MAX_TOTAL_BYTES = 104857600; // 100 MB uncompressed total.
+	public const ZIP_MAX_ENTRIES     = 2000;
+	public const ZIP_MAX_FILE_BYTES  = 5242880;  // 5 MB uncompressed per file.
+	public const ZIP_MAX_TOTAL_BYTES = 104857600; // 100 MB uncompressed total.
 
 	/**
 	 * Hook registration into WordPress.

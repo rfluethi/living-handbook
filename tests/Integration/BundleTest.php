@@ -398,4 +398,35 @@ final class BundleTest extends WP_UnitTestCase {
 			}
 		}
 	}
+
+	/**
+	 * A bundle is checked against the ZIP import's limits before it is read.
+	 * Up to 0.75.0 it had none, so a small prepared archive could unpack to
+	 * whatever its entries claimed.
+	 *
+	 * @return void
+	 */
+	public function test_a_bundle_beyond_the_zip_limits_is_refused(): void {
+		$path = (string) tempnam( sys_get_temp_dir(), 'lh-test-bundle' );
+		$zip  = new \ZipArchive();
+		$zip->open( $path, \ZipArchive::CREATE | \ZipArchive::OVERWRITE );
+		$zip->addFromString( 'manifest.json', '{"format":"living-handbook-bundle"}' );
+		$zip->addFromString( 'media/1-big.pdf', str_repeat( 'x', 8192 ) );
+		$zip->close();
+
+		$limit = static function (): int {
+			return 4096;
+		};
+		add_filter( 'living_handbook_zip_max_bytes', $limit );
+
+		$zip->open( $path );
+		$reason = HandbookImport::check_bounds( $zip );
+		remove_filter( 'living_handbook_zip_max_bytes', $limit );
+		$within = HandbookImport::check_bounds( $zip );
+		$zip->close();
+		wp_delete_file( $path );
+
+		$this->assertNotSame( '', $reason, 'Past the uncompressed total the bundle is refused.' );
+		$this->assertSame( '', $within, 'Under the default limit the same bundle passes.' );
+	}
 }
