@@ -73,6 +73,7 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_COLORS );
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_BASE_SIZE );
 	delete_option( LivingHandbook\Admin\MoveToHandbook::OPTION_ANY_MOVED );
+	delete_option( LivingHandbook\Git\GitSync::OPTION_SYNC_LOCK );
 
 	// Always: remove the area cards cache (transients keyed by version and by
 	// viewer). There is no lh_nav_ prefix to clean up. The navigation is built

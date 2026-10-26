@@ -393,4 +393,25 @@ final class UninstallTest extends WP_UnitTestCase {
 		}
 		$this->assertSame( 'keep me', $this->option_row( '_transient_other_plugin_import_abc' ) );
 	}
+
+	/**
+	 * No option of the plugin's own outlives it, including the ones added after
+	 * this test was written. The sync lock of 0.76.0 was nearly the first to
+	 * slip through: it was added in one place and the cleanup lives in another.
+	 * Asking the table for the prefix rather than for a list of names is what
+	 * catches the next one.
+	 *
+	 * @return void
+	 */
+	public function test_no_option_with_the_plugins_prefix_survives(): void {
+		global $wpdb;
+
+		update_option( 'living_handbook_sync_lock', time() );
+		update_option( 'living_handbook_upgrade_lock', time() );
+
+		$this->uninstall();
+
+		$left = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'living_handbook_' ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- checking the table itself is the point of the test.
+		$this->assertSame( array(), $left );
+	}
 }
