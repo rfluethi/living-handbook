@@ -5,7 +5,7 @@ Living Handbook ships with four handbooks: this user handbook in German and Engl
 <details>
 <summary>Requirements: What you need</summary>
 
-* A user account that may edit handbook pages.
+* A user account with the role Editor or higher. Loading publishes a whole handbook at once, so the right to edit your own pages is not enough.
 * A handbook as the target, for example one called "App handbook". Create it first, see [Create your first handbook](create-your-first-handbook.md). Decide there who may read it.
 
 The handbook ships inside the plugin, so you need no internet connection to load it.
@@ -27,7 +27,7 @@ If you want more than one, repeat this with another target handbook. Mixing two 
 
 The box is ticked, and for the normal case that is right: the pages are locked in the editor and a later load refreshes them, so the handbook follows the plugin.
 
-Untick it when you want to use a shipped handbook as the template for your own. The pages then arrive as ordinary handbook pages you can edit freely. The price: they age. A plugin update no longer touches them, and you will not hear about what changed in the template.
+Untick it when you want to use a shipped handbook as the template for your own. The pages then arrive as ordinary handbook pages you can edit freely. The price: they age. A plugin update no longer touches them, and you will not hear about what changed in the template. If you do load into the same handbook again later, that overwrites these pages too, ticked or not; so never load a template you are editing into the same target a second time.
 
 ![The import screen with the App handbook tab open, highlighting the "Load into" choice and the load button.](../assets/import-app-handbuch.webp)
 
@@ -38,19 +38,20 @@ All pages of this handbook are now in your chosen handbook, including navigation
 <details>
 <summary>Concept: Why the handbook matches your version</summary>
 
-The handbook ships with the plugin. The **App handbook** tab loads it from the plugin itself, matching the language of your WordPress admin. So the guide always matches the installed version, and your website needs no internet for it. When you update the plugin, the matching handbook comes along; loading it again through the tab then refreshes the pages. Loading never happens automatically, only when you trigger it.
+The handbook ships with the plugin. The **App handbook** tab loads it from the plugin itself. So the guide always matches the installed version, and your website needs no internet for it. When you update the plugin, the matching handbook comes along; loading it again through the tab then refreshes the pages. Loading never happens automatically, only when you trigger it.
 
 The texts are still written in public on GitHub and copied into the plugin when it is built. If you would rather pull the latest state straight from GitHub, a developer filter can point the tab there, see the developer documentation.
 
-The handbook exists in German and English. The tab picks the language of your admin. If you want the other language, import its folder by hand through the [GitHub import](../content/import-markdown.md).
+Which of the four handbooks you load is chosen under **Which handbook**. The user handbook in the language of your admin is preselected; the other three are right next to it.
 
 </details>
 
 <details>
-<summary>Pitfalls: Two peculiarities of this import</summary>
+<summary>Pitfalls: Three peculiarities of this import</summary>
 
 * **The pages are published immediately.** Every other import first creates unpublished drafts. Here it is different, on purpose: this is the plugin's reviewed documentation, and who may see it is governed by the target handbook anyway.
-* **Loading again overwrites the pages.** You can edit the loaded pages in WordPress, but loading again after a plugin update replaces them with the shipped edition. Make your own lasting changes in a handbook of your own, not in the loaded app-handbook pages.
+* **Loading again overwrites the pages.** With **Connection to the source** ticked, the loaded pages are locked in the editor, so you cannot edit them at all. Unticked you can, but loading into the same handbook again still replaces them with the shipped edition. Make your own lasting changes in a handbook of your own, not in the loaded app-handbook pages.
+* **Loading again deletes nothing.** It updates the pages that still exist and creates new ones. A page that a newer plugin version removed or renamed stays behind in your handbook as an old page, with its place in the navigation. To find them: the result list after loading names every page that was loaded. Then open **Handbook pages**, filter by the target handbook and compare. Whatever is there but not in the result list is a leftover; move it to the trash.
 
 </details>
 
@@ -68,6 +69,6 @@ The handbook exists in German and English. The tab picks the language of your ad
 * Eltern-Seite: Getting started
 * Reihenfolge: 5
 * Textauszug: This handbook ships with the plugin and loads into your own installation with one click, matching the installed version.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage
