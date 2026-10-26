@@ -188,4 +188,40 @@ final class UnresolvedLinksTest extends WP_UnitTestCase {
 		$this->assertSame( 0, $result['converted'] );
 		$this->assertSame( array(), $result['unresolved'] );
 	}
+
+	/**
+	 * A link to a section of another page keeps its section. Up to 0.75.0 the
+	 * pattern only saw hrefs that end in .md, so "page.md#section" was left as a
+	 * raw relative link that 404s in the browser.
+	 *
+	 * @return void
+	 */
+	public function test_a_link_with_an_anchor_resolves_and_keeps_the_anchor(): void {
+		$target = $this->page( 'Checking pages', '', 'checking-pages' );
+		$source = $this->page( 'A', 'See <a href="checking-pages.md#the-interval">the interval</a>.' );
+
+		$result  = Postprocessor::convert_md_links( $source );
+		$content = (string) get_post( $source )->post_content;
+
+		$this->assertStringNotContainsString( '.md', $content, 'The raw .md link must be gone.' );
+		$this->assertStringContainsString( 'href="' . get_permalink( $target ) . '#the-interval"', $content );
+		$this->assertSame( 1, $result['converted'] );
+	}
+
+	/**
+	 * A link with an anchor to no page is defused like any other, so it does
+	 * not stay behind as a raw link either.
+	 *
+	 * @return void
+	 */
+	public function test_an_unresolvable_link_with_an_anchor_becomes_text(): void {
+		$source = $this->page( 'A', 'See <a href="missing.md#part">the part</a>.' );
+
+		$result  = Postprocessor::convert_md_links( $source );
+		$content = (string) get_post( $source )->post_content;
+
+		$this->assertStringNotContainsString( 'missing.md', $content );
+		$this->assertStringContainsString( 'the part', $content );
+		$this->assertSame( 'missing.md', $result['unresolved'][0]['target'] ?? '' );
+	}
 }

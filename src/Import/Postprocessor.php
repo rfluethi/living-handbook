@@ -412,7 +412,11 @@ final class Postprocessor {
 		$count         = 0;
 		$unresolved    = array();
 		$content       = (string) preg_replace_callback(
-			'/<a href="([^"]+\.md)"([^>]*)>(.*?)<\/a>/is',
+			// The fragment and query are captured apart from the path. Up to
+			// 0.75.0 the pattern required the href to end in .md, so the most
+			// ordinary cross-reference in documentation, "page.md#section", was
+			// not seen at all and stayed a raw relative link that 404s.
+			'/<a href="([^"?#]+\.md)([?#][^"]*)?"([^>]*)>(.*?)<\/a>/is',
 			static function ( array $found ) use ( &$count, &$unresolved, $source_path, $base_dir, $page_title, $own_handbooks, $defuse ): string {
 				// A link that names a host is somebody else's document and is left
 				// exactly as it is. Only a relative link is a link into this import.
@@ -425,7 +429,13 @@ final class Postprocessor {
 					return $found[0];
 				}
 
-				$clean  = rawurldecode( (string) preg_replace( '/[?#].*$/', '', $found[1] ) );
+				// Only the fragment travels to the page: a query string meant
+				// something to the file host, nothing to a WordPress permalink.
+				$suffix   = (string) $found[2];
+				$hash_at  = strpos( $suffix, '#' );
+				$fragment = false === $hash_at ? '' : substr( $suffix, $hash_at );
+
+				$clean  = rawurldecode( $found[1] );
 				$target = 0;
 				if ( '' !== $source_path ) {
 					$target = self::find_page_by_source_path( self::resolve_path( $base_dir, $clean ) );
@@ -446,10 +456,10 @@ final class Postprocessor {
 						'source' => $page_title,
 						'target' => basename( $clean ),
 					);
-					return $found[3];
+					return $found[4];
 				}
 				++$count;
-				$text  = $found[3];
+				$text  = $found[4];
 				$plain = trim( wp_strip_all_tags( $text ) );
 				if ( '' === $plain || 1 === preg_match( '/\.md$/i', $plain ) ) {
 					$target_handbooks = self::handbook_ids( $target );
@@ -465,7 +475,7 @@ final class Postprocessor {
 						$text = esc_html( '' !== $name ? $name : $plain );
 					}
 				}
-				return '<a href="' . esc_url( $permalink ) . '"' . $found[2] . '>' . $text . '</a>';
+				return '<a href="' . esc_url( $permalink . $fragment ) . '"' . $found[3] . '>' . $text . '</a>';
 			},
 			$post->post_content
 		);
