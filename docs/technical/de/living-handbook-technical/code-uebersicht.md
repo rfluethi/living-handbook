@@ -99,3 +99,9 @@ Es gibt eine einzige, nicht verhandelbare Regel im Code: **jedes Lesen von Handb
 - Kommentare erklären die Begründung, nicht das Offensichtliche. Wo Code seltsam aussieht, sagt der Kommentar darüber, warum er so ist.
 - Es gibt absichtlich fast keine Einstellungen: Gestalterisches gehört in den Site Editor, das Verhalten hat wenige begründete Optionen, und alles andere ist ein Hook (siehe [hooks.md](hooks.md)) statt einer Checkbox.
 - Englisch ist die Sprache des Repositories. Die deutsche Fassung dieser Entwickler-Dokumentation liegt daneben unter `docs/technical/de/`, das deutsche Benutzerhandbuch unter `docs/user/de/`. Es sind getrennte Texte, keine aus dem Englischen erzeugten Übersetzungen; eine Änderung an der einen Sprache ist eine Änderung an beiden.
+
+## Transport-Metadaten
+* Seitentyp: Hintergrund / Konzept
+* Zielgruppe: Technik
+* Reihenfolge: 1
+* Letzte Aktualisierung: 2026-10-26

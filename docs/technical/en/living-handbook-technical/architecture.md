@@ -35,3 +35,9 @@ A concise, developer-facing summary of the shipped design. For a gentler, plain-
 - English is the language of the repository. The German translation lives in `languages/`; the German user handbook (`docs/user/de/`) and the German technical documentation (`docs/technical/de/`) ship in the repository next to their English counterparts. Neither language is the source of the other: they are separate texts, and a change to one is a change to both (see [`docs/README.md`](https://github.com/rfluethi/living-handbook/blob/main/docs/README.md)).
 
 _Updated in the same pull request as the code it describes._
+
+## Transport-Metadaten
+* Seitentyp: Background / Concept
+* Zielgruppe: Tech
+* Reihenfolge: 4
+* Letzte Aktualisierung: 2026-10-26

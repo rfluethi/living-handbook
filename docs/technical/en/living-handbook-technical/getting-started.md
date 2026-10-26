@@ -76,3 +76,8 @@ The entry page and the single page come with block templates that already place 
 - **Keep it from going stale:** review dates, intervals and the overdue dashboard. See [maintenance](maintenance.md).
 - **Change how it looks:** the blocks and their CSS variables. See [blocks](blocks.md) and [customization](customization.md).
 - **Understand the code:** the plain-language [code overview](code-overview.md).
+
+## Transport-Metadaten
+* Seitentyp: Guide
+* Zielgruppe: Tech
+* Reihenfolge: 1

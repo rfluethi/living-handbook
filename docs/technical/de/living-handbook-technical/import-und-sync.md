@@ -208,3 +208,9 @@ Standardmässig behält das Löschen des Plugins deine Inhalte und entfernt nur 
 - Synchronisierter Inhalt wird als gerendertes HTML gespeichert, nicht als bearbeitbare Blöcke, weil ein Cron-Lauf keinen Browser hat, um HTML in Blöcke zu wandeln.
 - MkDocs-Admonitions (`!!! note`, `??? tip`) werden in einen Zitatblock mit vorangestelltem Titel gewandelt, der Hinweis bleibt also abgesetzt, statt in losen Text zu zerfallen. Andere MkDocs-eigene Syntax fällt weiterhin auf reinen Text zurück: pymdownx-Tabs etwa gehören nicht zu GitHub Flavored Markdown, der Konverter versteht sie also nicht.
 - Living Handbook ist für Einzelinstallationen gebaut; in einem Multisite-Netzwerk importierst du pro Seite.
+
+## Transport-Metadaten
+* Seitentyp: Tool-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 8
+* Letzte Aktualisierung: 2026-10-26

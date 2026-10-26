@@ -53,3 +53,8 @@ Where the shipped versions come from: `src/Frontend/Templates.php`, as block mar
 ## Removing the templates again
 
 If you delete the plugin and chose "Also delete all handbook content" on the settings page, any versions of these templates you saved in the Site Editor are removed too. Without that option your saved templates stay, which is the safe default. See [import-and-sync.md](import-and-sync.md) for the uninstall behaviour.
+
+## Transport-Metadaten
+* Seitentyp: Tool overview
+* Zielgruppe: Tech
+* Reihenfolge: 6

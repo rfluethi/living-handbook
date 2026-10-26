@@ -65,3 +65,8 @@ Weil die Seiten in WordPress gepflegt werden, sind die WordPress-Revisionen die 
 Die Frage **War das hilfreich?** auf jeder Seite (siehe [bloecke.md](bloecke.md)) zählt eine Stimme pro berechtigter Leserin und meldet die Summen ans Dashboard. Eine Seite, die dauerhaft „Nein" einsammelt, ist ein Wartungssignal: Sie beantwortet die Frage nicht, mit der die Leute ankommen.
 
 Standardmässig stimmen nur angemeldete Leserinnen und Leser ab, die die Seite sehen dürfen, je eine Stimme. Unter Handbuch, Einstellungen lässt sich **Öffentliches Feedback** einschalten, dann stimmen auch abgemeldete Besuchende auf öffentlichen Seiten ab. Zum Schutz der Privatsphäre speichern solche Stimmen nichts Persönliches (kein Cookie, keine IP, keine Kennung), sie haben deshalb keine Begrenzung auf eine Stimme. Nach einer Überarbeitung kannst du die Zähler einer Seite zurücksetzen: die Handbuch-Liste zeigt bei jeder Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler leert.
+
+## Transport-Metadaten
+* Seitentyp: Prozessbeschreibung
+* Zielgruppe: Technik
+* Reihenfolge: 9

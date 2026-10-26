@@ -51,3 +51,8 @@ Woher die mitgelieferten Fassungen kommen: `src/Frontend/Templates.php`, als Blo
 ## Die Vorlagen wieder entfernen
 
 Wenn du das Plugin löschst und auf der Einstellungsseite „Auch alle Handbuch-Inhalte löschen" gewählt hast, werden auch alle Fassungen dieser Vorlagen entfernt, die du im Site-Editor gespeichert hast. Ohne diese Option bleiben deine gespeicherten Vorlagen erhalten, was der sichere Standard ist. Zum Verhalten beim Deinstallieren siehe [import-und-sync.md](import-und-sync.md).
+
+## Transport-Metadaten
+* Seitentyp: Tool-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 4

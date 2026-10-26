@@ -19,3 +19,9 @@ Für alle, die das Plugin installieren, gestalten oder erweitern. Die englische 
 ## Die eine Regel
 
 Jedes Lesen von Handbuch-Inhalt geht durch `AccessController::can_view_post()`. Wer einen neuen Weg ergänzt, Handbuchseiten zu lesen oder aufzulisten, führt ihn durch diese Methode. Sie ist die eine Stelle, die über Sichtbarkeit entscheidet, sie schlägt im Zweifel zu, nicht auf, und sie zu vergessen ist der eine Fehler, der Inhalt lecken lässt.
+
+## Transport-Metadaten
+* Seitentyp: Bereichs-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 1
+* Letzte Aktualisierung: 2026-10-26

@@ -210,3 +210,9 @@ Every block names its own assets in its `block.json`: `style` and `viewScript` p
 ## Styling the blocks
 
 All blocks use CSS custom properties and stable class names, so you can restyle them without touching the plugin. The full reference, the `--lh-*` variables, the class names per block, and what not to remove for accessibility, lives in [customization.md](customization.md).
+
+## Transport-Metadaten
+* Seitentyp: Tool overview
+* Zielgruppe: Tech
+* Reihenfolge: 5
+* Letzte Aktualisierung: 2026-10-26

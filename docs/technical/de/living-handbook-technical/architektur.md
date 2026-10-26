@@ -35,3 +35,9 @@ Eine knappe Zusammenfassung des ausgelieferten Entwurfs, für Entwicklerinnen un
 - Englisch ist die Sprache des Repositories. Die deutsche Übersetzung liegt in `languages/`; das deutsche Benutzerhandbuch (`docs/user/de/`) und die deutsche technische Dokumentation (`docs/technical/de/`) liegen im Repository neben ihren englischen Gegenstücken. Keine Sprache ist die Quelle der anderen: es sind getrennte Texte, und eine Änderung an der einen ist eine Änderung an beiden (siehe [`docs/README.md`](https://github.com/rfluethi/living-handbook/blob/main/docs/README.md)).
 
 _Wird im selben Pull Request aktualisiert wie der Code, den sie beschreibt._
+
+## Transport-Metadaten
+* Seitentyp: Hintergrund / Konzept
+* Zielgruppe: Technik
+* Reihenfolge: 6
+* Letzte Aktualisierung: 2026-10-26

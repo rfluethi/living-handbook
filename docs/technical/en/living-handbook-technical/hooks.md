@@ -352,3 +352,9 @@ Return an array of the same shape; an entry without a label is dropped.
 ## Actions
 
 _None. The three that were listed here as planned, after an import, on the metadata and on the freshness evaluation, were removed in 0.60.0 rather than left standing as a promise: a hook is a commitment whose signature cannot be changed later without breaking whoever uses it, and these three came from a list rather than from a use. They are kept as a note in the project's own workspace, with signature and purpose, and will be built when something actually needs them._
+
+## Transport-Metadaten
+* Seitentyp: Tool overview
+* Zielgruppe: Tech
+* Reihenfolge: 8
+* Letzte Aktualisierung: 2026-10-26

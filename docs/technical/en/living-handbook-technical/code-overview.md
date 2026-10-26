@@ -99,3 +99,9 @@ There is a single, non-negotiable rule in the code: **every read of handbook con
 - Comments explain the reasoning, not the obvious. When a piece of code looks odd, the comment above it says why it is that way.
 - There are almost no settings on purpose: visual choices belong in the Site Editor, behaviour has a few justified options, and everything else is a hook (see [hooks.md](hooks.md)) rather than a checkbox.
 - English is the language of the repository. The German version of these developer docs ships next to them, under `docs/technical/de/`, as does the German user handbook under `docs/user/de/`. They are separate texts, not translations generated from the English ones, so a change to one is a change to both.
+
+## Transport-Metadaten
+* Seitentyp: Background / Concept
+* Zielgruppe: Tech
+* Reihenfolge: 3
+* Letzte Aktualisierung: 2026-10-26

@@ -41,3 +41,9 @@ Das Plugin registriert nicht nur Routen, es engt auch solche von WordPress ein u
 - **`/wp/v2/handbook_set`** antwortet allen ohne `edit_posts` mit einer leeren Liste, und für einen einzelnen Term mit 403. Die Zugriffs-Konfiguration eines Handbuchs ist dort gar nicht zu sehen.
 - **`/wp/v2/media`** und **`/wp/v2/comments`**: ein Anhang oder ein Kommentar an einer Seite, die die aufrufende Person nicht lesen darf, fehlt in Sammlungen und antwortet einzeln mit 404.
 - **`/oembed/1.0/embed`** antwortet für eine Handbuchseite, die die aufrufende Person nicht lesen darf, mit nichts.
+
+## Transport-Metadaten
+* Seitentyp: Tool-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 11
+* Letzte Aktualisierung: 2026-10-26

@@ -41,3 +41,9 @@ The plugin does not only register routes, it also narrows and extends core ones.
 - **`/wp/v2/handbook_set`** answers an empty list, and a single term with 403, to anyone without `edit_posts`. The access configuration of a handbook is not exposed there at all.
 - **`/wp/v2/media`** and **`/wp/v2/comments`**: an attachment or a comment on a page the caller may not read is left out of collections and answers 404 on its own.
 - **`/oembed/1.0/embed`** answers nothing for a handbook page the caller may not read.
+
+## Transport-Metadaten
+* Seitentyp: Tool overview
+* Zielgruppe: Tech
+* Reihenfolge: 12
+* Letzte Aktualisierung: 2026-10-26

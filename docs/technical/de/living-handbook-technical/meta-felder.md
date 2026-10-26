@@ -83,3 +83,9 @@ Keines der vier ist über die REST-API lesbar: wer ein Handbuch lesen darf, gibt
 ## Ältere Namen
 
 Installationen von vor 0.56.0 trugen einige dieser Felder unter anderen Namen. `Plugin::rename_meta_keys()`, einmal von `Plugin::maybe_upgrade()` aufgerufen, benennt sie an Ort und Stelle um: `living_handbook_source` und `living_handbook_markdown_source` wurden zu `_lh_source` und `_lh_source_url`, und die Feedback-Zähler gingen von `living_handbook_feedback_*` über `_living_handbook_feedback_*` zu `_lh_feedback_*`. Code, der noch einen alten Namen liest, liest nichts.
+
+## Transport-Metadaten
+* Seitentyp: Tool-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 10
+* Letzte Aktualisierung: 2026-10-26

@@ -76,3 +76,8 @@ Einstiegsseite und Einzelseite bringen Block-Vorlagen mit, die die richtigen Bl�
 - **Es vor dem Veralten bewahren:** Prüfdaten, Intervalle und das Überfällig-Dashboard. Siehe [Wartung](wartung.md).
 - **Das Aussehen ändern:** die Blöcke und ihre CSS-Variablen. Siehe [Blöcke](bloecke.md) und [Anpassung](anpassung.md).
 - **Den Code verstehen:** die [Code-Übersicht](code-uebersicht.md) in einfacher Sprache.
+
+## Transport-Metadaten
+* Seitentyp: Anleitung
+* Zielgruppe: Technik
+* Reihenfolge: 2

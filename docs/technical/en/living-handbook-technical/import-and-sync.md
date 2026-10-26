@@ -221,3 +221,9 @@ The bundle import can create ordinary WordPress pages instead of handbook pages:
 Everything the handbook adds around a page does not, and it is worth naming: no handbook, so no access rule, no navigation, no table of contents, no badges, no feedback and no source note. Those live in the handbook template and in blocks that check their context; on an ordinary page they render nothing.
 
 The pages are created as **drafts**, whatever status the bundle carries. A bundle exported from an internal handbook would otherwise be published by the act of importing it, and that is the one mistake in this direction that cannot be taken back.
+
+## Transport-Metadaten
+* Seitentyp: Tool overview
+* Zielgruppe: Tech
+* Reihenfolge: 9
+* Letzte Aktualisierung: 2026-10-26

@@ -202,3 +202,8 @@ Die Standardstile enthalten einige Regeln, die es aus Gründen der Barrierefreih
 ```
 
 Jeder Block lässt sich zusätzlich über `theme.json` unter `styles.blocks` gestalten.
+
+## Transport-Metadaten
+* Seitentyp: Tool-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 5

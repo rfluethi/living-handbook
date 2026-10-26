@@ -322,3 +322,9 @@ Gibt ein Array derselben Form zurück; ein Eintrag ohne Label fällt weg.
 ## Actions
 
 _Bisher keine._
+
+## Transport-Metadaten
+* Seitentyp: Tool-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 7
+* Letzte Aktualisierung: 2026-10-26

@@ -212,3 +212,9 @@ Jeder Block benennt seine eigenen Assets in seiner `block.json`: `style` und `vi
 ## Die Blöcke gestalten
 
 Alle Blöcke nutzen CSS-Custom-Properties und stabile Klassennamen, du kannst sie also umgestalten, ohne das Plugin anzufassen. Die vollständige Referenz, die `--lh-*`-Variablen, die Klassennamen pro Block, und was du der Barrierefreiheit zuliebe nicht entfernen solltest, steht in [anpassung.md](anpassung.md).
+
+## Transport-Metadaten
+* Seitentyp: Tool-Übersicht
+* Zielgruppe: Technik
+* Reihenfolge: 3
+* Letzte Aktualisierung: 2026-10-26
