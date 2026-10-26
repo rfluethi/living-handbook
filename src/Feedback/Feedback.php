@@ -105,8 +105,19 @@ final class Feedback {
 		$value   = (string) $request->get_param( 'value' );
 		$post    = get_post( $post_id );
 
-		if ( ! $post instanceof WP_Post || Handbook::POST_TYPE !== $post->post_type ) {
+		// Only a published page takes a vote. The access check below asks about
+		// the handbook, not about the page, and up to 0.75.1 a vote on the id of
+		// a draft, a pending or a private page was counted. A draft gets the same
+		// answer as an id that does not exist, so the endpoint does not confirm
+		// that there is one.
+		if ( ! $post instanceof WP_Post || Handbook::POST_TYPE !== $post->post_type || 'publish' !== $post->post_status ) {
 			return new WP_REST_Response( array( 'ok' => false ), 400 );
+		}
+
+		// A password-protected page takes a vote only from somebody who has
+		// entered the password, the same rule core applies to its content.
+		if ( post_password_required( $post ) ) {
+			return new WP_REST_Response( array( 'ok' => false ), 403 );
 		}
 
 		// Only accept feedback for a page the user is actually allowed to read,
@@ -149,8 +160,7 @@ final class Feedback {
 					429
 				);
 			}
-			$count = (int) get_post_meta( $post_id, $key, true ) + 1;
-			update_post_meta( $post_id, $key, $count );
+			self::increment( $post_id, $key );
 			return new WP_REST_Response(
 				array(
 					'ok'      => true,
@@ -175,8 +185,7 @@ final class Feedback {
 			);
 		}
 
-		$count = (int) get_post_meta( $post_id, $key, true ) + 1;
-		update_post_meta( $post_id, $key, $count );
+		self::increment( $post_id, $key );
 
 		$voters[] = $user_id;
 		update_post_meta( $post_id, self::VOTERS, $voters );
@@ -187,6 +196,40 @@ final class Feedback {
 				'counted' => true,
 			)
 		);
+	}
+
+	/**
+	 * Add one to a vote counter, in the database rather than in PHP.
+	 *
+	 * Up to 0.75.1 the counter was read, increased in PHP and written back, so
+	 * two votes arriving at the same moment read the same number and one of them
+	 * was lost. The addition now happens in a single UPDATE, which the database
+	 * applies one after the other.
+	 *
+	 * The row has to exist for the UPDATE to find it, so it is created first
+	 * with 0. That step is not atomic: two first votes at once can each create a
+	 * row. It still counts right, because every later UPDATE adds to all rows of
+	 * the key, the oldest row has been there for every one of them, and the
+	 * oldest row is the one get_post_meta() reads.
+	 *
+	 * @param int    $post_id Page.
+	 * @param string $key     Counter meta key.
+	 * @return void
+	 */
+	private static function increment( int $post_id, string $key ): void {
+		global $wpdb;
+
+		add_post_meta( $post_id, $key, 0, true );
+
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- an atomic increment has no API; the cache is cleared below.
+			$wpdb->prepare(
+				"UPDATE {$wpdb->postmeta} SET meta_value = meta_value + 1 WHERE post_id = %d AND meta_key = %s",
+				$post_id,
+				$key
+			)
+		);
+
+		wp_cache_delete( $post_id, 'post_meta' );
 	}
 
 	/**

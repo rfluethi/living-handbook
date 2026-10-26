@@ -194,6 +194,79 @@ final class RobustnessTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Two votes at the same moment are both counted.
+	 *
+	 * Up to 0.75.1 the counter was read, increased in PHP and written back, so a
+	 * second vote that read the counter before the first one had written it was
+	 * lost. The second vote is sent here from inside the first one's write, at
+	 * exactly that moment.
+	 *
+	 * @return void
+	 */
+	public function test_two_votes_at_the_same_moment_are_both_counted(): void {
+		update_option( Settings::OPTION_PUBLIC_FEEDBACK, 1 );
+		wp_set_current_user( 0 );
+		$post_id = $this->public_page();
+
+		$fired  = false;
+		$racing = function ( $check, $object_id, $meta_key ) use ( &$fired, $post_id ) {
+			if ( ! $fired && Feedback::YES === $meta_key && $post_id === (int) $object_id ) {
+				$fired = true;
+				$this->vote( $post_id );
+			}
+			return $check;
+		};
+		add_filter( 'add_post_metadata', $racing, 10, 3 );
+		add_filter( 'update_post_metadata', $racing, 10, 3 );
+
+		$this->assertSame( 200, $this->vote( $post_id )->get_status() );
+
+		$this->assertTrue( $fired, 'The second vote was never sent.' );
+		$this->assertSame( 2, (int) get_post_meta( $post_id, Feedback::YES, true ) );
+	}
+
+	/**
+	 * A draft takes no vote. The access check asks about the handbook, and up to
+	 * 0.75.1 a vote sent with the id of an unpublished page was counted.
+	 *
+	 * @return void
+	 */
+	public function test_a_draft_takes_no_vote(): void {
+		$post_id = $this->public_page();
+		wp_update_post(
+			array(
+				'ID'          => $post_id,
+				'post_status' => 'draft',
+			)
+		);
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		$this->assertSame( 400, $this->vote( $post_id )->get_status() );
+		$this->assertSame( '', get_post_meta( $post_id, Feedback::YES, true ) );
+	}
+
+	/**
+	 * A password-protected page takes a vote only once the password is entered.
+	 *
+	 * @return void
+	 */
+	public function test_a_password_protected_page_takes_no_vote_without_the_password(): void {
+		$post_id = $this->public_page();
+		wp_update_post(
+			array(
+				'ID'            => $post_id,
+				'post_password' => 'secret',
+			)
+		);
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		$this->assertSame( 403, $this->vote( $post_id )->get_status() );
+		$this->assertSame( '', get_post_meta( $post_id, Feedback::YES, true ) );
+	}
+
+	/**
 	 * A published page in a public handbook, so the endpoint's own access check
 	 * lets the vote through and the test is about the ceiling, not about access.
 	 *
