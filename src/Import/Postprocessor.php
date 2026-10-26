@@ -37,6 +37,27 @@ final class Postprocessor {
 	public const META_SOURCE_PATH = '_lh_source_path';
 
 	/**
+	 * Which of order and excerpt the transport block set, so a later sync can
+	 * tell its own value from one that came from elsewhere.
+	 */
+	public const META_TRANSPORT_SET = '_lh_transport_set';
+
+	/**
+	 * Whether a page's menu order was set by its transport block.
+	 *
+	 * The folder import uses this to decide whether its own position for the
+	 * page applies: a number from the source wins, anything else is the import's
+	 * to set, including a position an earlier import gave it.
+	 *
+	 * @param int $post_id Post id.
+	 * @return bool
+	 */
+	public static function order_from_transport( int $post_id ): bool {
+		$set = get_post_meta( $post_id, self::META_TRANSPORT_SET, true );
+		return is_array( $set ) && ! empty( $set['order'] );
+	}
+
+	/**
 	 * Lookup tables for one finalize pass, or null when none is loaded.
 	 *
 	 * Resolving a link asks for a page by source path, by slug or by title. Each
@@ -97,13 +118,43 @@ final class Postprocessor {
 			}
 		}
 
-		wp_update_post(
-			array(
-				'ID'           => $post_id,
-				'post_excerpt' => trim( (string) ( $transport['excerpt'] ?? '' ) ),
-				'menu_order'   => (int) ( $transport['order'] ?? 0 ),
-			)
-		);
+		// Order and excerpt are written only when the transport block carries them,
+		// and taken back only when the block set them itself. Up to 0.75.0 every
+		// sync wrote both unconditionally, so a page without "Reihenfolge" was
+		// put back to 0 and lost the position its folder import had given it, on
+		// the first scheduled sync after the import, and a hand-written excerpt
+		// was emptied the same way. A value the block once set, and no longer
+		// does because the line was removed in the source, is still cleared: for
+		// what the block says, the source stays the source.
+		$set     = (array) get_post_meta( $post_id, self::META_TRANSPORT_SET, true );
+		$update  = array();
+		$excerpt = trim( (string) ( $transport['excerpt'] ?? '' ) );
+		if ( '' !== $excerpt ) {
+			$update['post_excerpt'] = $excerpt;
+			$set['excerpt']         = true;
+		} elseif ( ! empty( $set['excerpt'] ) ) {
+			$update['post_excerpt'] = '';
+			unset( $set['excerpt'] );
+		}
+		// "Reihenfolge: 0" cannot be told from no line at all, and needs not be:
+		// 0 is where a page without a number stands anyway.
+		$order = (int) ( $transport['order'] ?? 0 );
+		if ( 0 !== $order ) {
+			$update['menu_order'] = $order;
+			$set['order']         = true;
+		} elseif ( ! empty( $set['order'] ) ) {
+			$update['menu_order'] = 0;
+			unset( $set['order'] );
+		}
+		if ( array() !== $update ) {
+			$update['ID'] = $post_id;
+			wp_update_post( $update );
+		}
+		if ( array() !== $set ) {
+			update_post_meta( $post_id, self::META_TRANSPORT_SET, $set );
+		} else {
+			delete_post_meta( $post_id, self::META_TRANSPORT_SET );
+		}
 
 		$reviewed = trim( (string) ( $transport['reviewed'] ?? '' ) );
 		if ( 1 === preg_match( '/^\d{4}-\d{2}-\d{2}$/', $reviewed ) ) {

@@ -1725,8 +1725,11 @@ final class GitSync {
 	 * @return void
 	 */
 	private function place( int $post_id, int $parent_id, int $fallback ): void {
-		$current = (int) get_post_field( 'menu_order', $post_id );
-		$this->set_parent( $post_id, $parent_id, $current > 0 ? 0 : $fallback );
+		// Asked of the transport block, not of the current value: since a sync
+		// no longer resets a page without "Reihenfolge" to 0, a value above 0
+		// may be the position an earlier import gave it, and that one has to
+		// move with the repository like the rest of the structure.
+		$this->set_parent( $post_id, $parent_id, Postprocessor::order_from_transport( $post_id ) ? 0 : $fallback );
 	}
 
 	/**
