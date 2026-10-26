@@ -5,7 +5,7 @@ So machst du das Plugin einsatzbereit. Der Weg führt von der ZIP-Datei bis zur 
 <details>
 <summary>Voraussetzungen: Was deine Website mitbringen muss</summary>
 
-* **WordPress 6.7 oder neuer, mit einem Block-Theme.** Ein Block-Theme ist ein neueres WordPress-Design, das sich vollständig im Website-Editor bearbeiten lässt. Ein Beispiel ist das mitgelieferte Theme Twenty Twenty-Five. Mit einem älteren, klassischen Theme werden die Handbuch-Seiten nicht richtig dargestellt.
+* **WordPress 6.8 oder neuer, mit einem Block-Theme.** Ein Block-Theme ist ein neueres WordPress-Design, das sich vollständig im Website-Editor bearbeiten lässt. Ein Beispiel ist das mitgelieferte Theme Twenty Twenty-Five. Mit einem älteren, klassischen Theme werden die Handbuch-Seiten nicht richtig dargestellt.
 * **PHP 8.1 oder neuer.** Die PHP-Version deiner Website steht unter **Werkzeuge → Website-Zustand → Bericht**.
 * **Eine einzelne WordPress-Website.** Betreibst du ein Netzwerk aus mehreren Websites (Multisite), aktiviere das Plugin pro Website, nicht fürs ganze Netzwerk.
 
@@ -50,6 +50,6 @@ Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **H
 * Eltern-Seite: Erste Schritte
 * Reihenfolge: 1
 * Textauszug: So machst du das Plugin einsatzbereit, von der ZIP-Datei bis zur ersten sichtbaren Handbuch-Seite in deiner WordPress-Installation.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

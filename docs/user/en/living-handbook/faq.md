@@ -19,7 +19,7 @@ A new handbook starts with the visibility "All members (logged in)". Set it to "
 <details>
 <summary>Why do the handbook pages look broken in my theme?</summary>
 
-The plugin needs a block theme and WordPress 6.7 or newer. An older, classic theme cannot display the handbook pages properly. Details: [Installation](getting-started/installation.md).
+The plugin needs a block theme and WordPress 6.8 or newer. An older, classic theme cannot display the handbook pages properly. Details: [Installation](getting-started/installation.md).
 
 </details>
 
@@ -92,6 +92,6 @@ No. It only reads the addresses you enter yourself, during an import or in a pag
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 9
 * Textauszug: Short answers to the most common questions about Living Handbook, each pointing to the page with the full story.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

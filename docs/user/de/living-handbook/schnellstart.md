@@ -6,7 +6,7 @@ Der ganze Weg zum fertigen Handbuch auf einer Seite. Für alle, die WordPress gu
 
 ## In sechs Schritten zum Handbuch
 
-1. **Installieren:** Plugin-ZIP hochladen und aktivieren. Voraussetzungen: WordPress 6.7 mit Block-Theme, PHP 8.1. Details: [Installation](erste-schritte/installation.md).
+1. **Installieren:** Plugin-ZIP hochladen und aktivieren. Voraussetzungen: WordPress 6.8 mit Block-Theme, PHP 8.1. Details: [Installation](erste-schritte/installation.md).
 2. **Handbuch anlegen:** Unter **Handbuch → Handbücher** ein Handbuch erstellen und die **Sichtbarkeit** setzen. Achtung: Neue Handbücher stehen auf „Alle Mitglieder (angemeldet)“, nicht auf „Öffentlich“. Details: [Erstes Handbuch anlegen](erste-schritte/erstes-handbuch-anlegen.md).
 3. **Seiten anlegen:** Unter **Handbuch-Seiten → Neue Handbuch-Seite** schreiben wie gewohnt. Zwingend: **jede Seite einem Handbuch zuweisen**. Eine Seite ohne Handbuch bleibt auf der Website unsichtbar. Details: [Erste Seite anlegen](erste-schritte/erste-seite-anlegen.md).
 4. **Einordnen:** Pro Seite Seitentyp, Thema, Zielgruppe und verantwortliche Rolle wählen. Daraus entstehen Abzeichen und Filter.
@@ -23,8 +23,8 @@ Im Zweifel versteckt das Plugin. Eine Seite ohne Handbuch ist unsichtbar. Ein ne
 |---|---|
 | **Handbuch → Handbücher** | Handbücher anlegen, Sichtbarkeit regeln. |
 | **Handbuch → Handbuch-Seiten** | Seiten schreiben, prüfen und verwalten. |
-| **Handbuch → Import** | Markdown übernehmen: eingefügt, als ZIP, von GitHub oder als Paket. Auch dieses Handbuch lädst du hier, im Reiter [App-Handbuch](erste-schritte/app-handbuch-laden.md). |
-| **Handbuch → Export** | Ein Handbuch als Paket für eine andere Website [exportieren](inhalte/handbuch-umziehen.md). |
+| **Handbuch → Import** | Markdown übernehmen: eingefügt, als ZIP, von GitHub oder als Bündel. Auch dieses Handbuch lädst du hier, im Reiter [App-Handbuch](erste-schritte/app-handbuch-laden.md). |
+| **Handbuch → Export** | Ein Handbuch als Bündel für eine andere Website [exportieren](inhalte/handbuch-umziehen.md). |
 | **Handbuch → Einstellungen** | [Alle Optionen](die-einstellungen.md): Abgleich-Zeitplan, eigenes CSS, Verhalten beim Deinstallieren. |
 | **Dashboard** | Überfällige Prüfungen und Feedback-Zahlen im Blick behalten. |
 
@@ -43,6 +43,6 @@ Im Zweifel versteckt das Plugin. Eine Seite ohne Handbuch ist unsichtbar. Ein ne
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 2
 * Textauszug: Der ganze Weg zum fertigen Handbuch auf einer Seite, für alle, die WordPress gut kennen und sich nur einen Überblick verschaffen wollen.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

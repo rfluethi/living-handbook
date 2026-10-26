@@ -6,7 +6,7 @@ The whole path to a finished handbook on one page. For everyone who knows WordPr
 
 ## Six steps to a handbook
 
-1. **Install:** Upload the plugin ZIP and activate it. Requirements: WordPress 6.7 with a block theme, PHP 8.1. Details: [Installation](getting-started/installation.md).
+1. **Install:** Upload the plugin ZIP and activate it. Requirements: WordPress 6.8 with a block theme, PHP 8.1. Details: [Installation](getting-started/installation.md).
 2. **Create a handbook:** Under **Handbook → Handbooks**, create a handbook and set its **visibility**. Careful: new handbooks start on "All members (logged in)", not on "Public". Details: [Create your first handbook](getting-started/create-your-first-handbook.md).
 3. **Create pages:** Under **Handbook pages → Add new handbook page**, write as usual. Mandatory: **assign every page to a handbook**. A page without a handbook stays invisible on the website. Details: [Create your first page](getting-started/create-your-first-page.md).
 4. **Classify:** For each page, pick the page type, topic, audience and responsible role. These produce the badges and the filters.
@@ -43,6 +43,6 @@ When in doubt, the plugin hides. A page without a handbook is invisible. A new o
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 2
 * Textauszug: The whole path to a finished handbook on one page, for everyone who knows WordPress well and just wants an overview.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-26
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage
