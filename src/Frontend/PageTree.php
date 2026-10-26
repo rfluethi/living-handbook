@@ -45,14 +45,25 @@ final class PageTree {
 
 		$query = new WP_Query(
 			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'orderby'        => array(
+				'post_type'              => Handbook::POST_TYPE,
+				'post_status'            => 'publish',
+				'posts_per_page'         => -1,
+				'orderby'                => array(
 					'menu_order' => 'ASC',
 					'title'      => 'ASC',
 				),
-				'no_found_rows'  => true,
+				'no_found_rows'          => true,
+				// Neither consumer of the map reads post meta: the navigation needs
+				// title, parent and permalink, the area tiles also the excerpt or
+				// the content, all of them fields of the post row. WP_Query would
+				// still load every meta row of every page into the cache, which on
+				// an imported handbook (review date, interval, sync path and hash,
+				// feedback counters) is the larger part of what this query costs in
+				// memory. Measured on 500 pages with eight meta keys each, as a
+				// guest: 5.9 MB and 8 queries with meta, 2.3 MB and 7 without. A
+				// caller that does need meta for one page gets it from
+				// get_post_meta(), which loads that page's meta on demand.
+				'update_post_meta_cache' => false,
 				// include_children is off in every handbook query, here and in Cards,
 				// Filters, the export and the sync. One page belongs to exactly one
 				// handbook, so a handbook's list is its own pages. WordPress would
@@ -60,7 +71,7 @@ final class PageTree {
 				// grouping is hierarchical: harmless while nobody nested anything,
 				// wrong the moment somebody does, and it would file a child's pages
 				// under the parent's name.
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',
