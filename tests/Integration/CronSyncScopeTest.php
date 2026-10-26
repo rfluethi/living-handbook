@@ -145,4 +145,37 @@ final class CronSyncScopeTest extends WP_UnitTestCase {
 		$this->assertContains( 'Page public-two', $titles );
 		$this->assertNotContains( 'Page members-two', $titles, 'A guest must not see a page in a members handbook.' );
 	}
+
+	/**
+	 * A second run while the first still holds the lock does nothing. Up to
+	 * 0.75.0 the recurring event, the follow-up event and a manual trigger ran
+	 * side by side and synced the same batch twice.
+	 *
+	 * @return void
+	 */
+	public function test_a_run_does_not_start_while_another_holds_the_lock(): void {
+		$url = $this->make_github_page( Handbooks::VISIBILITY_PUBLIC, 'locked-one' );
+		add_option( GitSync::OPTION_SYNC_LOCK, (string) time(), '', false );
+
+		( new GitSync() )->run_sync();
+
+		$this->assertNotContains( $url, $this->requested, 'Another run is busy, so this one must not fetch anything.' );
+		$this->assertNotFalse( get_option( GitSync::OPTION_SYNC_LOCK ), 'And it must not release a lock it does not hold.' );
+	}
+
+	/**
+	 * A lock left by a run that died is taken over, and a finished run lets go
+	 * of its own.
+	 *
+	 * @return void
+	 */
+	public function test_an_abandoned_lock_is_taken_over_and_released(): void {
+		$url = $this->make_github_page( Handbooks::VISIBILITY_PUBLIC, 'stale-one' );
+		add_option( GitSync::OPTION_SYNC_LOCK, (string) ( time() - HOUR_IN_SECONDS ), '', false );
+
+		( new GitSync() )->run_sync();
+
+		$this->assertContains( $url, $this->requested );
+		$this->assertFalse( get_option( GitSync::OPTION_SYNC_LOCK ), 'The next run must find the way free.' );
+	}
 }

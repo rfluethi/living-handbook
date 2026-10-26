@@ -181,6 +181,18 @@ final class GitSync {
 
 	public const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
 
+	/**
+	 * Option that holds the scheduled sync's lock, with the time it was taken.
+	 */
+	public const OPTION_SYNC_LOCK = 'living_handbook_sync_lock';
+
+	/**
+	 * After how many seconds a lock counts as abandoned. A run that died
+	 * without releasing it must not stop the sync for good; a batch of twenty
+	 * pages with their images is minutes at worst.
+	 */
+	private const SYNC_LOCK_TTL = 15 * MINUTE_IN_SECONDS;
+
 	private const SCHEDULES = array( 'off', 'hourly', 'twicedaily', 'daily', 'weekly' );
 
 	/**
@@ -2104,6 +2116,73 @@ final class GitSync {
 	 * @return void
 	 */
 	public function run_sync(): void {
+		// One run at a time. The recurring event, the follow-up event and a
+		// request that triggers WP-Cron while another is still busy can all land
+		// here together; up to 0.75.0 they ran side by side, read the same
+		// offset, synced the same batch twice and sideloaded its images twice.
+		if ( ! self::acquire_sync_lock() ) {
+			return;
+		}
+
+		try {
+			$this->run_sync_locked();
+		} finally {
+			self::release_sync_lock();
+		}
+	}
+
+	/**
+	 * Take the sync lock, or say that another run holds it.
+	 *
+	 * INSERT IGNORE rather than add_option(): add_option() writes with "ON
+	 * DUPLICATE KEY UPDATE" and so succeeds for the second run as well. The
+	 * insert either creates the row or does nothing, which is the one atomic
+	 * step the options table offers, and the way core's upgrader locks too. A
+	 * lock older than SYNC_LOCK_TTL belongs to a run that died, and is taken
+	 * over.
+	 *
+	 * @return bool
+	 */
+	private static function acquire_sync_lock(): bool {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- an atomic insert is the point; the cache is cleared below.
+		$taken = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$wpdb->options}` ( `option_name`, `option_value`, `autoload` ) VALUES ( %s, %s, 'off' )", self::OPTION_SYNC_LOCK, (string) time() ) );
+		wp_cache_delete( self::OPTION_SYNC_LOCK, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+		if ( 1 === (int) $taken ) {
+			return true;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the value another process just wrote, not a cached one.
+		$since = (int) $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM `{$wpdb->options}` WHERE option_name = %s", self::OPTION_SYNC_LOCK ) );
+		if ( $since > time() - self::SYNC_LOCK_TTL ) {
+			return false;
+		}
+
+		// Abandoned. Take it over only if nobody else did in the meantime: the
+		// update names the old value, so of two runs doing this, one wins.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the same atomic step, for a stale lock.
+		$taken = $wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->options}` SET option_value = %s WHERE option_name = %s AND option_value = %s", (string) time(), self::OPTION_SYNC_LOCK, (string) $since ) );
+		wp_cache_delete( self::OPTION_SYNC_LOCK, 'options' );
+		return 1 === (int) $taken;
+	}
+
+	/**
+	 * Release the sync lock.
+	 *
+	 * @return void
+	 */
+	private static function release_sync_lock(): void {
+		delete_option( self::OPTION_SYNC_LOCK );
+	}
+
+	/**
+	 * The body of a scheduled run, while it holds the lock.
+	 *
+	 * @return void
+	 */
+	private function run_sync_locked(): void {
 		// An import that was started and then abandoned leaves its downloaded
 		// archive behind: nothing tells the plugin the browser has gone away. The
 		// scheduled run is where those are collected.
