@@ -133,10 +133,11 @@ final class AccessController {
 		// query. The type is publicly_queryable, so is_post_publicly_viewable()
 		// says yes and core answers /wp-json/oembed/1.0/embed with the page title
 		// and the author's display name. WordPress 6.8 added is_post_embeddable(),
-		// which closes this for a type that is not embeddable, but the plugin
-		// supports 6.7, and a site can re-open it through the is_post_embeddable
-		// filter. Gate the lookup and the response ourselves rather than relying
-		// on the core version in use.
+		// which closes this for a type that is not embeddable, and 6.8 is the
+		// plugin's minimum. It is still not enough on its own: a site, a theme or
+		// another plugin can re-open it through the is_post_embeddable filter. Gate
+		// the lookup and the response ourselves rather than relying on that filter
+		// staying untouched.
 		add_filter( 'oembed_request_post_id', array( $this, 'guard_oembed_request' ), 10, 2 );
 		add_filter( 'oembed_response_data', array( $this, 'guard_oembed_data' ), 10, 2 );
 
