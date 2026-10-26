@@ -2,9 +2,9 @@
 Contributors: rfluethi
 Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.75.0
+Stable tag: 0.75.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,13 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.75.1 =
+* Security: the bundled libraries for SVG cleaning, Markdown and YAML are updated past published vulnerabilities.
+* Security: the website export copies only media from the uploads folder; a crafted link could pull a file from outside it into the ZIP.
+* Fixed: a hand-written filter URL could put a handbook page on the "critical error" screen.
+* Fixed: learning paths work right after switching them on or updating, without saving the permalinks; their blocks are known to the Site Editor; their images and comments follow the access rules of the handbook.
+* Fixed: search, filters and feedback no longer fail for visitors on sites with a page cache.
 
 = 0.75.0 =
 * New: learning paths. Put existing handbook pages in an order, and people read them one after another with a Next button, a numbered list and a mark for what they have already read. For onboarding, or for a piece of required reading. Off by default, switched on under Settings, Learning paths.
@@ -250,6 +257,9 @@ Very little, and nothing is sent anywhere. The "Was this helpful?" feedback reco
 Older versions are listed in [CHANGELOG.md](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md) in the repository.
 
 == Upgrade Notice ==
+
+= 0.75.1 =
+Security and bug fix release, recommended for every site: updated libraries with published vulnerabilities, a website export that cannot carry files from outside the uploads folder, and learning paths that work without saving the permalinks.
 
 = 0.63.1 =
 Documentation housekeeping in the shipped handbook. Nothing needs doing on update.

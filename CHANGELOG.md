@@ -6,6 +6,25 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.75.1] - 2026-10-26
+
+A maintenance release from an independent review of 0.75.0. Every fix comes with a test that fails against 0.75.0; those were run against the old code one at a time.
+
+### Fixed
+
+* **The bundled libraries had published vulnerabilities.** Fifteen advisories against the three libraries in the ZIP, all published after 0.75.0 was built. `enshrined/svg-sanitize` 0.22.0 let a `javascript:` link through behind a DTD entity named like an HTML character reference (`&Tab;`, CVE-2026-107380); the fix exists only in 1.x, and the constraint `~0.19` held Composer below it, so the constraint is now `^1.1`. `league/commonmark` 2.8.2 had denial-of-service bugs in the core parser and the table extension, which the GitHub sync runs on Markdown from repositories the site does not control. `symfony/yaml` 6.4.42 could be crashed by one crafted `mkdocs.yml`. Now 1.1.1, 2.10.4 and 6.4.48. Nothing tested the SVG cleaning, so a green suite said nothing about it; `SvgSanitizeTest` closes that, including the case from the advisory.
+* **The website export could carry files from outside the uploads folder.** The part of a link after the uploads URL was appended to the uploads folder unchecked, so a link to `…/uploads/../../wp-config.php` put the database password into the ZIP of the next export. The path is now decoded, may not climb with `..`, has to resolve inside the uploads folder and has to be a file type the site accepts as an upload. As a side effect an image whose name needs percent-encoding, `a picture.png`, is now found and copied; before it pointed back at the site.
+* **A hand-written filter URL brought down the page.** `?lh_type[a][]=x` reached `sanitize_title()` as an array, a TypeError in PHP 8, on the page and through the REST filter, for any visitor and as often as they liked. Nested values are dropped now.
+* **Learning paths answered 404 until somebody saved the permalinks.** The rewrite rules were rebuilt only when the switch was updated, and the first time it is used the option is added instead. Both now schedule the rebuild, and every version update rebuilds the rules once.
+* **The three learning path blocks were unknown to the Site Editor.** It showed them as unsupported, and deleting such a placeholder removed the lesson list or the path bar from the template. They are registered in the editor now, like the other blocks that render from the page being read.
+* **The media, comments and oEmbed card of a learning path were not guarded.** Those channels asked whether the parent was a handbook page, not whether it was a guarded type, so `/wp/v2/media` described the images of a path in an internal handbook to anyone.
+* **Search, filters and feedback failed for guests behind a page cache.** Every page carried a REST nonce, a guest's included, and core checks a nonce whenever one is sent. A cached page served a stale one, and after a day every request of a guest was refused with 403. Guests get no nonce now, and the script sends the header only when there is one.
+
+### Changed
+
+* **Vulnerable dependencies are looked for.** Dependabot opens pull requests for Composer packages and Actions; CI runs `composer audit` on every push, and the release workflow and `bin/check-and-build.sh` refuse to build while a shipped package has a published advisory.
+* **Tested up to 7.1.** The integration suite runs green against WordPress 7.1.3, as well as against 6.8 and 7.0.4.
+
 ## [0.75.0] - 2026-08-14
 
 ### Added

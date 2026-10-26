@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.75.0\n"
+"Project-Id-Version: Living Handbook 0.75.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-14T19:40:44+00:00\n"
+"POT-Creation-Date: 2026-10-26T21:58:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -40,17 +40,17 @@ msgstr ""
 msgid "https://rfluethi.com"
 msgstr ""
 
-#: src/Access/AccessController.php:212
+#: src/Access/AccessController.php:228
 msgid "No access to this handbook"
 msgstr ""
 
 #. translators: %s: display name of the signed-in user.
-#: src/Access/AccessController.php:215
+#: src/Access/AccessController.php:231
 #, php-format
 msgid "You are signed in as %s, but your account does not have access to this handbook. Ask an administrator or the team that maintains the handbook to grant you access."
 msgstr ""
 
-#: src/Access/AccessController.php:235
+#: src/Access/AccessController.php:251
 msgid "Back to the site"
 msgstr ""
 
@@ -87,7 +87,7 @@ msgstr ""
 #: src/Admin/Maintenance.php:256
 #: src/Admin/Maintenance.php:260
 #: src/Export/SiteRenderer.php:241
-#: src/Export/StaticSite.php:922
+#: src/Export/StaticSite.php:971
 #: src/Handbook/Handbooks.php:329
 #: src/Import/HandbookExport.php:115
 #: src/PostType/Handbook.php:96
@@ -233,17 +233,17 @@ msgid "On this page"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:478
-#: src/Frontend/FrontendRenderer.php:110
+#: src/Frontend/FrontendRenderer.php:115
 msgid "Enlarge"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:479
-#: src/Frontend/FrontendRenderer.php:109
+#: src/Frontend/FrontendRenderer.php:114
 msgid "Close"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:480
-#: src/Frontend/FrontendRenderer.php:111
+#: src/Frontend/FrontendRenderer.php:116
 msgid "Enlarged diagram"
 msgstr ""
 
@@ -322,54 +322,54 @@ msgstr ""
 msgid "The export file could not be written on this server."
 msgstr ""
 
-#: src/Export/StaticSite.php:813
+#: src/Export/StaticSite.php:862
 #: src/Import/HandbookExport.php:263
 msgid "You are not allowed to export handbooks."
 msgstr ""
 
-#: src/Export/StaticSite.php:824
+#: src/Export/StaticSite.php:873
 msgid "This file has already been downloaded, or the export has expired. Build the website again if you need another copy."
 msgstr ""
 
-#: src/Export/StaticSite.php:914
+#: src/Export/StaticSite.php:963
 msgid "Export as a website"
 msgstr ""
 
-#: src/Export/StaticSite.php:915
+#: src/Export/StaticSite.php:964
 msgid "A ZIP of plain HTML files: the pages, their images, a page list and a search. It opens by double-clicking index.html, with no server and no internet connection. For readers who have no access to this site at all."
 msgstr ""
 
-#: src/Export/StaticSite.php:917
+#: src/Export/StaticSite.php:966
 msgid "A static copy has no access rules. It contains every page you can read in the handbook you choose, and whoever holds the file can read all of it. It also stops being current the moment it is made."
 msgstr ""
 
-#: src/Export/StaticSite.php:925
+#: src/Export/StaticSite.php:974
 #: src/Import/HandbookExport.php:118
 #: src/Import/MarkdownImportPage.php:914
 msgid "— select a handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:935
+#: src/Export/StaticSite.php:984
 #: src/Import/HandbookExport.php:128
 msgid "What to export"
 msgstr ""
 
-#: src/Export/StaticSite.php:937
-#: src/Export/StaticSite.php:938
+#: src/Export/StaticSite.php:986
+#: src/Export/StaticSite.php:987
 #: src/Import/HandbookExport.php:130
 #: src/Import/HandbookExport.php:131
 msgid "— the whole handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:943
+#: src/Export/StaticSite.php:992
 msgid "Look"
 msgstr ""
 
-#: src/Export/StaticSite.php:950
+#: src/Export/StaticSite.php:999
 msgid "\"Like this site\" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other three leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team."
 msgstr ""
 
-#: src/Export/StaticSite.php:955
+#: src/Export/StaticSite.php:1004
 msgid "Build the website"
 msgstr ""
 
@@ -512,8 +512,8 @@ msgstr ""
 #: src/Frontend/Entry.php:151
 #: src/Frontend/Entry.php:153
 #: src/Frontend/Entry.php:269
-#: src/Frontend/FrontendRenderer.php:346
-#: src/Frontend/FrontendRenderer.php:383
+#: src/Frontend/FrontendRenderer.php:351
+#: src/Frontend/FrontendRenderer.php:388
 #: src/Handbook/Handbooks.php:328
 msgid "Handbooks"
 msgstr ""
@@ -559,59 +559,59 @@ msgstr ""
 msgid "Handbook pages"
 msgstr ""
 
-#: src/Frontend/Filters.php:834
+#: src/Frontend/Filters.php:851
 #: src/Taxonomy/Taxonomies.php:45
 #: src/Taxonomy/Taxonomies.php:150
 msgid "Page type"
 msgstr ""
 
-#: src/Frontend/Filters.php:836
+#: src/Frontend/Filters.php:853
 #: src/Taxonomy/Taxonomies.php:46
 #: src/Taxonomy/Taxonomies.php:161
 msgid "Topics"
 msgstr ""
 
-#: src/Frontend/Filters.php:838
+#: src/Frontend/Filters.php:855
 #: src/Taxonomy/Taxonomies.php:47
 #: src/Taxonomy/Taxonomies.php:173
 #: src/Taxonomy/Taxonomies.php:174
 msgid "Responsibility"
 msgstr ""
 
-#: src/Frontend/Filters.php:840
+#: src/Frontend/Filters.php:857
 #: src/Taxonomy/Taxonomies.php:186
 msgid "Audience"
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:105
+#: src/Frontend/FrontendRenderer.php:110
 msgid "Thanks for your feedback."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:106
+#: src/Frontend/FrontendRenderer.php:111
 msgid "Your feedback could not be sent. Please try again."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:107
+#: src/Frontend/FrontendRenderer.php:112
 msgid "The list could not be updated. Please reload the page."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:108
+#: src/Frontend/FrontendRenderer.php:113
 msgid "No matches."
 msgstr ""
 
 #. translators: %d: number of matching pages in the page search.
-#: src/Frontend/FrontendRenderer.php:113
+#: src/Frontend/FrontendRenderer.php:118
 #, php-format
 msgid "%d matching pages"
 msgstr ""
 
 #. translators: 1: lessons already read, 2: lessons in the learning path.
-#: src/Frontend/FrontendRenderer.php:115
+#: src/Frontend/FrontendRenderer.php:120
 #, php-format
 msgid "%1$d of %2$d lessons read"
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:116
+#: src/Frontend/FrontendRenderer.php:121
 msgid "Continue"
 msgstr ""
 
@@ -676,7 +676,7 @@ msgstr ""
 
 #: src/Frontend/Templates.php:75
 #: src/Training/PathView.php:267
-#: src/Training/Training.php:128
+#: src/Training/Training.php:133
 msgid "Learning path"
 msgstr ""
 
@@ -1545,9 +1545,9 @@ msgstr ""
 #: src/Setup/Settings.php:52
 #: src/Setup/Settings.php:390
 #: src/Training/PathView.php:194
-#: src/Training/Training.php:127
-#: src/Training/Training.php:129
-#: src/Training/Training.php:130
+#: src/Training/Training.php:132
+#: src/Training/Training.php:134
+#: src/Training/Training.php:135
 msgid "Learning paths"
 msgstr ""
 
@@ -1864,23 +1864,23 @@ msgstr ""
 msgid "Lesson %1$d of %2$d"
 msgstr ""
 
-#: src/Training/Training.php:131
+#: src/Training/Training.php:136
 msgid "New learning path"
 msgstr ""
 
-#: src/Training/Training.php:132
+#: src/Training/Training.php:137
 msgid "Add new learning path"
 msgstr ""
 
-#: src/Training/Training.php:133
+#: src/Training/Training.php:138
 msgid "Edit learning path"
 msgstr ""
 
-#: src/Training/Training.php:134
+#: src/Training/Training.php:139
 msgid "Search learning paths"
 msgstr ""
 
-#: src/Training/Training.php:135
+#: src/Training/Training.php:140
 msgid "No learning paths yet."
 msgstr ""
 
@@ -1966,22 +1966,22 @@ msgid "Handbook entry (results): the areas and recently updated pages of this ha
 msgstr ""
 
 #: assets/blocks.js:225
-#: assets/blocks.js:291
+#: assets/blocks.js:311
 msgid "Show the label"
 msgstr ""
 
 #: assets/blocks.js:226
-#: assets/blocks.js:292
+#: assets/blocks.js:312
 msgid "Label"
 msgstr ""
 
 #: assets/blocks.js:226
-#: assets/blocks.js:292
+#: assets/blocks.js:312
 msgid "Read out to screen readers even when it is not shown."
 msgstr ""
 
 #: assets/blocks.js:227
-#: assets/blocks.js:293
+#: assets/blocks.js:313
 msgid "Placeholder"
 msgstr ""
 
@@ -2021,11 +2021,23 @@ msgstr ""
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 
-#: assets/blocks.js:290
+#: assets/blocks.js:292
+msgid "Learning path lessons: the ordered lessons of the learning path being read, with the start button."
+msgstr ""
+
+#: assets/blocks.js:297
+msgid "Learning paths of this handbook: the paths of the handbook whose entry page this is."
+msgstr ""
+
+#: assets/blocks.js:302
+msgid "Learning path bar: on a lesson opened from a learning path, which lesson of how many and the way to the previous and next one."
+msgstr ""
+
+#: assets/blocks.js:310
 msgid "Quick search"
 msgstr ""
 
-#: assets/blocks.js:295
+#: assets/blocks.js:315
 msgid "Handbook quick search: lists matching pages as you type, each with the sentence it was found in, so a reader jumps straight to a page. Does not narrow the result column; that is the Handbook search block."
 msgstr ""
 

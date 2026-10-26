@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-08-14T19:40:44+00:00\n"
+"POT-Creation-Date: 2026-10-26T21:58:31+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -45,12 +45,12 @@ msgstr ""
 msgid "https://rfluethi.com"
 msgstr ""
 
-#: src/Access/AccessController.php:212
+#: src/Access/AccessController.php:228
 msgid "No access to this handbook"
 msgstr "Kein Zugriff auf dieses Handbuch"
 
 #. translators: %s: display name of the signed-in user.
-#: src/Access/AccessController.php:215
+#: src/Access/AccessController.php:231
 #, php-format
 msgid ""
 "You are signed in as %s, but your account does not have access to this "
@@ -61,7 +61,7 @@ msgstr ""
 "Handbuch. Wende dich an eine Administratorin oder an das Team, das dieses "
 "Handbuch pflegt, um den Zugriff zu erhalten."
 
-#: src/Access/AccessController.php:235
+#: src/Access/AccessController.php:251
 msgid "Back to the site"
 msgstr "Zurück zur Website"
 
@@ -98,7 +98,7 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:256 src/Admin/Maintenance.php:260
-#: src/Export/SiteRenderer.php:241 src/Export/StaticSite.php:922
+#: src/Export/SiteRenderer.php:241 src/Export/StaticSite.php:971
 #: src/Handbook/Handbooks.php:329 src/Import/HandbookExport.php:115
 #: src/PostType/Handbook.php:96 src/PostType/Handbook.php:98
 #: src/Setup/Onboarding.php:100
@@ -259,15 +259,15 @@ msgstr "Start"
 msgid "On this page"
 msgstr "Auf dieser Seite"
 
-#: src/Export/SiteRenderer.php:478 src/Frontend/FrontendRenderer.php:110
+#: src/Export/SiteRenderer.php:478 src/Frontend/FrontendRenderer.php:115
 msgid "Enlarge"
 msgstr "Vergrössern"
 
-#: src/Export/SiteRenderer.php:479 src/Frontend/FrontendRenderer.php:109
+#: src/Export/SiteRenderer.php:479 src/Frontend/FrontendRenderer.php:114
 msgid "Close"
 msgstr "Schliessen"
 
-#: src/Export/SiteRenderer.php:480 src/Frontend/FrontendRenderer.php:111
+#: src/Export/SiteRenderer.php:480 src/Frontend/FrontendRenderer.php:116
 msgid "Enlarged diagram"
 msgstr "Vergrössertes Diagramm"
 
@@ -361,11 +361,11 @@ msgstr ""
 msgid "The export file could not be written on this server."
 msgstr "Die Export-Datei konnte auf diesem Server nicht geschrieben werden."
 
-#: src/Export/StaticSite.php:813 src/Import/HandbookExport.php:263
+#: src/Export/StaticSite.php:862 src/Import/HandbookExport.php:263
 msgid "You are not allowed to export handbooks."
 msgstr "Du darfst keine Handbücher exportieren."
 
-#: src/Export/StaticSite.php:824
+#: src/Export/StaticSite.php:873
 msgid ""
 "This file has already been downloaded, or the export has expired. Build the "
 "website again if you need another copy."
@@ -373,11 +373,11 @@ msgstr ""
 "Diese Datei wurde bereits heruntergeladen, oder der Export ist abgelaufen. "
 "Erzeuge die Website neu, wenn du eine weitere Kopie brauchst."
 
-#: src/Export/StaticSite.php:914
+#: src/Export/StaticSite.php:963
 msgid "Export as a website"
 msgstr "Als Website exportieren"
 
-#: src/Export/StaticSite.php:915
+#: src/Export/StaticSite.php:964
 msgid ""
 "A ZIP of plain HTML files: the pages, their images, a page list and a "
 "search. It opens by double-clicking index.html, with no server and no "
@@ -388,7 +388,7 @@ msgstr ""
 "und ohne Internetverbindung. Für Leserinnen und Leser, die gar keinen Zugang "
 "zu dieser Website haben."
 
-#: src/Export/StaticSite.php:917
+#: src/Export/StaticSite.php:966
 msgid ""
 "A static copy has no access rules. It contains every page you can read in "
 "the handbook you choose, and whoever holds the file can read all of it. It "
@@ -398,25 +398,25 @@ msgstr ""
 "du im gewählten Handbuch lesen darfst, und wer die Datei hat, liest alles "
 "davon. Ausserdem veraltet sie ab dem Moment, in dem sie entsteht."
 
-#: src/Export/StaticSite.php:925 src/Import/HandbookExport.php:118
+#: src/Export/StaticSite.php:974 src/Import/HandbookExport.php:118
 #: src/Import/MarkdownImportPage.php:914
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
-#: src/Export/StaticSite.php:935 src/Import/HandbookExport.php:128
+#: src/Export/StaticSite.php:984 src/Import/HandbookExport.php:128
 msgid "What to export"
 msgstr "Was exportieren"
 
-#: src/Export/StaticSite.php:937 src/Export/StaticSite.php:938
+#: src/Export/StaticSite.php:986 src/Export/StaticSite.php:987
 #: src/Import/HandbookExport.php:130 src/Import/HandbookExport.php:131
 msgid "— the whole handbook —"
 msgstr "— das ganze Handbuch —"
 
-#: src/Export/StaticSite.php:943
+#: src/Export/StaticSite.php:992
 msgid "Look"
 msgstr "Gestaltung"
 
-#: src/Export/StaticSite.php:950
+#: src/Export/StaticSite.php:999
 msgid ""
 "\"Like this site\" takes your theme along: its palette, its fonts, its "
 "spacing, plus what you set under Appearance. The other three leave all of "
@@ -428,7 +428,7 @@ msgstr ""
 "lassen all das hinter sich und bringen ihr eigenes mit, was für eine Kopie, "
 "die das Team verlässt, oft die bessere Wahl ist."
 
-#: src/Export/StaticSite.php:955
+#: src/Export/StaticSite.php:1004
 msgid "Build the website"
 msgstr "Website erzeugen"
 
@@ -595,8 +595,8 @@ msgid "No handbooks available."
 msgstr "Keine Handbücher verfügbar."
 
 #: src/Frontend/Entry.php:151 src/Frontend/Entry.php:153
-#: src/Frontend/Entry.php:269 src/Frontend/FrontendRenderer.php:346
-#: src/Frontend/FrontendRenderer.php:383 src/Handbook/Handbooks.php:328
+#: src/Frontend/Entry.php:269 src/Frontend/FrontendRenderer.php:351
+#: src/Frontend/FrontendRenderer.php:388 src/Handbook/Handbooks.php:328
 msgid "Handbooks"
 msgstr "Handbücher"
 
@@ -641,54 +641,54 @@ msgstr "Keine Treffer. Passe die Filter oder die Suche an."
 msgid "Handbook pages"
 msgstr "Handbuch-Seiten"
 
-#: src/Frontend/Filters.php:834 src/Taxonomy/Taxonomies.php:45
+#: src/Frontend/Filters.php:851 src/Taxonomy/Taxonomies.php:45
 #: src/Taxonomy/Taxonomies.php:150
 msgid "Page type"
 msgstr "Seitentyp"
 
-#: src/Frontend/Filters.php:836 src/Taxonomy/Taxonomies.php:46
+#: src/Frontend/Filters.php:853 src/Taxonomy/Taxonomies.php:46
 #: src/Taxonomy/Taxonomies.php:161
 msgid "Topics"
 msgstr "Themen"
 
-#: src/Frontend/Filters.php:838 src/Taxonomy/Taxonomies.php:47
+#: src/Frontend/Filters.php:855 src/Taxonomy/Taxonomies.php:47
 #: src/Taxonomy/Taxonomies.php:173 src/Taxonomy/Taxonomies.php:174
 msgid "Responsibility"
 msgstr "Verantwortung"
 
-#: src/Frontend/Filters.php:840 src/Taxonomy/Taxonomies.php:186
+#: src/Frontend/Filters.php:857 src/Taxonomy/Taxonomies.php:186
 msgid "Audience"
 msgstr "Zielgruppe"
 
-#: src/Frontend/FrontendRenderer.php:105
+#: src/Frontend/FrontendRenderer.php:110
 msgid "Thanks for your feedback."
 msgstr "Danke für dein Feedback."
 
-#: src/Frontend/FrontendRenderer.php:106
+#: src/Frontend/FrontendRenderer.php:111
 msgid "Your feedback could not be sent. Please try again."
 msgstr "Dein Feedback konnte nicht gesendet werden. Bitte versuche es erneut."
 
-#: src/Frontend/FrontendRenderer.php:107
+#: src/Frontend/FrontendRenderer.php:112
 msgid "The list could not be updated. Please reload the page."
 msgstr "Die Liste konnte nicht aktualisiert werden. Bitte lade die Seite neu."
 
-#: src/Frontend/FrontendRenderer.php:108
+#: src/Frontend/FrontendRenderer.php:113
 msgid "No matches."
 msgstr "Keine Treffer."
 
 #. translators: %d: number of matching pages in the page search.
-#: src/Frontend/FrontendRenderer.php:113
+#: src/Frontend/FrontendRenderer.php:118
 #, php-format
 msgid "%d matching pages"
 msgstr "%d passende Seiten"
 
 #. translators: 1: lessons already read, 2: lessons in the learning path.
-#: src/Frontend/FrontendRenderer.php:115
+#: src/Frontend/FrontendRenderer.php:120
 #, php-format
 msgid "%1$d of %2$d lessons read"
 msgstr "%1$d von %2$d Lektionen gelesen"
 
-#: src/Frontend/FrontendRenderer.php:116
+#: src/Frontend/FrontendRenderer.php:121
 msgid "Continue"
 msgstr "Weiterlesen"
 
@@ -759,7 +759,7 @@ msgstr ""
 "Seite» rechts."
 
 #: src/Frontend/Templates.php:75 src/Training/PathView.php:267
-#: src/Training/Training.php:128
+#: src/Training/Training.php:133
 msgid "Learning path"
 msgstr "Lernpfad"
 
@@ -1481,8 +1481,8 @@ msgid ""
 "Flat set of .md files, or a repository export with a mkdocs.yml for a "
 "structured import."
 msgstr ""
-"Flacher Satz von .md-Dateien, oder ein Repository-Export mit einer "
-"mkdocs.yml für einen strukturierten Import."
+"Flacher Satz von .md-Dateien, oder ein Repository-Export mit einer mkdocs."
+"yml für einen strukturierten Import."
 
 #: src/Import/MarkdownImportPage.php:998
 msgid "Import ZIP"
@@ -1845,8 +1845,8 @@ msgid "Classification"
 msgstr "Einordnung"
 
 #: src/Setup/Settings.php:52 src/Setup/Settings.php:390
-#: src/Training/PathView.php:194 src/Training/Training.php:127
-#: src/Training/Training.php:129 src/Training/Training.php:130
+#: src/Training/PathView.php:194 src/Training/Training.php:132
+#: src/Training/Training.php:134 src/Training/Training.php:135
 msgid "Learning paths"
 msgstr "Lernpfade"
 
@@ -2304,23 +2304,23 @@ msgstr "Weiter"
 msgid "Lesson %1$d of %2$d"
 msgstr "Lektion %1$d von %2$d"
 
-#: src/Training/Training.php:131
+#: src/Training/Training.php:136
 msgid "New learning path"
 msgstr "Neuer Lernpfad"
 
-#: src/Training/Training.php:132
+#: src/Training/Training.php:137
 msgid "Add new learning path"
 msgstr "Neuen Lernpfad hinzufügen"
 
-#: src/Training/Training.php:133
+#: src/Training/Training.php:138
 msgid "Edit learning path"
 msgstr "Lernpfad bearbeiten"
 
-#: src/Training/Training.php:134
+#: src/Training/Training.php:139
 msgid "Search learning paths"
 msgstr "Lernpfade durchsuchen"
 
-#: src/Training/Training.php:135
+#: src/Training/Training.php:140
 msgid "No learning paths yet."
 msgstr "Noch keine Lernpfade."
 
@@ -2430,20 +2430,20 @@ msgstr ""
 "Seiten dieses Handbuchs, oder die Treffer, solange eine Suche oder ein "
 "Filter aktiv ist. Suchleiste und Filterleiste sind eigene Blöcke."
 
-#: assets/blocks.js:225 assets/blocks.js:291
+#: assets/blocks.js:225 assets/blocks.js:311
 msgid "Show the label"
 msgstr "Beschriftung anzeigen"
 
-#: assets/blocks.js:226 assets/blocks.js:292
+#: assets/blocks.js:226 assets/blocks.js:312
 msgid "Label"
 msgstr "Beschriftung"
 
-#: assets/blocks.js:226 assets/blocks.js:292
+#: assets/blocks.js:226 assets/blocks.js:312
 msgid "Read out to screen readers even when it is not shown."
 msgstr ""
 "Wird auch dann von Screenreadern vorgelesen, wenn sie nicht sichtbar ist."
 
-#: assets/blocks.js:227 assets/blocks.js:293
+#: assets/blocks.js:227 assets/blocks.js:313
 msgid "Placeholder"
 msgstr "Platzhaltertext"
 
@@ -2497,11 +2497,29 @@ msgid ""
 msgstr ""
 "Handbuch-Feedback: die Frage «War das hilfreich?» für die aktuelle Seite."
 
-#: assets/blocks.js:290
+#: assets/blocks.js:292
+msgid ""
+"Learning path lessons: the ordered lessons of the learning path being read, "
+"with the start button."
+msgstr "Lektionen des Lernpfads: die Lektionen des gelesenen Lernpfads in ihrer Reihenfolge, mit dem Startknopf."
+
+#: assets/blocks.js:297
+msgid ""
+"Learning paths of this handbook: the paths of the handbook whose entry page "
+"this is."
+msgstr "Lernpfade dieses Handbuchs: die Lernpfade des Handbuchs, dessen Einstiegsseite dies ist."
+
+#: assets/blocks.js:302
+msgid ""
+"Learning path bar: on a lesson opened from a learning path, which lesson of "
+"how many and the way to the previous and next one."
+msgstr "Lernpfad-Leiste: auf einer Lektion, die aus einem Lernpfad geöffnet wurde, welche Lektion von wie vielen es ist und der Weg zur vorherigen und zur nächsten."
+
+#: assets/blocks.js:310
 msgid "Quick search"
 msgstr "Schnellsuche"
 
-#: assets/blocks.js:295
+#: assets/blocks.js:315
 msgid ""
 "Handbook quick search: lists matching pages as you type, each with the "
 "sentence it was found in, so a reader jumps straight to a page. Does not "
@@ -2846,7 +2864,9 @@ msgctxt "block description"
 msgid ""
 "The ordered lessons of a learning path, with a start button and how far this "
 "browser has read. Renders on a learning path only."
-msgstr "Die geordneten Lektionen eines Lernpfads, mit Startknopf und dem Stand, den dieser Browser kennt. Wird nur auf einem Lernpfad dargestellt."
+msgstr ""
+"Die geordneten Lektionen eines Lernpfads, mit Startknopf und dem Stand, den "
+"dieser Browser kennt. Wird nur auf einem Lernpfad dargestellt."
 
 #: blocks/lessons/block.json blocks/path-nav/block.json blocks/paths/block.json
 msgctxt "block keyword"
@@ -2924,7 +2944,10 @@ msgid ""
 "On a handbook page opened from a learning path: which path it is, which "
 "lesson of how many, and the way to the previous and the next one. Renders "
 "nothing otherwise."
-msgstr "Auf einer Handbuchseite, die aus einem Lernpfad geöffnet wurde: um welchen Pfad es geht, die wievielte Lektion von wie vielen, und der Weg zur vorherigen und zur nächsten. Sonst wird nichts dargestellt."
+msgstr ""
+"Auf einer Handbuchseite, die aus einem Lernpfad geöffnet wurde: um welchen "
+"Pfad es geht, die wievielte Lektion von wie vielen, und der Weg zur "
+"vorherigen und zur nächsten. Sonst wird nichts dargestellt."
 
 #: blocks/paths/block.json
 msgctxt "block title"
@@ -2936,7 +2959,9 @@ msgctxt "block description"
 msgid ""
 "The learning paths of the handbook whose entry page this is, with the number "
 "of lessons each one holds. Renders nothing when the handbook has none."
-msgstr "Die Lernpfade des Handbuchs, dessen Einstiegsseite das ist, je mit der Anzahl Lektionen. Hat das Handbuch keine, wird nichts dargestellt."
+msgstr ""
+"Die Lernpfade des Handbuchs, dessen Einstiegsseite das ist, je mit der "
+"Anzahl Lektionen. Hat das Handbuch keine, wird nichts dargestellt."
 
 #: blocks/search-form/block.json
 msgctxt "block title"
