@@ -57,6 +57,29 @@ final class BlockAssetsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The front-end script is deferred, and nothing attached to it makes core
+	 * fall back to a blocking load. Up to 0.75.1 it was only placed in the
+	 * footer: a theme or block that pulled it into the head stopped the parser.
+	 * The data from wp_localize_script() is printed before the tag and survives
+	 * defer; an inline script in the "after" position would not, so this test
+	 * also holds the line against one being added later.
+	 *
+	 * @return void
+	 */
+	public function test_the_front_end_script_is_deferred(): void {
+		$this->assertSame( 'defer', wp_scripts()->get_data( 'living-handbook', 'strategy' ) );
+		$this->assertSame( 1, wp_scripts()->get_data( 'living-handbook', 'group' ), 'It stays in the footer.' );
+
+		wp_enqueue_script( 'living-handbook' );
+		$html = get_echo( 'wp_print_scripts', array( 'living-handbook' ) );
+		wp_dequeue_script( 'living-handbook' );
+
+		$this->assertSame( 1, preg_match( '#<script[^>]*assets/frontend\.js[^>]*>#', $html, $tag ), 'The script tag is missing.' );
+		$this->assertMatchesRegularExpression( '#\sdefer[\s>=]#', $tag[0], 'Core did not print the tag deferred.' );
+		$this->assertLessThan( strpos( $html, 'assets/frontend.js' ), strpos( $html, 'var livingHandbook' ), 'The data has to come before the script.' );
+	}
+
+	/**
 	 * Every block that renders plugin markup names both handles, so WordPress
 	 * can load them wherever that block ends up.
 	 *

@@ -68,7 +68,23 @@ final class FrontendRenderer {
 	 */
 	public function register_assets(): void {
 		wp_register_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
-		wp_register_script( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.js', array(), LIVING_HANDBOOK_VERSION, true );
+		// Deferred, not only in the footer. The script waits for DOMContentLoaded
+		// anyway, which a deferred script still sees, so nothing it does changes;
+		// what changes is that the browser no longer stops parsing to run it when
+		// a theme or a block pulls the handle into the head. Its data comes from
+		// wp_localize_script(), which core prints as a separate inline script
+		// before the tag; only an inline script added "after" would make core
+		// fall back to a blocking load, and this handle has none (see the test).
+		wp_register_script(
+			'living-handbook',
+			LIVING_HANDBOOK_URL . 'assets/frontend.js',
+			array(),
+			LIVING_HANDBOOK_VERSION,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
 
 		// What a site sets in Settings, then what it wrote by hand, both attached
 		// to the handle rather than to one place that enqueues it: a block can
