@@ -130,6 +130,11 @@ final class Settings {
 	private string $color_picker_hook = '';
 
 	/**
+	 * Script handle that carries the colour picker set-up of the settings screen.
+	 */
+	public const COLOR_PICKER_HANDLE = 'living-handbook-settings-colors';
+
+	/**
 	 * Whether anonymous voting on public pages is switched on.
 	 *
 	 * @return bool
@@ -169,13 +174,26 @@ final class Settings {
 		);
 		if ( is_string( $hook ) && '' !== $hook ) {
 			add_action( 'load-' . $hook, array( $this, 'register_help' ) );
-			add_action( 'admin_print_footer_scripts-' . $hook, array( $this, 'print_color_picker_script' ) );
 			$this->color_picker_hook = $hook;
 		}
 	}
 
 	/**
-	 * Load the colour picker WordPress already ships on the settings screen.
+	 * Load the colour picker WordPress already ships on the settings screen, and
+	 * the line that turns the colour fields into pickers, with the theme's own
+	 * palette as the swatches underneath.
+	 *
+	 * The line used to be printed by hand into the admin footer, a <script> tag
+	 * of its own. It now rides on a registered handle with wp_add_inline_script(),
+	 * which is what puts it under WordPress's control: it is printed only when
+	 * the handle is, after the picker it needs, and a Content Security Policy
+	 * plugin or a script optimiser sees it as part of that handle instead of as
+	 * an anonymous tag. The handle has no file, it exists to carry the line and
+	 * its dependency on wp-color-picker.
+	 *
+	 * Without JavaScript the fields stay plain text inputs that accept a hex
+	 * colour, which is why they are text inputs in the markup: a type="color"
+	 * input has no empty state, and empty is what "the theme decides" looks like.
 	 *
 	 * @param string $hook Current admin screen.
 	 * @return void
@@ -186,31 +204,15 @@ final class Settings {
 		}
 
 		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'wp-color-picker' );
-	}
-
-	/**
-	 * Turn the colour fields into pickers, with the theme's own palette as the
-	 * swatches underneath.
-	 *
-	 * Written as a footer script rather than a file because it is four lines and
-	 * carries the palette with it. Without JavaScript the fields stay plain text
-	 * inputs that accept a hex colour, which is why they are text inputs in the
-	 * markup: a type="color" input has no empty state, and empty is what "the
-	 * theme decides" looks like.
-	 *
-	 * @return void
-	 */
-	public function print_color_picker_script(): void {
-		if ( ! wp_script_is( 'wp-color-picker', 'enqueued' ) ) {
-			return;
-		}
+		wp_register_script( self::COLOR_PICKER_HANDLE, false, array( 'jquery', 'wp-color-picker' ), LIVING_HANDBOOK_VERSION, true );
+		wp_enqueue_script( self::COLOR_PICKER_HANDLE );
 
 		$palette = array_keys( Appearance::theme_palette() );
-
-		printf(
-			'<script>jQuery(function($){$(".living-handbook-color").wpColorPicker({palettes:%s});});</script>',
-			wp_json_encode( array_values( $palette ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every entry passed sanitize_hex_color(), and wp_json_encode() escapes the result for a script context.
+		wp_add_inline_script(
+			self::COLOR_PICKER_HANDLE,
+			// Every entry passed sanitize_hex_color(), and wp_json_encode() escapes
+			// the result for a script context.
+			'jQuery(function($){$(".living-handbook-color").wpColorPicker({palettes:' . wp_json_encode( array_values( $palette ) ) . '});});'
 		);
 	}
 

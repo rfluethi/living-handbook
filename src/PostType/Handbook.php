@@ -39,6 +39,11 @@ final class Handbook {
 	public const POST_TYPE = 'handbook';
 
 	/**
+	 * Style handle that carries the divider of the admin submenu.
+	 */
+	public const MENU_STYLE_HANDLE = 'living-handbook-admin-menu';
+
+	/**
 	 * Hook registration into WordPress.
 	 *
 	 * @return void
@@ -47,7 +52,7 @@ final class Handbook {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_filter( 'wp_sitemaps_post_types', array( $this, 'exclude_from_sitemap' ) );
 		add_action( 'admin_menu', array( $this, 'reorder_submenu' ), 999 );
-		add_action( 'admin_head', array( $this, 'submenu_divider_style' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'submenu_divider_style' ) );
 		add_filter( 'get_default_comment_status', array( $this, 'default_comments_closed' ), 10, 2 );
 	}
 
@@ -77,13 +82,28 @@ final class Handbook {
 	 * spacing. The border colour is a translucent grey that reads on both the
 	 * dark and the light admin colour schemes.
 	 *
+	 * The rule used to be echoed as a <style> tag into the head of every admin
+	 * page, for every user. It now rides on a registered handle with
+	 * wp_add_inline_style(), so WordPress prints it with the other styles and an
+	 * optimiser or a Content Security Policy sees whose it is, and only for a
+	 * user who sees the handbook menu at all: the menu, and so the item the rule
+	 * styles, is shown to those who may edit handbook pages.
+	 *
 	 * @return void
 	 */
 	public function submenu_divider_style(): void {
-		echo '<style id="living-handbook-menu-divider">'
-			. '#menu-posts-' . esc_attr( self::POST_TYPE ) . ' .wp-submenu li a[href*="taxonomy=handbook_set"]{'
+		$type = get_post_type_object( self::POST_TYPE );
+		if ( null === $type || ! current_user_can( $type->cap->edit_posts ) ) {
+			return;
+		}
+
+		wp_register_style( self::MENU_STYLE_HANDLE, false, array(), LIVING_HANDBOOK_VERSION );
+		wp_enqueue_style( self::MENU_STYLE_HANDLE );
+		wp_add_inline_style(
+			self::MENU_STYLE_HANDLE,
+			'#menu-posts-' . self::POST_TYPE . ' .wp-submenu li a[href*="taxonomy=handbook_set"]{'
 			. 'margin-top:6px;padding-top:12px;border-top:1px solid rgba(140,140,140,.4);}'
-			. '</style>';
+		);
 	}
 
 	/**
