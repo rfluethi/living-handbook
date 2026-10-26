@@ -173,7 +173,12 @@ final class MarkdownImportPage {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'import_github_callback' ),
-				'permission_callback' => array( __CLASS__, 'can_import' ),
+				// upload_files as well, like the ZIP route: a GitHub import puts
+				// every image the pages reference into the media library, and a
+				// user who may not upload should not be able to do it this way.
+				'permission_callback' => static function (): bool {
+					return self::can_import() && current_user_can( 'upload_files' );
+				},
 			)
 		);
 		register_rest_route(
@@ -495,7 +500,7 @@ final class MarkdownImportPage {
 		$content       = HtmlSanitizer::clean_blocks( (string) $request->get_param( 'content' ) );
 		$handbook_id   = absint( $request->get_param( 'handbook' ) );
 		$transport     = (array) $request->get_param( 'transport' );
-		$parent        = absint( $request->get_param( 'parent' ) );
+		$parent        = self::allowed_parent( absint( $request->get_param( 'parent' ) ) );
 		$source_path   = sanitize_text_field( (string) $request->get_param( 'sourcePath' ) );
 		$explicit_slug = sanitize_title( (string) $request->get_param( 'slug' ) );
 		$slug          = $explicit_slug;
@@ -596,6 +601,26 @@ final class MarkdownImportPage {
 				admin_url( 'post.php' )
 			),
 		);
+	}
+
+	/**
+	 * The parent a new or refreshed page may be put under, or 0.
+	 *
+	 * The route needs only edit_posts, and the parent came straight from the
+	 * request: a contributor could hang a page under any post on the site, a
+	 * private page or another author's, and so into a handbook or a place in the
+	 * navigation they have no say over. Only a handbook page the user may edit
+	 * is accepted now; anything else makes the page a top-level one, which is
+	 * what the import does when it has no parent to give.
+	 *
+	 * @param int $parent_id Requested parent id.
+	 * @return int
+	 */
+	private static function allowed_parent( int $parent_id ): int {
+		if ( $parent_id <= 0 || Handbook::POST_TYPE !== get_post_type( $parent_id ) || ! current_user_can( 'edit_post', $parent_id ) ) {
+			return 0;
+		}
+		return $parent_id;
 	}
 
 	/**

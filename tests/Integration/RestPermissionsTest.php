@@ -315,4 +315,60 @@ final class RestPermissionsTest extends WP_UnitTestCase {
 		$this->assertSame( 200, $response->get_status() );
 		$this->assertSame( '', $data['html'] );
 	}
+
+	/**
+	 * The GitHub import puts images into the media library, so it needs
+	 * upload_files like the ZIP import. A contributor has edit_posts but not
+	 * upload_files, and reached it all the same.
+	 *
+	 * @return void
+	 */
+	public function test_import_github_denies_contributor(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'contributor' ) ) );
+		$request  = new WP_REST_Request( 'POST', '/living-handbook/v1/import-github' );
+		$response = $this->server->dispatch( $request );
+		$this->assertSame( 403, $response->get_status() );
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'author' ) ) );
+		$response = $this->server->dispatch( new WP_REST_Request( 'POST', '/living-handbook/v1/import-github' ) );
+		$this->assertNotSame( 403, $response->get_status(), 'An author may upload and so may import.' );
+	}
+
+	/**
+	 * The parent of an imported page has to be a handbook page the user may
+	 * edit. It came straight from the request, so a contributor could hang a
+	 * page under anything on the site.
+	 *
+	 * @return void
+	 */
+	public function test_create_ignores_a_parent_the_user_may_not_edit(): void {
+		$editor   = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$term_id  = $this->make_handbook();
+		$foreign  = $this->make_page( $editor, $term_id, 'foreign-parent', 'Theirs' );
+		$ordinary = self::factory()->post->create( array( 'post_author' => $editor ) );
+
+		$contributor = self::factory()->user->create( array( 'role' => 'contributor' ) );
+		wp_set_current_user( $contributor );
+		$own = self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'draft',
+				'post_author' => $contributor,
+			)
+		);
+
+		foreach ( array( $foreign, $ordinary ) as $parent ) {
+			$request = new WP_REST_Request( 'POST', '/living-handbook/v1/create' );
+			$request->set_param( 'title', 'Hung somewhere ' . $parent );
+			$request->set_param( 'parent', $parent );
+			$data = $this->server->dispatch( $request )->get_data();
+			$this->assertSame( 0, (int) get_post_field( 'post_parent', (int) $data['id'] ), 'Post ' . $parent . ' is not this user\'s to put pages under.' );
+		}
+
+		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/create' );
+		$request->set_param( 'title', 'Under my own' );
+		$request->set_param( 'parent', $own );
+		$data = $this->server->dispatch( $request )->get_data();
+		$this->assertSame( $own, (int) get_post_field( 'post_parent', (int) $data['id'] ), 'Under a page of their own it works as before.' );
+	}
 }
