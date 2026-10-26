@@ -378,7 +378,9 @@ final class HandbookImport {
 			if ( ! is_string( $data ) || '' === $data ) {
 				continue;
 			}
-			$url = MarkdownImportPage::sideload_image( basename( $file ), $data );
+			// Not sideload_image(): that takes images only, and a bundle also
+			// carries the PDFs and other files its pages link to.
+			$url = MarkdownImportPage::sideload_media( basename( $file ), $data );
 			if ( '' !== $url ) {
 				$map[ $original ] = $url;
 			}

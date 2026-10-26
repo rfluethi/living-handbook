@@ -731,6 +731,61 @@ final class MarkdownImportPage {
 	 * @return string Media URL, or an empty string on failure.
 	 */
 	public static function sideload_image( string $file_name, string $data, int $parent_id = 0 ): string {
+		// Decide what the file is before anything else, and decide it on the name
+		// it will be stored under. Up to 0.75.0 this took any name it was handed:
+		// the ZIP import only ever passes images, but the GitHub sync passes
+		// whatever a page in a foreign repository references, so "![x](evil.html)"
+		// went through wp_upload_bits(), which accepts .html for anyone holding
+		// unfiltered_html. That was stored XSS in the media library, from someone
+		// else's repository. And the SVG check looked at the raw name while the
+		// file was stored under sanitize_file_name(), which trims trailing dots:
+		// "logo.svg." was not an SVG to the check and was one on disk, so it
+		// skipped the cleaning.
+		$stored_name = self::image_file_name( $file_name, $data );
+		if ( '' === $stored_name ) {
+			return '';
+		}
+		return self::store( $file_name, $stored_name, $data, $parent_id );
+	}
+
+	/**
+	 * Sideload one file from a bundle: an image, or a document the bundle's pages
+	 * link to.
+	 *
+	 * A bundle carries every upload its pages reference, a PDF as much as a
+	 * screenshot, and it used to hand all of them to sideload_image(). Now that
+	 * that takes images only, the other files come through here, against a list
+	 * of their own: documents, spreadsheets, presentations, audio, video, archives
+	 * and plain text, and only when the content matches the extension. HTML,
+	 * scripts and stylesheets are never on it, whoever runs the import.
+	 *
+	 * @param string $file_name File name from the bundle.
+	 * @param string $data      File contents.
+	 * @return string Media URL, or an empty string when the file was refused.
+	 */
+	public static function sideload_media( string $file_name, string $data ): string {
+		if ( '' !== self::image_file_name( $file_name, $data ) ) {
+			return self::sideload_image( $file_name, $data );
+		}
+		$stored_name = self::document_file_name( $file_name, $data );
+		if ( '' === $stored_name ) {
+			return '';
+		}
+		return self::store( $file_name, $stored_name, $data, 0 );
+	}
+
+	/**
+	 * Store a file that passed its check, or reuse the earlier import of it.
+	 *
+	 * @param string $file_name   Name the source used, the key for reuse.
+	 * @param string $stored_name Checked name it is stored under.
+	 * @param string $data        File contents.
+	 * @param int    $parent_id   Page to attach it to, or 0.
+	 * @return string Media URL, or an empty string on failure.
+	 */
+	private static function store( string $file_name, string $stored_name, string $data, int $parent_id ): string {
+		$is_svg = 'svg' === strtolower( (string) pathinfo( $stored_name, PATHINFO_EXTENSION ) );
+
 		$hash     = md5( $data );
 		$existing = get_posts(
 			array(
@@ -772,7 +827,6 @@ final class MarkdownImportPage {
 		// stored XSS in the media library. Sanitize it before storing; if it
 		// cannot be sanitized (library missing or invalid SVG), skip it rather
 		// than store an unchecked file.
-		$is_svg = 'svg' === strtolower( (string) pathinfo( $file_name, PATHINFO_EXTENSION ) );
 		if ( $is_svg ) {
 			$data = self::sanitize_svg( $data );
 			if ( '' === $data ) {
@@ -791,7 +845,7 @@ final class MarkdownImportPage {
 		if ( $is_svg ) {
 			add_filter( 'upload_mimes', $allow_svg );
 		}
-		$upload = wp_upload_bits( sanitize_file_name( $file_name ), null, $data );
+		$upload = wp_upload_bits( $stored_name, null, $data );
 		if ( $is_svg ) {
 			remove_filter( 'upload_mimes', $allow_svg );
 		}
@@ -827,6 +881,92 @@ final class MarkdownImportPage {
 
 		$url = wp_get_attachment_url( $attachment_id );
 		return is_string( $url ) ? $url : '';
+	}
+
+	/**
+	 * The name an imported image is stored under, or '' when it is no image.
+	 *
+	 * Two checks, both needed. The name, after sanitize_file_name() and so
+	 * exactly as it will lie on disk, has to end in one of IMAGE_EXTENSIONS; the
+	 * site's general upload rules are not enough, because they allow HTML for
+	 * administrators and editors, and an import runs as one of them. And the
+	 * content has to be what the name says: a raster image is read by
+	 * getimagesizefromstring() and must report the type its extension claims,
+	 * so an HTML file called "x.png" is refused rather than stored and served
+	 * with whatever type the server guesses. An SVG cannot be read that way; it
+	 * has to contain an svg element, and is cleaned by the caller after that.
+	 *
+	 * Public and static so the decision can be tested on its own.
+	 *
+	 * @param string $file_name Name the source used.
+	 * @param string $data      File contents.
+	 * @return string
+	 */
+	public static function image_file_name( string $file_name, string $data ): string {
+		$name = sanitize_file_name( basename( str_replace( '\\', '/', $file_name ) ) );
+		$ext  = strtolower( (string) pathinfo( $name, PATHINFO_EXTENSION ) );
+		if ( '' === $name || ! in_array( $ext, self::IMAGE_EXTENSIONS, true ) || '' === $data ) {
+			return '';
+		}
+
+		if ( 'svg' === $ext ) {
+			return false !== stripos( $data, '<svg' ) ? $name : '';
+		}
+
+		$size = @getimagesizefromstring( $data ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Not an image is an answer here, not a warning.
+		$mime = is_array( $size ) ? (string) $size['mime'] : '';
+		$want = array(
+			'png'  => 'image/png',
+			'jpg'  => 'image/jpeg',
+			'jpeg' => 'image/jpeg',
+			'gif'  => 'image/gif',
+			'webp' => 'image/webp',
+		);
+
+		return $want[ $ext ] === $mime ? $name : '';
+	}
+
+	/**
+	 * The name a bundle document is stored under, or '' when it is refused.
+	 *
+	 * The extension has to belong to one of the harmless file kinds WordPress
+	 * knows (wp_get_ext_types(), without "code" and without flash), and the
+	 * content has to agree with it: wp_check_filetype_and_ext() reads the file
+	 * and drops a type whose real content says otherwise, the same check
+	 * WordPress runs on an ordinary upload.
+	 *
+	 * @param string $file_name Name the source used.
+	 * @param string $data      File contents.
+	 * @return string
+	 */
+	public static function document_file_name( string $file_name, string $data ): string {
+		$name = sanitize_file_name( basename( str_replace( '\\', '/', $file_name ) ) );
+		$ext  = strtolower( (string) pathinfo( $name, PATHINFO_EXTENSION ) );
+		if ( '' === $name || '' === $ext || '' === $data ) {
+			return '';
+		}
+
+		$kinds   = array( 'document', 'spreadsheet', 'interactive', 'audio', 'video', 'archive', 'text' );
+		$allowed = array();
+		foreach ( wp_get_ext_types() as $kind => $extensions ) {
+			if ( in_array( $kind, $kinds, true ) ) {
+				$allowed = array_merge( $allowed, (array) $extensions );
+			}
+		}
+		$allowed = array_diff( $allowed, array( 'swf' ) );
+		if ( ! in_array( $ext, $allowed, true ) ) {
+			return '';
+		}
+
+		$tmp = wp_tempnam( $name );
+		if ( '' === $tmp ) {
+			return '';
+		}
+		file_put_contents( $tmp, $data ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a temporary copy to read the real type from.
+		$checked = wp_check_filetype_and_ext( $tmp, $name );
+		wp_delete_file( $tmp );
+
+		return ( is_string( $checked['ext'] ) && '' !== $checked['ext'] ) ? $name : '';
 	}
 
 	/**
