@@ -225,4 +225,27 @@ final class SearchSnippetTest extends WP_UnitTestCase {
 		$this->assertCount( 1, $results );
 		$this->assertSame( array(), $results[0]['snippet'] );
 	}
+
+	/**
+	 * The sentence the search announces comes from the server, in the plural
+	 * form that fits. The script used to put the number into one fixed string,
+	 * "%d matching pages", and said "1 matching pages".
+	 *
+	 * @return void
+	 */
+	public function test_the_summary_has_the_right_plural_form(): void {
+		$this->page( 'Alpha', 'A unique word: zebracorn.' );
+
+		$request = new WP_REST_Request( 'GET', '/' . Filters::REST_NAMESPACE . Filters::REST_ROUTE_SEARCH );
+		$request->set_param( 'term_id', $this->term_id );
+		$request->set_param( 'q', 'zebracorn' );
+		$data = rest_do_request( $request )->get_data();
+
+		$this->assertSame( '1 matching page', $data['summary'] ?? null );
+
+		$this->page( 'Beta', 'Another zebracorn.' );
+		$data = rest_do_request( $request )->get_data();
+
+		$this->assertSame( '2 matching pages', $data['summary'] ?? null );
+	}
 }

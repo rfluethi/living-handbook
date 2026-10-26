@@ -165,7 +165,26 @@ final class Filters {
 			);
 		}
 
-		return new WP_REST_Response( array( 'results' => $results ), 200 );
+		// The sentence the browser announces, made here because only here is
+		// there a plural form for it. The script used to take one fixed string,
+		// "%d matching pages", and put the number in: "1 matching pages" in
+		// English, and wrong in every language with more than two forms. The
+		// script runs in the static export as well, where wp.i18n is not loaded,
+		// so the plural cannot be left to it.
+		$count   = count( $results );
+		$summary = sprintf(
+			/* translators: %d: number of matching pages in the page search. */
+			_n( '%d matching page', '%d matching pages', $count, 'living-handbook' ),
+			$count
+		);
+
+		return new WP_REST_Response(
+			array(
+				'results' => $results,
+				'summary' => $summary,
+			),
+			200
+		);
 	}
 
 	/**

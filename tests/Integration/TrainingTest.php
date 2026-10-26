@@ -219,6 +219,29 @@ final class TrainingTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The progress sentence comes with the markup, in the plural form of the
+	 * path's length, and the script only fills in how many have been read. Up
+	 * to 0.75.1 it was one fixed string, "%1$d of %2$d lessons read", whatever
+	 * the length, so a path of one lesson read "0 of 1 lessons read".
+	 *
+	 * @return void
+	 */
+	public function test_the_progress_sentence_follows_the_number_of_lessons(): void {
+		$single = $this->path( array( $this->page( 'Only' ) ) );
+		$this->go_to( (string) get_permalink( $single ) );
+		$this->assertStringContainsString( 'data-progress="%1$d of 1 lesson read"', PathView::render_lessons() );
+
+		$double = $this->path( array( $this->page( 'One' ), $this->page( 'Two' ) ) );
+		$this->go_to( (string) get_permalink( $double ) );
+		$this->assertStringContainsString( 'data-progress="%1$d of 2 lessons read"', PathView::render_lessons() );
+
+		$script = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/frontend.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
+		$this->assertStringContainsString( "getAttribute( 'data-progress' )", $script );
+		$this->assertStringNotContainsString( 'pathProgress', $script, 'The script still builds the sentence from a fixed string.' );
+		$this->assertStringNotContainsString( 'searchCount', $script, 'The script still builds the search count from a fixed string.' );
+	}
+
+	/**
 	 * A password on a path protects its lesson list too. Core keeps the path's
 	 * own text behind the password form, but the lesson block sits beside the
 	 * content, and up to 0.75.1 it listed every lesson, linked, under the form

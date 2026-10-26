@@ -128,8 +128,20 @@ final class PathView {
 		/* translators: %d: number of lessons in a learning path. */
 		$count_label = sprintf( _n( '%d lesson', '%d lessons', $total, 'living-handbook' ), $total );
 
+		// The progress line ("2 of 8 lessons read") is written by the script,
+		// which knows how many have been read, but its plural form follows the
+		// number of lessons, which is known here. So the sentence is chosen
+		// here with the total already in it, and the script only puts in the
+		// read count (%1$d). It used to be one fixed string for every total.
+		$progress = str_replace(
+			'%2$d',
+			(string) $total,
+			/* translators: 1: lessons already read, 2: lessons in the learning path. */
+			_n( '%1$d of %2$d lesson read', '%1$d of %2$d lessons read', $total, 'living-handbook' )
+		);
+
 		return sprintf(
-			'<div class="living-handbook-path" data-path="%1$s" data-total="%2$s">'
+			'<div class="living-handbook-path" data-path="%1$s" data-total="%2$s" data-progress="%8$s">'
 			. '<p class="living-handbook-path__progress" role="status">%3$s</p>'
 			. '<ol class="living-handbook-path__list">%4$s</ol>'
 			. '<p class="living-handbook-path__start"><a class="living-handbook-path__button" href="%5$s">%6$s</a></p>'
@@ -141,7 +153,8 @@ final class PathView {
 			$items,
 			esc_url( $start ),
 			esc_html__( 'Start', 'living-handbook' ),
-			esc_html__( 'What you have read is remembered in this browser only, so it is gone when you clear the browser data or switch device.', 'living-handbook' )
+			esc_html__( 'What you have read is remembered in this browser only, so it is gone when you clear the browser data or switch device.', 'living-handbook' ),
+			esc_attr( $progress )
 		);
 	}
 

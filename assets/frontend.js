@@ -282,7 +282,7 @@
 			say( '' );
 		}
 
-		function render( items ) {
+		function render( items, summary ) {
 			results.innerHTML = '';
 			if ( ! items.length ) {
 				var empty = document.createElement( 'li' );
@@ -319,8 +319,9 @@
 					results.appendChild( li );
 				} );
 				// One short sentence, not the whole list: the list itself is right
-				// there to be walked with the arrow keys.
-				say( ( window.livingHandbook.searchCount || '%d matches' ).replace( '%d', items.length ) );
+				// there to be walked with the arrow keys. The server sends it with
+				// the right plural form; the script has no plural rules of its own.
+				say( summary || String( items.length ) );
 			}
 			results.hidden = false;
 		}
@@ -371,7 +372,7 @@
 				}
 				return response.json();
 			} ).then( function ( data ) {
-				render( ( data && data.results ) ? data.results : [] );
+				render( ( data && data.results ) ? data.results : [], ( data && data.summary ) ? data.summary : '' );
 			} ).catch( function ( err ) {
 				if ( err && 'AbortError' === err.name ) {
 					return;
@@ -877,11 +878,12 @@
 			}
 		} );
 
+		// The sentence arrives from the server with the total and its plural
+		// form already chosen; only the read count is filled in here.
 		var progress = path.querySelector( '.living-handbook-path__progress' );
-		if ( progress && window.livingHandbook && livingHandbook.pathProgress ) {
-			progress.textContent = livingHandbook.pathProgress
-				.replace( '%1$d', read )
-				.replace( '%2$d', total );
+		var sentence = path.getAttribute( 'data-progress' );
+		if ( progress && sentence ) {
+			progress.textContent = sentence.replace( '%1$d', read );
 		}
 
 		// The button says Start on an untouched path and Continue as soon as

@@ -114,10 +114,10 @@ final class FrontendRenderer {
 				'lightboxClose'   => __( 'Close', 'living-handbook' ),
 				'lightboxOpen'    => __( 'Enlarge', 'living-handbook' ),
 				'lightboxDiagram' => __( 'Enlarged diagram', 'living-handbook' ),
-				/* translators: %d: number of matching pages in the page search. */
-				'searchCount'     => __( '%d matching pages', 'living-handbook' ),
-				/* translators: 1: lessons already read, 2: lessons in the learning path. */
-				'pathProgress'    => __( '%1$d of %2$d lessons read', 'living-handbook' ),
+				// The two sentences with a number in them come with the markup and
+				// the REST answer instead, where _n() can pick the plural form: the
+				// search count in Filters::rest_search(), the path progress in
+				// PathView::render_lessons().
 				'pathContinue'    => __( 'Continue', 'living-handbook' ),
 			)
 		);
