@@ -226,4 +226,33 @@ final class ArchiveSourceTest extends WP_UnitTestCase {
 
 		$this->assertTrue( ArchiveSource::is_allowed_archive_url( 'https://git.example.org/x.zip' ) );
 	}
+
+	/**
+	 * An archive larger than the limit is reported as too large.
+	 *
+	 * The download stops at the limit, so the file on disk is never larger than
+	 * it, and the check that compared with ">" could not fire: the cut-off ZIP
+	 * went on and the import said it could not open the archive, which sends
+	 * the reader looking for a broken repository instead of a size setting.
+	 *
+	 * @return void
+	 */
+	public function test_an_archive_at_the_limit_is_reported_as_too_large(): void {
+		$path = $this->make_archive( array( 'a.md' => str_repeat( 'x', 4000 ) ) );
+		$this->serve_archive( $path );
+		$limit = (int) filesize( $path );
+		add_filter(
+			'living_handbook_archive_max_bytes',
+			static function () use ( $limit ): int {
+				return $limit;
+			}
+		);
+
+		$source = new ArchiveSource();
+		$result = $source->open( 'example', 'repo', 'main' );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 413, $result->get_error_data()['status'] ?? 0 );
+		$source->close();
+	}
 }

@@ -22,6 +22,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Git;
 
+use LivingHandbook\Support\TempFiles;
 use WP_Error;
 use ZipArchive;
 
@@ -320,7 +321,14 @@ final class ArchiveSource {
 			wp_delete_file( $tmp );
 			return new WP_Error( 'living_handbook_import', __( 'The downloaded archive is empty.', 'living-handbook' ), array( 'status' => 502 ) );
 		}
-		if ( $size > $max ) {
+		// limit_response_size stops the download at exactly $max bytes, so a
+		// larger archive arrives cut off at that size and is never larger than
+		// it. Up to 0.75.0 this compared with ">", which could not be true: the
+		// truncated file went on to ZipArchive and the import reported "could
+		// not open the repository archive" instead of saying it was too large.
+		// An archive of exactly the limit is refused with it; one byte is not
+		// worth a second request to tell the two apart.
+		if ( $size >= $max ) {
 			wp_delete_file( $tmp );
 			return new WP_Error(
 				'living_handbook_import',
@@ -457,25 +465,12 @@ final class ArchiveSource {
 	 * @return int How many files were deleted.
 	 */
 	public static function cleanup_stale( int $older_than = 7200 ): int {
-		$pattern = rtrim( sys_get_temp_dir(), '/\\' ) . '/lh-archive*';
-		$found   = glob( $pattern );
-		if ( ! is_array( $found ) ) {
-			return 0;
-		}
-
-		$cutoff  = time() - max( 600, $older_than );
-		$deleted = 0;
-		foreach ( $found as $file ) {
-			if ( ! is_file( $file ) ) {
-				continue;
-			}
-			$age = (int) @filemtime( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- A file that vanished between glob and here is simply skipped.
-			if ( $age > 0 && $age < $cutoff ) {
-				wp_delete_file( $file );
-				++$deleted;
-			}
-		}
-		return $deleted;
+		// Also in the WordPress temp folder, where download() falls back to when
+		// the system one is not writable; up to 0.75.0 only the system one was
+		// looked at.
+		// Never younger than ten minutes, whatever the caller asks: a pass of an
+		// import may be reading its archive right now.
+		return TempFiles::sweep( 'lh-archive', max( 600, $older_than ) );
 	}
 
 	/**

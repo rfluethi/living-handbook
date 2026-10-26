@@ -484,4 +484,21 @@ final class FolderImportChunkedTest extends WP_UnitTestCase {
 
 		wp_delete_file( $new );
 	}
+
+	/**
+	 * Starting a new import collects old downloads, so a site with the
+	 * scheduled sync switched off, which never runs the cleanup there, does not
+	 * keep them for good.
+	 *
+	 * @return void
+	 */
+	public function test_a_new_import_collects_abandoned_archives(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$old = (string) tempnam( sys_get_temp_dir(), 'lh-archive' );
+		touch( $old, time() - 3 * HOUR_IN_SECONDS );
+
+		( new GitSync() )->import_folder( 'not a tree url' );
+
+		$this->assertFileDoesNotExist( $old );
+	}
 }

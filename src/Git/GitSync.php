@@ -540,6 +540,12 @@ final class GitSync {
 	 * @return array<string, mixed>|WP_Error The job state, ready to run.
 	 */
 	private function plan_job( string $tree_url, int $handbook_id, bool $publish ) {
+		// The scheduled sync collects archives of abandoned imports, but a site
+		// with the sync switched off has no scheduled run. Starting a new import
+		// is the other moment it is safe to do: a paused import older than its
+		// job's lifetime can no longer be continued.
+		ArchiveSource::cleanup_stale( 2 * self::JOB_TTL );
+
 		$parsed = self::parse_tree_url( $tree_url );
 		if ( null === $parsed ) {
 			return new WP_Error( 'living_handbook_import', __( 'Not a GitHub folder URL.', 'living-handbook' ), array( 'status' => 400 ) );

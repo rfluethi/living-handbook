@@ -14,6 +14,7 @@ use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Support\TempFiles;
 use LivingHandbook\Taxonomy\Taxonomies;
 use WP_Post;
 use WP_Term;
@@ -299,6 +300,11 @@ JS;
 		if ( ! class_exists( 'ZipArchive' ) ) {
 			wp_die( esc_html__( 'ZipArchive is not available on the server.', 'living-handbook' ), '', array( 'response' => 501 ) );
 		}
+
+		// A download that broke off ends the request before the file is deleted
+		// below. The export runs in one request, so a bundle older than an hour
+		// belongs to nobody; this is the next moment that notices.
+		TempFiles::sweep( 'lh-export', HOUR_IN_SECONDS );
 
 		$path = $this->build_zip( $term, $root_id );
 		if ( '' === $path ) {
