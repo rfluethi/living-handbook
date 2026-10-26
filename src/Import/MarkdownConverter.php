@@ -72,6 +72,13 @@ final class MarkdownConverter {
 	 * @return array{title:string,html:string,transport:array<string, mixed>}
 	 */
 	public function convert( string $markdown, array $image_map = array() ): array {
+		// A byte order mark in front of the file is not text. Windows editors
+		// write one, and with it the front matter did not start at the start of
+		// the file any more, so its "---" block was not recognised and landed in
+		// the page as a horizontal rule followed by YAML.
+		if ( str_starts_with( $markdown, "\xEF\xBB\xBF" ) ) {
+			$markdown = substr( $markdown, 3 );
+		}
 		$markdown = $this->strip_front_matter( $markdown );
 
 		$transport_raw = '';
@@ -83,10 +90,11 @@ final class MarkdownConverter {
 		}
 		$transport = ( new TransportBlock() )->parse( $transport_raw );
 
-		$title = '';
-		if ( preg_match( '/^[ \t]*#[ \t]+(.+?)[ \t]*$/m', $markdown, $heading, PREG_OFFSET_CAPTURE ) ) {
-			$title    = trim( $heading[1][0] );
-			$markdown = substr_replace( $markdown, '', (int) $heading[0][1], strlen( $heading[0][0] ) );
+		$title   = '';
+		$heading = self::title_heading( $markdown );
+		if ( null !== $heading ) {
+			$title    = $heading['title'];
+			$markdown = substr_replace( $markdown, '', $heading['offset'], $heading['length'] );
 		}
 
 		$html = $this->to_html( $markdown );
@@ -151,6 +159,50 @@ final class MarkdownConverter {
 	}
 
 	/**
+	 * The first top-level heading outside code, which becomes the page title.
+	 *
+	 * Up to 0.75.0 this was the first line anywhere that started with "# ". A
+	 * page that opens with a shell example, "# install deps" in a code fence,
+	 * had that comment taken as its title and cut out of the code. Fenced lines
+	 * are skipped now, the same way the transport marker skips them, and a line
+	 * indented four spaces or a tab is an indented code block in CommonMark, not
+	 * a heading.
+	 *
+	 * Public and static so the string logic is unit-testable on its own.
+	 *
+	 * @param string $markdown Markdown draft.
+	 * @return array{title: string, offset: int, length: int}|null
+	 */
+	public static function title_heading( string $markdown ): ?array {
+		$offset = 0;
+		$fence  = null;
+		foreach ( (array) preg_split( '/(?<=\n)/', $markdown ) as $line ) {
+			$line = (string) $line;
+			if ( preg_match( '/^ {0,3}(([`~])\2{2,})/', $line, $found ) ) {
+				if ( null === $fence ) {
+					$fence = array(
+						'char' => $found[2],
+						'len'  => strlen( $found[1] ),
+					);
+				} elseif ( $found[2] === $fence['char'] && strlen( $found[1] ) >= $fence['len'] ) {
+					$fence = null;
+				}
+			} elseif ( null === $fence && 1 === preg_match( '/^ {0,3}#[ \t]+(.+?)[ \t]*(\r?\n)?$/', $line, $heading ) ) {
+				// The line break stays in the text, so the lines around the
+				// heading do not run together.
+				$length = strlen( $line ) - strlen( $heading[2] ?? '' );
+				return array(
+					'title'  => trim( $heading[1] ),
+					'offset' => $offset,
+					'length' => $length,
+				);
+			}
+			$offset += strlen( $line );
+		}
+		return null;
+	}
+
+	/**
 	 * Remove a leading YAML front matter block, if present.
 	 *
 	 * @param string $markdown Markdown.
@@ -212,13 +264,24 @@ final class MarkdownConverter {
 	 * @return string
 	 */
 	private function rewrite_images( string $html, array $image_map ): string {
+		// Both sides are compared decoded. The map is keyed by the file name as
+		// it lies in the ZIP or as the Markdown wrote it, and CommonMark writes
+		// the src percent-encoded: "Bild ä.png" arrives as "Bild%20%C3%A4.png".
+		// Compared raw, such an image was uploaded but never linked, and the page
+		// pointed at a path that does not exist on the site.
+		$lookup = array();
+		foreach ( $image_map as $name => $url ) {
+			$lookup[ rawurldecode( (string) $name ) ] = $url;
+		}
+
 		return (string) preg_replace_callback(
 			'/(<img\b[^>]*\bsrc=")([^"]+)("[^>]*>)/i',
-			static function ( array $found ) use ( $image_map ): string {
-				$path = wp_parse_url( $found[2], PHP_URL_PATH );
-				$base = basename( is_string( $path ) ? $path : $found[2] );
-				if ( isset( $image_map[ $base ] ) ) {
-					return $found[1] . esc_url( $image_map[ $base ] ) . $found[3];
+			static function ( array $found ) use ( $lookup ): string {
+				$src  = html_entity_decode( $found[2], ENT_QUOTES, 'UTF-8' );
+				$path = wp_parse_url( $src, PHP_URL_PATH );
+				$base = rawurldecode( basename( is_string( $path ) ? $path : $src ) );
+				if ( isset( $lookup[ $base ] ) ) {
+					return $found[1] . esc_url( $lookup[ $base ] ) . $found[3];
 				}
 				return $found[0];
 			},

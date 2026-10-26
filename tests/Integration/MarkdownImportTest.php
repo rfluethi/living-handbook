@@ -15,6 +15,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\Import\MarkdownConverter;
 use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Import\Postprocessor;
 use LivingHandbook\PostType\Handbook;
@@ -407,5 +408,60 @@ final class MarkdownImportTest extends WP_UnitTestCase {
 			)
 		);
 		$this->assertSame( $first['id'], $again['id'], 'Inside the same handbook the slug matches.' );
+	}
+
+	/**
+	 * A "# comment" in the first code block is code, not the page title. Up to
+	 * 0.75.0 the title was the first line anywhere starting with "# ", so a page
+	 * opening with a shell example lost that line from its code and got it as
+	 * its title.
+	 *
+	 * @return void
+	 */
+	public function test_a_comment_in_a_code_block_is_not_the_title(): void {
+		$result = ( new MarkdownConverter() )->convert( "```bash\n# install deps\nnpm ci\n```\n\n# Setup\n\nText.\n" );
+
+		$this->assertSame( 'Setup', $result['title'] );
+		$this->assertStringContainsString( '# install deps', $result['html'], 'The comment stays in the code.' );
+		$this->assertStringNotContainsString( '<h1', $result['html'], 'The real heading became the title.' );
+	}
+
+	/**
+	 * A file without a heading outside code has no title, and keeps its code.
+	 *
+	 * @return void
+	 */
+	public function test_only_a_code_comment_gives_no_title(): void {
+		$result = ( new MarkdownConverter() )->convert( "```\n# just a comment\n```\n" );
+
+		$this->assertSame( '', $result['title'] );
+		$this->assertStringContainsString( '# just a comment', $result['html'] );
+	}
+
+	/**
+	 * An image whose name has a space or an umlaut is linked to its upload.
+	 * CommonMark writes the src percent-encoded, the map is keyed by the plain
+	 * name, and the two never met: the image was uploaded and not shown.
+	 *
+	 * @return void
+	 */
+	public function test_an_image_with_a_space_and_an_umlaut_is_linked(): void {
+		$map    = array( 'Bild ä.png' => 'https://example.org/wp-content/uploads/bild-a.png' );
+		$result = ( new MarkdownConverter() )->convert( "# T\n\n![Plan](<assets/Bild ä.png>)\n", $map );
+
+		$this->assertStringContainsString( 'src="https://example.org/wp-content/uploads/bild-a.png"', $result['html'] );
+	}
+
+	/**
+	 * Front matter after a byte order mark is still front matter.
+	 *
+	 * @return void
+	 */
+	public function test_front_matter_after_a_byte_order_mark_is_removed(): void {
+		$result = ( new MarkdownConverter() )->convert( "\xEF\xBB\xBF---\ntitle: Hidden\n---\n# Visible\n\nText.\n" );
+
+		$this->assertSame( 'Visible', $result['title'] );
+		$this->assertStringNotContainsString( 'Hidden', $result['html'] );
+		$this->assertStringNotContainsString( '<hr', $result['html'] );
 	}
 }
