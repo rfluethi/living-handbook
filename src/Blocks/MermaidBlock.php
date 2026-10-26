@@ -51,7 +51,24 @@ final class MermaidBlock {
 		$lib_path = LIVING_HANDBOOK_DIR . $lib_rel;
 		$lib_ver  = is_readable( $lib_path ) ? (string) filemtime( $lib_path ) : LIVING_HANDBOOK_VERSION;
 
-		wp_register_script( 'living-handbook-mermaid', LIVING_HANDBOOK_URL . $lib_rel, array(), $lib_ver, true );
+		// Deferred, together with the view script below: 3.5 MB of library that
+		// only draws what is already on the page has no reason to hold up the
+		// parser. Both have to carry the strategy, because WordPress falls back to
+		// blocking for a dependency the moment one script that needs it is
+		// blocking. Safe for the view script, which runs once the document is no
+		// longer loading, and deferred scripts run in order before
+		// DOMContentLoaded. The editor loads the library on its own, by URL, and
+		// the static export writes its own script tags, so neither is affected.
+		wp_register_script(
+			'living-handbook-mermaid',
+			LIVING_HANDBOOK_URL . $lib_rel,
+			array(),
+			$lib_ver,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
 
 		// The editor script does NOT depend on the library, so opening the block
 		// editor does not pull in 3.5 MB on every content type. The library URL
@@ -75,7 +92,10 @@ final class MermaidBlock {
 			LIVING_HANDBOOK_URL . 'assets/js/mermaid-view.js',
 			array( 'living-handbook-mermaid' ),
 			LIVING_HANDBOOK_VERSION,
-			true
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
 		);
 
 		// Metadata (title, category, icon, attributes, editorScript, viewScript)
@@ -117,6 +137,6 @@ final class MermaidBlock {
 			? '<figcaption class="living-handbook-figure__caption">' . esc_html( $title ) . '</figcaption>'
 			: '';
 
-		return '<figure ' . $wrapper . '>' . $pre . $caption . '</figure>';
+		return Blocks::with_anchor( '<figure ' . $wrapper . '>' . $pre . $caption . '</figure>', $attributes );
 	}
 }

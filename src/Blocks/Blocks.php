@@ -480,6 +480,32 @@ final class Blocks {
 	}
 
 	/**
+	 * Put a block's HTML anchor on the root element of its rendered markup.
+	 *
+	 * For the blocks that build their wrapper with get_block_wrapper_attributes().
+	 * From WordPress 7.0 that call adds the anchor itself, through the anchor
+	 * block support; 6.8 has no such support on the server, so there the id the
+	 * editor saved never reached the page. Setting it afterwards with the HTML API
+	 * works on both: on 7.0 it writes the same value over the same attribute.
+	 *
+	 * @param string               $html       The rendered block markup.
+	 * @param array<string, mixed> $attributes Block attributes ('anchor').
+	 * @return string
+	 */
+	public static function with_anchor( string $html, array $attributes ): string {
+		$anchor = isset( $attributes['anchor'] ) && is_string( $attributes['anchor'] ) ? trim( $attributes['anchor'] ) : '';
+		if ( '' === $html || '' === $anchor ) {
+			return $html;
+		}
+		$processor = new WP_HTML_Tag_Processor( $html );
+		if ( ! $processor->next_tag() ) {
+			return $html;
+		}
+		$processor->set_attribute( 'id', $anchor );
+		return $processor->get_updated_html();
+	}
+
+	/**
 	 * Apply the block's HTML anchor and additional CSS class (the Advanced panel)
 	 * to the root element of already-rendered block markup. These blocks render
 	 * their own markup rather than a standard block wrapper, so the id and class

@@ -12,6 +12,11 @@
 	"viewScript": "living-handbook",
 	"style": "living-handbook",
 	"example": {},
+	"attributes": {
+		"anchor": {
+			"type": "string"
+		}
+	},
 	"supports": {
 		"html": false,
 		"anchor": true,
@@ -19,7 +24,6 @@
 		"color": false,
 		"typography": false,
 		"spacing": false,
-		"dimensions": false,
-		"border": false
+		"dimensions": false
 	}
 }

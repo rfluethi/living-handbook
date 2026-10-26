@@ -5,6 +5,8 @@
 	"title": "Mermaid",
 	"category": "living-handbook",
 	"icon": "chart-area",
+	"description": "A diagram written as Mermaid code: flowcharts, sequences, timelines and more, drawn in the browser. A title and a description give it a text alternative.",
+	"keywords": [ "handbook", "living handbook", "mermaid", "diagram", "flowchart", "chart" ],
 	"textdomain": "living-handbook",
 	"editorScript": "living-handbook-mermaid-block",
 	"viewScript": "living-handbook-mermaid-view",
@@ -15,9 +17,13 @@
 		}
 	},
 	"supports": {
+		"html": false,
 		"anchor": true
 	},
 	"attributes": {
+		"anchor": {
+			"type": "string"
+		},
 		"code": {
 			"type": "string",
 			"default": ""

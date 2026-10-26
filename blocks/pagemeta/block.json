@@ -13,6 +13,9 @@
 	"style": "living-handbook",
 	"example": {},
 	"attributes": {
+		"anchor": {
+			"type": "string"
+		},
 		"showPeople": {
 			"type": "boolean",
 			"default": true
@@ -25,7 +28,6 @@
 		"color": false,
 		"typography": false,
 		"spacing": false,
-		"dimensions": false,
-		"border": false
+		"dimensions": false
 	}
 }

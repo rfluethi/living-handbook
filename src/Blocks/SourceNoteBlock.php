@@ -84,7 +84,7 @@ final class SourceNoteBlock {
 		}
 
 		$wrapper = get_block_wrapper_attributes( array( 'class' => 'lh-source-note' ) );
-		return '<div ' . $wrapper . '>' . $body . '</div>';
+		return Blocks::with_anchor( '<div ' . $wrapper . '>' . $body . '</div>', $attributes );
 	}
 
 	/**

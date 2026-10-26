@@ -13,6 +13,9 @@
 	"style": "living-handbook",
 	"example": {},
 	"attributes": {
+		"anchor": {
+			"type": "string"
+		},
 		"showLabel": {
 			"type": "boolean",
 			"default": false

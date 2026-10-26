@@ -14,6 +14,9 @@
 		"anchor": true
 	},
 	"attributes": {
+		"anchor": {
+			"type": "string"
+		},
 		"label": {
 			"type": "string",
 			"default": ""

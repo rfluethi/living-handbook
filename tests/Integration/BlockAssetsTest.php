@@ -172,4 +172,33 @@ final class BlockAssetsTest extends WP_UnitTestCase {
 			'The global editor hook and its callback are gone; the blocks name the bundle themselves.'
 		);
 	}
+
+	/**
+	 * The diagram library and the script that starts it load deferred. It is
+	 * 3.5 MB that only draws what is already on the page, and it used to block
+	 * the parser at the end of the body. Deferring only one of them would not
+	 * work: WordPress drops the strategy of a dependency as soon as a script
+	 * that needs it is blocking, so both have to say so, and the printed tag has
+	 * to carry the attribute.
+	 *
+	 * @return void
+	 */
+	public function test_the_diagram_scripts_load_deferred(): void {
+		foreach ( array( 'living-handbook-mermaid', 'living-handbook-mermaid-view' ) as $handle ) {
+			$this->assertSame( 'defer', wp_scripts()->get_data( $handle, 'strategy' ), $handle );
+		}
+
+		wp_enqueue_script( 'living-handbook-mermaid-view' );
+		ob_start();
+		wp_scripts()->do_items( array( 'living-handbook-mermaid-view' ), 1 );
+		$tags = (string) ob_get_clean();
+
+		// The attribute order differs between core versions, so each tag is
+		// looked at as a whole.
+		preg_match_all( '#<script\b[^>]*>#', $tags, $found );
+		foreach ( array( 'mermaid.min.js', 'mermaid-view.js' ) as $file ) {
+			$tag = (string) current( array_filter( $found[0], static fn( string $t ): bool => str_contains( $t, $file ) ) );
+			$this->assertMatchesRegularExpression( '#\sdefer[\s>=]#', $tag, $file . ' is printed without defer.' );
+		}
+	}
 }
