@@ -202,8 +202,17 @@
 			} );
 		}
 
+		// Every search gets a number, and only the answer to the latest one is
+		// shown. The debounce spaces the requests out but cannot order the
+		// answers: a slow answer for "onb" could land after the quick one for
+		// "onboarding" and replace it, so the list showed matches for words no
+		// longer in the field. A field emptied below two characters counts as a
+		// search of its own, so an answer still in flight cannot refill it.
+		var latest = 0;
+
 		var run = debounce( function () {
 			var term = search.value.trim();
+			var request = ++latest;
 			if ( term.length < 2 ) {
 				results.textContent = '';
 				return;
@@ -213,8 +222,14 @@
 					+ '?training_id=' + encodeURIComponent( trainingId )
 					+ '&q=' + encodeURIComponent( term )
 			} ).then( function ( response ) {
+				if ( request !== latest ) {
+					return;
+				}
 				render( ( response && response.results ) || [] );
 			} ).catch( function () {
+				if ( request !== latest ) {
+					return;
+				}
 				results.textContent = '';
 				var failed = document.createElement( 'li' );
 				failed.className = 'living-handbook-lessons__none';
