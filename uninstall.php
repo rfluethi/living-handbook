@@ -71,16 +71,39 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Training\Training::OPTION_FLUSH );
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_COLORS );
 	delete_option( LivingHandbook\Frontend\Appearance::OPTION_BASE_SIZE );
+	delete_option( LivingHandbook\Admin\MoveToHandbook::OPTION_ANY_MOVED );
 
 	// Always: remove the area cards cache (transients keyed by version and by
 	// viewer). There is no lh_nav_ prefix to clean up. The navigation is built
 	// fresh on every request, see Navigation::CACHE_VERSION_OPTION.
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-	$wpdb->query(
-		"DELETE FROM {$wpdb->options}
-		 WHERE option_name LIKE '\\_transient\\_lh\\_areas\\_%'
-		    OR option_name LIKE '\\_transient\\_timeout\\_lh\\_areas\\_%'"
+	//
+	// The same for the other transients the plugin writes, which the cleanup did
+	// not know about until 0.76.0: the state of a running GitHub import
+	// (GitSync::JOB_PREFIX) and of a running static export
+	// (StaticSite::JOB_PREFIX), each up to a whole handbook's worth of page data;
+	// the report of a bundle import (HandbookImport::NOTICE_TRANSIENT); and the
+	// hourly counters of anonymous feedback (Feedback, "lh_fb_<post>_<hour>").
+	// The prefixes are written out here because the constants are private to
+	// their classes. Each pattern ends in an underscore, so it cannot widen to a
+	// longer prefix another plugin might use.
+	$transient_prefixes = array(
+		'lh_areas_',
+		'living_handbook_import_',
+		'living_handbook_static_',
+		'living_handbook_bundle_report_',
+		'lh_fb_',
 	);
+	foreach ( $transient_prefixes as $transient_prefix ) {
+		$like = $wpdb->esc_like( $transient_prefix ) . '%';
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( '_transient_' ) . $like,
+				$wpdb->esc_like( '_transient_timeout_' ) . $like
+			)
+		);
+	}
 	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
 	// Versioned transient keys cannot be enumerated one by one, and on a
@@ -120,7 +143,11 @@ function living_handbook_run_uninstall(): void {
 				// term, they are useless without their lessons, and leaving them
 				// behind would leave rows nothing can reach.
 				'post_type'      => array( 'handbook', LivingHandbook\Training\Training::POST_TYPE ),
-				'post_status'    => 'any',
+				// Every status, listed. 'any' leaves out the statuses registered
+				// with exclude_from_search, which are 'trash' and 'auto-draft':
+				// with "delete everything" switched on, a page in the trash
+				// survived with its text, its meta and its revisions.
+				'post_status'    => array_keys( get_post_stati() ),
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
 				'no_found_rows'  => true,
@@ -161,23 +188,38 @@ function living_handbook_run_uninstall(): void {
 	}
 
 	// Remove any Site Editor customisations of the plugin's block templates.
-	// They are stored as wp_template / wp_template_part posts assigned to this
-	// plugin's theme identifier via the wp_theme taxonomy.
+	//
+	// This used to look for wp_template posts with the wp_theme term
+	// "living-handbook", which no template ever carries, so it removed nothing.
+	// Since WordPress 6.7 a template registered with register_block_template()
+	// belongs to the theme that is active: its id is "<theme>//<slug>", and when
+	// somebody saves it in the Site Editor, core (the templates REST controller)
+	// stores a wp_template post named after the slug, with the wp_theme term of
+	// the theme's stylesheet and the meta origin "plugin". The plugin is named
+	// nowhere in the stored row; it is only the registry that says which plugin
+	// a slug belongs to, and the registry is empty during uninstall.
+	//
+	// So the match is on what this plugin registers: the three slugs from
+	// Frontend\Templates, with origin "plugin". That leaves the theme's own
+	// templates alone (their origin is empty or "theme"), and it covers every
+	// theme, because a customisation made under a theme that is no longer
+	// active is still this plugin's template. Template parts are not matched:
+	// the plugin registers none.
 	$template_ids = get_posts(
 		LivingHandbook\Access\AccessController::internal(
 			array(
-				'post_type'      => array( 'wp_template', 'wp_template_part' ),
-				'post_status'    => 'any',
+				'post_type'      => 'wp_template',
+				'post_status'    => array_keys( get_post_stati() ),
+				'post_name__in'  => array(
+					'taxonomy-' . LivingHandbook\Handbook\Handbooks::TAXONOMY,
+					'single-' . LivingHandbook\PostType\Handbook::POST_TYPE,
+					'single-' . LivingHandbook\Training\Training::POST_TYPE,
+				),
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
 				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-					array(
-						'taxonomy' => 'wp_theme',
-						'field'    => 'name',
-						'terms'    => 'living-handbook',
-					),
-				),
+				'meta_key'       => 'origin', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- One run, at uninstall.
+				'meta_value'     => 'plugin', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- One run, at uninstall.
 			)
 		)
 	);

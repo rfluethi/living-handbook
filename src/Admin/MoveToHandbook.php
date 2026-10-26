@@ -67,8 +67,11 @@ final class MoveToHandbook {
 	 * never pays for it. Without it every 404 on every site would ask the
 	 * database whether some page used to live at that address, and the answer on
 	 * almost every site is no.
+	 *
+	 * Public so uninstall.php can name it: as a private constant it was the one
+	 * option the uninstall did not know about.
 	 */
-	private const OPTION_ANY_MOVED = 'living_handbook_moved_pages';
+	public const OPTION_ANY_MOVED = 'living_handbook_moved_pages';
 
 	/**
 	 * Hook registration into WordPress.

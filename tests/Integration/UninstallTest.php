@@ -238,4 +238,159 @@ final class UninstallTest extends WP_UnitTestCase {
 		$this->assertFalse( wp_next_scheduled( 'living_handbook_git_sync' ) );
 		$this->assertFalse( wp_next_scheduled( 'living_handbook_git_sync_continue' ) );
 	}
+
+	/**
+	 * A page in the trash and an unsaved draft are handbook content too.
+	 *
+	 * post_status 'any' leaves out every status registered with
+	 * exclude_from_search, and those are exactly 'trash' and 'auto-draft'. So
+	 * with "delete everything" switched on, a page somebody had thrown away
+	 * survived the uninstall with its text, its meta and its revisions, in a
+	 * trash nobody would look in again, as a post type that no longer exists.
+	 *
+	 * @return void
+	 */
+	public function test_the_opt_in_also_removes_trashed_and_auto_draft_pages(): void {
+		$trashed = self::factory()->post->create( array( 'post_type' => Handbook::POST_TYPE ) );
+		wp_trash_post( $trashed );
+		$this->assertSame( 'trash', get_post_status( $trashed ) );
+
+		$auto_draft = self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'auto-draft',
+			)
+		);
+		$path = self::factory()->post->create(
+			array(
+				'post_type'   => \LivingHandbook\Training\Training::POST_TYPE,
+				'post_status' => 'trash',
+			)
+		);
+
+		update_option( GitSync::OPTION_UNINSTALL, true );
+		$this->uninstall();
+
+		$this->assertNull( get_post( $trashed ), 'A handbook page in the trash goes with the content.' );
+		$this->assertNull( get_post( $auto_draft ), 'An auto-draft goes too.' );
+		$this->assertNull( get_post( $path ), 'So does a learning path in the trash.' );
+	}
+
+	/**
+	 * Without the opt-in, the trash is left alone like everything else.
+	 *
+	 * @return void
+	 */
+	public function test_trashed_pages_survive_an_ordinary_uninstall(): void {
+		$trashed = self::factory()->post->create( array( 'post_type' => Handbook::POST_TYPE ) );
+		wp_trash_post( $trashed );
+
+		$this->uninstall();
+
+		$this->assertSame( 'trash', get_post_status( $trashed ) );
+	}
+
+	/**
+	 * A plugin template customised in the Site Editor is stored under the
+	 * active theme, not under the plugin.
+	 *
+	 * Since WordPress 6.7, register_block_template() gives a plugin template the
+	 * id "<theme>//<slug>", and saving it in the Site Editor creates a
+	 * wp_template post whose wp_theme term is the active theme's stylesheet, with
+	 * meta origin "plugin". The uninstall looked for the term "living-handbook",
+	 * which no template ever carries, and so removed nothing. The save is done
+	 * here the way the Site Editor does it, through the templates endpoint.
+	 *
+	 * @return void
+	 */
+	public function test_the_opt_in_removes_templates_customised_in_the_site_editor(): void {
+		if ( ! function_exists( 'register_block_template' ) ) {
+			$this->markTestSkipped( 'Plugin templates need WordPress 6.7.' );
+		}
+		if ( ! wp_get_theme( 'twentytwentyfive' )->exists() ) {
+			$this->markTestSkipped( 'Needs a block theme.' );
+		}
+		switch_theme( 'twentytwentyfive' );
+		// The registry records the theme that was active at init, as it would on
+		// a real request after the switch.
+		$this->reregister_templates();
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$custom = $this->save_template( 'single-handbook', '<!-- wp:paragraph --><p>Ours, edited</p><!-- /wp:paragraph -->' );
+
+		// The theme's own single template, customised the same way: not ours.
+		$theme_own = $this->save_template( 'single', '<!-- wp:paragraph --><p>The theme, edited</p><!-- /wp:paragraph -->' );
+
+		$this->assertSame( 'twentytwentyfive', wp_get_object_terms( $custom, 'wp_theme', array( 'fields' => 'names' ) )[0], 'Core stores it under the theme.' );
+
+		update_option( GitSync::OPTION_UNINSTALL, true );
+		$this->uninstall();
+
+		$this->assertNull( get_post( $custom ), 'The customised plugin template goes with the content.' );
+		$this->assertInstanceOf( \WP_Post::class, get_post( $theme_own ), 'A customised theme template is the site owner\'s.' );
+
+		switch_theme( WP_DEFAULT_THEME );
+		$this->reregister_templates();
+	}
+
+	/**
+	 * Register the plugin's templates again for the theme active now.
+	 *
+	 * @return void
+	 */
+	private function reregister_templates(): void {
+		$registry = \WP_Block_Templates_Registry::get_instance();
+		foreach ( array_keys( $registry->get_all_registered() ) as $name ) {
+			if ( str_starts_with( (string) $name, 'living-handbook//' ) ) {
+				$registry->unregister( (string) $name );
+			}
+		}
+		( new \LivingHandbook\Frontend\Templates() )->register_templates();
+	}
+
+	/**
+	 * Save a template the way the Site Editor does, and return its post id.
+	 *
+	 * @param string $slug    Template slug.
+	 * @param string $content Block markup.
+	 * @return int
+	 */
+	private function save_template( string $slug, string $content ): int {
+		$request = new \WP_REST_Request( 'POST', '/wp/v2/templates/' . get_stylesheet() . '//' . $slug );
+		$request->set_body_params( array( 'content' => $content ) );
+		$response = rest_do_request( $request );
+		$this->assertSame( 200, $response->get_status(), (string) wp_json_encode( $response->get_data() ) );
+
+		$data = $response->get_data();
+		$this->assertIsArray( $data );
+		$this->assertGreaterThan( 0, (int) $data['wp_id'], (string) wp_json_encode( array_intersect_key( $data, array_flip( array( 'id', 'theme', 'source', 'origin', 'wp_id', 'plugin' ) ) ) ) );
+
+		return (int) $data['wp_id'];
+	}
+
+	/**
+	 * Everything the plugin keeps in the options table goes, whatever the
+	 * opt-in says: the moved-pages flag and the transients of running jobs and
+	 * notices, which the cleanup did not know about.
+	 *
+	 * @return void
+	 */
+	public function test_every_option_and_transient_of_the_plugin_goes(): void {
+		update_option( 'living_handbook_moved_pages', 1 );
+		set_transient( 'living_handbook_import_abc123', array( 'job' => 'abc123' ), HOUR_IN_SECONDS );
+		set_transient( 'living_handbook_static_def456', array( 'job' => 'def456' ), HOUR_IN_SECONDS );
+		set_transient( 'living_handbook_bundle_report_7', array( 'ok' => 1 ), 120 );
+		set_transient( 'lh_fb_42_2026102612', 3, 2 * HOUR_IN_SECONDS );
+		set_transient( 'other_plugin_import_abc', 'keep me', HOUR_IN_SECONDS );
+
+		$this->uninstall();
+
+		$this->assertFalse( $this->option_row( 'living_handbook_moved_pages' ) );
+		foreach ( array( 'living_handbook_import_abc123', 'living_handbook_static_def456', 'living_handbook_bundle_report_7', 'lh_fb_42_2026102612' ) as $name ) {
+			$this->assertFalse( $this->option_row( '_transient_' . $name ), $name . ' should be gone.' );
+			$this->assertFalse( $this->option_row( '_transient_timeout_' . $name ), 'The timeout of ' . $name . ' too.' );
+		}
+		$this->assertSame( 'keep me', $this->option_row( '_transient_other_plugin_import_abc' ) );
+	}
 }
