@@ -1,6 +1,6 @@
 # Blocks
 
-Living Handbook ships eleven dynamic blocks, grouped under the **Living Handbook** category in the block inserter. They are server-rendered: each one builds its markup on page load from the current context. Most only output something in the context they are meant for; placed anywhere else they render nothing at all.
+Living Handbook ships sixteen blocks, grouped under the **Living Handbook** category in the block inserter, each with its own `block.json` under `blocks/`. They are server-rendered: each one builds its markup on page load from the current context. Most only output something in the context they are meant for; placed anywhere else they render nothing at all.
 
 Every one of them also offers an **HTML anchor** and an **Additional CSS class** under the block's **Advanced** panel: the anchor becomes the id of the block's root element and the class is added to it, so you can link straight to a block or style one single instance. See [customization](customization.md#classes).
 
