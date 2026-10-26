@@ -268,12 +268,12 @@ final class FrontendRenderer {
 				);
 			}
 			$pattern = '/(<ul[^>]*wp-block-navigation__submenu-container[^>]*>)/';
-			return (string) preg_replace( $pattern, '$1' . $items, $content, 1 );
+			return (string) preg_replace( $pattern, '$1' . self::literal( $items ), $content, 1 );
 		}
 
 		// No container at all: add the toggle and container before the item close.
 		$container = self::submenu_toggle() . '<ul class="wp-block-navigation__submenu-container wp-block-navigation-submenu">' . $items . '</ul>';
-		return (string) preg_replace( '/<\/li>\s*$/', $container . '</li>', $content, 1 );
+		return (string) preg_replace( '/<\/li>\s*$/', self::literal( $container . '</li>' ), $content, 1 );
 	}
 
 	/**
@@ -300,7 +300,7 @@ final class FrontendRenderer {
 		// The container is new markup; the HTML API cannot insert child nodes, so
 		// it is appended as a string before the item's closing tag.
 		$container = self::submenu_toggle() . '<ul class="wp-block-navigation__submenu-container wp-block-navigation-submenu">' . $items . '</ul>';
-		return (string) preg_replace( '/<\/li>\s*$/', $container . '</li>', $content, 1 );
+		return (string) preg_replace( '/<\/li>\s*$/', self::literal( $container . '</li>' ), $content, 1 );
 	}
 
 	/**
@@ -358,9 +358,32 @@ final class FrontendRenderer {
 
 		$pattern = '/(<ul[^>]*wp-block-navigation__container[^>]*>)/';
 		if ( 1 === preg_match( $pattern, $content ) ) {
-			return (string) preg_replace( $pattern, '$1' . $submenu, $content, 1 );
+			return (string) preg_replace( $pattern, '$1' . self::literal( $submenu ), $content, 1 );
 		}
 		return $content;
+	}
+
+	/**
+	 * Make markup safe to use as the replacement of preg_replace().
+	 *
+	 * The handbook links carry the handbook names, and preg_replace() reads a
+	 * dollar sign or a backslash followed by a digit in the replacement as a
+	 * back reference. A handbook called "Budget $10" came out as "Budget " in
+	 * the menu, "$1" in a name repeated the menu's opening tag, and "\\" lost a
+	 * backslash. Escaping both turns the markup back into plain text for the
+	 * engine, and the '$1' the callers prepend stays a real reference.
+	 *
+	 * @param string $markup Markup to insert literally.
+	 * @return string
+	 */
+	private static function literal( string $markup ): string {
+		return strtr(
+			$markup,
+			array(
+				'\\' => '\\\\',
+				'$'  => '\\$',
+			)
+		);
 	}
 
 	/**
