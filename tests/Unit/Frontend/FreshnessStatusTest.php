@@ -130,4 +130,40 @@ final class FreshnessStatusTest extends TestCase {
 		$this->assertSame( FreshnessStatus::DUE, FreshnessStatus::status( '2026-01-01', 1, $this->days_after( '2026-01-01', 1 ) + 1 ) );
 		$this->assertSame( FreshnessStatus::OVERDUE, FreshnessStatus::status( '2026-01-01', 1, $this->days_after( '2026-01-01', 2 ) + 1 ) );
 	}
+
+	/**
+	 * The review date is a date in the site's zone, and so is the day it turns
+	 * due. Up to 0.75.1 the date was read as UTC, so in Zurich a page turned due
+	 * at 02:00 in summer instead of at midnight.
+	 *
+	 * @return void
+	 */
+	public function test_the_day_turns_at_local_midnight(): void {
+		$zurich = new \DateTimeZone( 'Europe/Zurich' );
+
+		// 2026-01-01 plus 90 days is 2026-04-01; summer time began on 29 March.
+		$half_past_midnight = ( new \DateTimeImmutable( '2026-04-01 00:30', $zurich ) )->getTimestamp();
+		$just_before        = ( new \DateTimeImmutable( '2026-04-01 00:00', $zurich ) )->getTimestamp();
+
+		$this->assertSame( FreshnessStatus::DUE, FreshnessStatus::status( '2026-01-01', 90, $half_past_midnight, $zurich ) );
+		$this->assertSame( FreshnessStatus::OK, FreshnessStatus::status( '2026-01-01', 90, $just_before, $zurich ) );
+
+		// West of Greenwich the mistake ran the other way: due before midnight.
+		$new_york = new \DateTimeZone( 'America/New_York' );
+		$evening  = ( new \DateTimeImmutable( '2026-03-31 22:00', $new_york ) )->getTimestamp();
+		$this->assertSame( FreshnessStatus::OK, FreshnessStatus::status( '2026-01-01', 90, $evening, $new_york ) );
+	}
+
+	/**
+	 * Without a zone the rule reads the date as UTC, as it always did, so a
+	 * caller without WordPress gets the same answer as before.
+	 *
+	 * @return void
+	 */
+	public function test_without_a_zone_the_date_is_utc(): void {
+		$due = (int) strtotime( '2026-04-01 00:00:00 UTC' );
+
+		$this->assertSame( FreshnessStatus::OK, FreshnessStatus::status( '2026-01-01', 90, $due ) );
+		$this->assertSame( FreshnessStatus::DUE, FreshnessStatus::status( '2026-01-01', 90, $due + 1 ) );
+	}
 }

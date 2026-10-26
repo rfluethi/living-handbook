@@ -196,6 +196,42 @@ final class PageTreeTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The review date is a local date, and the day it turns due starts at local
+	 * midnight. Up to 0.75.1 the stored date was read as UTC, so east of
+	 * Greenwich a page turned due hours after midnight, and west of it hours
+	 * before.
+	 *
+	 * The offset is chosen from the current hour so that the local date and the
+	 * UTC date differ right now; that is the window in which the two readings
+	 * disagree, and the test does not depend on when it runs.
+	 *
+	 * @return void
+	 */
+	public function test_freshness_counts_days_in_the_site_time_zone(): void {
+		$page = $this->page( $this->handbook( 'Zone' ), 'A page' );
+		update_post_meta( $page, Metadata::INTERVAL, 1 );
+
+		$hour = (int) gmdate( 'G' );
+		update_option( 'timezone_string', '' );
+
+		if ( $hour >= 11 ) {
+			// East: it is already tomorrow locally. Reviewed yesterday (local), the
+			// page has been due since local midnight; read as UTC, not yet.
+			update_option( 'gmt_offset', 14 );
+			update_post_meta( $page, Metadata::REVIEWED, current_datetime()->modify( '-1 day' )->format( 'Y-m-d' ) );
+			$this->assertSame( FreshnessStatus::DUE, FreshnessStatus::for_post( $page ) );
+		} else {
+			// West: it is still yesterday locally. Reviewed today (local), the page
+			// is due from local midnight on; read as UTC, it already is.
+			update_option( 'gmt_offset', -1 * ( $hour + 1 ) );
+			update_post_meta( $page, Metadata::REVIEWED, current_datetime()->format( 'Y-m-d' ) );
+			$this->assertSame( FreshnessStatus::OK, FreshnessStatus::for_post( $page ) );
+		}
+
+		update_option( 'gmt_offset', 0 );
+	}
+
+	/**
 	 * All four states have a label, the fourth one included. It used to have
 	 * none, which is why a page nobody had reviewed showed nothing at all where
 	 * its freshness belongs, leaving a reader unable to tell "fresh" from

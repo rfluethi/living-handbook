@@ -56,7 +56,8 @@ final class FreshnessStatus {
 		return self::status(
 			(string) get_post_meta( $post_id, Metadata::REVIEWED, true ),
 			(int) get_post_meta( $post_id, Metadata::INTERVAL, true ),
-			time()
+			time(),
+			wp_timezone()
 		);
 	}
 
@@ -69,18 +70,27 @@ final class FreshnessStatus {
 	 * the boundaries testable: a page is due the moment the interval has passed,
 	 * not a day later.
 	 *
-	 * @param string $reviewed Date of the last review, as stored (Y-m-d).
-	 * @param int    $interval Review interval in days.
-	 * @param int    $now      The moment to judge against, as a Unix timestamp.
+	 * The review date is a calendar date in the site's time zone: it is what an
+	 * editor picked in a date field, or the day an import ran, both local. Up to
+	 * 0.75.1 it was read with strtotime(), which takes a date without a zone as
+	 * UTC, so on a site in Zurich a page turned due at 01:00 in winter and 02:00
+	 * in summer instead of at midnight, and the list of overdue pages was wrong
+	 * for the first hours of every day. The days are now counted in the zone the
+	 * caller names; for_post() passes the site's.
+	 *
+	 * @param string             $reviewed Date of the last review, as stored (Y-m-d).
+	 * @param int                $interval Review interval in days.
+	 * @param int                $now      The moment to judge against, as a Unix timestamp.
+	 * @param \DateTimeZone|null $timezone Zone the date is read in. Default UTC.
 	 * @return string One of the class constants.
 	 */
-	public static function status( string $reviewed, int $interval, int $now ): string {
+	public static function status( string $reviewed, int $interval, int $now, ?\DateTimeZone $timezone = null ): string {
 		if ( '' === $reviewed || $interval <= 0 ) {
 			return self::NONE;
 		}
 
-		$due      = strtotime( $reviewed . ' +' . $interval . ' days' );
-		$escalate = strtotime( $reviewed . ' +' . ( 2 * $interval ) . ' days' );
+		$due      = self::days_later( $reviewed, $interval, $timezone );
+		$escalate = self::days_later( $reviewed, 2 * $interval, $timezone );
 		if ( false === $due ) {
 			return self::NONE;
 		}
@@ -92,6 +102,27 @@ final class FreshnessStatus {
 			return self::DUE;
 		}
 		return self::OK;
+	}
+
+	/**
+	 * Midnight at the start of the day a number of days after a date, in a zone.
+	 *
+	 * Calendar days, not 86400-second blocks: across a change to or from summer
+	 * time the day stays the day.
+	 *
+	 * @param string             $date     A date strtotime() understands, usually Y-m-d.
+	 * @param int                $days     Days to add.
+	 * @param \DateTimeZone|null $timezone Zone. Default UTC.
+	 * @return int|false Unix timestamp, or false for a date that cannot be read.
+	 */
+	private static function days_later( string $date, int $days, ?\DateTimeZone $timezone ) {
+		try {
+			$moment = new \DateTimeImmutable( $date, $timezone ?? new \DateTimeZone( 'UTC' ) );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+
+		return $moment->modify( '+' . $days . ' days' )->getTimestamp();
 	}
 
 	/**
