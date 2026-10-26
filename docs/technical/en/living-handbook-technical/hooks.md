@@ -1,6 +1,6 @@
 # Hooks
 
-Living Handbook exposes extension points so you can adjust behaviour without patching the plugin. Hook names are documented here as they are added.
+Living Handbook exposes extension points so you can adjust behaviour without patching the plugin. Hook names are documented here as they are added. The data the plugin keeps is listed in [meta-fields.md](meta-fields.md), and its REST endpoints in [rest-routes.md](rest-routes.md).
 
 ## Filters
 

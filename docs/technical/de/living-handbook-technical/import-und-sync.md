@@ -190,7 +190,9 @@ Aus Sicherheitsgründen muss die Quell-URL über https auf einen erlaubten Host 
 
 ## Was das Plugin wohin sendet
 
-Nur das, was du abrufen lässt. Import und Sync lesen von `github.com`, `raw.githubusercontent.com` und der GitHub-Contents-API unter `api.github.com`, und ausschliesslich von den Adressen, die du selbst einträgst. Es wird nichts irgendwohin gesendet, und wenn du keine der Funktionen nutzt, macht das Plugin überhaupt keine externen Aufrufe.
+Nur das, was du abrufen lässt, von GitHub. Eine `github.com`-URL wird nur zerlegt, nie abgerufen: Import und Sync lesen Dateien von `raw.githubusercontent.com`, eine Ordnerliste von der Git-Trees-API unter `api.github.com`, und bei einem Ordner mit mehr als etwa zwanzig Dateien das Repository-Archiv, dessen Adresse `api.github.com` liefert und das von `codeload.github.com` geladen wird. Gelesen wird ausschliesslich von Adressen, die du selbst einträgst, und gesendet werden nur diese Adressen und eine User-Agent-Kopfzeile. Nutzt du keine der Funktionen, geschieht nichts davon.
+
+Die andere externe Anfrage kommt nicht aus dem Code des Plugins, sondern von WordPress: die Fusszeile einer Seite (`living-handbook/pagemeta`) zeigt jede Person mit `get_avatar()`, und das lädt das Bild im Browser der Lesenden von Gravatar. Das Abschalten von **Avatare anzeigen** unter Einstellungen, Diskussion, oder von *Personen anzeigen (Avatar und Name)* im Block, entfernt sie. Die Readme führt beide Dienste unter *External services* auf, wie es das Plugin-Verzeichnis verlangt.
 
 Die nicht angemeldete GitHub-API erlaubt etwa 60 Anfragen pro Stunde. Ein grosser Ordner-Import kann daran stossen; der Import meldet das klar, und du kannst es später erneut versuchen.
 

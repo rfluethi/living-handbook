@@ -13,6 +13,8 @@ Für alle, die das Plugin installieren, gestalten oder erweitern. Die englische 
 7. [Hooks](hooks.md): die Filter und Aktionen, mit denen sich das Plugin erweitern lässt.
 8. [Import und Sync](import-und-sync.md): Markdown, GitHub, Bündel, App-Handbuch.
 9. [Wartung](wartung.md): der Prüfzyklus, die Spalten und Filter der Seitenliste.
+10. [Meta-Felder](meta-felder.md): jedes Custom Field, das das Plugin liest oder schreibt, mit Typ, Herkunft und Sichtbarkeit.
+11. [REST-Routen](rest-routen.md): jede Route unter `living-handbook/v1`, mit Methode, Berechtigung und Parametern, und was das Plugin an den Routen von WordPress ändert.
 
 ## Die eine Regel
 

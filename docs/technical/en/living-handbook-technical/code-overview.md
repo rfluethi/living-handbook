@@ -98,4 +98,4 @@ There is a single, non-negotiable rule in the code: **every read of handbook con
 - Every class, method and function carries a doc comment; the coding-standards check (`composer lint`) fails if one is missing, so this never drifts.
 - Comments explain the reasoning, not the obvious. When a piece of code looks odd, the comment above it says why it is that way.
 - There are almost no settings on purpose: visual choices belong in the Site Editor, behaviour has a few justified options, and everything else is a hook (see [hooks.md](hooks.md)) rather than a checkbox.
-- English is the language of the repository; the German source of these developer docs (`docs/technical/de/`) lives in the team's workspace. The German app handbook is the exception: it ships in the repository, under `docs/user/de/`.
+- English is the language of the repository. The German version of these developer docs ships next to them, under `docs/technical/de/`, as does the German user handbook under `docs/user/de/`. They are separate texts, not translations generated from the English ones, so a change to one is a change to both.

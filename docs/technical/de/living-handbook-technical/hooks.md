@@ -1,6 +1,6 @@
 # Hooks
 
-Living Handbook bietet Erweiterungspunkte, damit du das Verhalten anpassen kannst, ohne das Plugin selbst zu verändern. Die Namen der Hooks werden hier dokumentiert, sobald sie dazukommen.
+Living Handbook bietet Erweiterungspunkte, damit du das Verhalten anpassen kannst, ohne das Plugin selbst zu verändern. Die Namen der Hooks werden hier dokumentiert, sobald sie dazukommen. Die Daten, die das Plugin führt, stehen in [meta-felder.md](meta-felder.md), seine REST-Endpunkte in [rest-routen.md](rest-routen.md).
 
 ## Filter
 

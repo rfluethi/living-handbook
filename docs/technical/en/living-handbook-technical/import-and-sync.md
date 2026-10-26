@@ -183,7 +183,9 @@ For safety the source URL must point at an allowed host (`raw.githubusercontent.
 
 ## What the plugin sends where
 
-Only what you ask it to fetch. The import and the sync read from `github.com`, `raw.githubusercontent.com` and the GitHub contents API at `api.github.com`, and only from the addresses you enter yourself. Nothing is sent anywhere, and if you use neither feature the plugin makes no external calls at all.
+Only what you ask it to fetch, from GitHub. A `github.com` URL is only parsed, never fetched: the import and the sync read files from `raw.githubusercontent.com`, a folder listing from the Git trees API at `api.github.com`, and for a folder of more than about twenty files the repository archive, whose address `api.github.com` returns and which is downloaded from `codeload.github.com`. They read only from addresses you enter yourself, and they send nothing but those addresses and a User-Agent header. If you use neither feature, none of this happens.
+
+The other external request does not come from the plugin's code but from WordPress: the page footer (`living-handbook/pagemeta`) shows each person with `get_avatar()`, which loads the image from Gravatar in the reader's browser. Switching off **Show Avatars** under Settings, Discussion, or *Show people (avatar and name)* in the block, removes it. The readme lists both services under *External services*, as the plugin directory requires.
 
 The unauthenticated GitHub API allows about 60 requests per hour. Importing a large folder can hit that; the import reports it clearly and you can retry later.
 
