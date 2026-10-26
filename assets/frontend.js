@@ -470,6 +470,21 @@
 			if ( ! list ) {
 				return;
 			}
+
+			// A list that arrives with entries was filled on the server: the static
+			// export writes it into the file, so it works without scripting and in
+			// print. Up to 0.75.1 this function appended its own entries below
+			// those, and every exported page showed its table of contents twice.
+			// The entries already there are adopted for the scroll-spy instead.
+			if ( list.querySelector( 'a[href^="#"]' ) ) {
+				list.querySelectorAll( 'a[href^="#"]' ).forEach( function ( a ) {
+					var id = decodeURIComponent( a.getAttribute( 'href' ).substring( 1 ) );
+					map[ id ] = map[ id ] || [];
+					map[ id ].push( a );
+				} );
+				return;
+			}
+
 			var maxDepth = parseInt( box.getAttribute( 'data-max-depth' ), 10 ) || 6;
 			var shown = false;
 
