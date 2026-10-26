@@ -32,6 +32,10 @@ final class HandbookCommentsTest extends WP_UnitTestCase {
 	 */
 	private function handbook( string $mode = '' ): int {
 		$term = self::factory()->term->create_and_get( array( 'taxonomy' => Handbooks::TAXONOMY ) );
+		// Public, so the reader in these tests (a guest) may read the page. Since
+		// 0.76.0 comments are closed to anybody who may not read the page, see
+		// CommentWriteAccessTest; these tests are about the comment mode alone.
+		update_term_meta( (int) $term->term_id, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_PUBLIC );
 		if ( '' !== $mode ) {
 			update_term_meta( (int) $term->term_id, Handbooks::META_COMMENTS, $mode );
 		}
@@ -147,6 +151,10 @@ final class HandbookCommentsTest extends WP_UnitTestCase {
 				'comment_status' => 'open',
 			)
 		);
+
+		// A page without a handbook is readable only for people who may edit
+		// other people's posts (fail-closed), so ask as one of them.
+		wp_set_current_user( (int) self::factory()->user->create( array( 'role' => 'editor' ) ) );
 
 		$this->assertTrue( comments_open( $id ) );
 	}

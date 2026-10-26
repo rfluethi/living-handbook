@@ -142,6 +142,38 @@ final class AccessController {
 		add_filter( 'comments_clauses', array( $this, 'filter_comment_clauses' ), 10, 2 );
 		add_filter( 'comment_feed_where', array( $this, 'filter_comment_feed_where' ), 10, 2 );
 		add_filter( 'rest_prepare_comment', array( $this, 'guard_rest_comment' ), 10, 2 );
+
+		// Writing a comment is a channel of its own as well. Up to 0.75.1 only the
+		// reading side was guarded: a guest could post to wp-comments-post.php, and
+		// a signed-in reader to POST /wp/v2/comments, on a page of a handbook they
+		// may not read, and only the answer came back as a 404. Both core paths ask
+		// comments_open() before they store anything, and so do XML-RPC and the
+		// comment form, so the decision is made there. Priority 100 runs after
+		// Handbooks::filter_comments_open() (99): a handbook set to "comments open"
+		// must not be able to reopen what the access rule has closed. Pings are
+		// the same write through a different door.
+		add_filter( 'comments_open', array( $this, 'guard_comments_open' ), 100, 2 );
+		add_filter( 'pings_open', array( $this, 'guard_comments_open' ), 100, 2 );
+	}
+
+	/**
+	 * Close comments and pings on a guarded post the current user may not view.
+	 *
+	 * @param bool|mixed       $open    Whether comments (or pings) are open.
+	 * @param int|string|mixed $post_id Post id.
+	 * @return bool
+	 */
+	public function guard_comments_open( $open, $post_id ): bool {
+		$open = (bool) $open;
+		if ( ! $open ) {
+			return false;
+		}
+		$post_id = (int) $post_id;
+		if ( $post_id <= 0 || ! self::is_guarded( $post_id ) ) {
+			return $open;
+		}
+
+		return self::can_view_post( $post_id, get_current_user_id() );
 	}
 
 	/**
