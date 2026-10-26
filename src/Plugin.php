@@ -29,6 +29,7 @@ use LivingHandbook\Import\HandbookImport;
 use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Privacy\Privacy;
 use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Setup\Settings;
@@ -115,6 +116,7 @@ final class Plugin {
 		( new MermaidBlock() )->register();
 		( new SourceNoteBlock() )->register();
 		( new Onboarding() )->register();
+		( new Privacy() )->register();
 
 		// After an update the migrations have to run before anything relies on
 		// them. This used to hang on admin_init, which left it to the next visit
