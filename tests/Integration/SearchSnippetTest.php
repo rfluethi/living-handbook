@@ -202,4 +202,27 @@ final class SearchSnippetTest extends WP_UnitTestCase {
 
 		$this->assertSame( array(), $this->results( 'escalation' ) );
 	}
+
+	/**
+	 * A password-protected page is found, but not quoted. Core's search leaves
+	 * protected pages out for a guest and finds them for a signed-in reader, and
+	 * up to 0.75.1 the snippet then quoted the text the password protects.
+	 *
+	 * @return void
+	 */
+	public function test_a_password_protected_page_is_not_quoted(): void {
+		$id = $this->page( 'Locked', 'Before. The vault combination is 4711. After.' );
+		wp_update_post(
+			array(
+				'ID'            => $id,
+				'post_password' => 'secret',
+			)
+		);
+
+		wp_set_current_user( (int) self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+		$results = $this->results( 'combination' );
+
+		$this->assertCount( 1, $results );
+		$this->assertSame( array(), $results[0]['snippet'] );
+	}
 }

@@ -186,11 +186,20 @@ final class Filters {
 	 * The post is the one that already passed the access check in the caller.
 	 * Reading its content anywhere else would have to repeat that check.
 	 *
+	 * A password-protected page the visitor has not unlocked is quoted from
+	 * nowhere: core's search finds it for a signed-in reader by its content, and
+	 * up to 0.75.1 the snippet then printed the words around the hit, the very
+	 * text the password was meant to keep closed.
+	 *
 	 * @param WP_Post $post   The post whose content to quote.
 	 * @param string  $search The search words.
 	 * @return array<int, array{text:string, mark:bool}>
 	 */
 	private static function snippet( WP_Post $post, string $search ): array {
+		if ( post_password_required( $post ) ) {
+			return array();
+		}
+
 		$radius = 80;
 
 		$text = wp_strip_all_tags( strip_shortcodes( excerpt_remove_blocks( $post->post_content ) ) );

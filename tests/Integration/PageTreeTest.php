@@ -256,4 +256,52 @@ final class PageTreeTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'living-handbook-card__dot--none', $card );
 		$this->assertStringContainsString( FreshnessStatus::label( FreshnessStatus::NONE ), $card );
 	}
+
+	/**
+	 * A password-protected page shows no text on its card, neither as a page
+	 * card nor as an area tile. Up to 0.75.1 both printed the first words of the
+	 * content, so the password closed the page and its card next to it gave the
+	 * opening away.
+	 *
+	 * @return void
+	 */
+	public function test_a_password_protected_page_shows_no_text_on_its_card(): void {
+		$handbook = $this->handbook( 'Protected' );
+		$page     = $this->page( $handbook, 'Locked' );
+		wp_update_post(
+			array(
+				'ID'            => $page,
+				'post_content'  => 'The vault combination is 4711.',
+				'post_excerpt'  => '',
+				'post_password' => 'secret',
+			)
+		);
+
+		wp_set_current_user( 0 );
+
+		$this->assertStringNotContainsString( 'vault', Cards::page_card( $page ) );
+		$this->assertStringNotContainsString( 'vault', Cards::areas( $handbook ) );
+		$this->assertStringContainsString( 'Locked', Cards::areas( $handbook ), 'The tile itself stays.' );
+	}
+
+	/**
+	 * Its excerpt as well, which core would otherwise replace by "There is no
+	 * excerpt because this is a protected post." on the card.
+	 *
+	 * @return void
+	 */
+	public function test_a_password_protected_page_shows_no_excerpt(): void {
+		$page = $this->page( $this->handbook( 'Protected excerpt' ), 'Locked' );
+		wp_update_post(
+			array(
+				'ID'            => $page,
+				'post_excerpt'  => 'Summary of the vault.',
+				'post_password' => 'secret',
+			)
+		);
+
+		wp_set_current_user( 0 );
+
+		$this->assertStringContainsString( '<p class="living-handbook-card__excerpt"></p>', Cards::page_card( $page ) );
+	}
 }

@@ -57,9 +57,7 @@ final class Cards {
 				. '<span class="living-handbook-visually-hidden">' . esc_html( $label ) . '</span></span>';
 		}
 
-		$excerpt = has_excerpt( $post_id )
-			? wp_strip_all_tags( get_the_excerpt( $post_id ) )
-			: wp_trim_words( wp_strip_all_tags( (string) get_post_field( 'post_content', $post_id ) ), 22 );
+		$excerpt = self::excerpt( $post_id, 22 );
 
 		$badge = '' !== $type_name
 			? '<span class="living-handbook-badge living-handbook-badge--type">' . esc_html( $type_name ) . '</span>'
@@ -89,6 +87,29 @@ final class Cards {
 			$role_line,
 			$dot
 		);
+	}
+
+	/**
+	 * The short text of a page on a card: its excerpt, or its first words.
+	 *
+	 * Nothing for a password-protected page whose password the visitor has not
+	 * entered. Up to 0.75.1 the card printed the first words of the content
+	 * regardless, so the password kept the page closed and the card next to it
+	 * open; and with an excerpt the card printed core's "There is no excerpt
+	 * because this is a protected post." as if it were the page's summary.
+	 *
+	 * @param int $post_id Post ID.
+	 * @param int $words   How many words of the content when there is no excerpt.
+	 * @return string Plain text.
+	 */
+	private static function excerpt( int $post_id, int $words ): string {
+		if ( post_password_required( $post_id ) ) {
+			return '';
+		}
+
+		return has_excerpt( $post_id )
+			? wp_strip_all_tags( get_the_excerpt( $post_id ) )
+			: wp_trim_words( wp_strip_all_tags( (string) get_post_field( 'post_content', $post_id ) ), $words );
 	}
 
 	/**
@@ -219,9 +240,10 @@ final class Cards {
 		$out = '<div class="living-handbook-cards living-handbook-cards--areas">';
 		foreach ( $tops as $post ) {
 			$children = count( $map[ (int) $post->ID ] ?? array() );
-			$excerpt  = has_excerpt( $post->ID )
-				? wp_strip_all_tags( get_the_excerpt( $post->ID ) )
-				: wp_trim_words( wp_strip_all_tags( (string) $post->post_content ), 18 );
+			// This markup is cached and shared by everybody with the same
+			// handbooks, so whether one visitor has entered the password cannot
+			// decide what goes in. A protected page shows no text here at all.
+			$excerpt = '' !== $post->post_password ? '' : self::excerpt( $post->ID, 18 );
 
 			/* translators: %d: number of subpages. */
 			$count_label = sprintf( _n( '%d subpage', '%d subpages', $children, 'living-handbook' ), $children );
