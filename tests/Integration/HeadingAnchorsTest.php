@@ -123,6 +123,36 @@ final class HeadingAnchorsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A data-id is not an id. Up to 0.75.1 the pattern `\bid=` matched inside
+	 * `data-id=`, because a hyphen is a word boundary, so the heading got no id
+	 * and its anchor link pointed at the data value.
+	 *
+	 * @return void
+	 */
+	public function test_a_data_id_is_not_taken_for_the_id(): void {
+		$out = $this->rendered( '<h2 data-id="3">Getting started</h2>' );
+
+		$this->assertStringContainsString( 'id="getting-started"', $out );
+		$this->assertStringContainsString( 'href="#getting-started"', $out );
+		$this->assertStringNotContainsString( 'href="#3"', $out );
+	}
+
+	/**
+	 * An id set by hand further down is not given out a second time to an
+	 * earlier heading. Up to 0.75.1 the first "Intro" became `intro` before the
+	 * hand-set `intro` below it was seen, and both carried the same id.
+	 *
+	 * @return void
+	 */
+	public function test_an_automatic_id_does_not_take_one_set_by_hand(): void {
+		$out = $this->rendered( '<h2>Intro</h2><p>Text</p><h2 id="intro">Overview</h2><figure id="setup"></figure><h3>Setup</h3>' );
+
+		$this->assertSame( 1, substr_count( $out, 'id="intro"' ), 'Two elements carry the same id.' );
+		$this->assertStringContainsString( 'id="intro-2"', $out );
+		$this->assertSame( 1, substr_count( $out, 'id="setup"' ), 'An id elsewhere in the content was given out again.' );
+	}
+
+	/**
 	 * An umlaut becomes a readable ASCII slug, not a percent escape. Which one
 	 * WordPress makes of it (ubersicht or uebersicht) depends on the site
 	 * language, so the test holds the property, not the spelling.

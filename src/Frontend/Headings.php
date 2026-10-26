@@ -101,7 +101,16 @@ final class Headings {
 			return $content;
 		}
 
-		$used  = array();
+		// Every id already in the content is taken before the first heading gets
+		// one. Up to 0.75.1 the ids were handed out in one pass, so a heading set
+		// by hand to `intro` further down collided with an automatic `intro`
+		// given to an earlier heading of that name, and a link to #intro went to
+		// whichever came first. The same holds for an id on any other element of
+		// the content, a figure or an anchor someone placed by hand.
+		$used = array();
+		foreach ( self::ids_in( $content ) as $taken ) {
+			$used[ $taken ] = true;
+		}
 		$index = 0;
 
 		$out = preg_replace_callback(
@@ -135,9 +144,9 @@ final class Headings {
 			return $original;
 		}
 
-		$existing = array();
-		if ( preg_match( '/\bid=["\']([^"\']+)["\']/i', $attrs, $existing ) ) {
-			$id = $existing[1];
+		$existing = self::ids_in( '<h' . $level . $attrs . '>' );
+		if ( array() !== $existing ) {
+			$id = $existing[0];
 		} else {
 			$id    = $this->slug( $inner, $index, $used );
 			$attrs = rtrim( $attrs ) . ' id="' . esc_attr( $id ) . '"';
@@ -158,6 +167,25 @@ final class Headings {
 		);
 
 		return '<h' . $level . $attrs . '>' . $inner . ' ' . $link . '</h' . $level . '>';
+	}
+
+	/**
+	 * The id attributes in a piece of markup, in order.
+	 *
+	 * The attribute has to start after whitespace. The earlier pattern looked
+	 * for `\bid=`, and a hyphen is a word boundary, so `data-id="3"` on a heading
+	 * counted as its id: the heading kept no id of its own, and the anchor link
+	 * pointed at #3, which is nothing.
+	 *
+	 * @param string $html Markup.
+	 * @return array<int, string>
+	 */
+	private static function ids_in( string $html ): array {
+		if ( ! preg_match_all( '/<[a-z][^>]*?\sid\s*=\s*(["\'])(.*?)\1/is', $html, $found ) ) {
+			return array();
+		}
+
+		return array_values( array_filter( array_map( 'strval', $found[2] ), static fn( string $id ): bool => '' !== $id ) );
 	}
 
 	/**
