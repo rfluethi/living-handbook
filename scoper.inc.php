@@ -42,4 +42,34 @@ return array(
 	'expose-global-constants' => false,
 	'expose-global-classes'   => false,
 	'expose-global-functions' => false,
+
+	// PHP-Scoper moves symfony/deprecation-contracts' trigger_deprecation() to
+	// LivingHandbook\Vendor\trigger_deprecation(), and it rewrites the calls it
+	// can be sure of: a fully qualified \trigger_deprecation() becomes the
+	// prefixed name. An unqualified call inside a namespace it leaves alone,
+	// because PHP resolves that at run time, first in the current namespace and
+	// then in the global one, and neither is where the function now lives.
+	// symfony/yaml's Parser makes exactly such a call (for the deprecated
+	// "!php/const:" key syntax), so 0.75.0 shipped a parser that ended in "Call to
+	// undefined function ...\Yaml\trigger_deprecation()" instead of a silenced
+	// notice. The patcher qualifies those calls. It is narrow on purpose: only
+	// this one function, which deprecation-contracts always defines under the
+	// prefix. The polyfill functions (ctype_*, str_contains) are only defined
+	// when PHP lacks them, so qualifying their calls would break every normal
+	// host.
+	'patchers'                => array(
+		static function ( string $file_path, string $prefix, string $contents ): string {
+			unset( $file_path );
+
+			// Not after a backslash or a word character (already qualified, or a
+			// longer name), not after -> or :: (a method), not after "function "
+			// (the definition in deprecation-contracts itself), not inside the
+			// quoted name of a function_exists() check.
+			return (string) preg_replace(
+				'/(?<![\\\\\w>:$\'"])(?<!function )trigger_deprecation\s*\(/',
+				'\\\\' . str_replace( '\\', '\\\\', $prefix ) . '\\\\trigger_deprecation(',
+				$contents
+			);
+		},
+	),
 );

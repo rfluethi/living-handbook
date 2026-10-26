@@ -32,8 +32,12 @@ version="$(grep -oE "Version:[[:space:]]*[0-9]+\.[0-9]+\.[0-9]+" living-handbook
 output="living-handbook-${version}.zip"
 
 # Install only the runtime dependencies (commonmark, symfony/yaml) so vendor/
-# is production-clean before it ships.
-composer install --no-dev --optimize-autoloader --no-interaction --quiet
+# is production-clean before it ships. --prefer-dist is stated rather than left
+# to the environment: a Composer configured for source installs (or one that
+# falls back to git when it cannot reach the GitHub API) clones every package
+# with its .git, its tests and its tooling, and the zip would then depend on the
+# machine that built it.
+composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --quiet
 
 stage="$(mktemp -d)"
 dest="${stage}/living-handbook"
@@ -54,6 +58,21 @@ cp -R languages "$dest"/
 # installation independent of a repository staying reachable.
 if [ -d docs ]; then cp -R docs "$dest"/; fi
 cp -R vendor "$dest"/
+
+# The libraries arrive with what their own development needs: test suites, a
+# vendor/bin with their command-line tools, docs folders, changelogs and
+# READMEs, and the config of their linters. None of it runs inside WordPress,
+# all of it is scanned by Plugin Check and by every security scanner a host
+# runs, and the test suites alone carry fixtures that look like attacks on
+# purpose. Removed from the staged copy before anything reads it, so neither
+# PHP-Scoper nor the rebuilt autoloader sees it. The license texts stay: they
+# are the one file of a library that has to ship with it.
+rm -rf "${dest}/vendor/bin"
+find "${dest}/vendor" -mindepth 2 -name '.*' -prune -exec rm -rf {} +
+find "${dest}/vendor" -mindepth 3 -type d \( -name tests -o -name Tests -o -name docs -o -name docker \) -prune -exec rm -rf {} +
+find "${dest}/vendor" -mindepth 3 -type f \( -iname '*.md' -o -name '*.dist' -o -name '*.neon' -o -name 'psalm.xml' \
+	-o -name 'phpunit.xml' -o -name 'docker-compose.yml' -o -name 'roave-bc-check.yaml' -o -name '*.png' \) \
+	! -iname 'license*' -delete
 if [ -f readme.txt ]; then cp readme.txt "$dest"/; fi
 if [ -f README.md ]; then cp README.md "$dest"/; fi
 if [ -f LICENSE ]; then cp LICENSE "$dest"/; fi
@@ -100,6 +119,12 @@ else
 	cp composer.lock "$dest"/ 2>/dev/null || true
 	composer dump-autoload --classmap-authoritative --no-dev --no-interaction --quiet --working-dir="$dest"
 	rm -f "${dest}/composer.lock"
+
+	# dump-autoload writes two things PHP-Scoper never saw, under names every
+	# Composer project shares: a classmap entry for Composer\InstalledVersions,
+	# and the once-per-request keys of the "files" autoloads. Both collided with
+	# other plugins in 0.75.0; see the script for how.
+	php "${root}/bin/finish-scoped-autoload.php" "$dest" 'LivingHandbook\Vendor'
 
 	# A prefix that quietly did not take would produce a zip that looks right and
 	# collides exactly as before, so the build proves it took and that the
