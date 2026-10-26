@@ -154,6 +154,59 @@ final class AccessController {
 		// the same write through a different door.
 		add_filter( 'comments_open', array( $this, 'guard_comments_open' ), 100, 2 );
 		add_filter( 'pings_open', array( $this, 'guard_comments_open' ), 100, 2 );
+
+		// The previous/next post links are a read channel that bypasses WP_Query:
+		// get_adjacent_post() writes its own SQL, so neither restrict_query() nor
+		// filter_posts() sees it. In a classic theme, the_post_navigation() on a
+		// public handbook page handed a guest the title and the address of the
+		// neighbouring page by date, whichever handbook that page was in.
+		add_filter( 'get_previous_post_where', array( $this, 'filter_adjacent_where' ), 10, 5 );
+		add_filter( 'get_next_post_where', array( $this, 'filter_adjacent_where' ), 10, 5 );
+	}
+
+	/**
+	 * Keep the previous/next post of a guarded page inside what the user may view.
+	 *
+	 * The neighbour has to be in a handbook the user may view, and in none they
+	 * may not: the same fail-closed rule as can_view_post(), expressed in SQL.
+	 * A page in no handbook is never a neighbour. What SQL cannot express is the
+	 * living_handbook_can_view_post filter; a site that widens access through it
+	 * gets the stricter answer here, which is the safe direction.
+	 *
+	 * The clause ends up in core's cache key for the adjacent post (an md5 of the
+	 * whole query), so two users with different handbooks do not share an entry.
+	 *
+	 * @param string       $where          The WHERE clause, already prepared.
+	 * @param bool         $in_same_term   Unused.
+	 * @param int[]|string $excluded_terms Unused.
+	 * @param string       $taxonomy       Unused.
+	 * @param WP_Post|null $post           The post the neighbour is looked up for.
+	 * @return string
+	 */
+	public function filter_adjacent_where( $where, $in_same_term = false, $excluded_terms = '', $taxonomy = '', $post = null ): string {
+		unset( $in_same_term, $excluded_terms, $taxonomy );
+		$where = (string) $where;
+
+		if ( ! $post instanceof WP_Post || ! in_array( $post->post_type, self::guarded_post_types(), true ) ) {
+			return $where;
+		}
+		$user_id = get_current_user_id();
+		if ( user_can( $user_id, 'edit_others_posts' ) ) {
+			return $where;
+		}
+
+		global $wpdb;
+
+		$viewable = self::viewable_term_ids( $user_id );
+		$in       = empty( $viewable ) ? '0' : implode( ',', array_map( 'absint', $viewable ) );
+		$taxonomy = esc_sql( Handbooks::TAXONOMY );
+		$terms    = "SELECT lhtr.object_id FROM {$wpdb->term_relationships} lhtr"
+			. " INNER JOIN {$wpdb->term_taxonomy} lhtt ON lhtt.term_taxonomy_id = lhtr.term_taxonomy_id"
+			. " WHERE lhtt.taxonomy = '{$taxonomy}' AND lhtt.term_id";
+
+		return $where
+			. " AND p.ID IN ( {$terms} IN ({$in}) )"
+			. " AND p.ID NOT IN ( {$terms} NOT IN ({$in}) )";
 	}
 
 	/**
