@@ -83,6 +83,15 @@ final class PathView {
 			return '';
 		}
 
+		// The lesson list is the content of a path, and a password on the path
+		// protects it. Core keeps the path's own text behind the password form,
+		// but this block sits beside the content in the template, and up to
+		// 0.75.1 it listed every lesson, linked, with a start button, under a
+		// form that asked for the password.
+		if ( post_password_required( $post ) ) {
+			return '';
+		}
+
 		$user_id = get_current_user_id();
 		$lessons = Lessons::visible( $post->ID, $user_id );
 		$total   = count( $lessons );

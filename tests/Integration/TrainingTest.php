@@ -219,6 +219,28 @@ final class TrainingTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A password on a path protects its lesson list too. Core keeps the path's
+	 * own text behind the password form, but the lesson block sits beside the
+	 * content, and up to 0.75.1 it listed every lesson, linked, under the form
+	 * that asked for the password.
+	 *
+	 * @return void
+	 */
+	public function test_a_password_protected_path_does_not_list_its_lessons(): void {
+		$path = $this->path( array( $this->page( 'Alpha' ), $this->page( 'Beta' ) ) );
+		wp_update_post(
+			array(
+				'ID'            => $path,
+				'post_password' => 'secret',
+			)
+		);
+
+		$this->go_to( (string) get_permalink( $path ) );
+
+		$this->assertSame( '', PathView::render_lessons() );
+	}
+
+	/**
 	 * The path bar is the only thing on a lesson that knows about the path, and
 	 * it appears exactly when the URL says so. Without the argument a handbook
 	 * page is a handbook page.
