@@ -249,11 +249,36 @@ final class AccessController {
 			return;
 		}
 
-		if ( self::can_view_post( $post->ID, get_current_user_id() ) ) {
+		if ( self::can_view_post( $post->ID, get_current_user_id() ) || self::may_edit( $post->ID ) ) {
 			return;
 		}
 
 		$this->deny();
+	}
+
+	/**
+	 * Whether the current user may edit this post, by WordPress's own rules.
+	 *
+	 * Somebody who may edit a page sees its whole content in the editor anyway,
+	 * so refusing them the page itself protects nothing and breaks their work.
+	 * Up to 0.75.1 it did: an author's own new page has no handbook yet, an
+	 * author's page in a restricted handbook is outside what the author may
+	 * read, and in both cases the block editor got a 404 for the page it was
+	 * editing, the preview was refused, and saving reported an error although
+	 * the change had been stored. The edit_post capability is the right line:
+	 * an author passes it for their own pages only, a contributor for their own
+	 * drafts only, so nobody reads a page of somebody else this way.
+	 *
+	 * This is deliberately not part of can_view_post(). Lists, search, the
+	 * navigation and the entry page still follow the handbook's rules, so an
+	 * author's own page in a handbook they may not read does not pull the rest
+	 * of that handbook into view.
+	 *
+	 * @param int $post_id Post id.
+	 * @return bool
+	 */
+	private static function may_edit( int $post_id ): bool {
+		return $post_id > 0 && current_user_can( 'edit_post', $post_id );
 	}
 
 	/**
@@ -627,7 +652,9 @@ final class AccessController {
 	 * @return mixed
 	 */
 	public function guard_rest_item( $response, $post ) {
-		if ( $post instanceof WP_Post && ! self::can_view_post( $post->ID, get_current_user_id() ) ) {
+		// See may_edit(): the block editor reads and saves the page through this
+		// route, so whoever may edit it must get it back.
+		if ( $post instanceof WP_Post && ! self::can_view_post( $post->ID, get_current_user_id() ) && ! self::may_edit( $post->ID ) ) {
 			return new WP_REST_Response( null, 404 );
 		}
 		return $response;
