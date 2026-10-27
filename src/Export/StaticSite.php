@@ -250,6 +250,15 @@ final class StaticSite {
 			if ( ! AccessController::can_view_post( (int) $post->ID, $user_id ) ) {
 				continue;
 			}
+			// A password-protected page stays out like a page the filter hides.
+			// Rendered, it became the password form, which posts to this site's
+			// wp-login.php and does nothing in a folder on somebody's disk; and
+			// its text, put in the file behind the form, would be readable by
+			// whoever opens the file without any password. Links to it stay
+			// absolute, as links to every page that was not exported do.
+			if ( '' !== (string) $post->post_password ) {
+				continue;
+			}
 			$posts[ (int) $post->ID ] = $post;
 		}
 

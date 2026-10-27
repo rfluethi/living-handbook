@@ -1019,4 +1019,37 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'LH_STRINGS.results[ hits.length ]', $script );
 		$this->assertStringContainsString( '.slice( 0, LH_STRINGS.max )', $script );
 	}
+
+	/**
+	 * A password-protected page stays out of the export, like a page the filter
+	 * hides. Up to 0.75.1 it went in as the password form, which posts to the
+	 * site's wp-login.php and does nothing offline. A link to it stays
+	 * absolute, as a link to every page that was not exported does.
+	 *
+	 * @return void
+	 */
+	public function test_a_password_protected_page_stays_out(): void {
+		$term   = $this->handbook( 'Company' );
+		$locked = (int) self::factory()->post->create(
+			array(
+				'post_type'     => Handbook::POST_TYPE,
+				'post_status'   => 'publish',
+				'post_title'    => 'Locked page',
+				'post_content'  => 'Secret text.',
+				'post_password' => 'secret',
+			)
+		);
+		wp_set_object_terms( $locked, array( $term ), Handbooks::TAXONOMY );
+		$link = get_permalink( $locked );
+		$this->page( $term, 'Open page', '<a href="' . $link . '">the locked page</a>' );
+
+		$zip = $this->export( $term );
+
+		$this->assertFalse( $zip->locateName( 'locked-page.html' ) );
+		$this->assertStringNotContainsString( 'Locked page', (string) $zip->getFromName( 'index.html' ), 'Not in the page list.' );
+		$this->assertStringNotContainsString( 'Secret text', (string) $zip->getFromName( 'assets/search-index.js' ) );
+		$open = (string) $zip->getFromName( 'open-page.html' );
+		$this->assertStringContainsString( 'href="' . $link . '"', $open, 'The link keeps its address.' );
+		$this->assertStringNotContainsString( 'wp-login.php?action=postpass', $open );
+	}
 }
