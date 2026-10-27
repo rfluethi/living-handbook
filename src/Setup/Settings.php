@@ -445,10 +445,33 @@ final class Settings {
 		if ( 0 === $page_id ) {
 			return 0;
 		}
-		if ( in_array( get_post_type( $page_id ), AccessController::guarded_post_types(), true ) ) {
-			return 0;
+		if ( self::is_usable_denied_page( $page_id ) ) {
+			return $page_id;
 		}
-		return 'publish' === get_post_status( $page_id ) ? $page_id : 0;
+
+		// Falling back to the built-in message silently left whoever saved the
+		// form wondering why their choice did not stick (decided on 2026-10-27:
+		// say so). The settings API shows this above the form after the save.
+		add_settings_error(
+			self::OPTION_DENIED_PAGE,
+			'living_handbook_denied_page',
+			__( 'The page for visitors without access was not saved. It has to be a published ordinary page, not a handbook page or a learning path, so the built-in message is used instead.', 'living-handbook' )
+		);
+		return 0;
+	}
+
+	/**
+	 * Whether a post can serve as the page for visitors without access: a
+	 * published post that is not one of the guarded types.
+	 *
+	 * @param int $page_id Post id.
+	 * @return bool
+	 */
+	private static function is_usable_denied_page( int $page_id ): bool {
+		if ( in_array( get_post_type( $page_id ), AccessController::guarded_post_types(), true ) ) {
+			return false;
+		}
+		return 'publish' === get_post_status( $page_id );
 	}
 
 	/**
@@ -487,6 +510,17 @@ final class Settings {
 		echo '<p class="description">'
 			. esc_html__( 'Where a signed-in visitor lands when they open a handbook they may not read. Leave this on the built-in message unless you want to explain in your own words who grants access.', 'living-handbook' )
 			. '</p>';
+
+		// A page that was fine when it was chosen can stop being usable later:
+		// unpublished, or moved into a handbook. The dropdown then shows the
+		// built-in message as selected, and the stored choice is skipped at the
+		// moment of the redirect. Say so here, where it can be fixed.
+		$stored = (int) get_option( self::OPTION_DENIED_PAGE, 0 );
+		if ( $stored > 0 && ! self::is_usable_denied_page( $stored ) ) {
+			echo '<p class="description living-handbook-warning">'
+				. esc_html__( 'The page chosen earlier is no longer a published ordinary page, so visitors see the built-in message. Choose another page and save.', 'living-handbook' )
+				. '</p>';
+		}
 	}
 
 	/**

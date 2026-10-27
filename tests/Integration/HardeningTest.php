@@ -326,6 +326,57 @@ final class HardeningTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A refused choice says so after the save, instead of quietly falling back
+	 * to the built-in message; an accepted one adds no message.
+	 *
+	 * @return void
+	 */
+	public function test_a_refused_no_access_page_says_why(): void {
+		global $wp_settings_errors;
+		$wp_settings_errors = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- resetting the settings API between cases.
+
+		$settings = new \LivingHandbook\Setup\Settings();
+		$ordinary = (int) self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'publish',
+			)
+		);
+		$settings->sanitize_denied_page( $ordinary );
+		$this->assertSame( array(), get_settings_errors( \LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE ) );
+
+		$settings->sanitize_denied_page( $this->make_page( $this->make_handbook( Handbooks::VISIBILITY_PUBLIC ) ) );
+		$errors = get_settings_errors( \LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE );
+		$this->assertCount( 1, $errors );
+		$this->assertSame( 'error', $errors[0]['type'] );
+
+		$wp_settings_errors = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- resetting the settings API between cases.
+	}
+
+	/**
+	 * A page that stopped being usable after it was chosen is pointed out on
+	 * the settings screen.
+	 *
+	 * @return void
+	 */
+	public function test_a_no_access_page_that_became_unusable_is_pointed_out(): void {
+		$page = (int) self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'draft',
+			)
+		);
+		update_option( \LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE, $page );
+
+		ob_start();
+		( new \LivingHandbook\Setup\Settings() )->render_denied_page_field();
+		$markup = (string) ob_get_clean();
+		delete_option( \LivingHandbook\Setup\Settings::OPTION_DENIED_PAGE );
+
+		$this->assertStringContainsString( 'no longer a published ordinary page', $markup );
+	}
+
+	/**
 	 * A no-access page stored before that check, which the visitor may not read
 	 * either, is skipped: the built-in message answers instead of a redirect
 	 * that would lead straight back to the refusal.
