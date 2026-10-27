@@ -211,6 +211,47 @@ final class FolderImportChunkedTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * From the second file on, answer the way GitHub does when the hour's quota
+	 * is gone. This runs after the filter that serves the files and replaces its
+	 * answer, which is why it has the higher priority.
+	 *
+	 * @return void
+	 */
+	private function limit_from_the_second_file(): void {
+		$served = 0;
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( &$served ) {
+				unset( $args );
+				// Anything this does not answer keeps the answer it already has:
+				// returning false here would throw the served file away.
+				if ( false === strpos( (string) $url, 'raw.githubusercontent.com' ) ) {
+					return $preempt;
+				}
+				++$served;
+				if ( $served < 2 ) {
+					return $preempt;
+				}
+				return array(
+					'headers'  => array(
+						'x-ratelimit-remaining' => '0',
+						'x-ratelimit-reset'     => (string) ( time() + 900 ),
+					),
+					'body'     => '',
+					'response' => array(
+						'code'    => 403,
+						'message' => 'Forbidden',
+					),
+					'cookies'  => array(),
+					'filename' => null,
+				);
+			},
+			11,
+			3
+		);
+	}
+
+	/**
 	 * Create a handbook and sign in as someone who may import.
 	 *
 	 * @param string $name Handbook name.
@@ -332,40 +373,7 @@ final class FolderImportChunkedTest extends WP_UnitTestCase {
 	public function test_an_import_stops_when_the_request_limit_is_reached(): void {
 		$this->make_repository( 5 );
 
-		// From the second file on, GitHub answers the way it does when the hour's
-		// quota is gone. This runs after the filter that serves the files and
-		// replaces its answer, which is why it has the higher priority.
-		$served = 0;
-		add_filter(
-			'pre_http_request',
-			function ( $preempt, $args, $url ) use ( &$served ) {
-				unset( $args );
-				// Anything this does not answer keeps the answer it already has:
-				// returning false here would throw the served file away.
-				if ( false === strpos( (string) $url, 'raw.githubusercontent.com' ) ) {
-					return $preempt;
-				}
-				++$served;
-				if ( $served < 2 ) {
-					return $preempt;
-				}
-				return array(
-					'headers'  => array(
-						'x-ratelimit-remaining' => '0',
-						'x-ratelimit-reset'     => (string) ( time() + 900 ),
-					),
-					'body'     => '',
-					'response' => array(
-						'code'    => 403,
-						'message' => 'Forbidden',
-					),
-					'cookies'  => array(),
-					'filename' => null,
-				);
-			},
-			11,
-			3
-		);
+		$this->limit_from_the_second_file();
 		$this->serve_repository();
 
 		$git    = new GitSync();
@@ -387,6 +395,29 @@ final class FolderImportChunkedTest extends WP_UnitTestCase {
 			)
 		);
 		$this->assertLessThan( 5, count( $imported ), 'It must not carry on creating the rest.' );
+	}
+
+	/**
+	 * The import that runs in one call stops at the limit as well.
+	 *
+	 * Up to 0.75.1 it went straight on with the next pass: every pass set the
+	 * limit aside, asked for one more file, was refused and lost that page,
+	 * until the work list was used up and half the handbook was missing.
+	 *
+	 * @return void
+	 */
+	public function test_an_import_in_one_call_stops_when_the_request_limit_is_reached(): void {
+		$this->make_repository( 5 );
+		$this->limit_from_the_second_file();
+		$this->serve_repository();
+
+		$result = ( new GitSync() )->import_folder_complete( 'https://github.com/example/repo/tree/main/handbuch/de', $this->handbook( 'Limited at once' ), false );
+
+		$this->assertIsArray( $result );
+		$this->assertArrayHasKey( 'retry_after', $result, 'It has to say when asking again makes sense.' );
+		$this->assertArrayHasKey( 'job', $result, 'And how to carry on from where it stopped.' );
+		$this->assertStringContainsString( 'GitHub', implode( ' ', $result['notes'] ?? array() ) );
+		$this->assertSame( 2, $this->requests_matching( 'raw.githubusercontent.com' ), 'No file is asked for once GitHub has said no.' );
 	}
 
 	/**

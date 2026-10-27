@@ -547,11 +547,17 @@ final class GitSync {
 	}
 
 	/**
-	 * Import a whole folder in one call, however long it takes.
+	 * Imports a whole folder in one call, as far as GitHub lets it.
 	 *
 	 * The chunked import exists for the browser, which can come back for the rest.
-	 * A caller inside PHP cannot, so this one loops until the import is done. Only
-	 * use it where the run is known to be small, for example the bundled handbook.
+	 * A caller inside PHP cannot, so this one loops over the passes until the
+	 * import is done. Only use it where the run is known to be small, for
+	 * example the app handbook loaded from a GitHub override.
+	 *
+	 * The loop stops when GitHub's request limit is used up, and the result
+	 * then carries the job id, retry_after and the note that says when to try
+	 * again. Up to 0.75.1 it went on with the next pass: every pass asked for
+	 * one more file, was refused and lost that page.
 	 *
 	 * @param string $tree_url    A github.com tree URL to a folder.
 	 * @param int    $handbook_id Optional handbook term id.
@@ -561,16 +567,19 @@ final class GitSync {
 	public function import_folder_complete( string $tree_url, int $handbook_id = 0, bool $publish = false ) {
 		$result = $this->import_folder( $tree_url, $handbook_id, $publish );
 
-		while ( is_array( $result ) && isset( $result['job'] ) ) {
+		while ( is_array( $result ) && isset( $result['job'] ) && ! isset( $result['retry_after'] ) ) {
 			$next = $this->import_folder( '', 0, false, (string) $result['job'] );
 			if ( is_wp_error( $next ) ) {
 				return $next;
 			}
 			$result['pages'] = array_merge( $result['pages'], $next['pages'] );
 			$result['notes'] = array_merge( $result['notes'] ?? array(), $next['notes'] ?? array() );
-			unset( $result['job'], $result['remaining'], $result['total'] );
-			if ( isset( $next['job'] ) ) {
-				$result['job'] = $next['job'];
+			unset( $result['job'], $result['phase'], $result['remaining'], $result['total'] );
+			// What the last pass says about carrying on is what counts.
+			foreach ( array( 'job', 'phase', 'remaining', 'total', 'retry_after' ) as $key ) {
+				if ( isset( $next[ $key ] ) ) {
+					$result[ $key ] = $next[ $key ];
+				}
 			}
 		}
 
