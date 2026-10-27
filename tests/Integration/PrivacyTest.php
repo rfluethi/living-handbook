@@ -3,15 +3,17 @@
  * The personal data the plugin keeps is reachable through WordPress's privacy
  * tools, and goes with a deleted account.
  *
- * Two places hold a user id: the voter list of a page (so a signed-in reader's
- * "Was this helpful?" counts once) and the reviewer of a page. Neither showed
- * up in Tools > Export Personal Data or Erase Personal Data, the privacy policy
- * guide had no text for the plugin, and a deleted account stayed in every voter
- * list.
+ * Three places hold a user id: the voter list of a page (so a signed-in
+ * reader's "Was this helpful?" counts once), the reviewer of a page, and the
+ * access list of a restricted handbook. Up to 0.75.1 none showed up in Tools >
+ * Export Personal Data or Erase Personal Data, the privacy policy guide had no
+ * text for the plugin, and a deleted account stayed in every list.
  *
- * The eraser treats the two differently, deliberately: the voter id goes and
- * the totals stay; the reviewer stays and is reported as retained, because who
- * reviewed a page is the page's editorial record. See Privacy for the reasoning.
+ * The eraser treats them differently, deliberately: the voter id goes and the
+ * totals stay; the reviewer and the access list stay and are reported as
+ * retained, because the one is the page's editorial record and the other is
+ * what lets an active account read the handbook. See Privacy for the
+ * reasoning.
  *
  * @package LivingHandbook
  */
@@ -21,6 +23,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Feedback\Feedback;
+use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use WP_UnitTestCase;
@@ -166,7 +169,7 @@ final class PrivacyTest extends WP_UnitTestCase {
 
 	/**
 	 * Eight times the pages with voter lists must not cost eight times the
-	 * queries. Up to 0.76.0 every list was read on its own, inside the request
+	 * queries. Up to 0.75.1 every list was read on its own, inside the request
 	 * that deletes the account.
 	 *
 	 * @return void
@@ -176,6 +179,80 @@ final class PrivacyTest extends WP_UnitTestCase {
 		$large = $this->cost_of_forgetting( 40 );
 
 		$this->assertLessThanOrEqual( $small + 2, $large, sprintf( 'With 40 other pages it took %d queries, with 5 it took %d.', $large, $small ) );
+	}
+
+	/**
+	 * A restricted handbook whose access list names the given users.
+	 *
+	 * @param array<int, int> $users User ids.
+	 * @return int Term id.
+	 */
+	private function handbook_for( array $users ): int {
+		$term = (int) self::factory()->term->create(
+			array(
+				'taxonomy' => Handbooks::TAXONOMY,
+				'name'     => 'Board ' . wp_rand(),
+			)
+		);
+		update_term_meta( $term, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_RESTRICTED );
+		update_term_meta( $term, Handbooks::META_USERS, $users );
+
+		return $term;
+	}
+
+	/**
+	 * The access exporter names the handbooks whose access list holds the
+	 * person, and no other. Up to 0.75.1 there was no such exporter.
+	 *
+	 * @return void
+	 */
+	public function test_the_access_exporter_lists_the_handbooks_naming_the_person(): void {
+		$person = (int) self::factory()->user->create( array( 'user_email' => 'reader@example.org' ) );
+		$other  = (int) self::factory()->user->create();
+
+		$named = $this->handbook_for( array( $other, $person ) );
+		$not   = $this->handbook_for( array( $other ) );
+
+		$export = call_user_func( $this->registered( 'wp_privacy_personal_data_exporters', 'living-handbook-access' ), 'reader@example.org', 1 );
+		$items  = wp_list_pluck( $export['data'], 'item_id' );
+		$this->assertSame( array( 'living-handbook-access-' . $named ), $items );
+		$this->assertNotContains( 'living-handbook-access-' . $not, $items );
+		$this->assertTrue( $export['done'] );
+	}
+
+	/**
+	 * The eraser leaves the access list alone and reports it: emptying it
+	 * would end an active account's access without anybody deciding so.
+	 *
+	 * @return void
+	 */
+	public function test_the_eraser_retains_and_reports_the_access_list(): void {
+		$person = (int) self::factory()->user->create( array( 'user_email' => 'reader@example.org' ) );
+		$named  = $this->handbook_for( array( $person ) );
+
+		$result = call_user_func( $this->registered( 'wp_privacy_personal_data_erasers', 'living-handbook' ), 'reader@example.org', 1 );
+
+		$this->assertTrue( $result['items_retained'] );
+		$this->assertStringContainsString( 'access list', implode( ' ', $result['messages'] ) );
+		$this->assertSame( array( $person ), array_map( 'intval', (array) get_term_meta( $named, Handbooks::META_USERS, true ) ) );
+	}
+
+	/**
+	 * A deleted account leaves the access lists of the handbooks, the others
+	 * named there stay.
+	 *
+	 * @return void
+	 */
+	public function test_a_deleted_account_leaves_the_access_lists(): void {
+		require_once ABSPATH . 'wp-admin/includes/user.php';
+
+		$person = (int) self::factory()->user->create();
+		$other  = (int) self::factory()->user->create();
+		$named  = $this->handbook_for( array( $person, $other ) );
+
+		wp_delete_user( $person );
+
+		$this->assertSame( array( $other ), array_map( 'intval', (array) get_term_meta( $named, Handbooks::META_USERS, true ) ) );
 	}
 
 	/**
@@ -207,7 +284,7 @@ final class PrivacyTest extends WP_UnitTestCase {
 			}
 		}
 		$this->assertCount( 1, $texts );
-		foreach ( array( 'Gravatar', 'GitHub', 'local storage', 'counted only once' ) as $needle ) {
+		foreach ( array( 'Gravatar', 'GitHub', 'local storage', 'counted only once', 'named people' ) as $needle ) {
 			$this->assertStringContainsString( $needle, $texts[0] );
 		}
 	}

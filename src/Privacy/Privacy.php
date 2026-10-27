@@ -11,35 +11,41 @@ namespace LivingHandbook\Privacy;
 
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Feedback\Feedback;
+use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Exporter, eraser, policy text and account clean-up for the two places the
- * plugin stores a user id.
+ * Registers the exporters, the eraser, the policy text and the account
+ * clean-up for the three places the plugin stores a user id.
  *
  * - The voter list of a page (Feedback::VOTERS): the ids of the signed-in
  *   people who answered "Was this helpful?", kept so each of them counts once.
  *   Which answer someone gave is not stored with the id, only the two totals.
  * - The reviewer of a page (Metadata::REVIEWER): the person who last reviewed
  *   it, shown with name and avatar in the page footer.
+ * - The access list of a handbook (Handbooks::META_USERS): the people a
+ *   restricted handbook names one by one as readers.
  *
- * Neither was reachable through Tools > Export Personal Data or Erase Personal
- * Data, and the privacy policy guide said nothing about the plugin. A deleted
- * account also stayed in every voter list.
+ * Up to 0.75.1 none of them was reachable through Tools > Export Personal Data
+ * or Erase Personal Data, and the privacy policy guide said nothing about the
+ * plugin. A deleted account also stayed in every voter list and access list.
  *
- * The two are not treated alike on erasure, on purpose. Taking an id out of a
- * voter list loses nothing: the totals stay, and the only consequence is that
- * the person could vote again, which a deleted account cannot. Taking a
- * reviewer off a page removes who is accountable for the last review, which is
- * the page's editorial record rather than the person's data about themselves.
- * Whether that should go is a decision for the site, not for an automatic
- * eraser, so the reviewer is exported and reported as retained, with the
- * reason, and an administrator who decides otherwise changes it on the page.
+ * Erasure treats them differently, on purpose. Taking an id out of a voter
+ * list loses nothing: the totals stay, and the only consequence is that the
+ * person could vote again. The other two are retained and reported, with the
+ * reason. The reviewer is the page's editorial record rather than the
+ * person's data about themselves. The access list is what lets an active
+ * account read a handbook at all, and an eraser that emptied it would end that
+ * access silently. Whether either should go is a decision for the site, so an
+ * administrator who decides otherwise changes it on the page or the handbook.
+ * A deleted account has nothing left to read, so it leaves the access lists as
+ * it leaves the voter lists.
  */
 final class Privacy {
 
@@ -51,7 +57,7 @@ final class Privacy {
 	private const BATCH = 100;
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -63,7 +69,7 @@ final class Privacy {
 	}
 
 	/**
-	 * Add the two exporters.
+	 * Adds the three exporters.
 	 *
 	 * @param array<string, array<string, mixed>> $exporters Registered exporters.
 	 * @return array<string, array<string, mixed>>
@@ -77,12 +83,16 @@ final class Privacy {
 			'exporter_friendly_name' => __( 'Living Handbook reviews', 'living-handbook' ),
 			'callback'               => array( $this, 'export_reviews' ),
 		);
+		$exporters['living-handbook-access']   = array(
+			'exporter_friendly_name' => __( 'Living Handbook access', 'living-handbook' ),
+			'callback'               => array( $this, 'export_access' ),
+		);
 
 		return $exporters;
 	}
 
 	/**
-	 * Add the eraser.
+	 * Adds the eraser.
 	 *
 	 * @param array<string, array<string, mixed>> $erasers Registered erasers.
 	 * @return array<string, array<string, mixed>>
@@ -97,7 +107,7 @@ final class Privacy {
 	}
 
 	/**
-	 * The pages this person voted on.
+	 * Exports the pages this person voted on.
 	 *
 	 * @param string $email_address The requester's email address.
 	 * @param int    $page          Batch number, from 1.
@@ -134,7 +144,7 @@ final class Privacy {
 	}
 
 	/**
-	 * The pages this person is recorded as reviewer of.
+	 * Exports the pages this person is recorded as reviewer of.
 	 *
 	 * @param string $email_address The requester's email address.
 	 * @param int    $page          Batch number, from 1.
@@ -173,7 +183,47 @@ final class Privacy {
 	}
 
 	/**
-	 * Remove the person from every voter list, and report the reviews kept.
+	 * Exports the handbooks whose access list names this person.
+	 *
+	 * A site has a handful of handbooks, not thousands, so they are answered in
+	 * one call.
+	 *
+	 * @param string $email_address The requester's email address.
+	 * @param int    $page          Batch number, from 1 (unused, there is one batch).
+	 * @return array{data: array<int, array<string, mixed>>, done: bool}
+	 */
+	public function export_access( string $email_address, int $page = 1 ): array {
+		unset( $page );
+		$user_id = self::user_id( $email_address );
+		$data    = array();
+		foreach ( 0 === $user_id ? array() : self::handbooks_listing( $user_id ) as $term ) {
+			$link   = get_term_link( $term );
+			$data[] = array(
+				'group_id'          => 'living-handbook-access',
+				'group_label'       => __( 'Handbook access', 'living-handbook' ),
+				'group_description' => __( 'Handbooks that name you individually as somebody who may read them.', 'living-handbook' ),
+				'item_id'           => 'living-handbook-access-' . $term->term_id,
+				'data'              => array(
+					array(
+						'name'  => __( 'Handbook', 'living-handbook' ),
+						'value' => $term->name,
+					),
+					array(
+						'name'  => __( 'Address', 'living-handbook' ),
+						'value' => is_wp_error( $link ) ? '' : $link,
+					),
+				),
+			);
+		}
+
+		return array(
+			'data' => $data,
+			'done' => true,
+		);
+	}
+
+	/**
+	 * Removes the person from every voter list, and reports the reviews and the access kept.
 	 *
 	 * The batches run over every page that has a voter list, whoever is on it,
 	 * ordered by id. That set does not shrink while the eraser works, because a
@@ -221,13 +271,28 @@ final class Privacy {
 					count( $reviewed )
 				);
 			}
+
+			$access = self::handbooks_listing( $user_id );
+			if ( array() !== $access ) {
+				$result['items_retained'] = true;
+				$result['messages'][]     = sprintf(
+					/* translators: %d: number of handbooks. */
+					_n(
+						'Living Handbook: this person is named in the access list of %d handbook. Taking them off would silently end their access, so it is not erased automatically. Remove them in the handbook\'s settings if they should no longer read it.',
+						'Living Handbook: this person is named in the access lists of %d handbooks. Taking them off would silently end their access, so it is not erased automatically. Remove them in the handbooks\' settings if they should no longer read them.',
+						count( $access ),
+						'living-handbook'
+					),
+					count( $access )
+				);
+			}
 		}
 
 		return $result;
 	}
 
 	/**
-	 * Take a deleted account out of every voter list.
+	 * Takes a deleted account out of every voter list and every access list.
 	 *
 	 * The reviewer is left as it is, for the reason given on the class: it is
 	 * the page's record. A reviewer id without an account behind it shows no
@@ -239,6 +304,11 @@ final class Privacy {
 	public function forget_deleted_user( int $user_id ): void {
 		if ( $user_id <= 0 ) {
 			return;
+		}
+
+		foreach ( self::handbooks_listing( $user_id ) as $term ) {
+			$users = array_values( array_filter( self::access_list( (int) $term->term_id ), static fn( int $id ): bool => $id !== $user_id ) );
+			update_term_meta( (int) $term->term_id, Handbooks::META_USERS, $users );
 		}
 
 		$candidates = self::pages_that_may_list( $user_id );
@@ -285,7 +355,7 @@ final class Privacy {
 	}
 
 	/**
-	 * Suggest the plugin's part of the privacy policy.
+	 * Suggests the plugin's part of the privacy policy.
 	 *
 	 * @return void
 	 */
@@ -298,7 +368,7 @@ final class Privacy {
 	}
 
 	/**
-	 * The suggested policy text.
+	 * Returns the suggested policy text.
 	 *
 	 * @return string
 	 */
@@ -310,6 +380,8 @@ final class Privacy {
 				. __( 'The footer of a handbook page can show who created, last updated and last reviewed it, with their name and profile picture. The reviewer is stored with the page.', 'living-handbook' ),
 			'<strong>' . __( 'Profile pictures', 'living-handbook' ) . '</strong> '
 				. __( 'Profile pictures in the page footer are provided by Gravatar, a service of Automattic, unless this site uses a different avatar setting. To show one, your browser loads the image from gravatar.com, which receives a hash of the person\'s email address, your IP address and the usual browser information.', 'living-handbook' ),
+			'<strong>' . __( 'Access to handbooks', 'living-handbook' ) . '</strong> '
+				. __( 'A handbook can be opened to named people only. Their user accounts are stored with the handbook\'s settings for as long as they are meant to read it, and are removed when an account is deleted.', 'living-handbook' ),
 			'<strong>' . __( 'Content from GitHub', 'living-handbook' ) . '</strong> '
 				. __( 'Handbook pages can be imported and kept up to date from GitHub. These requests are made by this website\'s server to api.github.com, raw.githubusercontent.com and codeload.github.com. They name the repository and the files, and contain no data about the visitors of this site.', 'living-handbook' ),
 			'<strong>' . __( 'Progress through learning paths', 'living-handbook' ) . '</strong> '
@@ -392,6 +464,42 @@ final class Privacy {
 				)
 			)
 		);
+	}
+
+	/**
+	 * The handbooks whose access list names this person.
+	 *
+	 * @param int $user_id User id.
+	 * @return array<int, WP_Term>
+	 */
+	private static function handbooks_listing( int $user_id ): array {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => Handbooks::TAXONOMY,
+				'hide_empty' => false,
+			)
+		);
+		if ( ! is_array( $terms ) ) {
+			return array();
+		}
+
+		$listing = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term && in_array( $user_id, self::access_list( (int) $term->term_id ), true ) ) {
+				$listing[] = $term;
+			}
+		}
+		return $listing;
+	}
+
+	/**
+	 * The access list of a handbook, as integers.
+	 *
+	 * @param int $term_id Handbook term id.
+	 * @return array<int, int>
+	 */
+	private static function access_list( int $term_id ): array {
+		return array_values( array_filter( array_map( 'intval', (array) get_term_meta( $term_id, Handbooks::META_USERS, true ) ) ) );
 	}
 
 	/**
