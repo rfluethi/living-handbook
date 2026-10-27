@@ -83,10 +83,11 @@ final class MermaidBlock {
 			LIVING_HANDBOOK_VERSION,
 			true
 		);
-		wp_localize_script(
+		// Configuration, not translations: printed as data before the script.
+		wp_add_inline_script(
 			'living-handbook-mermaid-block',
-			'lhMermaid',
-			array( 'src' => LIVING_HANDBOOK_URL . $lib_rel )
+			'var lhMermaid = ' . wp_json_encode( array( 'src' => LIVING_HANDBOOK_URL . $lib_rel ), JSON_UNESCAPED_SLASHES ) . ';',
+			'before'
 		);
 		wp_set_script_translations( 'living-handbook-mermaid-block', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 

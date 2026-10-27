@@ -1160,16 +1160,20 @@ final class MarkdownImportPage {
 			true
 		);
 		wp_enqueue_script( 'living-handbook-markdown-import' );
-		wp_localize_script(
+		// Configuration, not translations: printed as data before the script.
+		// wp_localize_script() is meant for strings and casts every value to one.
+		wp_add_inline_script(
 			'living-handbook-markdown-import',
-			'lhImport',
-			array(
-				'convertPath'  => '/living-handbook/v1/convert',
-				'zipPath'      => '/living-handbook/v1/import-zip',
-				'githubPath'   => '/living-handbook/v1/import-github',
-				'createPath'   => '/living-handbook/v1/create',
-				'finalizePath' => '/living-handbook/v1/finalize',
-			)
+			'var lhImport = ' . wp_json_encode(
+				array(
+					'convertPath'  => '/living-handbook/v1/convert',
+					'zipPath'      => '/living-handbook/v1/import-zip',
+					'githubPath'   => '/living-handbook/v1/import-github',
+					'createPath'   => '/living-handbook/v1/create',
+					'finalizePath' => '/living-handbook/v1/finalize',
+				)
+			) . ';',
+			'before'
 		);
 
 		wp_set_script_translations( 'living-handbook-markdown-import', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
