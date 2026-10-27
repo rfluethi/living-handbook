@@ -82,7 +82,7 @@ final class Metadata {
 			self::UPDATED   => array( self::class, 'sanitize_date_value' ),
 			self::REVIEWED  => array( self::class, 'sanitize_date_value' ),
 			self::INTERVAL  => 'absint',
-			self::REVIEWER  => 'absint',
+			self::REVIEWER  => array( self::class, 'sanitize_reviewer_value' ),
 			self::TOC_DEPTH => array( self::class, 'sanitize_toc_depth_value' ),
 		);
 
@@ -125,6 +125,43 @@ final class Metadata {
 	public static function sanitize_date_value( $value ): string {
 		$date = trim( (string) $value );
 		return 1 === preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ? $date : '';
+	}
+
+	/**
+	 * A reviewer is a user ID, or 0 for nobody.
+	 *
+	 * The empty choice of a user dropdown posts -1 unless told otherwise, and
+	 * absint() turns that into 1: up to 0.75.1 every save of the meta box
+	 * without a reviewer made user 1 the reviewer and showed that person in the
+	 * public footer. A negative number and anything that is not a number mean
+	 * nobody. This is the sanitizer of the meta field, so it runs on every
+	 * write, a REST write included.
+	 *
+	 * @param mixed $value Incoming value.
+	 * @return int
+	 */
+	public static function sanitize_reviewer_value( $value ): int {
+		if ( ! is_numeric( $value ) ) {
+			return 0;
+		}
+		return max( 0, (int) $value );
+	}
+
+	/**
+	 * The reviewer a form posted, or 0 for nobody.
+	 *
+	 * On top of sanitize_reviewer_value(), the ID of a user who does not exist
+	 * means nobody too: the forms list only existing users, so anything else
+	 * did not come from them. The check stays with the forms rather than in
+	 * the field's sanitizer, which also runs for imports and other code that
+	 * writes the field directly.
+	 *
+	 * @param mixed $value Posted value, unslashed.
+	 * @return int
+	 */
+	private static function posted_reviewer( $value ): int {
+		$user_id = self::sanitize_reviewer_value( $value );
+		return ( $user_id > 0 && false !== get_userdata( $user_id ) ) ? $user_id : 0;
 	}
 
 	/**
@@ -219,11 +256,12 @@ final class Metadata {
 			<?php
 			wp_dropdown_users(
 				array(
-					'name'             => 'living_handbook_reviewer',
-					'id'               => 'living_handbook_reviewer',
-					'selected'         => $reviewer,
-					'show_option_none' => __( 'none', 'living-handbook' ),
-					'class'            => 'widefat',
+					'name'              => 'living_handbook_reviewer',
+					'id'                => 'living_handbook_reviewer',
+					'selected'          => $reviewer,
+					'show_option_none'  => __( 'none', 'living-handbook' ),
+					'option_none_value' => 0,
+					'class'             => 'widefat',
 				)
 			);
 			?>
@@ -280,7 +318,7 @@ final class Metadata {
 		$interval = isset( $_POST['living_handbook_interval'] ) ? absint( $_POST['living_handbook_interval'] ) : 0;
 		update_post_meta( $post_id, self::INTERVAL, $interval );
 
-		$reviewer = isset( $_POST['living_handbook_reviewer'] ) ? absint( $_POST['living_handbook_reviewer'] ) : 0;
+		$reviewer = isset( $_POST['living_handbook_reviewer'] ) ? self::posted_reviewer( sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewer'] ) ) ) : 0;
 		update_post_meta( $post_id, self::REVIEWER, $reviewer );
 
 		$depth = isset( $_POST['living_handbook_toc_depth'] ) ? absint( $_POST['living_handbook_toc_depth'] ) : 0;
@@ -516,7 +554,7 @@ final class Metadata {
 		$interval = isset( $_POST['living_handbook_interval'] ) ? absint( $_POST['living_handbook_interval'] ) : 0;
 		update_post_meta( $post_id, self::INTERVAL, $interval );
 
-		$reviewer = isset( $_POST['living_handbook_reviewer'] ) ? absint( $_POST['living_handbook_reviewer'] ) : 0;
+		$reviewer = isset( $_POST['living_handbook_reviewer'] ) ? self::posted_reviewer( sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewer'] ) ) ) : 0;
 		update_post_meta( $post_id, self::REVIEWER, $reviewer );
 	}
 }
