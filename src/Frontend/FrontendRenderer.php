@@ -26,7 +26,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Loads the frontend stylesheet and script and offers the navigation shortcode.
+ * Registers the front-end stylesheet and script with their data and inline CSS,
+ * enqueues them on handbook views, adds the body class, injects the handbook
+ * list into a marked core Navigation block, and offers the navigation shortcode.
  */
 final class FrontendRenderer {
 
@@ -41,7 +43,11 @@ final class FrontendRenderer {
 	private const NAV_MARKER_CLASS = 'has-handbook-menu';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
+	 *
+	 * The block editor needs no hook of its own for the stylesheet: every block
+	 * names it as its style in block.json, and in the admin core enqueues the
+	 * style handles of every registered block (BlockAssetsTest).
 	 *
 	 * @return void
 	 */
@@ -49,14 +55,13 @@ final class FrontendRenderer {
 		add_action( 'init', array( $this, 'register_assets' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
 		add_action( 'wp_head', array( $this, 'mark_scripting' ), 1 );
-		add_action( 'enqueue_block_assets', array( $this, 'enqueue_editor_preview' ) );
 		add_filter( 'body_class', array( $this, 'body_class' ) );
 		add_filter( 'render_block', array( $this, 'inject_handbook_menu' ), 10, 2 );
 		add_shortcode( 'living_handbook_nav', array( $this, 'nav_shortcode' ) );
 	}
 
 	/**
-	 * Register the front-end stylesheet and script, once, with their data.
+	 * Registers the front-end stylesheet and script, once, with their data.
 	 *
 	 * Registering is not enqueueing: nothing is loaded here. The handles exist so
 	 * that both ways of asking for them lead to the same file. Every block names
@@ -75,7 +80,8 @@ final class FrontendRenderer {
 		// a theme or a block pulls the handle into the head. Its data comes from
 		// wp_localize_script(), which core prints as a separate inline script
 		// before the tag; only an inline script added "after" would make core
-		// fall back to a blocking load, and this handle has none (see the test).
+		// fall back to a blocking load, and this handle has none
+		// (BlockAssetsTest::test_the_front_end_script_is_deferred()).
 		wp_register_script(
 			'living-handbook',
 			LIVING_HANDBOOK_URL . 'assets/frontend.js',
@@ -115,14 +121,14 @@ final class FrontendRenderer {
 			'living-handbook',
 			'livingHandbook',
 			array(
-				'rest'            => esc_url_raw( rest_url( 'living-handbook/v1/feedback' ) ),
+				'rest'            => esc_url_raw( rest_url( Filters::REST_NAMESPACE . '/feedback' ) ),
 				'filter'          => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE ) ),
 				'search'          => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE_SEARCH ) ),
 				// Only for a signed-in reader. Core checks a nonce that is sent even
 				// for a guest, and a page cache serves the guest's nonce long after it
-				// expired: on a cached public handbook, search, filters and feedback
-				// answered 403 after a day (0.75.0). A guest needs no nonce, the
-				// endpoints decide on their own what a guest may see.
+				// expired. Up to 0.75.0, search, filters and feedback on a cached
+				// public handbook answered 403 after a day. A guest needs no nonce,
+				// the endpoints decide on their own what a guest may see.
 				'nonce'           => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 				'thanks'          => __( 'Thanks for your feedback.', 'living-handbook' ),
 				'feedbackError'   => __( 'Your feedback could not be sent. Please try again.', 'living-handbook' ),
@@ -153,11 +159,12 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Enqueue the stylesheet and script on every handbook view.
+	 * Enqueues the stylesheet and script on every handbook view.
 	 *
 	 * The blocks bring the same two handles along themselves, through their
 	 * block.json, wherever they are rendered. This covers what is not a block:
-	 * the handbook templates, the archive, the term archive.
+	 * the handbook templates of a single page, a learning path and a handbook
+	 * entry page (term archive).
 	 *
 	 * @return void
 	 */
@@ -171,7 +178,7 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Mark the document as scripted before the page is painted.
+	 * Marks the document as scripted before the page is painted.
 	 *
 	 * The accordion navigation collapses closed branches only once it knows the
 	 * script will run, because without the script a closed branch could never be
@@ -195,44 +202,21 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Load the frontend stylesheet inside the block editor as well, so the
-	 * server-rendered previews of the handbook blocks (overview, entry, menu)
-	 * look like the real page instead of an unstyled list. enqueue_block_assets
-	 * runs in both contexts; the admin check keeps this out of the frontend,
-	 * where enqueue() already handles the stylesheet on handbook views only.
-	 * Scoped to the handbook editor, so other post-type editors do not load it.
-	 *
-	 * @return void
-	 */
-	public function enqueue_editor_preview(): void {
-		if ( ! is_admin() ) {
-			return;
-		}
-		$screen = get_current_screen();
-		if ( null === $screen || Handbook::POST_TYPE !== $screen->post_type ) {
-			return;
-		}
-		wp_enqueue_style( 'living-handbook', LIVING_HANDBOOK_URL . 'assets/frontend.css', array(), LIVING_HANDBOOK_VERSION );
-	}
-
-	/**
-	 * Add a scope class to the body on handbook views so a site can style the
+	 * Adds a scope class to the body on handbook views, so a site can style the
 	 * blocks used inside a handbook without affecting the rest of the site.
 	 *
 	 * @param string[] $classes Body classes.
 	 * @return string[]
 	 */
 	public function body_class( array $classes ): array {
-		if ( is_singular( Handbook::POST_TYPE )
-			|| is_post_type_archive( Handbook::POST_TYPE )
-			|| is_tax( Handbooks::TAXONOMY ) ) {
+		if ( is_singular( Handbook::POST_TYPE ) || is_tax( Handbooks::TAXONOMY ) ) {
 			$classes[] = 'living-handbook-page';
 		}
 		return $classes;
 	}
 
 	/**
-	 * Inject the accessible handbooks into a core Navigation block, a navigation
+	 * Injects the accessible handbooks into a core Navigation block, a navigation
 	 * submenu, or a navigation link that carries the marker class, so the
 	 * handbooks appear inside the theme's own navigation and its mobile overlay.
 	 *
@@ -480,9 +464,10 @@ final class FrontendRenderer {
 	 * @return bool
 	 */
 	private static function is_handbook_view(): bool {
+		// No post type archive: it is switched off (has_archive => false), the
+		// overview is a page holding the overview block.
 		return is_singular( Handbook::POST_TYPE )
 			|| is_singular( Training::POST_TYPE )
-			|| is_post_type_archive( Handbook::POST_TYPE )
 			|| is_tax( Handbooks::TAXONOMY )
 			|| has_block( 'living-handbook/overview' )
 			|| has_block( 'living-handbook/entry' )
@@ -491,7 +476,7 @@ final class FrontendRenderer {
 	}
 
 	/**
-	 * Fallback shortcode that renders the current handbook's page tree.
+	 * Renders the current handbook's page tree for the fallback shortcode.
 	 *
 	 * The primary navigation is the living-handbook/navigation block placed in
 	 * the single template. This shortcode covers classic templates that cannot

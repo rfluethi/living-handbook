@@ -174,6 +174,26 @@ final class BlockAssetsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The block editor gets the stylesheet through block.json, on every editor
+	 * screen and without a hook of the plugin's own: in the admin, core enqueues
+	 * the style handles of every registered block on enqueue_block_assets. Up to
+	 * 0.75.1 the plugin added the same stylesheet itself for the handbook
+	 * editor only, which this makes unnecessary.
+	 *
+	 * @return void
+	 */
+	public function test_the_editor_gets_the_stylesheet_from_block_json(): void {
+		foreach ( array( Handbook::POST_TYPE, 'page' ) as $screen ) {
+			wp_dequeue_style( 'living-handbook' );
+			set_current_screen( $screen );
+			do_action( 'enqueue_block_assets' );
+
+			$this->assertTrue( wp_style_is( 'living-handbook', 'enqueued' ), $screen );
+		}
+		set_current_screen( 'front' );
+	}
+
+	/**
 	 * The diagram library and the script that starts it load deferred. It is
 	 * 3.5 MB that only draws what is already on the page, and it used to block
 	 * the parser at the end of the body. Deferring only one of them would not
