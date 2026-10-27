@@ -168,4 +168,39 @@ final class NavigationTitleTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '.living-handbook-nav--accordion.living-handbook-nav--js .living-handbook-nav__sublist {', $css );
 		$this->assertStringContainsString( ".classList.add( 'living-handbook-nav--js' )", $js );
 	}
+
+	/**
+	 * The page is marked as scripted in the head, before it is painted. Up to
+	 * the early marker the deferred script folded the accordion only after the
+	 * browser had drawn the whole tree open: a jump of the layout on every page
+	 * view of a large handbook.
+	 *
+	 * @return void
+	 */
+	public function test_the_page_is_marked_as_scripted_before_it_is_painted(): void {
+		wp_enqueue_script( 'living-handbook' );
+
+		ob_start();
+		( new \LivingHandbook\Frontend\FrontendRenderer() )->mark_scripting();
+		$head = (string) ob_get_clean();
+		wp_dequeue_script( 'living-handbook' );
+
+		$this->assertStringContainsString( "classList.add('living-handbook-js')", $head );
+
+		$css = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/frontend.css' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
+		$this->assertStringContainsString( '.living-handbook-js .living-handbook-nav--accordion .living-handbook-nav__sublist,', $css, 'The early marker collapses the branches.' );
+	}
+
+	/**
+	 * Off a handbook view, and without the script, the head stays untouched.
+	 *
+	 * @return void
+	 */
+	public function test_no_marker_where_the_script_is_not_loaded(): void {
+		$this->go_to( home_url( '/' ) );
+
+		ob_start();
+		( new \LivingHandbook\Frontend\FrontendRenderer() )->mark_scripting();
+		$this->assertSame( '', (string) ob_get_clean() );
+	}
 }

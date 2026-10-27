@@ -48,6 +48,7 @@ final class FrontendRenderer {
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_assets' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_action( 'wp_head', array( $this, 'mark_scripting' ), 1 );
 		add_action( 'enqueue_block_assets', array( $this, 'enqueue_editor_preview' ) );
 		add_filter( 'body_class', array( $this, 'body_class' ) );
 		add_filter( 'render_block', array( $this, 'inject_handbook_menu' ), 10, 2 );
@@ -166,6 +167,30 @@ final class FrontendRenderer {
 
 		wp_enqueue_style( 'living-handbook' );
 		wp_enqueue_script( 'living-handbook' );
+	}
+
+	/**
+	 * Mark the document as scripted before the page is painted.
+	 *
+	 * The accordion navigation collapses closed branches only once it knows the
+	 * script will run, because without the script a closed branch could never be
+	 * opened again. The script itself loads deferred at the end of the page, so
+	 * a browser painted the whole tree open first and folded it a moment later:
+	 * on a handbook of a few hundred pages a jump of the entire layout on every
+	 * page view. One line in the head sets the marker before anything is drawn;
+	 * the script still marks the navigation itself, for a page where this did
+	 * not run (a strict content security policy, a theme without wp_head()).
+	 *
+	 * In a block theme the template is rendered before the head is printed, so
+	 * a block placed anywhere on the page has already asked for the script.
+	 *
+	 * @return void
+	 */
+	public function mark_scripting(): void {
+		if ( ! self::is_handbook_view() && ! wp_script_is( 'living-handbook', 'enqueued' ) ) {
+			return;
+		}
+		wp_print_inline_script_tag( "document.documentElement.classList.add('living-handbook-js');" );
 	}
 
 	/**

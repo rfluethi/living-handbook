@@ -566,12 +566,17 @@
 }
 
 /* Accordion variant: sublists are collapsed unless their branch is open. Only
-   once the script has marked the navigation: the toggles need the script, and
-   without it a closed branch could never be opened again. */
+   once it is known that the script runs: the toggles need the script, and
+   without it a closed branch could never be opened again. Two markers say so:
+   living-handbook-js on the root element, set by one line in the head before
+   the page is painted, and living-handbook-nav--js on the navigation, set by
+   the script itself where the head line did not run. */
+.living-handbook-js .living-handbook-nav--accordion .living-handbook-nav__sublist,
 .living-handbook-nav--accordion.living-handbook-nav--js .living-handbook-nav__sublist {
 	display: none;
 }
 
+.living-handbook-js .living-handbook-nav--accordion .living-handbook-nav__item.is-open > .living-handbook-nav__sublist,
 .living-handbook-nav--accordion.living-handbook-nav--js .living-handbook-nav__item.is-open > .living-handbook-nav__sublist {
 	display: block;
 }
@@ -579,8 +584,8 @@
 /* Without the script no toggle does anything, the title toggle included, so
    none is offered: the navigation is shown whole, like the tree variant, and
    the spacers go with the toggles so the labels still line up. */
-.living-handbook-nav:not(.living-handbook-nav--js) .living-handbook-nav__toggle,
-.living-handbook-nav:not(.living-handbook-nav--js) .living-handbook-nav__spacer {
+html:not(.living-handbook-js) .living-handbook-nav:not(.living-handbook-nav--js) .living-handbook-nav__toggle,
+html:not(.living-handbook-js) .living-handbook-nav:not(.living-handbook-nav--js) .living-handbook-nav__spacer {
 	display: none;
 }
 

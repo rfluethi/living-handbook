@@ -226,6 +226,9 @@ final class SiteRenderer {
 		$out .= '<title>' . esc_html( $page_title ) . '</title>' . "\n";
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -- written into an exported file, where there is no WordPress to enqueue with.
 		$out .= '<link rel="stylesheet" href="' . esc_attr( $prefix ) . 'assets/style.css">' . "\n";
+		// The same early marker as on the site (FrontendRenderer::mark_scripting()),
+		// so the exported navigation does not unfold and fold on every page.
+		$out .= "<script>document.documentElement.classList.add('living-handbook-js');</script>\n";
 		$out .= '</head>' . "\n";
 		// living-handbook-page is what the plugin's own frontend script looks for
 		// before it makes content images and diagrams clickable. The export reuses
