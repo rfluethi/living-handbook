@@ -100,7 +100,10 @@ final class Training {
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action( 'init', array( $this, 'register_meta' ) );
-		add_action( 'init', array( $this, 'maybe_flush_rewrites' ), 99 );
+		// wp_loaded, not init: a rebuild at init priority 99 leaves out the
+		// rules of every plugin that registers its types later than that, the
+		// reason Plugin::maybe_upgrade() moved there too.
+		add_action( 'wp_loaded', array( $this, 'maybe_flush_rewrites' ) );
 		add_action( 'update_option_' . self::OPTION_ENABLED, array( $this, 'schedule_flush' ) );
 		// The first time the switch is used the option does not exist yet, and
 		// update_option() then adds it: update_option_ never fires, and

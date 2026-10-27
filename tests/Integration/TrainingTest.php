@@ -448,6 +448,25 @@ final class TrainingTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The scheduled rebuild runs on wp_loaded, after every plugin has
+	 * registered its types, not on init where a later plugin's rules would be
+	 * left out of the rebuilt set.
+	 *
+	 * @return void
+	 */
+	public function test_the_scheduled_rebuild_waits_for_wp_loaded(): void {
+		$training = new Training();
+		$training->register();
+
+		$this->assertFalse( has_action( 'init', array( $training, 'maybe_flush_rewrites' ) ), 'Not on init.' );
+		$this->assertNotFalse( has_action( 'wp_loaded', array( $training, 'maybe_flush_rewrites' ) ), 'On wp_loaded.' );
+
+		update_option( Training::OPTION_FLUSH, 1 );
+		$training->maybe_flush_rewrites();
+		$this->assertFalse( get_option( Training::OPTION_FLUSH ), 'The rebuild ran and is no longer pending.' );
+	}
+
+	/**
 	 * The three learning path blocks are registered in the editor script, so
 	 * the Site Editor does not show them as unsupported.
 	 *
