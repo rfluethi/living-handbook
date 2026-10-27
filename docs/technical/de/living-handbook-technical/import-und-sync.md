@@ -206,7 +206,7 @@ Die nicht angemeldete GitHub-API erlaubt etwa 60 Anfragen pro Stunde. Ein große
 
 ## Deinstallieren
 
-Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur die eigenen Einstellungen und Caches des Plugins. Unter **Handbuch → Einstellungen** kannst du dich dafür entscheiden, alles zu entfernen, was das Plugin angelegt hat, einschließlich Handbuch-Seiten, Handbüchern, deren Metadaten, der angelegten Taxonomie-Begriffe und aller plugin-eigenen Templates, die du im Site-Editor bearbeitet hast. Die Option ist bewusst standardmäßig aus: Ein versehentliches Löschen soll dich nicht das Handbuch kosten. Auch mit ihr bleiben die Dateien der Mediathek stehen, die zu Handbuch-Seiten hochgeladen oder beim Import eingespielt wurden eingeschlossen; wer sie loswerden will, löscht sie in der Mediathek.
+Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur die eigenen Einstellungen und Caches des Plugins. Unter **Handbuch → Einstellungen** kannst du dich dafür entscheiden, alles zu entfernen, was das Plugin angelegt hat, einschließlich Handbuch-Seiten, Handbüchern, deren Metadaten, der angelegten Taxonomie-Begriffe und aller plugin-eigenen Templates, die du im Site-Editor bearbeitet hast. Die Option ist bewusst standardmäßig aus: Ein versehentliches Löschen soll dich nicht das Handbuch kosten. Auch mit ihr bleiben die Dateien der Mediathek stehen, die zu Handbuch-Seiten hochgeladen oder beim Import eingespielt wurden eingeschlossen; wer sie loswerden will, löscht sie in der Mediathek. Was das Plugin an diesen Dateien vermerkt hat, damit ein erneuter Import ein unverändertes Bild wiederverwendet (`_lh_import_file`, `_lh_import_hash`), entfernt es dabei.
 
 ## Grenzen
 

@@ -185,6 +185,16 @@ function living_handbook_run_uninstall(): void {
 		}
 	}
 
+	// The plugin's bookkeeping on the images the Markdown import uploaded: the
+	// source file name and its hash, which let a re-import reuse an unchanged
+	// image (MarkdownImportPage::META_IMPORT_FILE and META_IMPORT_HASH, private
+	// there). The images themselves stay on purpose, they belong to the media
+	// library and may be used anywhere on the site; the meta means nothing
+	// without the plugin. Up to 0.75.1 it was left on every one of them.
+	foreach ( array( '_lh_import_file', '_lh_import_hash' ) as $attachment_key ) {
+		delete_post_meta_by_key( $attachment_key );
+	}
+
 	// The overview page created on activation, if it is still a page.
 	if ( $overview_page_id > 0 && 'page' === get_post_type( $overview_page_id ) ) {
 		wp_delete_post( $overview_page_id, true );

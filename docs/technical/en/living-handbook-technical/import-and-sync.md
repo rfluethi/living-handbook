@@ -199,7 +199,7 @@ The unauthenticated GitHub API allows about 60 requests per hour. Importing a la
 
 ## Uninstalling
 
-By default, deleting the plugin keeps your content and removes only the plugin's own settings and caches. On **Handbook → Settings** you can opt in to remove everything the plugin created, including handbook pages, handbooks, their metadata, the seeded taxonomy terms and any of the plugin's templates you edited in the Site Editor. The option is off by default on purpose: an accidental delete should not cost you the handbook. Even with it, the files in the media library stay, including the ones uploaded to handbook pages or sideloaded by an import; whoever wants them gone deletes them in the media library.
+By default, deleting the plugin keeps your content and removes only the plugin's own settings and caches. On **Handbook → Settings** you can opt in to remove everything the plugin created, including handbook pages, handbooks, their metadata, the seeded taxonomy terms and any of the plugin's templates you edited in the Site Editor. The option is off by default on purpose: an accidental delete should not cost you the handbook. Even with it, the files in the media library stay, including the ones uploaded to handbook pages or sideloaded by an import; whoever wants them gone deletes them in the media library. What the plugin noted on those files so that a later import reuses an unchanged image (`_lh_import_file`, `_lh_import_hash`) is removed with it.
 
 ## Limits
 

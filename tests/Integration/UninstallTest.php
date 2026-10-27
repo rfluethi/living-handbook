@@ -417,4 +417,29 @@ final class UninstallTest extends WP_UnitTestCase {
 		$left = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( 'living_handbook_' ) . '%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- checking the table itself is the point of the test.
 		$this->assertSame( array(), $left );
 	}
+
+	/**
+	 * With the opt-in, the images the Markdown import uploaded stay in the
+	 * media library, but the plugin's bookkeeping on them goes. Without it,
+	 * both stay, so a reinstalled plugin still reuses the images.
+	 *
+	 * @return void
+	 */
+	public function test_the_opt_in_removes_the_import_meta_but_keeps_the_images(): void {
+		$image = self::factory()->attachment->create( array( 'post_mime_type' => 'image/png' ) );
+		update_post_meta( $image, '_lh_import_file', 'diagram.png' );
+		update_post_meta( $image, '_lh_import_hash', 'abc123' );
+		update_post_meta( $image, '_wp_attachment_image_alt', 'A diagram' );
+
+		$this->uninstall();
+		$this->assertSame( 'diagram.png', get_post_meta( $image, '_lh_import_file', true ), 'An ordinary uninstall keeps it.' );
+
+		update_option( GitSync::OPTION_UNINSTALL, true );
+		$this->uninstall();
+
+		$this->assertSame( 'attachment', get_post_type( $image ), 'The image stays, on purpose.' );
+		$this->assertSame( '', get_post_meta( $image, '_lh_import_file', true ) );
+		$this->assertSame( '', get_post_meta( $image, '_lh_import_hash', true ) );
+		$this->assertSame( 'A diagram', get_post_meta( $image, '_wp_attachment_image_alt', true ), 'Meta that is not the plugin\'s stays.' );
+	}
 }
