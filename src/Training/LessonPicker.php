@@ -245,8 +245,17 @@ final class LessonPicker {
 			<input type="hidden" name="<?php echo esc_attr( self::FIELD ); ?>" value="<?php echo esc_attr( implode( ',', $lessons ) ); ?>" class="living-handbook-lessons__value">
 
 			<?php if ( $handbook <= 0 ) : ?>
+				<?php
+				// The block editor saves a meta box but does not render it again,
+				// so the search field appears only once the page is reloaded. Up
+				// to 0.75.1 the hint said only "save it once", and after saving
+				// the box looked unchanged. Showing the field without a reload
+				// would take more than the box: the search route reads the
+				// handbook the path has stored, and would have to be told an
+				// unsaved one and check it.
+				?>
 				<p class="living-handbook-lessons__hint">
-					<?php esc_html_e( 'Choose a handbook for this learning path and save it once. The lessons are searched inside that handbook, so there is nothing to search in yet.', 'living-handbook' ); ?>
+					<?php esc_html_e( 'Choose a handbook for this learning path, save it, and reload the page. The lessons are searched inside that handbook, so there is nothing to search in yet.', 'living-handbook' ); ?>
 				</p>
 			<?php else : ?>
 				<p>

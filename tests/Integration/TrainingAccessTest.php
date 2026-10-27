@@ -431,4 +431,23 @@ final class TrainingAccessTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'Salary bands', $html );
 		$this->assertStringContainsString( 'Internal lesson', $html, 'A lesson the editor may read keeps its title.' );
 	}
+
+	/**
+	 * A path without a handbook says to save and reload. The block editor
+	 * does not render a saved meta box again, so up to 0.75.1 the hint said
+	 * "save it once", and after saving the box looked unchanged.
+	 *
+	 * @return void
+	 */
+	public function test_a_path_without_handbook_says_to_reload_after_saving(): void {
+		wp_set_current_user( (int) self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$path = (int) self::factory()->post->create( array( 'post_type' => Training::POST_TYPE ) );
+
+		ob_start();
+		( new LessonPicker() )->render( get_post( $path ) );
+		$html = (string) ob_get_clean();
+
+		$this->assertStringContainsString( 'save it, and reload the page', $html );
+		$this->assertStringNotContainsString( 'living-handbook-lessons__search', $html, 'There is nothing to search in yet.' );
+	}
 }

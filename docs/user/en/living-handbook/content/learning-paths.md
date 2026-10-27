@@ -20,7 +20,7 @@ Switching it off hides everything again and deletes nothing. Your paths, their t
 ## How it works
 
 1. Open **Handbook → Learning paths → New learning path**.
-2. Give it a **title** ("Editorial onboarding"), pick the **handbook** it belongs to on the right, and **save once**. Only then does the path know which handbook to search for lessons in.
+2. Give it a **title** ("Editorial onboarding"), pick the **handbook** it belongs to on the right, **save once and reload the page**. Only then does the path know which handbook to search for lessons in, and only after the reload does the **Lessons** box show the search field.
 3. Write a few sentences into the text area: who the path is for, what should stick at the end, roughly how long it takes. This text is the entry page.
 4. In the **Lessons** box, type into the search field. It offers published pages of this handbook. Clicking a result appends it to the list.
 5. **Move up** and **Move down** put the list in the right order, **Remove** takes a lesson out again. The buttons work with a mouse and with the keyboard alike.

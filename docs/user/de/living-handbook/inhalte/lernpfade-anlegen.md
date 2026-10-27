@@ -20,7 +20,7 @@ Ausschalten blendet alles wieder aus und löscht nichts. Deine Pfade, ihre Texte
 ## So geht es
 
 1. Öffne **Handbuch → Lernpfade → Neuer Lernpfad**.
-2. Gib ihm einen **Titel** («Onboarding Redaktion»), wähle rechts das **Handbuch**, zu dem er gehört, und **speichere einmal**. Erst danach weiß der Pfad, in welchem Handbuch er nach Lektionen suchen soll.
+2. Gib ihm einen **Titel** («Onboarding Redaktion»), wähle rechts das **Handbuch**, zu dem er gehört, **speichere einmal und lade die Seite neu**. Erst danach weiß der Pfad, in welchem Handbuch er nach Lektionen suchen soll, und erst nach dem Neuladen zeigt der Kasten **Lektionen** das Suchfeld.
 3. Schreib in den Textbereich ein paar Sätze: für wen der Pfad gedacht ist, was am Ende sitzen soll, wie lange es etwa dauert. Dieser Text ist die Einstiegsseite.
 4. Im Kasten **Lektionen** tippst du in das Suchfeld. Angeboten werden veröffentlichte Seiten dieses Handbuchs. Ein Klick auf einen Treffer hängt ihn unten an die Liste an.
 5. Mit **Nach oben** und **Nach unten** bringst du die Liste in die richtige Reihenfolge, mit **Entfernen** fliegt eine Lektion wieder raus. Die Knöpfe funktionieren mit Maus und Tastatur gleichermaßen.
