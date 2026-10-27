@@ -2,16 +2,12 @@
 /**
  * Render a handbook page for the export the way the site renders it.
  *
- * The first version of the export built its pages by hand: breadcrumb, title,
- * badges, table of contents, content, metadata footer, in that order, decided
- * here. Which meant a site that had moved those blocks around in the Site
- * Editor got an export that ignored every one of those decisions. Rico put it
- * plainly, and he was right.
- *
- * So the export renders the block template instead, the same
+ * The export renders the block template, the same
  * `living-handbook//single-handbook` the front end uses, and the edited version
  * of it when there is one. What comes out has the blocks where the site put
- * them, because it is the same markup going through the same renderers.
+ * them, because it is the same markup going through the same renderers. A page
+ * built here by hand, in an order decided here, would ignore every change a
+ * site made in the Site Editor.
  *
  * Two things have to be true for that to work, and both are the reason this
  * class exists rather than a one-line `do_blocks()`:
@@ -52,26 +48,27 @@ final class TemplateRender {
 	private const TEMPLATE = 'single-handbook';
 
 	/**
-	 * Blocks that are cut before rendering, and why.
+	 * Blocks that are cut before rendering, by their full name.
+	 *
+	 * Full names as parse_blocks() reports them: a core block carries the core/
+	 * namespace there, although its markup leaves it out (wp:template-part).
 	 *
 	 * @var array<int, string>
 	 */
 	private const DROP = array(
-		// Core blocks are serialised without their namespace: the markup says
-		// wp:template-part, not wp:core/template-part. Getting that wrong is
-		// silent, because a filter that matches nothing removes nothing, and the
-		// theme's header and footer sailed straight into the export.
-		'template-part',
+		// The theme's header and footer, with a site navigation that leads
+		// nowhere once the page is a file.
+		'core/template-part',
 		// Everything below needs a server to answer it.
 		'living-handbook/feedback',
 		'living-handbook/search',
-		'comments',
-		'post-comments-form',
-		'comments-query-loop',
+		'core/comments',
+		'core/post-comments-form',
+		'core/comments-query-loop',
 	);
 
 	/**
-	 * The template markup, with what cannot travel already removed.
+	 * Returns the template markup, with what cannot travel already removed.
 	 *
 	 * The edited version wins over the one the plugin registers: if somebody
 	 * rearranged the page in the Site Editor, that arrangement is the point.
@@ -100,34 +97,88 @@ final class TemplateRender {
 			return '';
 		}
 
-		foreach ( self::DROP as $block ) {
-			$content = self::without( $content, $block );
-		}
-
-		return $content;
+		return self::without( $content, self::DROP );
 	}
 
 	/**
-	 * Remove every occurrence of one block from block markup.
+	 * Removes every block with one of the given names from block markup, at any
+	 * depth, together with everything inside it.
 	 *
-	 * Both spellings: the self-closing form a block without inner content uses,
-	 * and the pair around inner blocks.
+	 * The markup is parsed and serialized again rather than cut with a pattern.
+	 * Up to 0.75.1 a pattern did it, and the attribute part of a block with
+	 * attributes could run past the end of its own comment: a comments block
+	 * as the Site Editor writes it took every block up to the next
+	 * self-closing one with attributes along with it.
 	 *
-	 * @param string $markup Block markup.
-	 * @param string $block  Block name, for example core/comments.
+	 * @param string             $markup Block markup.
+	 * @param array<int, string> $names  Full block names, for example core/comments.
 	 * @return string
 	 */
-	private static function without( string $markup, string $block ): string {
-		$name = preg_quote( $block, '#' );
+	private static function without( string $markup, array $names ): string {
+		$kept = array();
+		foreach ( parse_blocks( $markup ) as $block ) {
+			if ( self::is_dropped( $block, $names ) ) {
+				continue;
+			}
+			$kept[] = self::without_inner( $block, $names );
+		}
 
-		$markup = (string) preg_replace( '#<!--\s+wp:' . $name . '(\s+\{.*?\})?\s+/-->#s', '', $markup );
-		$markup = (string) preg_replace( '#<!--\s+wp:' . $name . '(\s+\{.*?\})?\s+-->.*?<!--\s+/wp:' . $name . '\s+-->#s', '', $markup );
-
-		return $markup;
+		return serialize_blocks( $kept );
 	}
 
 	/**
-	 * Render one page through the template.
+	 * Removes the dropped blocks from the inner blocks of one parsed block.
+	 *
+	 * A parsed block marks the place of each inner block in its innerContent
+	 * with a null, in order. A removed inner block takes its null with it, or
+	 * the serializer would put the next block in its place.
+	 *
+	 * @param array<string, mixed> $block A parsed block.
+	 * @param array<int, string>   $names Full block names to remove.
+	 * @return array<string, mixed>
+	 */
+	private static function without_inner( array $block, array $names ): array {
+		$inner = isset( $block['innerBlocks'] ) && is_array( $block['innerBlocks'] ) ? array_values( $block['innerBlocks'] ) : array();
+		if ( array() === $inner ) {
+			return $block;
+		}
+
+		$blocks  = array();
+		$content = array();
+		$next    = 0;
+		foreach ( (array) ( $block['innerContent'] ?? array() ) as $chunk ) {
+			if ( null !== $chunk ) {
+				$content[] = $chunk;
+				continue;
+			}
+			$child = $inner[ $next ] ?? null;
+			++$next;
+			if ( ! is_array( $child ) || self::is_dropped( $child, $names ) ) {
+				continue;
+			}
+			$blocks[]  = self::without_inner( $child, $names );
+			$content[] = null;
+		}
+
+		$block['innerBlocks']  = $blocks;
+		$block['innerContent'] = $content;
+
+		return $block;
+	}
+
+	/**
+	 * Whether a parsed block is one of the blocks to remove.
+	 *
+	 * @param array<string, mixed> $block A parsed block.
+	 * @param array<int, string>   $names Full block names to remove.
+	 * @return bool
+	 */
+	private static function is_dropped( array $block, array $names ): bool {
+		return in_array( (string) ( $block['blockName'] ?? '' ), $names, true );
+	}
+
+	/**
+	 * Renders one page through the template.
 	 *
 	 * @param WP_Post $post   The page.
 	 * @param string  $markup The prepared template markup.
@@ -174,7 +225,7 @@ final class TemplateRender {
 	}
 
 	/**
-	 * The layout rules WordPress collected while rendering.
+	 * Returns the layout rules WordPress collected while rendering.
 	 *
 	 * Block supports (the flex rules behind a columns block, gaps, and so on) are
 	 * not in any stylesheet: the style engine gathers them per request and the
