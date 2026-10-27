@@ -143,6 +143,49 @@ final class EditorAccessTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * An author opens the attachment page of an image on their own page in a
+	 * handbook they may not read, and the editor gets the image through REST.
+	 * Both guards asked only whether the parent may be read, so the author was
+	 * refused a file of the page they may open.
+	 *
+	 * @return void
+	 */
+	public function test_an_author_opens_the_files_of_their_page_in_a_restricted_handbook(): void {
+		$author = (int) self::factory()->user->create( array( 'role' => 'author' ) );
+		$id     = $this->page( $author, 'publish', $this->restricted_handbook() );
+		$image  = (int) self::factory()->attachment->create(
+			array(
+				'post_parent'    => $id,
+				'post_mime_type' => 'image/png',
+				'post_title'     => 'Screenshot',
+				'post_author'    => $author,
+				'file'           => 'screenshot.png',
+			)
+		);
+		wp_set_current_user( $author );
+
+		$this->assertSame( 200, rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/media/' . $image ) )->get_status(), 'The editor gets the image.' );
+
+		$this->go_to( (string) get_permalink( $image ) );
+		$this->assertTrue( is_attachment() );
+		try {
+			( new AccessController() )->guard_attachment();
+		} catch ( WPDieException $e ) {
+			$this->fail( 'The author was refused a file of their own page: ' . $e->getMessage() );
+		}
+
+		$other = (int) self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $other );
+		$this->assertSame( 404, rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/media/' . $image ) )->get_status(), 'Another author still does not.' );
+		try {
+			( new AccessController() )->guard_attachment();
+			$this->fail( 'Another author should have been refused.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'does not have access', $e->getMessage() );
+		}
+	}
+
+	/**
 	 * A contributor gets their own draft back as well.
 	 *
 	 * @return void

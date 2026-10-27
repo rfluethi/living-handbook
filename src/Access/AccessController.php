@@ -307,8 +307,10 @@ final class AccessController {
 			return;
 		}
 
+		// Whoever may edit the parent page may open its files too, as they may
+		// open the page itself in guard_singular().
 		$parent = (int) $attachment->post_parent;
-		if ( ! self::is_guarded( $parent ) || self::can_view_post( $parent, get_current_user_id() ) ) {
+		if ( ! self::is_guarded( $parent ) || self::can_view_post( $parent, get_current_user_id() ) || self::may_edit( $parent ) ) {
 			return;
 		}
 
@@ -604,7 +606,10 @@ final class AccessController {
 		if ( ! self::is_guarded( (int) $post->post_parent ) ) {
 			return $response;
 		}
-		if ( self::can_view_post( (int) $post->post_parent, get_current_user_id() ) ) {
+		// The block editor loads the page's images through this route; an author
+		// whose own page sits in a handbook they may not read must get them, as
+		// they get the page (see may_edit()).
+		if ( self::can_view_post( (int) $post->post_parent, get_current_user_id() ) || self::may_edit( (int) $post->post_parent ) ) {
 			return $response;
 		}
 		return new WP_REST_Response( null, 404 );
