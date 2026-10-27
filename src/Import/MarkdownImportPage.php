@@ -257,8 +257,13 @@ final class MarkdownImportPage {
 	 * test, and the bounds are the part worth pinning: they are what stands
 	 * between a prepared archive and the server's memory.
 	 *
+	 * An entry above ZIP_MAX_FILE_BYTES is left out rather than refusing the
+	 * whole archive, and if it is one the import would have used, a Markdown
+	 * file, an image or the mkdocs.yml, its path is returned under "skipped",
+	 * so the screen can name it. Up to 0.75.1 it was left out without a word.
+	 *
 	 * @param string $path Path of the ZIP on disk.
-	 * @return array{markdown: array<string, string>, images: array<string, string>, mkdocs: string}|WP_Error
+	 * @return array{markdown: array<string, string>, images: array<string, string>, mkdocs: string, skipped: array<int, string>}|WP_Error
 	 */
 	public static function read_zip( string $path ) {
 		if ( ! class_exists( 'ZipArchive' ) ) {
@@ -280,6 +285,7 @@ final class MarkdownImportPage {
 		$markdown_files = array();
 		$image_files    = array();
 		$mkdocs_yaml    = '';
+		$skipped        = array();
 		$total_bytes    = 0;
 
 		/**
@@ -299,11 +305,18 @@ final class MarkdownImportPage {
 				continue;
 			}
 
+			$ext       = strtolower( pathinfo( $base, PATHINFO_EXTENSION ) );
+			$is_mkdocs = in_array( strtolower( $base ), array( 'mkdocs.yml', 'mkdocs.yaml' ), true );
+			$wanted    = 'md' === $ext || in_array( $ext, self::IMAGE_EXTENSIONS, true ) || $is_mkdocs;
+
 			// Guard against a prepared archive: skip a single oversized entry,
 			// and stop before the uncompressed total exhausts memory.
 			$stat = $zip->statIndex( $i );
 			$size = is_array( $stat ) ? (int) $stat['size'] : 0;
 			if ( $size > self::ZIP_MAX_FILE_BYTES ) {
+				if ( $wanted ) {
+					$skipped[] = $name;
+				}
 				continue;
 			}
 			$total_bytes += $size;
@@ -317,12 +330,11 @@ final class MarkdownImportPage {
 			if ( false === $content ) {
 				continue;
 			}
-			$ext = strtolower( pathinfo( $base, PATHINFO_EXTENSION ) );
 			if ( 'md' === $ext ) {
 				$markdown_files[ $name ] = $content;
 			} elseif ( in_array( $ext, self::IMAGE_EXTENSIONS, true ) ) {
 				$image_files[ $base ] = $content;
-			} elseif ( '' === $mkdocs_yaml && ( 'mkdocs.yml' === strtolower( $base ) || 'mkdocs.yaml' === strtolower( $base ) ) ) {
+			} elseif ( '' === $mkdocs_yaml && $is_mkdocs ) {
 				$mkdocs_yaml = $content;
 			}
 		}
@@ -332,6 +344,7 @@ final class MarkdownImportPage {
 			'markdown' => $markdown_files,
 			'images'   => $image_files,
 			'mkdocs'   => $mkdocs_yaml,
+			'skipped'  => $skipped,
 		);
 	}
 
@@ -366,8 +379,23 @@ final class MarkdownImportPage {
 		$image_files    = $read['images'];
 		$mkdocs_yaml    = $read['mkdocs'];
 
+		$notes = array();
+		if ( array() !== $read['skipped'] ) {
+			$notes[] = sprintf(
+				/* translators: 1: size limit in whole megabytes, 2: list of file paths in the ZIP. */
+				_n(
+					'This file in the ZIP is larger than %1$d MB and was left out: %2$s.',
+					'These files in the ZIP are larger than %1$d MB each and were left out: %2$s.',
+					count( $read['skipped'] ),
+					'living-handbook'
+				),
+				(int) round( self::ZIP_MAX_FILE_BYTES / MB_IN_BYTES ),
+				wp_sprintf( '%l', $read['skipped'] )
+			);
+		}
 		if ( empty( $markdown_files ) ) {
-			return self::import_error( __( 'No .md files found in the ZIP.', 'living-handbook' ) );
+			// A ZIP whose only Markdown was too large says so, not just "none".
+			return self::import_error( implode( ' ', array_merge( array( __( 'No .md files found in the ZIP.', 'living-handbook' ) ), $notes ) ) );
 		}
 
 		$image_map = array();
@@ -378,7 +406,6 @@ final class MarkdownImportPage {
 			}
 		}
 
-		$notes = array();
 		if ( '' !== $mkdocs_yaml && MkDocsImport::available() ) {
 			$specs = MkDocsImport::build_specs( $mkdocs_yaml, $markdown_files, $image_map, new MarkdownConverter(), $notes );
 			if ( ! empty( $specs ) ) {

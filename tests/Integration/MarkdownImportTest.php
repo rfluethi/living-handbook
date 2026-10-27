@@ -136,6 +136,27 @@ final class MarkdownImportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The oversized file the import would have used is named, so the screen
+	 * can say what is missing; a file the import never reads is not.
+	 *
+	 * @return void
+	 */
+	public function test_an_oversized_file_is_named(): void {
+		$path = $this->make_zip(
+			array(
+				'docs/small.md'    => "# Small\n",
+				'docs/huge.md'     => str_repeat( 'x', 5242880 + 1024 ),
+				'docs/archive.bin' => str_repeat( 'y', 5242880 + 1024 ),
+			)
+		);
+
+		$read = MarkdownImportPage::read_zip( $path );
+
+		$this->assertIsArray( $read );
+		$this->assertSame( array( 'docs/huge.md' ), $read['skipped'] ?? null );
+	}
+
+	/**
 	 * Past the total size the reading stops with an error rather than filling
 	 * memory. The limit is lowered through its filter, so the test does not have
 	 * to build a hundred megabytes to prove it.
