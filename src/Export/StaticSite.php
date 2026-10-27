@@ -261,6 +261,17 @@ final class StaticSite {
 			TempFiles::sweep( 'lh-site', 2 * self::JOB_TTL );
 
 			$state = self::plan( $term, $root_id, (string) $request->get_param( 'theme' ) );
+			// An area that leaves nothing is an area this user may not export:
+			// not in the handbook, not readable to them, or left out like a
+			// password-protected page. Saying the handbook is empty would be
+			// wrong, so the answer names the area, as the bundle export does.
+			if ( $root_id > 0 && array() === $state['queue'] ) {
+				return new WP_Error(
+					'living_handbook_area_refused',
+					__( 'That area cannot be exported.', 'living-handbook' ),
+					array( 'status' => 403 )
+				);
+			}
 			if ( array() === $state['queue'] ) {
 				return new WP_Error(
 					'living_handbook_export_empty',

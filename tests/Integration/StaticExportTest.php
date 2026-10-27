@@ -1073,6 +1073,35 @@ final class StaticExportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * An area the export would leave empty is refused as an area. Up to this
+	 * fix the answer said the whole handbook had no readable pages, which was
+	 * not true and sent people looking in the wrong place.
+	 *
+	 * @return void
+	 */
+	public function test_an_area_that_cannot_be_exported_says_so(): void {
+		$term   = $this->handbook( 'Company' );
+		$this->page( $term, 'Open page', 'Text.' );
+		$locked = (int) self::factory()->post->create(
+			array(
+				'post_type'     => Handbook::POST_TYPE,
+				'post_status'   => 'publish',
+				'post_title'    => 'Locked area',
+				'post_password' => 'secret',
+			)
+		);
+		wp_set_object_terms( $locked, array( $term ), Handbooks::TAXONOMY );
+
+		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/static-export' );
+		$request->set_param( 'handbook', $term );
+		$request->set_param( 'area', $locked );
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 403, $response->get_status() );
+		$this->assertSame( 'living_handbook_area_refused', $response->as_error()->get_error_code() );
+	}
+
+	/**
 	 * The navigation of an exported page lists only exported pages. Up to this
 	 * fix the page tree in the rendered template still named the
 	 * password-protected page plan() had left out, with an absolute link to the
