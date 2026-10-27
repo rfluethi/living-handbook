@@ -130,7 +130,11 @@ final class Postprocessor {
 		// was emptied the same way. A value the block once set, and no longer
 		// does because the line was removed in the source, is still cleared: for
 		// what the block says, the source stays the source.
-		$set     = (array) get_post_meta( $post_id, self::META_TRANSPORT_SET, true );
+		// Not a cast: get_post_meta() answers '' for a page without the meta, and
+		// (array) '' is array( '' ), which is not empty and was written back on
+		// every sync of every page whose block sets neither field.
+		$set     = get_post_meta( $post_id, self::META_TRANSPORT_SET, true );
+		$set     = is_array( $set ) ? $set : array();
 		$update  = array();
 		$excerpt = trim( (string) ( $transport['excerpt'] ?? '' ) );
 		if ( '' !== $excerpt ) {

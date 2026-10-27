@@ -112,4 +112,19 @@ final class SyncTransportTest extends WP_UnitTestCase {
 		$this->assertSame( 0, (int) $post->menu_order, 'A number the file took back is taken back here too.' );
 		$this->assertSame( '', $post->post_excerpt );
 	}
+
+	/**
+	 * A block that sets neither field leaves no bookkeeping behind. The stored
+	 * set used to be read with a cast, which turned the missing meta into
+	 * array( '' ) and wrote that on every sync.
+	 *
+	 * @return void
+	 */
+	public function test_a_block_without_order_and_excerpt_stores_no_set(): void {
+		$id = $this->github_page();
+
+		\LivingHandbook\Import\Postprocessor::apply_transport( $id, array( 'topic' => '' ) );
+
+		$this->assertFalse( metadata_exists( 'post', $id, \LivingHandbook\Import\Postprocessor::META_TRANSPORT_SET ) );
+	}
 }
