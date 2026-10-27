@@ -136,13 +136,26 @@ final class PageMeta {
 	}
 
 	/**
-	 * Format a Y-m-d date with the site's date format.
+	 * Formats a stored Y-m-d date with the site's date format.
+	 *
+	 * The date is a calendar day in the site's time zone, so it is read in that
+	 * zone and printed with wp_date(). Up to 0.75.1 it went through strtotime()
+	 * and date_i18n(), which read the day in PHP's default zone: right only as
+	 * long as that zone is UTC, and a day early on a site where a plugin or the
+	 * server set another one east of UTC.
 	 *
 	 * @param string $ymd Date in Y-m-d.
-	 * @return string
+	 * @return string The formatted date, or $ymd as it is when it cannot be read.
 	 */
 	private static function format_date( string $ymd ): string {
-		$timestamp = strtotime( $ymd );
-		return false !== $timestamp ? date_i18n( (string) get_option( 'date_format' ), $timestamp ) : $ymd;
+		try {
+			$day = new \DateTimeImmutable( $ymd, wp_timezone() );
+		} catch ( \Exception $e ) {
+			return $ymd;
+		}
+
+		$out = wp_date( (string) get_option( 'date_format' ), $day->getTimestamp() );
+
+		return is_string( $out ) ? $out : $ymd;
 	}
 }
