@@ -25,6 +25,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Admin;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use WP_Term;
@@ -116,14 +117,9 @@ final class MoveToHandbook {
 			return array();
 		}
 
-		$out = array();
-		foreach ( $terms as $term ) {
-			if ( $term instanceof WP_Term ) {
-				$out[] = $term;
-			}
-		}
-
-		return $out;
+		// Only the handbooks the user may write into: a handbook kept from them
+		// is neither offered nor accepted (see handle_bulk_action()).
+		return AccessController::usable_handbooks( $terms );
 	}
 
 	/**
@@ -233,8 +229,8 @@ final class MoveToHandbook {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WordPress verifies the bulk nonce before this filter runs.
 		$term_id = isset( $_REQUEST[ self::FIELD ] ) ? absint( wp_unslash( $_REQUEST[ self::FIELD ] ) ) : 0;
 		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
-		if ( ! $term instanceof WP_Term ) {
-			// No handbook chosen: nothing is moved, and the screen says so rather
+		if ( ! $term instanceof WP_Term || ! AccessController::may_use_handbook( $term_id ) ) {
+			// No handbook chosen, or one the user may not use: nothing is moved, and the screen says so rather
 			// than reporting a silent success over zero pages.
 			return add_query_arg( array( 'lh_no_handbook' => 1 ), $redirect );
 		}

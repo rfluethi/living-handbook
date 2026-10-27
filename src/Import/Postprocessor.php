@@ -84,7 +84,10 @@ final class Postprocessor {
 		$handbook_name = trim( (string) ( $transport['handbook'] ?? '' ) );
 		if ( '' !== $handbook_name ) {
 			$term = get_term_by( 'name', $handbook_name, Handbooks::TAXONOMY );
-			if ( $term instanceof WP_Term ) {
+			// A file names the handbook it belongs to, and the import follows it,
+			// but not into a handbook the importing person may not read: that
+			// would be a way around the check on the chosen handbook (E-0075).
+			if ( $term instanceof WP_Term && AccessController::may_use_handbook( (int) $term->term_id ) ) {
 				return (int) $term->term_id;
 			}
 		}

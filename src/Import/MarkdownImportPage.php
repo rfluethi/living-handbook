@@ -217,6 +217,16 @@ final class MarkdownImportPage {
 	}
 
 	/**
+	 * The error for an import into a handbook the user may not read: whoever
+	 * may not read it may not write into it either.
+	 *
+	 * @return WP_Error
+	 */
+	private static function handbook_refused(): WP_Error {
+		return self::import_error( __( 'You are not allowed to import into this handbook.', 'living-handbook' ), 403 );
+	}
+
+	/**
 	 * The "CommonMark is missing" operation error, shared by the callbacks.
 	 *
 	 * @return WP_Error
@@ -419,6 +429,9 @@ final class MarkdownImportPage {
 			return self::no_commonmark();
 		}
 		$handbook_id = absint( $request->get_param( 'handbook' ) );
+		if ( $handbook_id > 0 && ! AccessController::may_use_handbook( $handbook_id ) ) {
+			return self::handbook_refused();
+		}
 
 		// The app handbook loads from the bundled folder (or a GitHub override, via
 		// the filter), published straight away, through its own path. It needs no
@@ -498,8 +511,11 @@ final class MarkdownImportPage {
 		// The browser converted the HTML to blocks and posts it back here, so this
 		// is the write path and it sanitizes for itself: a caller can skip /convert
 		// and post arbitrary markup straight to this endpoint.
-		$content       = HtmlSanitizer::clean_blocks( (string) $request->get_param( 'content' ) );
-		$handbook_id   = absint( $request->get_param( 'handbook' ) );
+		$content     = HtmlSanitizer::clean_blocks( (string) $request->get_param( 'content' ) );
+		$handbook_id = absint( $request->get_param( 'handbook' ) );
+		if ( $handbook_id > 0 && ! AccessController::may_use_handbook( $handbook_id ) ) {
+			return array( 'error' => self::handbook_refused()->get_error_message() );
+		}
 		$transport     = (array) $request->get_param( 'transport' );
 		$parent        = self::allowed_parent( absint( $request->get_param( 'parent' ) ) );
 		$source_path   = sanitize_text_field( (string) $request->get_param( 'sourcePath' ) );
@@ -1164,7 +1180,7 @@ final class MarkdownImportPage {
 				'hide_empty' => false,
 			)
 		);
-		$handbooks = is_array( $handbooks ) ? $handbooks : array();
+		$handbooks = AccessController::usable_handbooks( is_array( $handbooks ) ? $handbooks : array() );
 		$bundle    = HandbookImport::can_import();
 		$app       = AppHandbook::can_load();
 		?>

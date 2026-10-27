@@ -26,7 +26,7 @@ Das neue Handbuch erscheint in der Liste unter **Handbuch → Handbücher**. Es 
 <details>
 <summary>Stolpersteine: Die Sichtbarkeit ist bewusst streng</summary>
 
-Ein neues Handbuch steht auf **Alle Mitglieder (angemeldet)**. Ausgeloggt siehst du also nichts. Das ändert sich erst, wenn du es auf **Öffentlich** stellst oder Rollen und Personen freigibst. Das ist Absicht: Das Plugin verbirgt eine Seite lieber, als sie versehentlich zu veröffentlichen. Siehst du beim Testen nichts, prüfe zuerst die Sichtbarkeit. Nutze dafür ein privates Browserfenster. Mehr unter [Sichtbarkeit einstellen](../zugriff/sichtbarkeit-einstellen.md).
+Ein neues Handbuch steht auf **Alle Mitglieder (angemeldet)**. Ausgeloggt siehst du also nichts. Das ändert sich erst, wenn du es auf **Öffentlich** stellst oder Rollen und Personen freigibst. Das ist Absicht: Das Plugin verbirgt eine Seite lieber, als sie versehentlich zu veröffentlichen. Siehst du beim Testen nichts, prüfe zuerst die Sichtbarkeit. Nutze dafür ein privates Browserfenster. Wählst du **Eingeschränkt**, hake deine eigene Rolle oder dich selbst an; sonst kannst du das Handbuch nach dem Speichern selbst nicht mehr öffnen, es sei denn, du bist Administratorin oder Administrator. Mehr unter [Sichtbarkeit einstellen](../zugriff/sichtbarkeit-einstellen.md).
 
 </details>
 
@@ -52,6 +52,6 @@ WordPress schaltet Kommentare pro Seite. Für ein Handbuch mit zweihundert Seite
 * Eltern-Seite: Erste Schritte
 * Reihenfolge: 2
 * Textauszug: Ein Handbuch ist der Behälter, in dem deine Seiten liegen; diese Anleitung legt dein erstes Handbuch an und setzt seine Sichtbarkeit.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

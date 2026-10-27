@@ -11,6 +11,7 @@ namespace LivingHandbook\Admin;
 
 use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Frontend\FreshnessStatus;
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -483,6 +484,11 @@ final class Maintenance {
 					'orderby'         => 'name',
 					'selected'        => $current,
 					'echo'            => false,
+					// A handbook the user may not read is not a filter they get to
+					// pick, nor a name they get to see.
+					'exclude'         => Handbooks::TAXONOMY === $taxonomy && ! AccessController::reads_everything( get_current_user_id() )
+						? AccessController::hidden_term_ids( get_current_user_id() )
+						: array(),
 				)
 			);
 

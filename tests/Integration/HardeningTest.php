@@ -138,7 +138,8 @@ final class HardeningTest extends WP_UnitTestCase {
 		$public_term = $this->make_handbook( Handbooks::VISIBILITY_PUBLIC );
 		$this->make_handbook( Handbooks::VISIBILITY_RESTRICTED );
 
-		$editor = self::factory()->user->create( array( 'role' => 'editor' ) );
+		// An administrator reads the restricted handbook, a guest does not.
+		$editor = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
 		wp_set_current_user( (int) $editor );
 		$editor_key = Cards::areas_cache_key( $public_term );
@@ -149,7 +150,7 @@ final class HardeningTest extends WP_UnitTestCase {
 		$this->assertNotSame(
 			$editor_key,
 			$guest_key,
-			'An editor and a guest must not share one cached copy of the area cards.'
+			'An administrator and a guest must not share one cached copy of the area cards.'
 		);
 	}
 

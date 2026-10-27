@@ -26,7 +26,7 @@ The new handbook appears in the list under **Handbook → Handbooks**. It also a
 <details>
 <summary>Pitfalls: Visibility is strict on purpose</summary>
 
-A new handbook starts on **All members (logged in)**. Logged out, you see nothing. That only changes when you set it to **Public** or grant roles and people. This is deliberate: the plugin would rather hide a page than publish it by accident. If you see nothing while testing, check the visibility first. Use a private browser window for that. More under [Set visibility](../access/set-visibility.md).
+A new handbook starts on **All members (logged in)**. Logged out, you see nothing. That only changes when you set it to **Public** or grant roles and people. This is deliberate: the plugin would rather hide a page than publish it by accident. If you see nothing while testing, check the visibility first. Use a private browser window for that. If you choose **Restricted**, tick your own role or yourself; otherwise you can no longer open the handbook yourself once you save, unless you are an administrator. More under [Set visibility](../access/set-visibility.md).
 
 </details>
 
@@ -52,6 +52,6 @@ WordPress switches comments per page. For a handbook of two hundred pages that i
 * Eltern-Seite: Getting started
 * Reihenfolge: 2
 * Textauszug: A handbook is the container for your pages; this guide creates your first handbook and sets its visibility.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

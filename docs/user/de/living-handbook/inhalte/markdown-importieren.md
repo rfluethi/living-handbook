@@ -18,7 +18,7 @@ Der Import liest jede Markdown-Datei und baut daraus eine normale Handbuch-Seite
    * **GitHub:** Trage eine GitHub-Adresse ein und klicke auf **Von GitHub importieren**. Zeigt die Adresse auf eine einzelne Datei, entsteht eine Seite. Zeigt sie auf einen Ordner, werden alle Markdown-Dateien darin importiert, Unterordner eingeschlossen.
    * **Bündel:** Übernimm ein ganzes Handbuch von einer anderen Website, siehe [Handbuch umziehen](handbuch-umziehen.md).
    * **App-Handbuch:** Lade genau dieses Handbuch, siehe [App-Handbuch laden](../erste-schritte/app-handbuch-laden.md).
-3. Wähle das **Ziel-Handbuch**, in das die Seiten gehören.
+3. Wähle das **Ziel-Handbuch**, in das die Seiten gehören. Zur Wahl stehen die Handbücher, die du lesen darfst.
 4. Starte den Import und lies die Ergebnisliste. Sie meldet, was angelegt wurde und wo etwas fehlte.
 5. Prüfe die neuen Seiten und **veröffentliche** sie. Importierte Seiten sind zuerst unveröffentlichte Entwürfe. So geht nichts ungeprüft online. Einzige Ausnahme ist das App-Handbuch, es erscheint sofort.
 
@@ -92,6 +92,6 @@ Ein zweiter Import derselben Quelle legt keine Kopien an. Er aktualisiert die be
 * Eltern-Seite: Inhalte
 * Reihenfolge: 2
 * Textauszug: Diese Anleitung übernimmt fertige Markdown-Texte als Seiten in dein Handbuch: eingefügt, als ZIP-Datei oder von einer GitHub-Adresse.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

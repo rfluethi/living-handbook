@@ -223,11 +223,11 @@ final class Cards {
 		// the key has to carry who is asking. Without that, the first editor to
 		// open the page fills the cache with pages a guest may not see, and
 		// everyone gets them for the next day. Two things decide what a viewer
-		// gets: the handbooks they may read, and whether they bypass the filter
-		// altogether (edit_others_posts), which viewable_term_ids() does not
-		// express.
-		return current_user_can( 'edit_others_posts' )
-			? 'editor'
+		// gets: the handbooks they may read, and whether they read everything
+		// (AccessController::reads_everything()), which viewable_term_ids() does
+		// not express.
+		return AccessController::reads_everything( get_current_user_id() )
+			? 'all'
 			: substr( md5( implode( ',', AccessController::viewable_term_ids( get_current_user_id() ) ) ), 0, 12 );
 	}
 

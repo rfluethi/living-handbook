@@ -2,9 +2,12 @@
 /**
  * Frontend access control, enforced per handbook.
  *
- * Access is frontend-only. Editing in wp-admin uses the standard WordPress
- * roles and is not restricted here. A handbook page is viewable when its
- * handbook allows the current user; pages without a handbook are fail-closed.
+ * A handbook page is viewable when its handbook allows the current user; pages
+ * without a handbook are fail-closed. Administrators read every handbook
+ * (reads_everything()), everybody else, editors included, reads what a
+ * handbook grants them. In wp-admin the same rule keeps other people's pages
+ * of a handbook the user may not read out of the lists and out of the editor;
+ * one's own pages stay one's own.
  *
  * @package LivingHandbook
  */
@@ -59,6 +62,14 @@ final class AccessController {
 	public const INTERNAL_QUERY_ARG = 'living_handbook_internal';
 
 	/**
+	 * Re-entry guard for hide_handbooks_on_term_screen(), which asks get_terms()
+	 * for the handbooks a user may not read while get_terms() is asking it.
+	 *
+	 * @var bool
+	 */
+	private static bool $listing_terms = false;
+
+	/**
 	 * Per-request memo of term visibility decisions, keyed "term_id:user_id".
 	 *
 	 * A result set of one handbook shares one term, so the same decision is
@@ -98,6 +109,276 @@ final class AccessController {
 	 */
 	private static function is_guarded( int $post_id ): bool {
 		return in_array( get_post_type( $post_id ), self::guarded_post_types(), true );
+	}
+
+	/**
+	 * Whether a user reads every handbook, whatever its settings say.
+	 *
+	 * Administrators, by the manage_options capability. Until this change it was
+	 * everybody who may edit other people's posts, the editor role among them,
+	 * and a handbook could not be kept from the editors. Decided on 2026-10-27
+	 * (E-0075): an editor reads what a handbook grants them like everybody else.
+	 * A site with roles of its own can name another capability.
+	 *
+	 * @param int $user_id User ID (0 for a guest).
+	 * @return bool
+	 */
+	public static function reads_everything( int $user_id ): bool {
+		if ( $user_id <= 0 ) {
+			return false;
+		}
+
+		/**
+		 * Filter the capability that reads every handbook regardless of its
+		 * visibility settings.
+		 *
+		 * @param string $capability Capability. Default 'manage_options'.
+		 */
+		$capability = (string) apply_filters( 'living_handbook_read_all_capability', 'manage_options' );
+
+		return '' !== $capability && user_can( $user_id, $capability );
+	}
+
+	/**
+	 * The handbooks a user may not read.
+	 *
+	 * @param int $user_id User ID (0 for a guest).
+	 * @return int[]
+	 */
+	public static function hidden_term_ids( int $user_id ): array {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => Handbooks::TAXONOMY,
+				'hide_empty' => false,
+				'fields'     => 'ids',
+			)
+		);
+		if ( is_wp_error( $terms ) ) {
+			return array();
+		}
+		$ids = array();
+		foreach ( $terms as $term_id ) {
+			if ( ! self::can_view_term( (int) $term_id, $user_id ) ) {
+				$ids[] = (int) $term_id;
+			}
+		}
+		return $ids;
+	}
+
+	/**
+	 * Whether the current user may put pages into a handbook, or take them out
+	 * of it: import into it, move pages into it, export it.
+	 *
+	 * Whoever may not read a handbook may not write into it either. A bundle
+	 * update into a handbook kept to administrators would otherwise overwrite
+	 * its pages, and an export would hand them out. The scheduled sync and
+	 * WP-CLI run without a user and are the site itself.
+	 *
+	 * @param int $term_id Handbook term ID.
+	 * @return bool
+	 */
+	public static function may_use_handbook( int $term_id ): bool {
+		$user_id = get_current_user_id();
+		if ( 0 === $user_id && ( wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) ) ) {
+			return true;
+		}
+		return self::reads_everything( $user_id ) || self::can_view_term( $term_id, $user_id );
+	}
+
+	/**
+	 * Keep the handbooks of a list the current user may use.
+	 *
+	 * For the plugin's own pickers: the import target, the export, the bulk move.
+	 *
+	 * @param array<int|string, mixed> $terms Terms.
+	 * @return array<int, WP_Term>
+	 */
+	public static function usable_handbooks( array $terms ): array {
+		$out = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term && self::may_use_handbook( (int) $term->term_id ) ) {
+				$out[] = $term;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Whether a post belongs to a handbook the user may not read.
+	 *
+	 * @param int|WP_Post $post    Post.
+	 * @param int         $user_id User ID.
+	 * @return bool
+	 */
+	private static function in_hidden_handbook( int|WP_Post $post, int $user_id ): bool {
+		$terms = get_the_terms( $post, Handbooks::TAXONOMY );
+		if ( ! is_array( $terms ) ) {
+			return false;
+		}
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term && ! self::can_view_term( $term->term_id, $user_id ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether a post appears in the back end for a user who does not read
+	 * everything.
+	 *
+	 * The back end shows more than the front end: pages in no handbook yet, and
+	 * one's own pages wherever they are, because that is where they are worked
+	 * on. What it does not show is somebody else's page in a handbook the user
+	 * may not read, nor that page's files.
+	 *
+	 * @param WP_Post $post    Post.
+	 * @param int     $user_id User ID.
+	 * @return bool
+	 */
+	private static function visible_in_backend( WP_Post $post, int $user_id ): bool {
+		if ( (int) $post->post_author === $user_id ) {
+			return true;
+		}
+		if ( in_array( $post->post_type, self::guarded_post_types(), true ) ) {
+			return ! self::in_hidden_handbook( $post, $user_id );
+		}
+		if ( 'attachment' === $post->post_type && $post->post_parent > 0 && self::is_guarded( (int) $post->post_parent ) ) {
+			$parent = get_post( (int) $post->post_parent );
+			return ! $parent instanceof WP_Post || self::visible_in_backend( $parent, $user_id );
+		}
+		return true;
+	}
+
+	/**
+	 * Other people's pages in handbooks the user may not read, by id.
+	 *
+	 * For the back-end lists. A tax_query cannot say "or my own", and a
+	 * posts_where filter would not reach get_posts(), which suppresses filters;
+	 * post__not_in is set in pre_get_posts and holds for both.
+	 *
+	 * @param int $user_id User ID.
+	 * @return int[]
+	 */
+	private static function hidden_post_ids( int $user_id ): array {
+		$hidden = self::hidden_term_ids( $user_id );
+		if ( array() === $hidden ) {
+			return array();
+		}
+
+		global $wpdb;
+
+		$terms = implode( ',', array_map( 'absint', $hidden ) );
+		$types = "'" . implode( "','", array_map( static fn( string $type ): string => (string) esc_sql( $type ), self::guarded_post_types() ) ) . "'";
+		$tax   = esc_sql( Handbooks::TAXONOMY );
+
+		$sql = "SELECT DISTINCT p.ID FROM {$wpdb->posts} p"
+			. " INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID"
+			. " INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id"
+			. " WHERE tt.taxonomy = '{$tax}' AND tt.term_id IN ({$terms})"
+			. " AND p.post_type IN ({$types}) AND p.post_author <> %d";
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- term ids are integers, types and taxonomy fixed and escaped, the user id a placeholder; the answer depends on the user and on every page's membership, which no cache group tracks.
+		$ids = $wpdb->get_col( $wpdb->prepare( $sql, $user_id ) );
+
+		return array_map( 'intval', (array) $ids );
+	}
+
+	/**
+	 * Whether this request is a back-end read: wp-admin itself, or an
+	 * admin-ajax tool of somebody who may edit other people's posts.
+	 *
+	 * The file admin-ajax.php always runs with is_admin() true, so a front-end AJAX read
+	 * would look like a back-end one; only the second kind is let in.
+	 *
+	 * @return bool
+	 */
+	private static function is_backend_read(): bool {
+		return is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) );
+	}
+
+	/**
+	 * Close editing, deleting and reading of other people's pages in a handbook
+	 * the user may not read, and the settings of such a handbook.
+	 *
+	 * The front-end rule alone is no rule when the back end hands out the same
+	 * page: an editor who may not read a handbook kept to administrators would
+	 * open its pages in the editor, and change its visibility in the handbook
+	 * settings (manage_categories, which every editor has). One's own pages stay
+	 * editable wherever they are (E-0069), and the files of a page follow it.
+	 *
+	 * @param string[]|mixed $caps    Primitive capabilities required.
+	 * @param string|mixed   $cap     The capability asked for.
+	 * @param int|mixed      $user_id User ID.
+	 * @param array<mixed>   $args    The object id first.
+	 * @return string[]
+	 */
+	public function guard_meta_caps( $caps, $cap, $user_id, $args ): array {
+		$caps    = (array) $caps;
+		$object  = isset( $args[0] ) && is_numeric( $args[0] ) ? (int) $args[0] : 0;
+		$user_id = (int) $user_id;
+		if ( $object <= 0 ) {
+			return $caps;
+		}
+
+		if ( in_array( $cap, array( 'edit_post', 'delete_post', 'read_post', 'publish_post', 'edit_page', 'delete_page', 'read_page' ), true ) ) {
+			$post = get_post( $object );
+			if ( ! $post instanceof WP_Post ) {
+				return $caps;
+			}
+			$guarded = in_array( $post->post_type, self::guarded_post_types(), true )
+				|| ( 'attachment' === $post->post_type && $post->post_parent > 0 && self::is_guarded( (int) $post->post_parent ) );
+			if ( ! $guarded || self::reads_everything( $user_id ) || self::visible_in_backend( $post, $user_id ) ) {
+				return $caps;
+			}
+			return array( 'do_not_allow' );
+		}
+
+		if ( in_array( $cap, array( 'edit_term', 'delete_term', 'assign_term' ), true ) ) {
+			$term = get_term( $object );
+			if ( ! $term instanceof WP_Term || Handbooks::TAXONOMY !== $term->taxonomy ) {
+				return $caps;
+			}
+			if ( self::reads_everything( $user_id ) || self::can_view_term( (int) $term->term_id, $user_id ) ) {
+				return $caps;
+			}
+			return array( 'do_not_allow' );
+		}
+
+		return $caps;
+	}
+
+	/**
+	 * Leave the handbooks a user may not read out of the handbook list screen.
+	 *
+	 * Their settings are closed already (guard_meta_caps()); this keeps their
+	 * names and page counts out of view, and out of the parent selector.
+	 *
+	 * @param array<string, mixed>|mixed $args       get_terms() arguments.
+	 * @param string[]|mixed             $taxonomies Taxonomies asked for.
+	 * @return array<string, mixed>|mixed
+	 */
+	public function hide_handbooks_on_term_screen( $args, $taxonomies ) {
+		global $pagenow;
+		if ( self::$listing_terms || ! is_array( $args ) || ! is_admin() || wp_doing_ajax() || 'edit-tags.php' !== $pagenow ) {
+			return $args;
+		}
+		if ( ! in_array( Handbooks::TAXONOMY, (array) $taxonomies, true ) ) {
+			return $args;
+		}
+		$user_id = get_current_user_id();
+		if ( self::reads_everything( $user_id ) ) {
+			return $args;
+		}
+
+		self::$listing_terms = true;
+		$hidden              = self::hidden_term_ids( $user_id );
+		self::$listing_terms = false;
+
+		if ( array() !== $hidden ) {
+			$args['exclude'] = array_merge( wp_parse_id_list( $args['exclude'] ?? array() ), $hidden );
+		}
+		return $args;
 	}
 
 	/**
@@ -167,6 +448,11 @@ final class AccessController {
 		// neighbouring page by date, whichever handbook that page was in.
 		add_filter( 'get_previous_post_where', array( $this, 'filter_adjacent_where' ), 10, 5 );
 		add_filter( 'get_next_post_where', array( $this, 'filter_adjacent_where' ), 10, 5 );
+
+		// The back end is a read channel too, and a write channel: see
+		// guard_meta_caps().
+		add_filter( 'map_meta_cap', array( $this, 'guard_meta_caps' ), 10, 4 );
+		add_filter( 'get_terms_args', array( $this, 'hide_handbooks_on_term_screen' ), 10, 2 );
 	}
 
 	/**
@@ -196,7 +482,7 @@ final class AccessController {
 			return $where;
 		}
 		$user_id = get_current_user_id();
-		if ( user_can( $user_id, 'edit_others_posts' ) ) {
+		if ( self::reads_everything( $user_id ) ) {
 			return $where;
 		}
 
@@ -474,20 +760,8 @@ final class AccessController {
 		if ( $query->is_main_query() && $query->is_singular() ) {
 			return;
 		}
-		// admin-ajax.php always runs with is_admin() true, so a front-end AJAX
-		// read would look like a back-end one. Back-end tools use admin-ajax too,
-		// and they are let through, but only for users who may edit other
-		// people's posts: the same gate the comment channel uses. An earlier
-		// version allowed every edit_posts user here, reasoning that the classic
-		// editor's link search (wp-link-ajax) needed it. It does not:
-		// WP_Editor::wp_link_query() asks for post types registered as public,
-		// and this type is not one, so it never appears there. The wider gate
-		// only opened a path for any other plugin's admin-ajax handler that
-		// happens to query handbook pages.
-		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) ) ) {
-			return;
-		}
-		if ( current_user_can( 'edit_others_posts' ) ) {
+		$user_id = get_current_user_id();
+		if ( self::reads_everything( $user_id ) ) {
 			return;
 		}
 		$types = (array) $query->get( 'post_type' );
@@ -495,14 +769,44 @@ final class AccessController {
 			return;
 		}
 
-		$viewable    = self::viewable_term_ids( get_current_user_id() );
-		$restriction = array(
-			'taxonomy' => Handbooks::TAXONOMY,
-			'field'    => 'term_id',
-			// An empty set must match nothing, not everything, so fall back to a
-			// term id that no page carries.
-			'terms'    => empty( $viewable ) ? array( 0 ) : $viewable,
-		);
+		// A back-end read (see is_backend_read(); an earlier version let every
+		// edit_posts user through on admin-ajax, for a link search that never
+		// asks for this type) keeps pages in no handbook and one's own pages,
+		// which is what the back end is for, and leaves out other people's pages
+		// in a handbook the user may not read. Up to 0.76.0 it left out nothing.
+		if ( self::is_backend_read() ) {
+			$hidden = self::hidden_post_ids( $user_id );
+			if ( array() !== $hidden ) {
+				$query->set( 'post__not_in', array_values( array_unique( array_merge( wp_parse_id_list( $query->get( 'post__not_in' ) ), $hidden ) ) ) );
+			}
+			return;
+		}
+
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			// Editors also read pages in no handbook (see can_view_post()), so
+			// their restriction names what they may not read rather than what
+			// they may.
+			$hidden = self::hidden_term_ids( $user_id );
+			if ( array() === $hidden ) {
+				return;
+			}
+			$restriction = array(
+				'taxonomy'         => Handbooks::TAXONOMY,
+				'field'            => 'term_id',
+				'terms'            => $hidden,
+				'operator'         => 'NOT IN',
+				'include_children' => false,
+			);
+		} else {
+			$viewable    = self::viewable_term_ids( $user_id );
+			$restriction = array(
+				'taxonomy' => Handbooks::TAXONOMY,
+				'field'    => 'term_id',
+				// An empty set must match nothing, not everything, so fall back to
+				// a term id that no page carries.
+				'terms'    => empty( $viewable ) ? array( 0 ) : $viewable,
+			);
+		}
 
 		$existing = $query->get( 'tax_query' );
 		if ( empty( $existing ) || ! is_array( $existing ) ) {
@@ -551,12 +855,22 @@ final class AccessController {
 			return $posts;
 		}
 
-		// admin-ajax.php runs with is_admin() true. A front-end AJAX read must
-		// still be filtered; back-end tools are let through for users who may
-		// edit other people's posts, consistent with restrict_query() and the
-		// comment channel.
-		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) ) ) {
+		$user_id = get_current_user_id();
+		if ( self::reads_everything( $user_id ) ) {
 			return $posts;
+		}
+
+		// A back-end read follows the back-end rule, as in restrict_query(). The
+		// media library in particular is read here: the files of somebody else's
+		// page in a handbook the user may not read stay out of it.
+		if ( self::is_backend_read() ) {
+			self::prime_post_terms( $posts, false !== $query->get( 'update_post_term_cache', true ) );
+			return array_values(
+				array_filter(
+					$posts,
+					static fn( $post ): bool => ! $post instanceof WP_Post || self::visible_in_backend( $post, $user_id )
+				)
+			);
 		}
 
 		// Read the handbook membership of the whole result set in one query
@@ -566,7 +880,7 @@ final class AccessController {
 		// priming it here is what makes the decision a cache hit.
 		self::prime_post_terms( $posts, false !== $query->get( 'update_post_term_cache', true ) );
 
-		return self::drop_unreadable( $posts, get_current_user_id() );
+		return self::drop_unreadable( $posts, $user_id );
 	}
 
 	/**
@@ -590,7 +904,8 @@ final class AccessController {
 	 * @return array<int, mixed> The readable ones, in their order, reindexed.
 	 */
 	public static function readable_posts( array $posts ): array {
-		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) ) ) {
+		$user_id = get_current_user_id();
+		if ( self::reads_everything( $user_id ) ) {
 			return array_values( $posts );
 		}
 
@@ -602,13 +917,27 @@ final class AccessController {
 		}
 		self::prime_handbook_terms( $guarded );
 
-		$user_id = get_current_user_id();
+		if ( self::is_backend_read() ) {
+			return array_values(
+				array_filter(
+					$posts,
+					static fn( $post ): bool => ! $post instanceof WP_Post || self::visible_in_backend( $post, $user_id )
+				)
+			);
+		}
 
 		// The coarse layer, as restrict_query() would have added it to a query.
 		// can_view_post() alone is not the same thing: its filter can let a page
 		// through that no readable handbook holds, and in a query such a page
 		// never reaches the filter.
-		if ( ! current_user_can( 'edit_others_posts' ) ) {
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			$posts = array_filter(
+				$posts,
+				static fn( $post ): bool => ! $post instanceof WP_Post
+					|| ! in_array( $post->post_type, self::guarded_post_types(), true )
+					|| ! self::in_hidden_handbook( $post, $user_id )
+			);
+		} else {
 			$viewable = array_flip( self::viewable_term_ids( $user_id ) );
 			$posts    = array_filter(
 				$posts,
@@ -801,26 +1130,17 @@ final class AccessController {
 
 	/**
 	 * Whether the comment channels should be filtered for the current request.
-	 * Not in wp-admin (moderators need every comment), and not for users who may
-	 * edit others' posts (they may view every handbook anyway).
+	 *
+	 * Always, except for those who read every handbook. Up to 0.76.0 wp-admin
+	 * and everybody who may edit other people's posts were let through: the
+	 * comment screen showed every comment on every handbook page to every
+	 * editor, which a handbook kept to administrators cannot allow. Moderators
+	 * now see the comments on the handbooks they may read.
 	 *
 	 * @return bool
 	 */
 	private static function should_filter_comments(): bool {
-		// admin-ajax.php runs with is_admin() true; a front-end AJAX read must
-		// still be filtered, so only a real wp-admin request bypasses this.
-		// Unlike restrict_query() and filter_posts(), edit_posts does not open an
-		// AJAX bypass here: comment bodies are content, and the capability to see
-		// them is edit_others_posts (comment moderation), not the ability to edit
-		// one's own posts. Keeping the stricter gate avoids exposing comments on
-		// non-viewable handbooks to contributors.
-		if ( is_admin() && ! wp_doing_ajax() ) {
-			return false;
-		}
-		if ( current_user_can( 'edit_others_posts' ) ) {
-			return false;
-		}
-		return true;
+		return ! self::reads_everything( get_current_user_id() );
 	}
 
 	/**
@@ -1031,12 +1351,17 @@ final class AccessController {
 	public static function can_view_post( int|WP_Post $post, int $user_id ): bool {
 		$post_id = $post instanceof WP_Post ? (int) $post->ID : $post;
 
-		if ( user_can( $user_id, 'edit_others_posts' ) ) {
+		if ( self::reads_everything( $user_id ) ) {
 			$allowed = true;
 		} else {
 			$terms = get_the_terms( $post, Handbooks::TAXONOMY );
-			if ( is_wp_error( $terms ) || ! is_array( $terms ) || empty( $terms ) ) {
+			if ( is_wp_error( $terms ) ) {
 				$allowed = false;
+			} elseif ( ! is_array( $terms ) || empty( $terms ) ) {
+				// A page in no handbook is work in progress, not yet content of
+				// any handbook: whoever looks after other people's pages reads it,
+				// nobody else does.
+				$allowed = user_can( $user_id, 'edit_others_posts' );
 			} else {
 				$allowed = true;
 				foreach ( $terms as $term ) {
@@ -1099,13 +1424,11 @@ final class AccessController {
 		if ( 0 === $user_id ) {
 			return false;
 		}
-		// The same exception as in can_view_post(), at the level of the handbook.
-		// Up to 0.75.1 an editor could open every page of a restricted handbook
-		// but not its entry page, and did not find it in the overview, the menu
-		// or the navigation links: two rules for one person, which nobody could
-		// explain. Decided on 2026-10-27: whoever may edit other people's posts
-		// reads every handbook, on both levels.
-		if ( user_can( $user_id, 'edit_others_posts' ) ) {
+		// The same exception as in can_view_post(), at the level of the handbook:
+		// the pages and the handbook follow one rule. Until E-0075 that rule let
+		// everybody who may edit other people's posts read everything, so no
+		// handbook could be kept from the editors; now only administrators do.
+		if ( self::reads_everything( $user_id ) ) {
 			return true;
 		}
 		if ( Handbooks::VISIBILITY_MEMBERS === $visibility ) {

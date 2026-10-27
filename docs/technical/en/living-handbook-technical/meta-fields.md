@@ -7,7 +7,7 @@ Two kinds, told apart by their name (see [architecture.md](architecture.md)):
 - **Editorial** fields carry the prefix `living_handbook_`. A person fills them in, and the registered ones are readable over the REST API.
 - **Bookkeeping** fields carry the prefix `_lh_`. The plugin keeps them about a page rather than for it. The leading underscore makes them protected: WordPress hides them from the Custom Fields box, where a wrong edit would break the sync without a word.
 
-"REST" below means the field is registered with `show_in_rest` and appears under `meta` in `/wp/v2/handbook`. Every registered field is written only by someone who may edit that object: the auth callback asks `edit_post` for the page, or `manage_categories` for a handbook. A field marked "not registered" is plain post meta that only the plugin's own code touches.
+"REST" below means the field is registered with `show_in_rest` and appears under `meta` in `/wp/v2/handbook`. Every registered field is written only by someone who may edit that object: the auth callback asks `edit_post` for the page, or `manage_categories` and `edit_term` for a handbook; the plugin denies `edit_term` for a handbook the person may not read. A field marked "not registered" is plain post meta that only the plugin's own code touches.
 
 ## Handbook pages (`handbook`)
 
@@ -73,7 +73,7 @@ All three are removed by the row action **Reset feedback** in the page list. Ano
 
 | Key | Type | REST | Written by | What it holds |
 | --- | --- | --- | --- | --- |
-| `living_handbook_visibility` | string: `public`, `members`, `restricted` | no | The handbook edit screen (`manage_categories`); a bundle import creating a handbook always writes `members` | The access level. Empty is read as `members`. |
+| `living_handbook_visibility` | string: `public`, `members`, `restricted` | no | The handbook edit screen (`manage_categories` and `edit_term`, so only whoever may read the handbook); a bundle import creating a handbook always writes `members` | The access level. Empty is read as `members`. |
 | `living_handbook_roles` | array of role slugs | no | The handbook edit screen; a bundle import | The roles a restricted handbook admits. |
 | `living_handbook_users` | array of user IDs | no | The handbook edit screen only | The people a restricted handbook admits on top of the roles. Never exported and never imported. |
 | `living_handbook_comments` | string: `inherit`, `open`, `closed` | no | The handbook edit screen | Comments for the whole handbook: leave them to each page, or force them on or off. |

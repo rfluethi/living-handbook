@@ -6,7 +6,7 @@ Living Handbook ships with four handbooks: this user handbook in German and Engl
 <summary>Requirements: What you need</summary>
 
 * A user account with the role Editor or higher. Loading publishes a whole handbook at once, so the right to edit your own pages is not enough.
-* A handbook as the target, for example one called "App handbook". Create it first, see [Create your first handbook](create-your-first-handbook.md). Decide there who may read it.
+* A handbook as the target, for example one called "App handbook". Create it first, see [Create your first handbook](create-your-first-handbook.md). Decide there who may read it, and do not lock yourself out: you can load only into a handbook you may read.
 
 The handbook ships inside the plugin, so you need no internet connection to load it.
 
@@ -16,7 +16,7 @@ The handbook ships inside the plugin, so you need no internet connection to load
 
 1. Open **Handbook → Import** and switch to the **App handbook** tab.
 2. Under **Which handbook**, choose what to load.
-3. Under **Load into**, choose the target handbook.
+3. Under **Load into**, choose the target handbook. The handbooks you may read are offered.
 4. Under **Connection to the source**, decide whether the pages stay tied to the shipped copy. See below.
 5. Click **Load handbook**.
 6. Read the result list. Then look at the loaded handbook on the website.

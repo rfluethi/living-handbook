@@ -24,9 +24,9 @@ A signed-in vote is counted once per user and page (see `_lh_feedback_voters` in
 | --- | --- | --- | --- | --- |
 | POST | `/convert` | `edit_posts` | `markdown` (required, string) | `{ title, html, transport }`: one pasted draft converted to HTML, with its transport block parsed. Nothing is written. |
 | POST | `/import-zip` | `upload_files` | the file `zip`, as a multipart upload | `{ files: [ { name, slug, title, html, transport } ], images, notes }`, or for a MkDocs project `{ mode: "mkdocs", pages, images, notes }`. The images are sideloaded here; the pages are created afterwards through `/create`. |
-| POST | `/create` | `edit_posts` | `title`, `content` (block markup, sanitised here), `handbook` (term ID), `transport` (object), `parent` (post ID), `sourcePath`, `slug`, `order` | `{ id, sourcePath, updated, editUrl }`. Creates a draft, or refreshes the page a re-import matches, but only one the caller may edit. |
+| POST | `/create` | `edit_posts` | `title`, `content` (block markup, sanitised here), `handbook` (term ID), `transport` (object), `parent` (post ID), `sourcePath`, `slug`, `order` | `{ id, sourcePath, updated, editUrl }`. Creates a draft, or refreshes the page a re-import matches, but only one the caller may edit. When `handbook` names a handbook the caller may not read, the answer is `{ error }` and no page is created. |
 | POST | `/finalize` | `edit_posts` | `ids` (array of post IDs) | `{ converted }`: resolves parents and internal `.md` links. Only handbook pages the caller may edit are touched. |
-| POST | `/import-github` | `edit_posts` | `url` (a file or `tree` URL), `handbook`, `title`; or `job` to continue a folder import; or `app_handbook` with `app_entry` and `keep_source` | `{ pages: [ { id, title, editUrl } ] }`, plus `notes` when there is something to report. A folder import that runs out of time answers with `job`, `phase` (`pages` or `links`), `remaining` and `total`, and is asked again with that `job`; a used-up GitHub quota adds `retry_after` in seconds. Loading the app handbook additionally requires `edit_others_posts` and answers 403 without it. |
+| POST | `/import-github` | `edit_posts` | `url` (a file or `tree` URL), `handbook`, `title`; or `job` to continue a folder import; or `app_handbook` with `app_entry` and `keep_source` | `{ pages: [ { id, title, editUrl } ] }`, plus `notes` when there is something to report. A folder import that runs out of time answers with `job`, `phase` (`pages` or `links`), `remaining` and `total`, and is asked again with that `job`; a used-up GitHub quota adds `retry_after` in seconds. Loading the app handbook additionally requires `edit_others_posts` and answers 403 without it. Also 403 when `handbook` names a handbook the caller may not read. |
 | POST | `/static-export` | `edit_others_posts` | `handbook` (term ID), `area` (top-level page ID, optional), `theme` (`site`, `plain`, `dark`, `paper`, or one added through `living_handbook_static_export_themes`); or `job` to continue | One pass of a website export: `{ job, done: false, total, remaining }` until it is finished, then `{ job, done: true, total, url, name, size }`, where `url` downloads the ZIP through `admin-post.php`. 403 when the caller may not read the handbook; a job belongs to the user who started it. |
 | GET | `/training-lessons` | `edit_post` on the learning path named by `training_id` | `training_id` (required); `q` (title search) | `{ results: [ { id, title } ] }`, at most 10 published pages of the path's own handbook, matched by title only. 400 when `training_id` is not a learning path; 403 when the caller may not read that handbook. Every hit is checked with `can_view_post()`. |
 
@@ -38,7 +38,7 @@ The plugin does not only register routes, it also narrows and extends core ones.
 
 - **`/wp/v2/handbook`** (the page type, `show_in_rest`) carries the editorial fields and `_lh_source`, `_lh_source_url` under `meta` (see [meta-fields.md](meta-fields.md)), and a read-only field `living_handbook_status`: `{ freshness, reviewed, interval, permalink, ai_exclude }`. A single page the caller may not read answers 404, in every context, including `context=edit`; collections are filtered the same way.
 - **`/wp/v2/lh_training`** exists only while the learning paths module is switched on, and follows the same access rules as the pages.
-- **`/wp/v2/handbook_set`** answers an empty list, and a single term with 403, to anyone without `edit_posts`. The access configuration of a handbook is not exposed there at all.
+- **`/wp/v2/handbook_set`** answers an empty list, and a single term with 403, to anyone without `edit_posts`. Someone with `edit_posts` gets only the handbooks they may read, and 403 for any other single term, so the block editor offers only those in its handbook picker. The access configuration of a handbook is not exposed there at all.
 - **`/wp/v2/media`** and **`/wp/v2/comments`**: an attachment or a comment on a page the caller may not read is left out of collections and answers 404 on its own.
 - **`/oembed/1.0/embed`** answers nothing for a handbook page the caller may not read.
 
@@ -46,4 +46,4 @@ The plugin does not only register routes, it also narrows and extends core ones.
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 12
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27

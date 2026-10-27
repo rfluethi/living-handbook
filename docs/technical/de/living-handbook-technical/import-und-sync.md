@@ -16,7 +16,9 @@ Die Quellen sind:
 4. **Bündel**: ein Bündel hochladen, das auf einer anderen Seite mit dem Plugin exportiert wurde (siehe unten). Verlangt `edit_others_posts`, also Redaktion oder höher.
 5. **App-Handbuch**: das eigene Handbuch der App, die mit dem Plugin ausgelieferte Kopie, mit einem Klick laden (siehe unten). Verlangt `edit_others_posts`, also Redaktion oder höher: der Reiter erscheint für alle, die importieren dürfen, aber das Laden selbst veröffentlicht ein ganzes Handbuch und weist geringere Rollen ab.
 
-Seiten, die ohne Handbuch landen, sind im Frontend unsichtbar, denn der Zugriff ist fail-closed.
+Seiten, die ohne Handbuch landen, lesen im Frontend nur Redaktion und Administration, denn der Zugriff ist fail-closed.
+
+Als Ziel-Handbuch bietet der Bildschirm nur Handbücher an, die die importierende Person lesen darf, und `/import-github` und `/create` lehnen ein anderes mit „Du darfst nicht in dieses Handbuch importieren." ab: wer ein Handbuch nicht lesen darf, schreibt auch nicht hinein. Das gilt für jede Quelle, das App-Handbuch eingeschlossen. Der geplante Sync und WP-CLI laufen ohne Benutzer und sind davon ausgenommen (`AccessController::may_use_handbook()`).
 
 **Wie die Umwandlung abläuft:** league/commonmark rendert das Markdown zu HTML, und die eigene Einfüge-Umwandlung von WordPress macht daraus bearbeitbare Blöcke. Ein ```` ```mermaid ````-Codeblock wird zu einem live gerenderten Mermaid-Block, aufklappbare `<details>`-Abschnitte werden zu Details-Blöcken, und Bilder aus einem `assets`-Ordner werden in die Mediathek übernommen. Sobald alle Seiten existieren, wendet ein gemeinsamer Nachbearbeiter die Transport-Metadaten an und löst Eltern-Seiten und interne `.md`-Links auf, sowohl das Linkziel als auch den sichtbaren Linktext.
 
@@ -59,7 +61,7 @@ Wird eine Seite so aktualisiert, behält sie **Slug und Veröffentlichungsstatus
 
 ## Ein Handbuch exportieren
 
-Unter **Handbuch → Export** kann jede Person mit `edit_others_posts` (Redaktion oder höher) ein **Handbuch als Bündel exportieren**: ein einzelnes ZIP mit einer `manifest.json` und einem Ordner `media/`. Wähle zuerst das **Handbuch**; das zweite Feld führt dann dessen **Bereiche** auf (ein Bereich ist eine oberste Seite und wird zusammen mit ihren Unterseiten exportiert). Lass es auf *das ganze Handbuch*, um alles zu exportieren. Dann **Bündel exportieren**, und das ZIP wird heruntergeladen. Es ist selbsttragend und lässt sich deshalb auf eine andere Seite mit dem Plugin übertragen, ohne auf diese hier zurückzugreifen. Auch ein Bereichs-Bündel trägt die Konfiguration des Handbuchs mit, damit die Zielseite weiß, wohin die Seiten gehören.
+Unter **Handbuch → Export** kann jede Person mit `edit_others_posts` (Redaktion oder höher) ein Handbuch, das sie lesen darf, **als Bündel exportieren**; andere stehen nicht zur Wahl, und ein trotzdem übergebenes lehnt der Export mit 403 ab. Das Bündel ist ein einzelnes ZIP mit einer `manifest.json` und einem Ordner `media/`. Wähle zuerst das **Handbuch**; das zweite Feld führt dann dessen **Bereiche** auf (ein Bereich ist eine oberste Seite und wird zusammen mit ihren Unterseiten exportiert). Lass es auf *das ganze Handbuch*, um alles zu exportieren. Dann **Bündel exportieren**, und das ZIP wird heruntergeladen. Es ist selbsttragend und lässt sich deshalb auf eine andere Seite mit dem Plugin übertragen, ohne auf diese hier zurückzugreifen. Auch ein Bereichs-Bündel trägt die Konfiguration des Handbuchs mit, damit die Zielseite weiß, wohin die Seiten gehören.
 
 Das Bündel enthält die Konfiguration des Handbuchs (Sichtbarkeit und erlaubte Rollen), jede Seite als Abbild ihres Block-Markups samt Platz in der Hierarchie, die vier Einordnungs-Taxonomien, die Prüf-Metadaten und die referenzierten Medien. Es trägt bewusst **nicht** die Liste einzeln erlaubter Personen: Das sind E-Mail-Adressen, ein Bündel ist eine Datei, die heruntergeladen und weitergegeben wird, und die Zielseite hat ohnehin andere Benutzer. Ist ein Handbuch auf benannte Personen beschränkt, setze sie nach dem Import neu. Eine aus GitHub gespeiste Seite behält ihre Quell-URL und nimmt auf der Zielseite den Sync aus demselben Repository wieder auf. Lokale, seitenspezifische Daten bleiben draußen: Die Feedback-Zähler und der Sync-Status gehören der jeweiligen Seite.
 
@@ -71,7 +73,7 @@ Das Bündel enthält die Konfiguration des Handbuchs (Sichtbarkeit und erlaubte 
 
 ## Ein Handbuch als statische Website exportieren
 
-Derselbe Bildschirm bietet einen zweiten Export, für Leserinnen und Leser ganz ohne WordPress: **Als Website exportieren** baut ein ZIP aus reinen HTML-Dateien, das sich aus dem Dateisystem heraus öffnen lässt, ohne Server und ohne Netz. Wieder `edit_others_posts`, und der Bildschirm nennt die Folge beim Namen: eine statische Kopie trägt keine Zugriffsregeln mehr, wer die Datei hat, liest jede Seite darin.
+Derselbe Bildschirm bietet einen zweiten Export, für Leserinnen und Leser ganz ohne WordPress: **Als Website exportieren** baut ein ZIP aus reinen HTML-Dateien, das sich aus dem Dateisystem heraus öffnen lässt, ohne Server und ohne Netz. Wieder `edit_others_posts` und ein Handbuch, das die Person lesen darf, und der Bildschirm nennt die Folge beim Namen: eine statische Kopie trägt keine Zugriffsregeln mehr, wer die Datei hat, liest jede Seite darin.
 
 Vier Entscheidungen sollte kennen, wer den Code liest (`Export/StaticSite.php`, `Export/SiteRenderer.php`):
 
@@ -108,7 +110,7 @@ Die Lernpfade des Bündels werden mit importiert, ihre Lektionen auf die importi
 
 Ein kurzer Bericht oben auf dem Bildschirm nennt, wie viele Seiten angelegt, aktualisiert, übersprungen oder geschützt wurden, getrennt davon dasselbe für die Lernpfade, und führt auf, was sich nicht zuordnen ließ.
 
-Der Import verlangt `edit_others_posts`, also Redaktion oder höher. Ein Bündel ist eine Datei von einer anderen Seite, sein Inhalt gilt deshalb als fremd und wird beim Einlesen gereinigt, genau wie beim Markdown-Import und beim GitHub-Sync: Skripte, Event-Handler und unsichere URLs werden entfernt. Die Reinigung läuft Block für Block, die Blockstruktur bleibt also unangetastet. Auch Medien werden gereinigt, SVG eingeschlossen. Trotzdem bringt ein Bündel Inhalte mit, die jemand anderes geschrieben hat, es lohnt sich also, sie vor dem Veröffentlichen zu lesen.
+Der Import verlangt `edit_others_posts`, also Redaktion oder höher, und ein Ziel, das die Person lesen darf. Unter **Importieren nach** stehen nur solche Handbücher zur Wahl. Ein Bündel, dessen eigenes Handbuch hier schon existiert und für die Person nicht lesbar ist, wird mit „Du darfst nicht in dieses Handbuch importieren." abgelehnt, bevor eine Seite angefasst wird; ein Update würde sonst Seiten überschreiben, die sie nicht sehen darf. Ein Bündel ist eine Datei von einer anderen Seite, sein Inhalt gilt deshalb als fremd und wird beim Einlesen gereinigt, genau wie beim Markdown-Import und beim GitHub-Sync: Skripte, Event-Handler und unsichere URLs werden entfernt. Die Reinigung läuft Block für Block, die Blockstruktur bleibt also unangetastet. Auch Medien werden gereinigt, SVG eingeschlossen. Trotzdem bringt ein Bündel Inhalte mit, die jemand anderes geschrieben hat, es lohnt sich also, sie vor dem Veröffentlichen zu lesen.
 
 ## Ein Bündel als normale WordPress-Seiten importieren
 
@@ -116,7 +118,7 @@ Ein Bündel lässt sich auch als gewöhnliche WordPress-Seiten einlesen statt al
 
 ## Bestehende WordPress-Seiten ins Handbuch verschieben
 
-Eine gewöhnliche WordPress-Seite muss nicht neu geschrieben werden. Wähle sie in der Seitenliste unter **Seiten** aus, nimm die Mehrfachaktion **In ein Handbuch verschieben…** und daneben das Ziel-Handbuch. Unterseiten kommen mit, und die alte Adresse leitet mit 301 auf die neue um, bestehende Links laufen also nicht ins Leere. Die verschobenen Seiten kommen als **Nicht geprüft** an: Prüfdatum und Prüfintervall setzt du danach in der Meta-Box **Handbuch-Wartung**.
+Eine gewöhnliche WordPress-Seite muss nicht neu geschrieben werden. Wähle sie in der Seitenliste unter **Seiten** aus, nimm die Mehrfachaktion **In ein Handbuch verschieben…** und daneben das Ziel-Handbuch; angeboten und angenommen werden nur Handbücher, die du lesen darfst. Unterseiten kommen mit, und die alte Adresse leitet mit 301 auf die neue um, bestehende Links laufen also nicht ins Leere. Die verschobenen Seiten kommen als **Nicht geprüft** an: Prüfdatum und Prüfintervall setzt du danach in der Meta-Box **Handbuch-Wartung**.
 
 ## Das App-Handbuch
 

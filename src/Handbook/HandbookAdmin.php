@@ -287,7 +287,7 @@ final class HandbookAdmin {
 			|| ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['living_handbook_access_nonce'] ) ), 'living_handbook_access' ) ) {
 			return;
 		}
-		if ( ! current_user_can( 'manage_categories' ) ) {
+		if ( ! Handbooks::can_edit_access( false, '', $term_id ) ) {
 			return;
 		}
 

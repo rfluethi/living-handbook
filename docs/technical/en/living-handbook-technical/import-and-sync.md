@@ -17,7 +17,9 @@ The sources are:
 4. **Bundle**: upload a bundle exported from another site running the plugin (see below). Requires `edit_others_posts`, so an editor or above.
 5. **App handbook**: load the app's own handbook, the copy bundled with the plugin, in one click (see below). Requires `edit_others_posts`, so an editor or above: the tab is shown to anyone who may import, but the load itself publishes a whole handbook and refuses lesser roles.
 
-Pages that land without a handbook are invisible on the front end, because access is fail-closed.
+Pages that land without a handbook are read on the front end only by editors and administrators, because access is fail-closed.
+
+As the target handbook the screen offers only handbooks the importing person may read, and `/import-github` and `/create` refuse any other with "You are not allowed to import into this handbook.": whoever may not read a handbook does not write into it either. That holds for every source, the app handbook included. The scheduled sync and WP-CLI run without a user and are exempt (`AccessController::may_use_handbook()`).
 
 **How the conversion works:** league/commonmark renders the Markdown to HTML, and WordPress's own paste conversion turns that HTML into editable blocks. A ```` ```mermaid ```` code fence becomes a live-rendered Mermaid block, collapsible `<details>` sections become details blocks, and images referenced from an `assets` folder are sideloaded into the media library. Once all pages exist, a shared post-processor applies the transport metadata and resolves parents and internal `.md` links, both the link target and the visible link text.
 
@@ -60,7 +62,7 @@ When a page is updated this way it keeps its **slug and its publication status**
 
 ## Exporting a handbook
 
-Under **Handbook → Export**, anyone with `edit_others_posts` (an editor or above) can **export a handbook as a bundle**: a single ZIP with a `manifest.json` and a `media/` folder. Pick the **handbook** first; the second field then lists that handbook's **areas** (an area is a top-level page, and it exports together with its subpages). Leave it on *the whole handbook* to export everything. Then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. An area bundle still carries the handbook's configuration, so the target knows where the pages belong.
+Under **Handbook → Export**, anyone with `edit_others_posts` (an editor or above) can export a handbook they may read **as a bundle**; others are not offered, and one passed in anyway is refused by the export with a 403. The bundle is a single ZIP with a `manifest.json` and a `media/` folder. Pick the **handbook** first; the second field then lists that handbook's **areas** (an area is a top-level page, and it exports together with its subpages). Leave it on *the whole handbook* to export everything. Then **Export bundle**, and the ZIP downloads. It is self-contained, so it can be moved to another site running the plugin without reaching back to this one. An area bundle still carries the handbook's configuration, so the target knows where the pages belong.
 
 The bundle carries the handbook's configuration (visibility and allowed roles), every page as a block-markup snapshot with its place in the hierarchy, the four classifying taxonomies, the freshness metadata, and the referenced media. It deliberately does **not** carry the list of individually allowed people: those are e-mail addresses, a bundle is a file that gets downloaded and passed on, and the target site has a different set of users anyway. If a handbook is restricted to named people, set them again after importing. A GitHub-sourced page keeps its source URL, so on the target site it resumes syncing from the same repository. Local, site-specific data is deliberately left out: the feedback counts and the sync status belong to each site.
 
@@ -72,7 +74,7 @@ The bundle carries the handbook's configuration (visibility and allowed roles), 
 
 ## Exporting a handbook as a static website
 
-The same screen offers a second export, for readers who have no WordPress at all: **Export as a website** builds a ZIP of plain HTML files that opens from the file system, no server and no network required. `edit_others_posts` again, and the screen states the consequence plainly: a static copy carries no access rules, so whoever holds the file reads every page in it.
+The same screen offers a second export, for readers who have no WordPress at all: **Export as a website** builds a ZIP of plain HTML files that opens from the file system, no server and no network required. `edit_others_posts` again and a handbook the person may read, and the screen states the consequence plainly: a static copy carries no access rules, so whoever holds the file reads every page in it.
 
 Four decisions are worth knowing when reading the code (`Export/StaticSite.php`, `Export/SiteRenderer.php`):
 
@@ -109,7 +111,7 @@ The bundle's learning paths are imported too, their lessons pointed at the impor
 
 A short report at the top of the screen says how many pages were created, updated, skipped or protected, the same separately for the learning paths, and lists anything that could not be mapped.
 
-Importing requires `edit_others_posts`, so an editor or above. A bundle is a file from another site, so its content is treated as external and cleaned on the way in, the same way the Markdown import and the GitHub sync are: scripts, event handlers and unsafe URLs are stripped. The cleaning runs block by block, so the block structure survives untouched. Media is cleaned as well, including SVG. That said, a bundle still brings in content someone else wrote, so it is worth reading before you publish it.
+Importing requires `edit_others_posts`, so an editor or above, and a target the person may read. **Import into** offers only such handbooks. A bundle whose own handbook already exists here and is not readable for the person is refused with "You are not allowed to import into this handbook." before any page is touched; an update would otherwise overwrite pages they may not see. A bundle is a file from another site, so its content is treated as external and cleaned on the way in, the same way the Markdown import and the GitHub sync are: scripts, event handlers and unsafe URLs are stripped. The cleaning runs block by block, so the block structure survives untouched. Media is cleaned as well, including SVG. That said, a bundle still brings in content someone else wrote, so it is worth reading before you publish it.
 
 ## The app handbook
 
@@ -213,7 +215,7 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 
 ## Moving existing WordPress pages into a handbook
 
-Select the pages in **Pages**, pick **Move into a handbook…** from the bulk actions, and choose the handbook in the dropdown that appears beside it. Three things happen that would not happen if you only changed the post type by hand:
+Select the pages in **Pages**, pick **Move into a handbook…** from the bulk actions, and choose the handbook in the dropdown that appears beside it; only handbooks you may read are offered and accepted. Three things happen that would not happen if you only changed the post type by hand:
 
 - The pages are assigned to the handbook you picked. Without a handbook a handbook page is not moved but gone: access is fail-closed, and a page with no handbook is not readable by anyone on the front end.
 - Their old addresses keep working. `/about/` becomes `/handbook/about/`, and WordPress does not redirect on a type change, so the old path is remembered and answered with a permanent redirect. Every existing link, bookmark and search result survives the move.

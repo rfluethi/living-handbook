@@ -14,13 +14,13 @@ Parameters:
 - `int $post_id` The handbook page ID.
 - `int $user_id` The user ID (0 for a guest).
 
-The built-in rules start with the capabilities, not with the handbook: an account with `edit_others_posts` (Editor, Administrator) is allowed every page, restricted handbooks included and pages without a handbook too. For such an account `$allowed` arrives as `true`. Only for everyone else are the handbook's visibility, roles and people consulted. Returning `false` here removes the page for that person from lists, search, navigation and exports. One exception lies outside this filter: whoever may edit a page under the WordPress rules (`edit_post`), so an author their own pages and a contributor their own drafts, gets that one page in the block editor, the preview and the single view, whatever the filter says. Otherwise a filter could take somebody's own work away from them.
+The built-in rules start with the capabilities, not with the handbook. Whoever reads every handbook, by default an account with `manage_options` (Administrator, see `living_handbook_read_all_capability`), is allowed every page, restricted handbooks included and pages without a handbook too; for such an account `$allowed` arrives as `true`. A page without a handbook is also readable for accounts with `edit_others_posts` (Editor), and for nobody else. For every other page the handbook's visibility, roles and people are consulted, for editors too: an editor reads a restricted handbook only when their role or they themselves are listed on it. Returning `false` here removes the page for that person from lists, search, navigation and exports. One exception lies outside this filter: whoever may edit a page under the WordPress rules (`edit_post`), so an author their own pages and a contributor their own drafts, gets that one page in the block editor, the preview and the single view, whatever the filter says. Otherwise a filter could take somebody's own work away from them. For other people's pages in a handbook the person may not read, the plugin itself denies `edit_post` (through `map_meta_cap`), so the exception opens such a handbook only for one's own pages.
 
 The filter runs once for every page the navigation shows, so it has to be cheap. The navigation reads only the titles and addresses of a handbook's pages, not their content, and does not put them in the post cache: a callback that calls `get_post()` there costs one database query per page, a few thousand on a large handbook. Decide from the ID, the user and data you can cache, such as term meta.
 
-The handbook-level check, `AccessController::can_view_term()`, which decides the entry page, the overview, the menu, the learning paths and the search and filter endpoints, does not run this filter. It lets accounts with `edit_others_posts` through as well, so an editor reads a restricted handbook they are not listed on in full. The right to edit a single page means nothing to it: that right opens the one page, not the handbook, and lists, search and navigation still follow the handbook's rules for an author.
+The handbook-level check, `AccessController::can_view_term()`, which decides the entry page, the overview, the menu, the learning paths and the search and filter endpoints, does not run this filter, and neither does the protection in the back end that builds on it (page list, media library, editor, comments, handbook settings, the choice of handbook for import and export). Without a grant from the handbook it lets through only whoever reads every handbook. The right to edit a single page means nothing to it: that right opens the one page, not the handbook, and lists, search and navigation still follow the handbook's rules for an author.
 
-Return a boolean. Example, grant a service account read access to everything:
+Return a boolean. Example, grant a service account read access to every page. This does not open entry pages, the overview or the back end; for an account that should really read everything, use `living_handbook_read_all_capability`.
 
 ```php
 add_filter(
@@ -37,6 +37,29 @@ add_filter(
 ```
 
 If you write your own read path, call `AccessController::can_view_post()` rather than reading the term meta yourself. It is the only supported way to ask the question, and it is memoized per request.
+
+### `living_handbook_read_all_capability`
+
+Filters the capability with which an account reads every handbook, whatever its visibility says. Whoever has it reads every page, every entry page, every learning path and every comment, sees every page, file and handbook in the back end, and can configure, export and import into every handbook, as far as their other WordPress capabilities reach. Everyone else, editors included, reads what a handbook grants them. The question is answered in one place, `AccessController::reads_everything()`; ask there rather than checking the capability yourself.
+
+Parameters:
+
+- `string $capability` The capability. Default `'manage_options'`, so administrators.
+
+Return a string. An empty string means nobody reads everything, administrators included. The handbook grants then apply to every account, to a handbook's settings too: whoever may not read a handbook can no longer open it either.
+
+Example, let editors read every handbook again, as before 0.76.0:
+
+```php
+add_filter(
+	'living_handbook_read_all_capability',
+	function (): string {
+		return 'edit_others_posts';
+	}
+);
+```
+
+The filter runs on every access decision; return a fixed value, not a decision per person. If only a single account should read everything, a service account for instance, return a capability of your own such as `'read_all_handbooks'` and grant it to that account and to the Administrator role, because whoever lacks it reads only what the handbooks grant from then on. Pages without a handbook do not depend on this filter: they are read by whoever has `edit_others_posts` and by whoever reads every handbook.
 
 ### `living_handbook_sync_allowed_hosts`
 

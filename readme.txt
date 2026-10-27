@@ -19,7 +19,7 @@ Core features:
 * A dedicated handbook content type with structured page types (Diataxis plus FAQ).
 * Ownership per page: assign a responsible role to every page, and a reviewer as a WordPress user.
 * Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
-* Frontend access per handbook: public, all members, or restricted to specific roles and/or people. Editors and administrators (anyone who may edit other people's posts) read every handbook in full regardless.
+* Access per handbook: public, all members, or restricted to specific roles and/or people, on the site and in wp-admin. Administrators read every handbook; editors read what a handbook grants them, so a handbook can be kept to administrators.
 * Several handbooks side by side, each with its own access group, its own entry page, and its own navigation.
 * An entry page per handbook with full-text search, taxonomy filters that apply without a reload, area tiles and recently updated pages.
 * A single-page layout with per-handbook navigation, badges, an on-this-page table of contents, feedback and a metadata footer, all as blocks.
@@ -73,7 +73,7 @@ All of these licenses are compatible with the plugin's GPL-2.0-or-later. Apache-
 
 = Who can see a handbook? =
 
-Access is set per handbook: public (no login), all logged-in members, or restricted to specific roles and/or people. It is enforced on the entry page and on single pages, in the search, the filters, the menu and the REST API. Two exceptions apply. Accounts that may edit other people's posts (by default Editors and Administrators) read every handbook in full, restricted ones included: its pages, its entry page, its entry in the overview and its learning paths, so a handbook cannot be hidden from the site's editors. And anyone who may edit a page under the WordPress rules may also open it in the block editor, preview it and read it on the site, even when its handbook otherwise excludes them; for Authors that means their own pages, for Contributors their own drafts. Other people's pages, lists, search and navigation still follow the handbook's rules.
+Access is set per handbook: public (no login), all logged-in members, or restricted to specific roles and/or people. It is enforced on the entry page and on single pages, in the search, the filters, the menu and the REST API. Two exceptions apply. Administrators read every handbook in full, restricted ones included; Editors read what a handbook grants them like everybody else, so a handbook can be kept to administrators, and in wp-admin other people's pages of such a handbook, its files and its settings stay closed to them. And anyone who may edit a page under the WordPress rules may also open it in the block editor, preview it and read it on the site, even when its handbook otherwise excludes them; for Authors that means their own pages, for Contributors their own drafts. Other people's pages, lists, search and navigation still follow the handbook's rules.
 
 = What happens when I uninstall the plugin? =
 
@@ -118,7 +118,7 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 * Security: imports store only real images (and, in bundles, ordinary media files); an imported page cannot be placed under a page you may not edit.
 * New: a bundle carries the handbook's learning paths, pointing at the imported pages.
 * New: WordPress's privacy tools export and erase the plugin's personal data, with a suggested privacy policy text.
-* Changed: whoever may edit a page gets it in the block editor and the preview, even in a handbook they may not read; editors and administrators read every handbook, its entry page included.
+* Changed: whoever may edit a page gets it in the block editor and the preview, even in a handbook they may not read. Only administrators read every handbook; editors read what a handbook grants them, on the site and in wp-admin.
 * Changed: loading the app handbook again lists pages that are no longer shipped and leaves pages loaded without the source connection alone. A new installation's overview page lives at /handbooks/.
 * Fixed: a scheduled sync keeps the page order and excerpts the file does not set; links to sections of other pages work; MkDocs imports keep their metadata.
 * Fixed: "delete everything" removes trashed pages, customised templates and every setting; the media library stays. Updates migrate without an admin visit.
@@ -165,7 +165,7 @@ Older versions are listed in [CHANGELOG.md on GitHub](https://github.com/rflueth
 == Upgrade Notice ==
 
 = 0.76.0 =
-Closes an independent review: access on comments, attachments and protected pages, safer imports, privacy tools, learning paths in bundles, and authors can edit their own pages again. Recommended for every site.
+Closes an independent review: access on comments, attachments and protected pages, safer imports, privacy tools, learning paths in bundles, and authors can edit their own pages again. Editors now read only the restricted handbooks that name them: check the roles of each one.
 
 = 0.75.1 =
 Security and bug fix release, recommended for every site: updated libraries with published vulnerabilities, a website export that cannot carry files from outside the uploads folder, and learning paths that work without saving the permalinks.

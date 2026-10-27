@@ -6,7 +6,7 @@ Living Handbook bringt vier Handbücher mit: dieses Benutzerhandbuch auf Deutsch
 <summary>Voraussetzungen: Was du brauchst</summary>
 
 * Ein Benutzerkonto mit der Rolle Redakteur oder höher. Das Laden veröffentlicht ein ganzes Handbuch auf einmal, darum genügt das Recht, eigene Seiten zu bearbeiten, nicht.
-* Ein Handbuch als Ziel, zum Beispiel eines mit dem Namen „App-Handbuch“. Lege es vorher an, siehe [Erstes Handbuch anlegen](erstes-handbuch-anlegen.md). Bestimme dort auch, wer es lesen darf.
+* Ein Handbuch als Ziel, zum Beispiel eines mit dem Namen „App-Handbuch“. Lege es vorher an, siehe [Erstes Handbuch anlegen](erstes-handbuch-anlegen.md). Bestimme dort auch, wer es lesen darf, und schließ dich dabei nicht selbst aus: laden kannst du nur in ein Handbuch, das du lesen darfst.
 
 Das Handbuch liegt im Plugin, du brauchst also keine Internetverbindung, um es zu laden.
 
@@ -16,7 +16,7 @@ Das Handbuch liegt im Plugin, du brauchst also keine Internetverbindung, um es z
 
 1. Öffne **Handbuch → Import** und wechsle auf den Reiter **App-Handbuch**.
 2. Wähle unter **Welches Handbuch** aus, was du laden willst.
-3. Wähle unter **Laden in** das Ziel-Handbuch aus.
+3. Wähle unter **Laden in** das Ziel-Handbuch aus. Zur Wahl stehen die Handbücher, die du lesen darfst.
 4. Entscheide unter **Verbindung zur Quelle**, ob die Seiten am mitgelieferten Stand hängen bleiben sollen. Siehe unten.
 5. Klicke auf **Handbuch laden**.
 6. Lies die Ergebnisliste. Sieh dir danach das geladene Handbuch auf der Website an.

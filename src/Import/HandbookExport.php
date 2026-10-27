@@ -103,7 +103,7 @@ final class HandbookExport {
 				'hide_empty' => false,
 			)
 		);
-		$handbooks = is_array( $handbooks ) ? $handbooks : array();
+		$handbooks = AccessController::usable_handbooks( is_array( $handbooks ) ? $handbooks : array() );
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Export', 'living-handbook' ); ?></h1>
@@ -299,6 +299,10 @@ JS;
 
 		if ( ! $term instanceof WP_Term ) {
 			wp_die( esc_html__( 'Choose what to export.', 'living-handbook' ), '', array( 'response' => 400 ) );
+		}
+		// A handbook the user may not read is not theirs to hand out.
+		if ( ! AccessController::may_use_handbook( (int) $term->term_id ) ) {
+			wp_die( esc_html__( 'You are not allowed to export this handbook.', 'living-handbook' ), '', array( 'response' => 403 ) );
 		}
 
 		if ( ! class_exists( 'ZipArchive' ) ) {

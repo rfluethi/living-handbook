@@ -131,14 +131,31 @@ final class AccessTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A content manager (editor) sees everything.
+	 * An administrator sees everything; an editor sees what the handbook grants
+	 * them, so a handbook can be kept to administrators. Up to E-0075 every
+	 * editor read every handbook.
 	 *
 	 * @return void
 	 */
-	public function test_editor_sees_restricted(): void {
-		$page = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
-		$user = self::factory()->user->create( array( 'role' => 'editor' ) );
-		$this->assertTrue( AccessController::can_view_post( $page, (int) $user ) );
+	public function test_a_handbook_kept_to_administrators_is_kept_from_editors(): void {
+		$page   = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
+		$admin  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$editor = self::factory()->user->create( array( 'role' => 'editor' ) );
+
+		$this->assertTrue( AccessController::can_view_post( $page, (int) $admin ) );
+		$this->assertFalse( AccessController::can_view_post( $page, (int) $editor ) );
+	}
+
+	/**
+	 * A handbook that names the editor role is open to editors.
+	 *
+	 * @return void
+	 */
+	public function test_an_editor_reads_a_handbook_granted_to_editors(): void {
+		$page   = $this->make_page( $this->make_handbook( 'restricted', array( 'editor' ) ) );
+		$editor = self::factory()->user->create( array( 'role' => 'editor' ) );
+
+		$this->assertTrue( AccessController::can_view_post( $page, (int) $editor ) );
 	}
 
 	/**
@@ -240,19 +257,16 @@ final class AccessTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A back-end AJAX read (admin-ajax.php) does not apply the coarse restriction
-	 * to a user who may edit other people's posts: their back-end view is
-	 * unrestricted anyway, so back-end tools stay consistent with it.
+	 * A back-end AJAX read (admin-ajax.php) by an editor follows the back-end
+	 * rule: pages in no handbook and the handbooks granted to them are there,
+	 * somebody else's page in a handbook kept to administrators is not.
 	 *
 	 * @return void
 	 */
-	public function test_backend_ajax_does_not_restrict_editor(): void {
-		$page   = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
-		$editor = self::factory()->user->create( array( 'role' => 'editor' ) );
-
-		// An editor may view every handbook anyway (edit_others_posts), so this
-		// only pins down that the AJAX path does not suddenly hide it from them.
-		$this->assertTrue( AccessController::can_view_post( $page, (int) $editor ) );
+	public function test_backend_ajax_keeps_an_editor_to_their_handbooks(): void {
+		$page    = $this->make_page( $this->make_handbook( 'restricted', array( 'administrator' ) ) );
+		$members = $this->make_page( $this->make_handbook( 'members' ) );
+		$editor  = self::factory()->user->create( array( 'role' => 'editor' ) );
 
 		wp_set_current_user( (int) $editor );
 		set_current_screen( 'edit.php' );
@@ -267,7 +281,8 @@ final class AccessTest extends WP_UnitTestCase {
 		set_current_screen( 'front' );
 		wp_set_current_user( 0 );
 
-		$this->assertContains( $page, $ids );
+		$this->assertNotContains( $page, $ids );
+		$this->assertContains( $members, $ids );
 	}
 
 	/**

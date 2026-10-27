@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Import;
 
 use LivingHandbook\Git\GitSync;
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -414,6 +415,9 @@ final class HandbookImport {
 			$report['notes'][] = __( 'The bundle was imported as ordinary WordPress pages, as drafts. They carry no handbook, so no access rule, no navigation, no table of contents, no badges and no review data; the text, the images and the diagrams are there.', 'living-handbook' );
 		} else {
 			$term_id = $this->resolve_handbook( $manifest, $report, $chosen );
+			if ( -1 === $term_id ) {
+				return array( 'error' => __( 'You are not allowed to import into this handbook.', 'living-handbook' ) );
+			}
 			if ( 0 === $term_id ) {
 				return array( 'error' => __( 'The bundle names no handbook.', 'living-handbook' ) );
 			}
@@ -602,12 +606,17 @@ final class HandbookImport {
 	 * @param array<string, mixed> $manifest Decoded manifest.
 	 * @param array<string, mixed> $report   Report (out).
 	 * @param int                  $chosen   Chosen target handbook term ID, or 0 for the bundle's own.
-	 * @return int Term ID, or 0.
+	 * @return int Term ID, 0 when the bundle names none, -1 when the handbook is one the user may not use.
 	 */
 	private function resolve_handbook( array $manifest, array &$report, int $chosen = 0 ): int {
 		if ( $chosen > 0 ) {
 			$target = get_term( $chosen, Handbooks::TAXONOMY );
 			if ( $target instanceof WP_Term ) {
+				// Whoever may not read a handbook may not write into it: an update
+				// would overwrite pages they are not allowed to see.
+				if ( ! AccessController::may_use_handbook( (int) $target->term_id ) ) {
+					return -1;
+				}
 				$report['notes'][] = __( 'The pages went into the handbook you chose; its access configuration was left unchanged.', 'living-handbook' );
 				return (int) $target->term_id;
 			}
@@ -622,6 +631,9 @@ final class HandbookImport {
 
 		$existing = get_term_by( 'slug', $slug, Handbooks::TAXONOMY );
 		if ( $existing instanceof WP_Term ) {
+			if ( ! AccessController::may_use_handbook( (int) $existing->term_id ) ) {
+				return -1;
+			}
 			$report['notes'][] = __( 'An existing handbook was reused; its access configuration was left unchanged.', 'living-handbook' );
 			return (int) $existing->term_id;
 		}

@@ -17,6 +17,13 @@ A new handbook starts with the visibility "All members (logged in)". Set it to "
 </details>
 
 <details>
+<summary>Why is a handbook missing for an editor, in the admin too?</summary>
+
+Only administrators read every handbook. Editors read what a handbook grants them. If a handbook is set to "Restricted" without the Editor role or the person ticked, it is missing for them everywhere: on the website, in the handbook list, in the page list and in the import and export. Tick the role or the person on the handbook. Details: [Set visibility](access/set-visibility.md).
+
+</details>
+
+<details>
 <summary>Why do the handbook pages look broken in my theme?</summary>
 
 The plugin needs a block theme and WordPress 6.8 or newer. An older, classic theme cannot display the handbook pages properly. Details: [Installation](getting-started/installation.md).

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Handbook;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
 use LivingHandbook\Training\Training;
@@ -366,6 +367,16 @@ final class Handbooks {
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			// A slug no term carries: matches nothing, so the response is empty.
 			$args['slug'] = array( '__living_handbook_no_access__' );
+			return $args;
+		}
+		// The block editor offers what this list holds. A handbook the user may
+		// not read is neither shown nor offered.
+		$user_id = get_current_user_id();
+		if ( ! AccessController::reads_everything( $user_id ) ) {
+			$hidden = AccessController::hidden_term_ids( $user_id );
+			if ( array() !== $hidden ) {
+				$args['exclude'] = array_merge( wp_parse_id_list( $args['exclude'] ?? array() ), $hidden );
+			}
 		}
 		return $args;
 	}
@@ -375,12 +386,14 @@ final class Handbooks {
 	 * per-id endpoint cannot be used to read one handbook around the empty list.
 	 *
 	 * @param mixed $response The prepared response.
-	 * @param mixed $item     The term (unused).
+	 * @param mixed $item     The term.
 	 * @return mixed
 	 */
 	public function restrict_rest_item( $response, $item ) {
-		unset( $item );
 		if ( ! current_user_can( 'edit_posts' ) ) {
+			return new WP_REST_Response( null, 403 );
+		}
+		if ( $item instanceof WP_Term && ! AccessController::may_use_handbook( (int) $item->term_id ) ) {
 			return new WP_REST_Response( null, 403 );
 		}
 		return $response;
@@ -445,9 +458,21 @@ final class Handbooks {
 	/**
 	 * Whether the current user may edit a handbook's access configuration.
 	 *
+	 * The handbook's own edit right as well (see
+	 * AccessController::guard_meta_caps()): somebody who may not read a
+	 * handbook may not open it by changing its settings either.
+	 *
+	 * @param bool|mixed $allowed   Unused.
+	 * @param string     $meta_key  Unused.
+	 * @param int|mixed  $object_id The handbook term ID, 0 when unknown.
 	 * @return bool
 	 */
-	public static function can_edit_access(): bool {
-		return current_user_can( 'manage_categories' );
+	public static function can_edit_access( $allowed = false, $meta_key = '', $object_id = 0 ): bool {
+		unset( $allowed, $meta_key );
+		if ( ! current_user_can( 'manage_categories' ) ) {
+			return false;
+		}
+		$term_id = is_numeric( $object_id ) ? (int) $object_id : 0;
+		return 0 === $term_id || current_user_can( 'edit_term', $term_id );
 	}
 }

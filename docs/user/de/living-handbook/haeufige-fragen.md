@@ -17,6 +17,13 @@ Ein neues Handbuch startet mit der Sichtbarkeit „Alle Mitglieder (angemeldet)�
 </details>
 
 <details>
+<summary>Warum fehlt einer Redakteurin ein Handbuch, auch in der Verwaltung?</summary>
+
+Alle Handbücher lesen nur Administratorinnen und Administratoren. Die Redaktion liest, was ein Handbuch ihr freigibt. Steht ein Handbuch auf „Eingeschränkt“, ohne dass die Rolle Redakteur oder die Person angehakt ist, fehlt es für sie überall: auf der Website, in der Handbuch-Liste, in der Seitenliste und beim Import und Export. Hake die Rolle oder die Person beim Handbuch an. Details: [Sichtbarkeit einstellen](zugriff/sichtbarkeit-einstellen.md).
+
+</details>
+
+<details>
 <summary>Warum sehen die Handbuch-Seiten in meinem Theme kaputt aus?</summary>
 
 Das Plugin braucht ein Block-Theme und WordPress 6.8 oder neuer. Ein älteres, klassisches Theme kann die Handbuch-Seiten nicht richtig darstellen. Details: [Installation](erste-schritte/installation.md).

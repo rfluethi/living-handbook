@@ -14,13 +14,13 @@ Parameter:
 - `int $post_id` Die ID der Handbuch-Seite.
 - `int $user_id` Die Benutzer-ID (0 für Gäste).
 
-Die eingebauten Regeln beginnen bei den Rechten, nicht beim Handbuch: ein Konto mit `edit_others_posts` (Redaktion, Administration) darf jede Seite lesen, auch in eingeschränkten Handbüchern und auch ohne Handbuch. Für ein solches Konto kommt `$allowed` als `true` an. Erst für alle anderen zählen Sichtbarkeit, Rollen und Personen des Handbuchs. Gibst du hier `false` zurück, verschwindet die Seite für diese Person aus Listen, Suche, Navigation und Export. Eine Ausnahme liegt außerhalb dieses Filters: Wer eine Seite nach WordPress-Regeln bearbeiten darf (`edit_post`), also eine Autorin ihre eigenen Seiten und eine Mitarbeiterin ihre eigenen Entwürfe, bekommt diese eine Seite im Block-Editor, in der Vorschau und in der Einzelansicht, was immer der Filter sagt. Sonst könnte ein Filter jemandem die eigene Arbeit wegnehmen.
+Die eingebauten Regeln beginnen bei den Rechten, nicht beim Handbuch. Wer jedes Handbuch liest, standardmäßig ein Konto mit `manage_options` (Administration, siehe `living_handbook_read_all_capability`), darf jede Seite lesen, auch in eingeschränkten Handbüchern und auch ohne Handbuch; für ein solches Konto kommt `$allowed` als `true` an. Eine Seite ohne Handbuch lesen außerdem Konten mit `edit_others_posts` (Redaktion), sonst niemand. Für jede andere Seite zählen Sichtbarkeit, Rollen und Personen des Handbuchs, auch für die Redaktion: eine Redakteurin liest ein eingeschränktes Handbuch nur, wenn ihre Rolle oder sie selbst dort eingetragen ist. Gibst du hier `false` zurück, verschwindet die Seite für diese Person aus Listen, Suche, Navigation und Export. Eine Ausnahme liegt außerhalb dieses Filters: Wer eine Seite nach WordPress-Regeln bearbeiten darf (`edit_post`), also eine Autorin ihre eigenen Seiten und eine Mitarbeiterin ihre eigenen Entwürfe, bekommt diese eine Seite im Block-Editor, in der Vorschau und in der Einzelansicht, was immer der Filter sagt. Sonst könnte ein Filter jemandem die eigene Arbeit wegnehmen. Für fremde Seiten in einem Handbuch, das die Person nicht lesen darf, verweigert das Plugin `edit_post` selbst (über `map_meta_cap`); die Ausnahme öffnet ein solches Handbuch also nur für die eigenen Seiten.
 
 Der Filter läuft für jede Seite, die die Navigation zeigt, einmal; er muss also billig sein. Die Navigation liest von den Seiten eines Handbuchs nur Titel und Adressen, nicht den Inhalt, und legt sie nicht in den Post-Cache: Ein Callback, der dort `get_post()` aufruft, kostet eine Datenbankabfrage pro Seite, bei einem großen Handbuch einige tausend. Entscheide anhand der ID, des Benutzers und von Daten, die sich cachen lassen, etwa Term-Meta.
 
-Die Prüfung auf Handbuch-Ebene, `AccessController::can_view_term()`, die über Einstiegsseite, Übersicht, Menü, Lernpfade sowie den Such- und den Filter-Endpunkt entscheidet, läuft nicht durch diesen Filter. Sie lässt Konten mit `edit_others_posts` ebenfalls durch, eine Redakteurin liest ein eingeschränktes Handbuch, in dem sie nicht eingetragen ist, also vollständig. Das Recht, eine einzelne Seite zu bearbeiten, kennt sie dagegen nicht: es öffnet diese eine Seite, nicht das Handbuch, und Listen, Suche und Navigation folgen für eine Autorin weiter den Handbuch-Regeln.
+Die Prüfung auf Handbuch-Ebene, `AccessController::can_view_term()`, die über Einstiegsseite, Übersicht, Menü, Lernpfade sowie den Such- und den Filter-Endpunkt entscheidet, läuft nicht durch diesen Filter, und ebenso wenig der Schutz im Backend, der auf ihr aufbaut (Seitenliste, Mediathek, Editor, Kommentare, Handbuch-Einstellungen, die Wahl des Handbuchs bei Import und Export). Ohne Handbuch-Freigabe lässt sie nur durch, wer jedes Handbuch liest. Das Recht, eine einzelne Seite zu bearbeiten, kennt sie nicht: es öffnet diese eine Seite, nicht das Handbuch, und Listen, Suche und Navigation folgen für eine Autorin weiter den Handbuch-Regeln.
 
-Gib einen Boolean zurück. Beispiel: Einem Servicekonto Lesezugriff auf alles geben.
+Gib einen Boolean zurück. Beispiel: Einem Servicekonto Lesezugriff auf alle Seiten geben. Einstiegsseiten, Übersicht und Backend öffnet das nicht; soll ein Konto wirklich alles lesen, nimm `living_handbook_read_all_capability`.
 
 ```php
 add_filter(
@@ -37,6 +37,29 @@ add_filter(
 ```
 
 Wenn du einen eigenen Lesepfad schreibst, ruf `AccessController::can_view_post()` auf, statt die Term-Metadaten selbst auszulesen. Das ist der einzige unterstützte Weg, diese Frage zu stellen, und das Ergebnis wird pro Request zwischengespeichert.
+
+### `living_handbook_read_all_capability`
+
+Filtert die Fähigkeit, mit der ein Konto jedes Handbuch liest, was immer dessen Sichtbarkeit sagt. Wer sie hat, liest jede Seite, jede Einstiegsseite, jeden Lernpfad und jeden Kommentar, sieht im Backend alle Seiten, Dateien und Handbücher und kann jedes Handbuch einstellen, exportieren und als Importziel wählen, soweit die übrigen WordPress-Rechte reichen. Alle anderen, die Redaktion eingeschlossen, lesen, was ein Handbuch ihnen freigibt. Die Frage wird an einer Stelle beantwortet, `AccessController::reads_everything()`; frag dort, statt die Fähigkeit selbst zu prüfen.
+
+Parameter:
+
+- `string $capability` Die Fähigkeit. Standard ist `'manage_options'`, also die Administration.
+
+Gib einen String zurück. Ein leerer String heißt: niemand liest alles, auch die Administration nicht. Dann gelten die Handbuch-Freigaben für jedes Konto, auch für die Einstellungen eines Handbuchs: wer es nicht lesen darf, kann es auch nicht mehr öffnen.
+
+Beispiel: die Redaktion wieder jedes Handbuch lesen lassen, wie vor 0.76.0.
+
+```php
+add_filter(
+	'living_handbook_read_all_capability',
+	function (): string {
+		return 'edit_others_posts';
+	}
+);
+```
+
+Der Filter läuft bei jeder Zugriffsentscheidung; gib einen festen Wert zurück, keine Entscheidung pro Person. Soll nur ein einzelnes Konto alles lesen, etwa ein Dienstkonto, gib eine eigene Fähigkeit wie `'read_all_handbooks'` zurück und vergib sie diesem Konto und der Rolle Administrator, denn wer sie nicht hat, liest ab dann nur noch, was die Handbücher freigeben. Seiten ohne Handbuch hängen nicht an diesem Filter: sie liest, wer `edit_others_posts` hat, und wer jedes Handbuch liest.
 
 ### `living_handbook_sync_allowed_hosts`
 

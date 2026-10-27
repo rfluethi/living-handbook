@@ -10,12 +10,14 @@ The diagram shows the decision path when a page is requested: from the role thro
 
 ```mermaid
 graph TD;
-  A["Visitor requests a handbook page"] --> R{"Editor or administrator?"};
+  A["Visitor requests a handbook page"] --> R{"Administrator?"};
   R -->|"Yes"| Y["Page is shown"];
   R -->|"No"| W{"May the person edit this page?"};
   W -->|"Yes"| Y;
   W -->|"No"| B{"Does the page belong to a handbook?"};
-  B -->|"No"| X["No access"];
+  B -->|"No"| N{"Editor?"};
+  N -->|"Yes"| Y;
+  N -->|"No"| X["No access"];
   B -->|"Yes"| C{"Visibility of the handbook?"};
   C -->|"Public"| Y["Page is shown"];
   C -->|"All members"| D{"Logged in?"};
@@ -29,7 +31,7 @@ graph TD;
 ## Why it is built this way
 
 * **One rule per handbook instead of per page.** Visibility per page sounds flexible. But it quickly turns unmanageable, because nobody keeps a hundred individual rules in their head. A rule per handbook fits in one sentence: "All logged-in people see the team handbook."
-* **A page without a handbook is invisible.** It has no rule that could allow access. So the safe answer applies: no access. This is the most common cause of "my page does not show up", see [Frequently asked questions](../faq.md).
+* **A page without a handbook is invisible.** It has no rule that could allow access. So the safe answer applies: no access. Only editors and administrators see it, so that someone can assign it to a handbook. This is the most common cause of "my page does not show up", see [Frequently asked questions](../faq.md).
 * **There is one central checkpoint.** Every place that shows handbook content first asks the same question: may this person read this? That holds for pages, search, filters, menu and feedback. There is no back door that could be forgotten.
 * **The side paths are closed too.** Handbook pages do not appear in the technical lists that search engines and other websites read out. An internal handbook leaves no public traces.
 
@@ -37,8 +39,9 @@ One consequence you need to know: this restraint also applies to public handbook
 
 ## What this means for your work
 
-* **Editors see everything.** Anyone who may edit other people's posts (the roles Editor and Administrator) reads every handbook in full, restricted ones too: the pages, even those without a handbook assignment, the entry page, the entry in the overview and the learning paths. Visibility protects a handbook from its readers, not from your own editors. That is also why a test with an editor account misleads: check the view with an account that has your readers' role.
+* **Only administrators see everything.** Administrators read every handbook in full, restricted ones too: the pages, even those without a handbook assignment, the entry page, the entry in the overview and the learning paths. Editors read what a handbook grants them, like everyone else. A restricted handbook without the Editor role ticked therefore stays reserved for administrators. That is also why a test with an administrator account misleads: check the view with an account that has your readers' role.
 * **Whoever may edit a page may also read it.** An author opens their own page in the block editor, in the preview and on the website, even when the handbook otherwise excludes them. Other people's pages, lists, search and navigation still follow the visibility for them.
+* **The admin follows the same rule.** In the WordPress admin, other people's pages from handbooks you may not read are missing: from the page list, from the media library and from the comments. You cannot open, edit or delete them, and you can neither configure nor delete the handbook itself. Only the counts above the page list still include such pages.
 * A new handbook starts on **All members**. It becomes public only through your deliberate decision.
 * An imported handbook also starts on **All members**, whatever the source says.
 * When something does not show up, it is almost never a bug but the protection logic. Check the handbook assignment and the visibility before you look further.
@@ -46,13 +49,13 @@ One consequence you need to know: this restraint also applies to public handbook
 <details>
 <summary>Background: For developers</summary>
 
-The central check is filterable, for example to give a service account read access to everything. Your own read paths must always route through this check. How that works is in the [developer documentation on the hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/hooks.md).
+The central check is filterable, for example to give a service account read access to everything. The capability with which administrators read every handbook can be changed too, for example so that editors read every handbook as well. Your own read paths must always route through this check. How that works is in the [developer documentation on the hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/hooks.md).
 
 </details>
 
 ## Images and files
 
-An image that belongs to a handbook page inherits that page's access: it is not listed in the media endpoint, and someone who may not open the page cannot read its entry either.
+An image that belongs to a handbook page inherits that page's access: it is listed neither in the media endpoint nor in the admin's media library, and someone who may not open the page cannot read its entry either.
 
 The file itself is not protected, and no plugin can protect it. WordPress keeps uploads in `wp-content/uploads`, and the web server hands that folder out directly, without asking WordPress first. Anyone with the file's address can open it. For most handbooks that is acceptable, because an address is hard to guess. If your handbook holds images that must not leave the team, ask whoever runs the server to protect the uploads folder, for example with a rule in `wp-content/uploads/.htaccess` on Apache or a `location` block on nginx.
 

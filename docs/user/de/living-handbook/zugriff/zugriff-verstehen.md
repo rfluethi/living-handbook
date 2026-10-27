@@ -10,12 +10,14 @@ Das Diagramm zeigt den Entscheidungsweg beim Aufruf einer Seite: von der Rolle �
 
 ```mermaid
 graph TD;
-  A["Besucher ruft eine Handbuch-Seite auf"] --> R{"Redaktion oder Administration?"};
+  A["Besucher ruft eine Handbuch-Seite auf"] --> R{"Administration?"};
   R -->|"Ja"| Y["Seite wird angezeigt"];
   R -->|"Nein"| W{"Darf die Person diese Seite bearbeiten?"};
   W -->|"Ja"| Y;
   W -->|"Nein"| B{"Gehört die Seite zu einem Handbuch?"};
-  B -->|"Nein"| X["Kein Zugriff"];
+  B -->|"Nein"| N{"Redaktion?"};
+  N -->|"Ja"| Y;
+  N -->|"Nein"| X["Kein Zugriff"];
   B -->|"Ja"| C{"Sichtbarkeit des Handbuchs?"};
   C -->|"Öffentlich"| Y["Seite wird angezeigt"];
   C -->|"Alle Mitglieder"| D{"Angemeldet?"};
@@ -29,7 +31,7 @@ graph TD;
 ## Warum es so gebaut ist
 
 * **Eine Regel pro Handbuch statt pro Seite.** Sichtbarkeit pro Seite klingt flexibel. Sie wird aber schnell unübersichtlich, denn niemand behält hundert Einzelregeln im Kopf. Eine Regel pro Handbuch kannst du in einem Satz aussprechen: „Das Team-Handbuch sehen alle Angemeldeten.“
-* **Eine Seite ohne Handbuch ist unsichtbar.** Sie hat keine Regel, die Zugriff erlauben könnte. Also gilt die sichere Antwort: kein Zugriff. Das ist die häufigste Ursache für „meine Seite erscheint nicht“, siehe [Häufige Fragen](../haeufige-fragen.md).
+* **Eine Seite ohne Handbuch ist unsichtbar.** Sie hat keine Regel, die Zugriff erlauben könnte. Also gilt die sichere Antwort: kein Zugriff. Nur Redaktion und Administration sehen sie, damit jemand sie einem Handbuch zuweisen kann. Das ist die häufigste Ursache für „meine Seite erscheint nicht“, siehe [Häufige Fragen](../haeufige-fragen.md).
 * **Es gibt einen zentralen Prüfpunkt.** Jede Stelle, die Handbuch-Inhalte anzeigt, stellt vorher dieselbe Frage: Darf diese Person das lesen? Das gilt für Seiten, Suche, Filter, Menü und Feedback. Es gibt keine Hintertür, die vergessen gehen könnte.
 * **Auch die Nebenwege sind geschlossen.** Handbuch-Seiten tauchen nicht in den technischen Listen auf, die Suchmaschinen und andere Websites auslesen. Ein internes Handbuch hinterlässt keine öffentlichen Spuren.
 
@@ -37,8 +39,9 @@ Eine Folge davon musst du kennen: Diese Zurückhaltung gilt auch für öffentlic
 
 ## Was das für deine Arbeit bedeutet
 
-* **Die Redaktion sieht alles.** Wer fremde Beiträge bearbeiten darf (die Rollen Redakteur und Administrator), liest jedes Handbuch vollständig, auch eingeschränkte: die Seiten, auch solche ohne Handbuch-Zuweisung, die Einstiegsseite, den Eintrag in der Übersicht und die Lernpfade. Die Sichtbarkeit schützt ein Handbuch also vor Leserinnen und Lesern, nicht vor der eigenen Redaktion. Darum täuscht ein Test mit einem Redaktionskonto: Prüfe die Sicht mit einem Konto, das die Rolle deiner Leserinnen hat.
+* **Nur die Administration sieht alles.** Administratorinnen und Administratoren lesen jedes Handbuch vollständig, auch eingeschränkte: die Seiten, auch solche ohne Handbuch-Zuweisung, die Einstiegsseite, den Eintrag in der Übersicht und die Lernpfade. Die Redaktion liest wie alle anderen, was ein Handbuch ihr freigibt. Ein eingeschränktes Handbuch, bei dem die Rolle Redakteur nicht angehakt ist, bleibt also der Administration vorbehalten. Darum täuscht ein Test mit einem Administrator-Konto: Prüfe die Sicht mit einem Konto, das die Rolle deiner Leserinnen hat.
 * **Wer eine Seite bearbeiten darf, darf sie auch lesen.** Eine Autorin öffnet ihre eigene Seite im Block-Editor, in der Vorschau und auf der Website, auch wenn das Handbuch sie sonst ausschließt. Fremde Seiten, Listen, Suche und Navigation folgen für sie weiter der Sichtbarkeit.
+* **Auch die Verwaltung hält sich daran.** In der WordPress-Verwaltung fehlen Seiten anderer Personen aus Handbüchern, die du nicht lesen darfst: in der Seitenliste, in der Mediathek und bei den Kommentaren. Öffnen, bearbeiten oder löschen kannst du sie nicht, und das Handbuch selbst kannst du weder einstellen noch löschen. Einzig die Zähler über der Seitenliste zählen solche Seiten mit.
 * Ein neues Handbuch startet auf **Alle Mitglieder**. Öffentlich wird es nur durch deine bewusste Entscheidung.
 * Ein importiertes Handbuch startet ebenfalls auf **Alle Mitglieder**, egal was die Quelle sagt.
 * Wenn etwas nicht erscheint, ist das fast nie ein Fehler, sondern die Schutzlogik. Prüfe Handbuch-Zuweisung und Sichtbarkeit, bevor du weitersuchst.
@@ -46,13 +49,13 @@ Eine Folge davon musst du kennen: Diese Zurückhaltung gilt auch für öffentlic
 <details>
 <summary>Hintergrund: Für Entwicklerinnen und Entwickler</summary>
 
-Die zentrale Prüfung ist filterbar. So bekommt zum Beispiel ein Dienstkonto Lesezugriff auf alles. Eigene Lesepfade müssen immer durch diese Prüfung führen. Wie das geht, steht in der [Entwickler-Dokumentation zu den Hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/hooks.md).
+Die zentrale Prüfung ist filterbar. So bekommt zum Beispiel ein Dienstkonto Lesezugriff auf alles. Auch die Fähigkeit, mit der die Administration jedes Handbuch liest, lässt sich ändern, etwa damit auch die Redaktion jedes Handbuch liest. Eigene Lesepfade müssen immer durch diese Prüfung führen. Wie das geht, steht in der [Entwickler-Dokumentation zu den Hooks](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/hooks.md).
 
 </details>
 
 ## Bilder und Dateien
 
-Ein Bild, das zu einer Handbuch-Seite gehört, erbt deren Zugriff: Es taucht nicht in der Medien-Schnittstelle auf, und wer die Seite nicht öffnen darf, bekommt auch den Eintrag des Bildes nicht.
+Ein Bild, das zu einer Handbuch-Seite gehört, erbt deren Zugriff: Es taucht weder in der Medien-Schnittstelle noch in der Mediathek der Verwaltung auf, und wer die Seite nicht öffnen darf, bekommt auch den Eintrag des Bildes nicht.
 
 Die Datei selbst ist nicht geschützt, und kein Plugin kann sie schützen. WordPress legt Uploads in `wp-content/uploads` ab, und dieser Ordner wird vom Webserver direkt ausgeliefert, ohne dass WordPress gefragt wird. Wer die Adresse der Datei kennt, kann sie öffnen. Für die meisten Handbücher ist das vertretbar, weil eine solche Adresse kaum zu erraten ist. Enthält dein Handbuch Bilder, die das Team nicht verlassen dürfen, lass den Upload-Ordner auf dem Server schützen, zum Beispiel mit einer Regel in `wp-content/uploads/.htaccess` bei Apache oder einem `location`-Block bei nginx.
 

@@ -14,7 +14,7 @@ The handbook's [learning paths](learning-paths.md) travel along too. On the targ
 ## Exporting
 
 1. Open **Handbook → Export**.
-2. Choose the **handbook**. In the second field you can then narrow down: the whole handbook or just one area. An area exports together with its subpages.
+2. Choose the **handbook**. The handbooks you may read are offered. In the second field you can then narrow down: the whole handbook or just one area. An area exports together with its subpages.
 3. Click **Export bundle**. The ZIP file downloads.
 
 ## Importing
@@ -25,7 +25,7 @@ The handbook's [learning paths](learning-paths.md) travel along too. On the targ
    * **Skip** (default): Existing pages are left untouched. Only new ones are created.
    * **Update:** Existing pages are refreshed from the bundle.
    * **Always create:** Every page in the bundle becomes a new page. Useful for cloning.
-4. Under **Import into**, choose which handbook the pages go to. Without a choice, the handbook from the bundle is created anew.
+4. Under **Import into**, choose which handbook the pages go to. The handbooks you may read are offered. Without a choice, the handbook from the bundle is created anew.
 5. Start the import and read the report. It lists what was created, updated or skipped, for pages and learning paths separately.
 
 ## Result
@@ -37,6 +37,7 @@ The pages and the learning paths are on the target site. Links between the pages
 
 * **An imported handbook always starts with visibility "All members".** That holds even if it was public on the old site. An import must never publish anything by accident. Raise the visibility by hand afterwards.
 * **Individually allowed people must be entered again.** They do not travel along.
+* **You do not import into a handbook you may not read.** If the bundle's handbook already exists on the target site and you may not read it there, the import stops with "You are not allowed to import into this handbook." before it touches a page. An update would otherwise overwrite pages you may not see. Choose another target or ask someone who may read that handbook.
 * **A learning path loses lessons that are not in the bundle.** They drop out of the path, and the report points this out. If you import the bundle as ordinary WordPress pages, no paths come along at all.
 * **Learning paths appear only with the module.** If the learning paths module is off on the target site, the paths are imported anyway. They become visible as soon as you switch it on under **Handbook → Settings → Learning paths**.
 * **On update, the target site's upkeep data survives.** Feedback numbers and review data are not overwritten.

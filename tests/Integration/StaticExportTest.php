@@ -623,23 +623,37 @@ final class StaticExportTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Whoever may export reads every handbook, so a restricted handbook is
-	 * exported for them. Up to 0.75.1 an editor could open every page of a
-	 * restricted handbook but was refused its export, because the export asked
-	 * the handbook-level rule, which had no exception for editors. Since 0.76.0
-	 * both levels have the same one (AccessController::evaluate_term()); what a
-	 * page filter hides still stays out, see the next test.
+	 * A restricted handbook granted to editors is exported for an editor: the
+	 * export follows the same rule as reading, on the handbook level and per
+	 * page. What a page filter hides still stays out, see the tests below.
 	 *
 	 * @return void
 	 */
 	public function test_a_restricted_handbook_is_exported_for_an_editor(): void {
 		$term = $this->handbook( 'Board', Handbooks::VISIBILITY_RESTRICTED );
-		update_term_meta( $term, Handbooks::META_ROLES, array( 'administrator' ) );
+		update_term_meta( $term, Handbooks::META_ROLES, array( 'editor' ) );
 		$this->page( $term, 'Minutes' );
 
 		$zip = $this->export( $term );
 
 		$this->assertNotFalse( $zip->locateName( 'minutes.html' ) );
+	}
+
+	/**
+	 * A handbook kept to administrators is not exported for an editor. Since
+	 * E-0075 an editor reads only what a handbook grants them, and an export is
+	 * a way of reading it.
+	 *
+	 * @return void
+	 */
+	public function test_a_handbook_kept_to_administrators_is_not_exported_for_an_editor(): void {
+		$term = $this->handbook( 'Board', Handbooks::VISIBILITY_RESTRICTED );
+		update_term_meta( $term, Handbooks::META_ROLES, array( 'administrator' ) );
+		$this->page( $term, 'Minutes' );
+
+		$data = $this->pass( array( 'handbook' => $term ) );
+
+		$this->assertArrayNotHasKey( 'job', $data, 'No export starts: ' . wp_json_encode( $data ) );
 	}
 
 	/**

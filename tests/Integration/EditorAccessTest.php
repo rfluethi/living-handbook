@@ -241,28 +241,58 @@ final class EditorAccessTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * An editor reads a restricted handbook on both levels: the pages and the
-	 * handbook itself, its entry page and its place in the lists of handbooks.
-	 * Up to 0.75.1 the pages were open to them and the handbook was not.
+	 * An administrator reads a restricted handbook on both levels: the pages and
+	 * the handbook itself, its entry page and its place in the lists of
+	 * handbooks. Up to 0.75.1 the pages were open and the handbook was not.
 	 *
 	 * @return void
 	 */
-	public function test_an_editor_reads_the_restricted_handbook_itself(): void {
-		$term_id = $this->restricted_handbook();
+	public function test_an_administrator_reads_the_restricted_handbook_itself(): void {
+		$term_id = (int) self::factory()->term->create( array( 'taxonomy' => Handbooks::TAXONOMY ) );
+		update_term_meta( $term_id, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_RESTRICTED );
+		update_term_meta( $term_id, Handbooks::META_ROLES, array( 'author' ) );
 		$this->page( (int) self::factory()->user->create( array( 'role' => 'author' ) ), 'publish', $term_id );
-		$editor = (int) self::factory()->user->create( array( 'role' => 'editor' ) );
-		wp_set_current_user( $editor );
+		$admin = (int) self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin );
 
-		$this->assertTrue( AccessController::can_view_term( $term_id, $editor ) );
-		$this->assertContains( $term_id, wp_list_pluck( AccessController::readable_terms( $editor ), 'term_id' ), 'The handbook is in the overview, the menu and the navigation links.' );
+		$this->assertTrue( AccessController::can_view_term( $term_id, $admin ) );
+		$this->assertContains( $term_id, wp_list_pluck( AccessController::readable_terms( $admin ), 'term_id' ), 'The handbook is in the overview, the menu and the navigation links.' );
 
 		$this->go_to( (string) get_term_link( $term_id, Handbooks::TAXONOMY ) );
 		try {
 			( new AccessController() )->guard_term_archive();
 		} catch ( WPDieException $e ) {
-			$this->fail( 'The editor was refused the entry page: ' . $e->getMessage() );
+			$this->fail( 'The administrator was refused the entry page: ' . $e->getMessage() );
 		}
 		$this->assertTrue( is_tax( Handbooks::TAXONOMY ) );
+	}
+
+	/**
+	 * An editor does not read a handbook kept to administrators, on neither
+	 * level. Decided on 2026-10-27 (E-0075), replacing E-0070.
+	 *
+	 * @return void
+	 */
+	public function test_an_editor_does_not_read_a_handbook_kept_to_administrators(): void {
+		$term_id = $this->restricted_handbook();
+		$page    = $this->page( (int) self::factory()->user->create( array( 'role' => 'administrator' ) ), 'publish', $term_id );
+		$editor  = (int) self::factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor );
+
+		$this->assertFalse( AccessController::can_view_term( $term_id, $editor ) );
+		$this->assertFalse( AccessController::can_view_post( $page, $editor ) );
+		$this->assertNotContains( $term_id, wp_list_pluck( AccessController::readable_terms( $editor ), 'term_id' ) );
+		// 403 from core: the editor context asks for the edit right first, and
+		// that is closed too (see RestrictedFromEditorsTest).
+		$this->assertContains( $this->editor_get( $page ), array( 403, 404 ), 'Not through REST either.' );
+
+		$this->go_to( (string) get_permalink( $page ) );
+		try {
+			( new AccessController() )->guard_singular();
+			$this->fail( 'The editor should have been refused the page.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'does not have access', $e->getMessage() );
+		}
 	}
 
 	/**

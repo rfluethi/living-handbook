@@ -18,7 +18,7 @@ The import reads each Markdown file and builds a normal handbook page from it. A
    * **GitHub:** Enter a GitHub address and click **Import from GitHub**. If the address points at a single file, one page is created. If it points at a folder, every Markdown file in it is imported, subfolders included.
    * **Bundle:** Take over a whole handbook from another website, see [Move a handbook](move-a-handbook.md).
    * **App handbook:** Load this very handbook, see [Load the app handbook](../getting-started/load-the-app-handbook.md).
-3. Choose the **target handbook** the pages belong to.
+3. Choose the **target handbook** the pages belong to. The handbooks you may read are offered.
 4. Start the import and read the result list. It reports what was created and where something was missing.
 5. Check the new pages and **publish** them. Imported pages start as unpublished drafts. Nothing goes online unchecked. The one exception is the app handbook, which appears immediately.
 
@@ -92,6 +92,6 @@ A second import of the same source creates no copies. It updates the existing pa
 * Eltern-Seite: Content
 * Reihenfolge: 2
 * Textauszug: This guide brings finished Markdown texts into your handbook as pages: pasted, as a ZIP file or from a GitHub address.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

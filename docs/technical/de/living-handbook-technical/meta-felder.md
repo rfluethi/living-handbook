@@ -7,7 +7,7 @@ Zwei Sorten, am Namen zu unterscheiden (siehe [architektur.md](architektur.md)):
 - **Redaktionelle** Felder tragen das Präfix `living_handbook_`. Eine Person füllt sie aus, und die registrierten sind über die REST-API lesbar.
 - **Buchhaltungs**-Felder tragen das Präfix `_lh_`. Das Plugin führt sie über eine Seite, nicht für sie. Der führende Unterstrich macht sie geschützt: WordPress blendet sie in der Box „Custom Fields" aus, wo eine falsche Bearbeitung den Abgleich wortlos kaputt machen würde.
 
-„REST" heißt unten, das Feld ist mit `show_in_rest` registriert und erscheint unter `meta` in `/wp/v2/handbook`. Jedes registrierte Feld schreibt nur, wer dieses Objekt bearbeiten darf: der Auth-Callback fragt `edit_post` für die Seite, oder `manage_categories` für ein Handbuch. Ein Feld mit „nicht registriert" ist gewöhnliches Post-Meta, das nur der eigene Code des Plugins anfasst.
+„REST" heißt unten, das Feld ist mit `show_in_rest` registriert und erscheint unter `meta` in `/wp/v2/handbook`. Jedes registrierte Feld schreibt nur, wer dieses Objekt bearbeiten darf: der Auth-Callback fragt `edit_post` für die Seite, oder `manage_categories` und `edit_term` für ein Handbuch; `edit_term` verweigert das Plugin für ein Handbuch, das die Person nicht lesen darf. Ein Feld mit „nicht registriert" ist gewöhnliches Post-Meta, das nur der eigene Code des Plugins anfasst.
 
 ## Handbuchseiten (`handbook`)
 
@@ -73,7 +73,7 @@ Alle drei entfernt die Zeilenaktion **Feedback zurücksetzen** in der Seitenlist
 
 | Schlüssel | Typ | REST | Geschrieben von | Inhalt |
 | --- | --- | --- | --- | --- |
-| `living_handbook_visibility` | string: `public`, `members`, `restricted` | nein | Die Bearbeitungsseite des Handbuchs (`manage_categories`); ein Bündel-Import, der ein Handbuch anlegt, schreibt immer `members` | Die Zugriffsstufe. Leer wird als `members` gelesen. |
+| `living_handbook_visibility` | string: `public`, `members`, `restricted` | nein | Die Bearbeitungsseite des Handbuchs (`manage_categories` und `edit_term`, also nur wer das Handbuch lesen darf); ein Bündel-Import, der ein Handbuch anlegt, schreibt immer `members` | Die Zugriffsstufe. Leer wird als `members` gelesen. |
 | `living_handbook_roles` | Array von Rollen-Slugs | nein | Die Bearbeitungsseite des Handbuchs; ein Bündel-Import | Die Rollen, die ein eingeschränktes Handbuch zulässt. |
 | `living_handbook_users` | Array von Benutzer-IDs | nein | Nur die Bearbeitungsseite des Handbuchs | Die Personen, die ein eingeschränktes Handbuch zusätzlich zu den Rollen zulässt. Nie exportiert und nie importiert. |
 | `living_handbook_comments` | string: `inherit`, `open`, `closed` | nein | Die Bearbeitungsseite des Handbuchs | Kommentare für das ganze Handbuch: jeder Seite überlassen, oder für alle ein- oder ausgeschaltet. |
