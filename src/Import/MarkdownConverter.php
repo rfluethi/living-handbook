@@ -42,7 +42,7 @@ final class MarkdownConverter {
 	private const RENDERED = 'League\\CommonMark\\Output\\RenderedContentInterface';
 
 	/**
-	 * Whether the Markdown library is installed.
+	 * Returns whether the Markdown library is installed.
 	 *
 	 * @return bool
 	 */
@@ -65,7 +65,7 @@ final class MarkdownConverter {
 	}
 
 	/**
-	 * Convert a draft into title, HTML, and transport metadata.
+	 * Converts a draft into title, HTML, and transport metadata.
 	 *
 	 * @param string                $markdown  Full Markdown draft.
 	 * @param array<string, string> $image_map Map of image file name to media URL.
@@ -117,9 +117,10 @@ final class MarkdownConverter {
 	}
 
 	/**
-	 * Byte offset of the transport-block marker, or null if there is none.
+	 * Returns the byte offset of the transport-block marker, or null if there is none.
 	 *
-	 * The marker is the German heading «## Transport-Metadaten». Two rules make
+	 * The marker is the heading «## Transport-Metadaten» (the transport block is
+	 * written in German, see TransportBlock). Two rules make
 	 * the detection robust enough that a page can talk about the marker without
 	 * being cut in half by it. A marker inside a fenced code block is an example,
 	 * not a marker, so fenced lines are skipped. And when the marker appears more
@@ -138,19 +139,9 @@ final class MarkdownConverter {
 		$fence    = null;
 		$position = null;
 		foreach ( (array) preg_split( '/(?<=\n)/', $markdown ) as $line ) {
-			$line = (string) $line;
-			if ( preg_match( '/^ {0,3}(([`~])\2{2,})/', $line, $found ) ) {
-				// A fence line: it opens a code block, or closes one when it
-				// uses the same character and is at least as long (CommonMark).
-				if ( null === $fence ) {
-					$fence = array(
-						'char' => $found[2],
-						'len'  => strlen( $found[1] ),
-					);
-				} elseif ( $found[2] === $fence['char'] && strlen( $found[1] ) >= $fence['len'] ) {
-					$fence = null;
-				}
-			} elseif ( null === $fence && 1 === preg_match( '/^##[ \t]*Transport-Metadaten/i', $line ) ) {
+			$line                     = (string) $line;
+			list( $is_fence, $fence ) = self::track_fence( $line, $fence );
+			if ( ! $is_fence && null === $fence && 1 === preg_match( '/^##[ \t]*Transport-Metadaten/i', $line ) ) {
 				$position = $offset;
 			}
 			$offset += strlen( $line );
@@ -159,9 +150,9 @@ final class MarkdownConverter {
 	}
 
 	/**
-	 * The first top-level heading outside code, which becomes the page title.
+	 * Returns the first top-level heading outside code, which becomes the page title.
 	 *
-	 * Up to 0.75.0 this was the first line anywhere that started with "# ". A
+	 * Up to 0.75.1 this was the first line anywhere that started with "# ". A
 	 * page that opens with a shell example, "# install deps" in a code fence,
 	 * had that comment taken as its title and cut out of the code. Fenced lines
 	 * are skipped now, the same way the transport marker skips them, and a line
@@ -177,17 +168,9 @@ final class MarkdownConverter {
 		$offset = 0;
 		$fence  = null;
 		foreach ( (array) preg_split( '/(?<=\n)/', $markdown ) as $line ) {
-			$line = (string) $line;
-			if ( preg_match( '/^ {0,3}(([`~])\2{2,})/', $line, $found ) ) {
-				if ( null === $fence ) {
-					$fence = array(
-						'char' => $found[2],
-						'len'  => strlen( $found[1] ),
-					);
-				} elseif ( $found[2] === $fence['char'] && strlen( $found[1] ) >= $fence['len'] ) {
-					$fence = null;
-				}
-			} elseif ( null === $fence && 1 === preg_match( '/^ {0,3}#[ \t]+(.+?)[ \t]*(\r?\n)?$/', $line, $heading ) ) {
+			$line                     = (string) $line;
+			list( $is_fence, $fence ) = self::track_fence( $line, $fence );
+			if ( ! $is_fence && null === $fence && 1 === preg_match( '/^ {0,3}#[ \t]+(.+?)[ \t]*(\r?\n)?$/', $line, $heading ) ) {
 				// The line break stays in the text, so the lines around the
 				// heading do not run together.
 				$length = strlen( $line ) - strlen( $heading[2] ?? '' );
@@ -200,6 +183,36 @@ final class MarkdownConverter {
 			$offset += strlen( $line );
 		}
 		return null;
+	}
+
+	/**
+	 * Follows fenced code blocks line by line, the way CommonMark does.
+	 *
+	 * A fence line opens a code block, or closes the open one when it uses the
+	 * same character and is at least as long. Shared by the two scans that must
+	 * not look inside code: the transport marker and the title heading.
+	 *
+	 * @param string                             $line  One line of the draft.
+	 * @param array{char: string, len: int}|null $fence The open fence, or null outside code.
+	 * @return array{0: bool, 1: array{char: string, len: int}|null} Whether the line is a fence line, and the open fence after it.
+	 */
+	private static function track_fence( string $line, ?array $fence ): array {
+		if ( 1 !== preg_match( '/^ {0,3}(([`~])\2{2,})/', $line, $found ) ) {
+			return array( false, $fence );
+		}
+		if ( null === $fence ) {
+			return array(
+				true,
+				array(
+					'char' => $found[2],
+					'len'  => strlen( $found[1] ),
+				),
+			);
+		}
+		if ( $found[2] === $fence['char'] && strlen( $found[1] ) >= $fence['len'] ) {
+			return array( true, null );
+		}
+		return array( true, $fence );
 	}
 
 	/**

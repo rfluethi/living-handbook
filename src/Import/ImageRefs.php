@@ -23,8 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class ImageRefs {
 
 	/**
-	 * The distinct relative image references in a Markdown draft, in the order
-	 * they first appear.
+	 * Returns the distinct relative image references in a Markdown draft, in the
+	 * order they first appear.
 	 *
 	 * @param string $markdown Markdown source.
 	 * @return array<int, string> Relative references, e.g. "../assets/x.svg".
@@ -58,19 +58,9 @@ final class ImageRefs {
 	 */
 	private static function add( array &$refs, string $ref ): void {
 		$ref = trim( $ref );
-		if ( '' === $ref || self::is_absolute( $ref ) ) {
+		if ( '' === $ref || Postprocessor::is_external_link( $ref ) ) {
 			return;
 		}
 		$refs[ $ref ] = $ref;
-	}
-
-	/**
-	 * Whether a reference is absolute, so it is left untouched.
-	 *
-	 * @param string $ref Reference.
-	 * @return bool
-	 */
-	private static function is_absolute( string $ref ): bool {
-		return 1 === preg_match( '#^(?:[a-z][a-z0-9+.-]*:|//)#i', $ref );
 	}
 }

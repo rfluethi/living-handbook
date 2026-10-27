@@ -32,9 +32,23 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Postprocessor {
 
+	/**
+	 * Meta holding the parent title a transport block named, until the
+	 * finalize pass has resolved it (see resolve_parent()).
+	 */
 	public const PARENT_META = '_lh_import_parent_title';
 
+	/**
+	 * Meta holding a page's path in its source (folder or MkDocs import, GitHub
+	 * sync), the precise key for re-imports and for resolving links.
+	 */
 	public const META_SOURCE_PATH = '_lh_source_path';
+
+	/**
+	 * The "Eltern-Seite" value that means the top level rather than a page
+	 * title; matched without regard to case.
+	 */
+	private const TOP_LEVEL = 'oberste Ebene';
 
 	/**
 	 * Which of order and excerpt the transport block set, so a later sync can
@@ -43,7 +57,7 @@ final class Postprocessor {
 	public const META_TRANSPORT_SET = '_lh_transport_set';
 
 	/**
-	 * Whether a page's menu order was set by its transport block.
+	 * Returns whether a page's menu order was set by its transport block.
 	 *
 	 * The folder import uses this to decide whether its own position for the
 	 * page applies: a number from the source wins, anything else is the import's
@@ -64,17 +78,19 @@ final class Postprocessor {
 	 * of those was a query, so a run of a few hundred pages with a handful of
 	 * links each ran into thousands of them, in the one request that has to
 	 * finish. The tables answer the same three questions from one query over the
-	 * handbook. They are only loaded during finalize_report(); a single page
-	 * converted on its own keeps asking the database, where one query beats
-	 * reading the whole handbook.
+	 * handbook. They are only loaded between begin_run() and end_run(), which
+	 * finalize_report() and the GitHub import's closing passes call; a single
+	 * page converted on its own keeps asking the database, where one query
+	 * beats reading the whole handbook.
 	 *
 	 * @var array{path: array<string, int>, slug: array<string, int>, title: array<string, int[]>}|null
 	 */
 	private static ?array $index = null;
 
 	/**
-	 * The handbook a page goes into: the one its transport block names, when
-	 * that handbook exists, otherwise the default.
+	 * Returns the handbook a page goes into: the one its transport block names,
+	 * when that handbook exists and the importing user may use it, otherwise
+	 * the default.
 	 *
 	 * @param array<string, mixed> $transport           Transport values.
 	 * @param int                  $default_handbook_id Handbook to use when the transport names none.
@@ -86,7 +102,7 @@ final class Postprocessor {
 			$term = get_term_by( 'name', $handbook_name, Handbooks::TAXONOMY );
 			// A file names the handbook it belongs to, and the import follows it,
 			// but not into a handbook the importing person may not read: that
-			// would be a way around the check on the chosen handbook (E-0075).
+			// would be a way around the check on the chosen handbook.
 			if ( $term instanceof WP_Term && AccessController::may_use_handbook( (int) $term->term_id ) ) {
 				return (int) $term->term_id;
 			}
@@ -95,7 +111,7 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Apply the transport values to a page.
+	 * Applies the transport values to a page.
 	 *
 	 * @param int                  $post_id            Post id.
 	 * @param array<string, mixed> $transport          Transport values.
@@ -126,7 +142,7 @@ final class Postprocessor {
 		}
 
 		// Order and excerpt are written only when the transport block carries them,
-		// and taken back only when the block set them itself. Up to 0.75.0 every
+		// and taken back only when the block set them itself. Up to 0.75.1 every
 		// sync wrote both unconditionally, so a page without "Reihenfolge" was
 		// put back to 0 and lost the position its folder import had given it, on
 		// the first scheduled sync after the import, and a hand-written excerpt
@@ -177,7 +193,7 @@ final class Postprocessor {
 		}
 
 		$parent_title = trim( (string) ( $transport['parent'] ?? '' ) );
-		if ( '' !== $parent_title && 0 !== strcasecmp( 'oberste Ebene', $parent_title ) ) {
+		if ( '' !== $parent_title && 0 !== strcasecmp( self::TOP_LEVEL, $parent_title ) ) {
 			update_post_meta( $post_id, self::PARENT_META, $parent_title );
 		} else {
 			delete_post_meta( $post_id, self::PARENT_META );
@@ -188,20 +204,20 @@ final class Postprocessor {
 	 * Give a page the named terms of one classifying taxonomy.
 	 *
 	 * Called with names, wp_set_object_terms() creates every term it does not
-	 * find. The import route needs only edit_posts, so up to 0.75.0 a contributor could
-	 * add terms to a taxonomy whose term screen they are not allowed to open,
-	 * just by naming them in a transport block. A user who may not edit the
-	 * taxonomy's terms now gets the existing ones assigned and the others left
-	 * out.
+	 * find. The import route needs only edit_posts, so up to 0.75.1 a
+	 * contributor could add terms to a taxonomy whose term screen they are not
+	 * allowed to open, just by naming them in a transport block, and the
+	 * scheduled sync did the same for whatever file a contributor pointed
+	 * their draft at. Now a user who may not assign the taxonomy's terms gets
+	 * none, and one who may assign but not edit them gets the existing ones
+	 * and the others left out.
 	 *
 	 * Without a logged-in user the page's author stands in. The scheduled sync
 	 * runs from cron with no user at all, and WP-CLI the same way; asking
-	 * current_user_can() there would refuse everything. Up to 0.76.0 it
-	 * therefore allowed everything, and that was a way round the rule: a
-	 * contributor sets GitHub as the source of their own draft, and the next
-	 * scheduled sync creates whatever terms the file names. The source of a
-	 * page is chosen by whoever may edit it, so the rule follows the page's
-	 * author. A page without an author gets only existing terms.
+	 * current_user_can() there would refuse everything, and allowing
+	 * everything would let the sync create what its author may not. The source
+	 * of a page is chosen by whoever may edit it, so the rule follows the
+	 * page's author. A page without an author gets only existing terms.
 	 *
 	 * @param int      $post_id  Post id.
 	 * @param string[] $names    Term names.
@@ -236,11 +252,11 @@ final class Postprocessor {
 			}
 			return;
 		}
-		wp_set_object_terms( $post_id, count( $names ) > 1 ? $names : $names[0], $taxonomy );
+		wp_set_object_terms( $post_id, $names, $taxonomy );
 	}
 
 	/**
-	 * Resolve parents and convert internal .md links for the given pages.
+	 * Resolves parents and converts internal .md links for the given pages.
 	 *
 	 * @param array<int, int|string> $ids Post ids.
 	 * @return int Number of links converted.
@@ -250,7 +266,7 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Like finalize(), but also returns the links that could not be resolved.
+	 * Resolves like finalize(), and also returns the links that could not be resolved.
 	 *
 	 * A link with no target is turned into plain text by convert_md_links(), so
 	 * after this runs no raw .md link is left in any page to become a 404. The
@@ -297,7 +313,7 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Open a finalize run: load the lookup tables and warm the caches for the
+	 * Opens a finalize run: loads the lookup tables and warms the caches for the
 	 * pages that are about to be worked through.
 	 *
 	 * An import that does not finish in one request finalizes in passes too, so
@@ -319,7 +335,7 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Close a finalize run.
+	 * Closes a finalize run.
 	 *
 	 * @return void
 	 */
@@ -328,7 +344,7 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Finalize one page: set its parent from the import, then convert its links.
+	 * Finalizes one page: sets its parent from the import, then converts its links.
 	 *
 	 * @param int $post_id Post id.
 	 * @return array{converted: int, unresolved: array<int, array{source: string, target: string}>}
@@ -366,7 +382,7 @@ final class Postprocessor {
 		// point of these tables is to replace thousands of them. The status filter
 		// is applied below rather than in the statement, so the SQL stays a fixed
 		// string with two placeholders.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One read for a whole run, see above; it lives only as long as the run.
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT p.ID, p.post_title, p.post_name, p.post_status, m.meta_value AS source_path
@@ -452,7 +468,7 @@ final class Postprocessor {
 	 * @return string
 	 */
 	private static function title_key( string $title ): string {
-		return function_exists( 'mb_strtolower' ) ? mb_strtolower( $title, 'UTF-8' ) : strtolower( $title );
+		return mb_strtolower( $title, 'UTF-8' );
 	}
 
 	/**
@@ -488,7 +504,7 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Convert internal .md links to WordPress permalinks, and defuse the rest.
+	 * Converts internal .md links to WordPress permalinks, and defuses the rest.
 	 *
 	 * A link is resolved to its page in three tries: by source path (exact, when
 	 * the page carries one), then by the folder name for an index or README file
@@ -539,7 +555,7 @@ final class Postprocessor {
 		$unresolved    = array();
 		$content       = (string) preg_replace_callback(
 			// The fragment and query are captured apart from the path. Up to
-			// 0.75.0 the pattern required the href to end in .md, so the most
+			// 0.75.1 the pattern required the href to end in .md, so the most
 			// ordinary cross-reference in documentation, "page.md#section", was
 			// not seen at all and stayed a raw relative link that 404s.
 			'/<a href="([^"?#]+\.md)([?#][^"]*)?"([^>]*)>(.*?)<\/a>/is',
@@ -620,7 +636,7 @@ final class Postprocessor {
 	}
 
 	/**
-	 * Whether a link target belongs to somebody else.
+	 * Returns whether a link target belongs to somebody else.
 	 *
 	 * A scheme or a leading "//" names a host, and a document on another host is
 	 * not part of this import however its file name ends. Everything else is
@@ -628,10 +644,14 @@ final class Postprocessor {
 	 * or "tel:" link is caught by the same rule, since it carries a scheme too,
 	 * even though neither could plausibly end in .md.
 	 *
+	 * The one place this rule lives: image references (ImageRefs) and MkDocs
+	 * navigation entries (MkDocsImport) are told apart from files in the source
+	 * the same way.
+	 *
 	 * @param string $href The raw href, before decoding.
 	 * @return bool
 	 */
-	private static function is_external_link( string $href ): bool {
+	public static function is_external_link( string $href ): bool {
 		$href = trim( $href );
 
 		if ( str_starts_with( $href, '//' ) ) {
@@ -714,8 +734,8 @@ final class Postprocessor {
 					'post_status'    => 'any',
 					'posts_per_page' => 1,
 					'no_found_rows'  => true,
-					'meta_key'       => self::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'meta_value'     => $path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					'meta_key'       => self::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- The source path lives only in post meta.
+					'meta_value'     => $path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- See the meta key.
 				)
 			)
 		);

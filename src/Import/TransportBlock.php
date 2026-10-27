@@ -23,6 +23,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * «Thema», then «Bereich» and «Themengebiet». «Thema» matches the current
  * interface label and is the preferred one for new drafts; «Bereich» and the
  * older «Themengebiet» keep the existing corpus of drafts working.
+ *
+ * The labels are German because the drafts this block travels with are; they
+ * are data, not interface text. One value has a meaning of its own:
+ * «Eltern-Seite: oberste Ebene» puts the page at the top level
+ * (Postprocessor::apply_transport()).
  */
 final class TransportBlock {
 
@@ -36,14 +41,18 @@ final class TransportBlock {
 		'page_type' => array( 'seitentyp' ),
 		'role'      => array( 'verantwortliche rolle' ),
 		'topic'     => array( 'thema', 'bereich', 'themengebiet' ),
+		'audiences' => array( 'zielgruppe' ),
 		'handbook'  => array( 'handbuch' ),
 		'parent'    => array( 'eltern-seite' ),
+		'order'     => array( 'reihenfolge' ),
 		'excerpt'   => array( 'textauszug' ),
+		'reviewed'  => array( 'letzte prüfung' ),
+		'interval'  => array( 'prüfintervall' ),
 		'slug'      => array( 'slug' ),
 	);
 
 	/**
-	 * Parse the raw transport section.
+	 * Parses the raw transport section.
 	 *
 	 * @param string $text The transport section (from its heading to the end).
 	 * @return array{page_type:string,role:string,topic:string,audiences:array<int,string>,handbook:string,parent:string,order:int,excerpt:string,reviewed:string,interval:int,slug:string}
@@ -57,20 +66,20 @@ final class TransportBlock {
 		}
 
 		$audiences = array();
-		foreach ( explode( ',', $this->value( $values, 'zielgruppe' ) ) as $audience ) {
+		foreach ( explode( ',', $this->first( $values, self::LABELS['audiences'] ) ) as $audience ) {
 			$audience = trim( $audience );
 			if ( '' !== $audience ) {
 				$audiences[] = $audience;
 			}
 		}
 
-		$reviewed = $this->value( $values, 'letzte prüfung' );
+		$reviewed = $this->first( $values, self::LABELS['reviewed'] );
 		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $reviewed ) ) {
 			$reviewed = '';
 		}
 
 		$interval = 0;
-		if ( preg_match( '/(\d+)/', $this->value( $values, 'prüfintervall' ), $found ) ) {
+		if ( preg_match( '/(\d+)/', $this->first( $values, self::LABELS['interval'] ), $found ) ) {
 			$interval = (int) $found[1];
 		}
 
@@ -81,7 +90,7 @@ final class TransportBlock {
 			'audiences' => $audiences,
 			'handbook'  => $this->first( $values, self::LABELS['handbook'] ),
 			'parent'    => $this->first( $values, self::LABELS['parent'] ),
-			'order'     => (int) $this->value( $values, 'reihenfolge' ),
+			'order'     => (int) $this->first( $values, self::LABELS['order'] ),
 			'excerpt'   => $this->first( $values, self::LABELS['excerpt'] ),
 			'reviewed'  => $reviewed,
 			'interval'  => $interval,

@@ -51,14 +51,14 @@ final class MkDocsImport {
 	}
 
 	/**
-	 * Build the ordered page specs from a mkdocs.yml.
+	 * Builds the ordered page specs from a mkdocs.yml.
 	 *
 	 * @param string                $yaml      The mkdocs.yml contents.
 	 * @param array<string, string> $files     Markdown files, keyed by ZIP path.
 	 * @param array<string, string> $image_map Image basenames mapped to media URLs.
 	 * @param MarkdownConverter     $converter Converter for the page bodies.
 	 * @param array<int, string>    $notes     Filled with what went wrong, if anything.
-	 * @return array<int, mixed>
+	 * @return array<int, array<string, mixed>>
 	 */
 	public static function build_specs( string $yaml, array $files, array $image_map, MarkdownConverter $converter, array &$notes = array() ): array {
 		$nav = self::read_nav( $yaml, $notes );
@@ -181,20 +181,20 @@ final class MkDocsImport {
 	/**
 	 * Walk a nav level, appending page specs in order.
 	 *
-	 * @param array<int, mixed>     $nodes       Nav nodes.
-	 * @param string                $parent_path Parent source path.
-	 * @param array<string, string> $files       Markdown files by ZIP path.
-	 * @param array<string, string> $image_map   Image map.
-	 * @param MarkdownConverter     $converter   Converter.
-	 * @param array<int, mixed>     $specs       Collected specs, by reference.
-	 * @param array<int, string>    $notes       Filled with what was left out, by reference.
+	 * @param array<int, mixed>                $nodes       Nav nodes.
+	 * @param string                           $parent_path Parent source path.
+	 * @param array<string, string>            $files       Markdown files by ZIP path.
+	 * @param array<string, string>            $image_map   Image map.
+	 * @param MarkdownConverter                $converter   Converter.
+	 * @param array<int, array<string, mixed>> $specs Collected specs, by reference.
+	 * @param array<int, string>               $notes       Filled with what was left out, by reference.
 	 * @return void
 	 */
 	private static function walk( array $nodes, string $parent_path, array $files, array $image_map, MarkdownConverter $converter, array &$specs, array &$notes = array() ): void {
 		$order = 0;
 		foreach ( $nodes as $node ) {
 			// MkDocs allows an entry without a title, "- page.md", and takes the
-			// title from the page itself. Up to 0.75.0 such an entry was not an
+			// title from the page itself. Up to 0.75.1 such an entry was not an
 			// array and was skipped, so the page was missing from the import.
 			if ( is_string( $node ) ) {
 				$node = array( '' => $node );
@@ -208,7 +208,7 @@ final class MkDocsImport {
 			// A nav entry may point somewhere else entirely, a link to the
 			// repository or to another site. There is no file behind it, and it
 			// used to become an empty page with the link's title.
-			if ( is_string( $value ) && self::is_external( $value ) ) {
+			if ( is_string( $value ) && Postprocessor::is_external_link( $value ) ) {
 				$notes[] = sprintf(
 					/* translators: %s: the navigation entry's title or address. */
 					__( 'The navigation entry "%s" points to another address, not to a file in the ZIP, so it was left out.', 'living-handbook' ),
@@ -264,7 +264,7 @@ final class MkDocsImport {
 			}
 			$key   = (string) array_key_first( $child );
 			$value = $child[ $key ];
-			if ( is_string( $value ) && ! self::is_external( $value ) ) {
+			if ( is_string( $value ) && ! Postprocessor::is_external_link( $value ) ) {
 				$base = strtolower( basename( $value ) );
 				if ( 'index.md' === $base || 'readme.md' === $base ) {
 					return $value;
@@ -332,7 +332,7 @@ final class MkDocsImport {
 
 		// The transport block travels with the page, so page type, role, topic,
 		// audiences, review date and excerpt arrive the way they do on every other
-		// import path. Up to 0.75.0 the screen sent an empty block for a MkDocs
+		// import path. Up to 0.75.1 the screen sent an empty block for a MkDocs
 		// import and all of that was lost. Parent and order stay out: the nav is
 		// what defines the structure here, and a "Eltern-Seite" line would move
 		// the page away from where the nav put it.
@@ -348,16 +348,6 @@ final class MkDocsImport {
 			'synthetic'  => false,
 			'transport'  => $transport,
 		);
-	}
-
-	/**
-	 * Whether a nav value points outside the ZIP: a scheme or a leading "//".
-	 *
-	 * @param string $value Nav value.
-	 * @return bool
-	 */
-	private static function is_external( string $value ): bool {
-		return 1 === preg_match( '#^(?:[a-z][a-z0-9+.-]*:|//)#i', trim( $value ) );
 	}
 
 	/**
