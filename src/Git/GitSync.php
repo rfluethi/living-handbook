@@ -2277,14 +2277,12 @@ final class GitSync {
 		// reported fifty however many had failed.
 		$query = new WP_Query(
 			array(
-				'post_type'        => Handbook::POST_TYPE,
-				'post_status'      => 'any',
-				'posts_per_page'   => self::MAX_NOTICE_PAGES,
-				'fields'           => 'ids',
-				// Like get_posts(), which this query was until 0.75.1.
-				'suppress_filters' => true,
-				'meta_key'         => self::META_ERROR, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- a flag set on few pages, read on the handbook screens only.
-				'meta_value'       => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => 'any',
+				'posts_per_page' => self::MAX_NOTICE_PAGES,
+				'fields'         => 'ids',
+				'meta_key'       => self::META_ERROR, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- a flag set on few pages, read on the handbook screens only.
+				'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
 			)
 		);
 		$ids   = array_map( 'intval', (array) $query->posts );
