@@ -15,11 +15,11 @@ Start with [`technical/en/`](technical/en/living-handbook-technical/README.md) i
 
 All four have the same form: `docs/<kind>/<language>/<handbook>/`. The last level matters, it is not decoration. The import reads the language folder, and what lies **directly** in it becomes a page of its own at the top level, while a subfolder with a `README.md` becomes **one** page with everything else below it. The last level is therefore the handbook's own start page: `living-handbook` for the user handbook, `living-handbook-technical` for the technical documentation, in both languages.
 
-Until 0.70.0 only the user handbook had that level, so the technical documentation imported as a dozen pages side by side with no entry page, and its `README.md` landed among them instead of above them.
+Without that level a handbook would import as a dozen pages side by side with no entry page, and its `README.md` would land among them instead of above them.
 
 **This is also why the four language folders have no `README.md` of their own.** One there would be read by the import as a page, and a page called "Readme" at the top of a handbook is not what anyone wants. The index of each handbook is one level down, inside the handbook folder. Nothing imports `docs/`, `docs/user/` or `docs/technical/`, so those three do have one.
 
 ## Two rules for editing
 
 - **This is the source.** Nothing here is generated, and no copy of it is kept anywhere else. A change belongs in a commit.
-- **The German and the English version stay in step.** They are separate texts, not a translation pipeline, so a change to one is a change to both. A German page that says something the English one does not is how the two start drifting apart, and that has cost this project a day before.
+- **The German and the English version stay in step.** They are separate texts, not a translation pipeline, so a change to one is a change to both. A German page that says something the English one does not is how the two start drifting apart.

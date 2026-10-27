@@ -26,7 +26,7 @@ The plugin needs a block theme and WordPress 6.8 or newer. An older, classic the
 <details>
 <summary>Why can a subpage of my handbook overview not be reached?</summary>
 
-The overview lives at `/handbook/`, and under `/handbook/…` WordPress looks for handbook pages. An ordinary subpage of the overview, such as `/handbook/team/`, is therefore not found. Do not hang subpages under the overview, or give it a different address. Details: [The three surfaces](interface/the-three-surfaces.md).
+Your overview probably still lives at `/handbook/`, as on installations from before version 0.76.0. Under `/handbook/…` WordPress looks for handbook pages. An ordinary subpage of the overview, such as `/handbook/team/`, is therefore not found. Give the overview a different address, for example `/handbooks/`, which new installations get anyway. Details: [The three surfaces](interface/the-three-surfaces.md).
 
 </details>
 
@@ -75,7 +75,7 @@ By default the buttons only appear for logged-in people, with one vote per perso
 <details>
 <summary>Does deleting the plugin delete my content?</summary>
 
-No, by default all handbooks and pages survive. Only the plugin's settings are removed. Clearing everything is a deliberate option under **Handbook → Settings**. An accidental delete therefore never costs you the handbook. Details: [The settings](the-settings.md).
+No, by default all handbooks and pages survive. Only the plugin's settings are removed. Clearing everything is a deliberate option under **Handbook → Settings**. Even that leaves the files in the media library. An accidental delete therefore never costs you the handbook. Details: [The settings](the-settings.md).
 
 </details>
 
@@ -99,6 +99,6 @@ It sends no content of your site anywhere. It does contact two services, though.
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 9
 * Textauszug: Short answers to the most common questions about Living Handbook, each pointing to the page with the full story.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

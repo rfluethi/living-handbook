@@ -12,11 +12,11 @@ Before the individual blocks, it helps to know the three pages a handbook has. A
 
 | Surface | What it is | URL |
 | --- | --- | --- |
-| **Overview** | Lists all handbooks a visitor may read. A normal WordPress page holding the overview block; activation creates one for you, and you can move, restyle or replace it. | Whatever you choose, for example `/handbook/` |
+| **Overview** | Lists all handbooks a visitor may read. A normal WordPress page holding the overview block; activation creates one for you, and you can move, restyle or replace it. | Whatever you choose; activation creates it at `/handbooks/` |
 | **Entry page** | The start page of one handbook: search, filters, areas, recently updated. Created automatically for every handbook. | `/handbook-set/<handbook-slug>/` |
 | **Single page** | One handbook page: navigation, content, table of contents, badges, feedback, metadata. | `/handbook/<page-slug>/` |
 
-The entry page and the single page come with block templates that already place the right blocks, so you rarely need to build them by hand. The overview is a normal page: activation creates one called "Handbook" with the "Handbook overview" block already on it, so a fresh install shows something instead of nothing. Because it is an ordinary page, you can move it, restyle it, or build your own instead. There is deliberately no automatic archive at `/handbook/`, because that would be a second, competing overview you cannot style.
+The entry page and the single page come with block templates that already place the right blocks, so you rarely need to build them by hand. The overview is a normal page: activation creates one called "Handbook" with the "Handbook overview" block already on it, so a fresh install shows something instead of nothing. Its slug is `handbooks`, or `handbook-overview` when `living_handbook_post_type_slug` puts the handbook pages themselves at `handbooks`. Installations from before 0.76.0 keep their overview at `handbook`; there a subpage of the overview cannot be reached, because WordPress reads `/handbook/<slug>/` as a handbook page. The remedy is to change the overview's slug. Because it is an ordinary page, you can move it, restyle it, or build your own instead. There is deliberately no automatic archive at `/handbook/`, because that would be a second, competing overview you cannot style.
 
 ## Handbook overview (`living-handbook/overview`)
 
@@ -26,7 +26,7 @@ Lists every handbook the current visitor may read: name, description and page co
 
 Under each one it lists the first few page titles, which is what tells two handbooks apart: a name and a page count say what a handbook is called and how big it is, not what is in it. A "All pages" link appears exactly when there is more than is shown.
 
-A handbook that belongs to another one is set in below it and says which one ("in Company"). The grouping taxonomy has been hierarchical since it was registered and nothing read that, so a structure someone built was invisible until 0.68.0. Three rules go with it, and they are deliberate: **access is not inherited**, every handbook decides for itself who may read it; a child whose parent the visitor may not see moves up to the top level rather than disappearing with it, because the alternative is a readable handbook nobody can reach; and the order inside a level is the name.
+A handbook that belongs to another one is set in below it and says which one ("in Company"). The grouping taxonomy is hierarchical, and this block shows the structure. Three rules go with it, and they are deliberate: **access is not inherited**, every handbook decides for itself who may read it; a child whose parent the visitor may not see moves up to the top level rather than disappearing with it, because the alternative is a readable handbook nobody can reach; and the order inside a level is the name.
 
 **Settings:** *Display* switches between **List** (default) and **Cards**. A list reads better for the handful of handbooks most sites have; cards suit a page where the overview is the main visual element. *Page titles under each handbook* is the length of the preview, 0 to 10, three by default; 0 turns it off.
 
@@ -34,9 +34,9 @@ A handbook that belongs to another one is set in below it and says which one ("i
 
 ## The entry page is three blocks
 
-An entry page has three parts, and since 0.66.0 each is its own block: the **search bar**, the **result column** (the entry block), and the **filter bar**. The shipped "Handbook entry" template holds all three, so a fresh install looks as it did; in the editor you can now see them, move them, and leave one out.
+An entry page has three parts, and each is its own block: the **search bar**, the **result column** (the entry block), and the **filter bar**. The shipped "Handbook entry" template holds all three; in the editor you can see them, move them, and leave one out.
 
-Before 0.66.0 the entry block drew all three itself, and 0.65.0 gave it two switches for turning the search bar and the filter bar off. Both are gone: a setting that manages a weakness is worse than not having the weakness. What you place is what renders.
+So there are no switches in the entry block for turning the search bar or the filter bar off: whoever does not want a bar leaves its block out. What you place is what renders.
 
 The three find each other through the handbook id on the result column, so the search bar and the filter bar work wherever on the page they sit.
 
@@ -167,7 +167,7 @@ A short note marking a page as maintained on GitHub and updated automatically, w
 
 ## Handbook quick search (`living-handbook/search`)
 
-A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It is not the search bar: it jumps to a page rather than narrowing the result column. Until 0.66.0 it rendered on single pages only, so placing it on an entry page produced nothing and said nothing about why; it now renders wherever the page knows its handbook.
+A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It is not the search bar: it jumps to a page rather than narrowing the result column. It renders wherever the page knows its handbook, on single pages and entry pages alike.
 
 Under each result stands the sentence the words were found in, with the words marked. That is the page's own text around the hit, not its excerpt: an excerpt is the same text for every search and would not say why this page matched. A page that matched by its title alone shows no sentence, because there is none to show. The pieces travel as text, not as markup, and the browser builds the `<mark>` elements from them, so nothing from a page's content is ever parsed as HTML on the way.
 
@@ -185,7 +185,7 @@ The list is resolved for the person reading it: a lesson that was deleted, unpub
 
 ## Learning path bar (`living-handbook/path-nav`)
 
-On a handbook page that was opened from a learning path: the name of the path, "Lesson 3 of 9", and the way to the previous and the next lesson. It stands in the shipped single-page template above the title and renders nothing at all unless the URL names a path, that path exists, the reader may view it, and this page is one of its lessons for this reader. A stale or guessed `lh_path` therefore produces an ordinary page rather than an error.
+On a handbook page that was opened from a learning path: the name of the path, "Lesson 3 of 9", and the way to the previous and the next lesson. It stands in the shipped single-page template above the title and renders nothing at all unless the URL names a path, that path exists, the reader may view it, and this page is one of its lessons for this reader. A stale or guessed `lh_path` therefore produces an ordinary page rather than an error. A draft path is visible to everyone who may edit it: in the preview of a learning path draft the lessons show the bar, while learners do not see drafts.
 
 **Renders on:** single handbook pages opened through a learning path.
 
@@ -205,7 +205,7 @@ Three causes account for almost every "the block is empty" report:
 
 ## Where the styles and scripts come from
 
-Every block names its own assets in its `block.json`: `style` and `viewScript` point at the shared front-end handles, `editorScript` at the editor bundle. WordPress then loads the handbook stylesheet and script exactly where a block is rendered, and a page with none of the plugin's blocks loads nothing extra. This matters for blocks placed outside a handbook page, in a header, a footer or another template part: deciding from the current query whether a page "looks like" a handbook view cannot see those, and such a block used to render unstyled and without its script. The two shared handles are registered once, on `init`, with their REST endpoints and translated labels attached to the handle rather than to one call site.
+Every block names its own assets in its `block.json`: `style` and `viewScript` point at the shared front-end handles, `editorScript` at the editor bundle. WordPress then loads the handbook stylesheet and script exactly where a block is rendered, and a page with none of the plugin's blocks loads nothing extra. This matters for blocks placed outside a handbook page, in a header, a footer or another template part: deciding from the current query whether a page "looks like" a handbook view cannot see those, and such a block would come out unstyled and without its script. The two shared handles are registered once, on `init`, with their REST endpoints and translated labels attached to the handle rather than to one call site.
 
 ## Styling the blocks
 
@@ -215,4 +215,4 @@ All blocks use CSS custom properties and stable class names, so you can restyle 
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 5
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27

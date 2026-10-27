@@ -42,6 +42,8 @@ A learning path belongs to exactly one handbook and is as visible as that handbo
 
 Lessons go through the same check. A page somebody may not see appears for that person neither in the list nor in the counter. That makes the path a different length for two people, and it is meant to: the alternative would be to reveal in the counter how much somebody is missing.
 
+A path in draft is seen only by those who may edit it. In the preview of a learning path draft the lessons show the path bar, so you can click through the route before publishing. Learners do not see drafts.
+
 ## When the handbook changes
 
 There is nothing to maintain on the path. What is stored is a set of references and an order; everything else is worked out when the page is read. A lesson drops out of the list, the numbering and the Next button by itself as soon as it is deleted, set back to draft, or moved to another handbook. Pages that were renamed or moved simply appear with their new title.
@@ -54,7 +56,17 @@ What the path does **not** do in this stage: tell anybody that a lesson has chan
 * A path can only hold pages from its own handbook.
 * At most 200 lessons per path.
 * No knowledge questions and no badges.
-* A learning path does not travel along when you [move a handbook](move-a-handbook.md); create it again on the target site.
+
+## When moving to another website
+
+When you [move a handbook](move-a-handbook.md), its learning paths travel along in the bundle. On the target site the lessons point at the imported pages. The rules:
+
+* With the whole handbook, every path travels along, drafts and paths without lessons included.
+* If you export only an area, a path keeps only the lessons in that area. A path without a lesson in the area stays behind.
+* A lesson the bundle does not contain is dropped. The import points this out.
+* If the path already exists on the target site, the same choice applies to it as to the pages: skip, update or create anew.
+* If the learning paths module is off on the target site, the paths are imported anyway. They appear as soon as you switch it on.
+* If you import the bundle as ordinary WordPress pages, no paths come along.
 
 ## Related pages
 
@@ -70,6 +82,6 @@ What the path does **not** do in this stage: tell anybody that a lesson has chan
 * Eltern-Seite: Content
 * Reihenfolge: 6
 * Textauszug: An ordered selection of existing handbook pages for onboarding and required reading, with next-lesson navigation and a progress mark the browser remembers.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-08-14
 * Prüfintervall: 180 Tage

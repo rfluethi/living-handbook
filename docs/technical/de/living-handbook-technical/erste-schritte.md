@@ -47,7 +47,7 @@ Zwei Einstellungen in der Editor-Seitenleiste zählen, bevor du veröffentlichst
 
 > **Das häufigste „es erscheint nichts".** Wenn eine veröffentlichte Seite nicht auftaucht, ist ihr fast immer kein Handbuch zugeordnet, oder ihr Handbuch ist für die aktuelle Besucherin nicht sichtbar. Ordne das Handbuch zu und prüfe dessen Sichtbarkeit.
 
-Ob eine neue Handbuch-Seite Kommentare erlaubt, entscheidet die Voreinstellung unter **Einstellungen → Diskussion**. Das Plugin schaltet Kommentare nicht mehr hart aus, auch nicht beim Import. Für eine einzelne Seite stellst du das im Feld **Diskussion** um, und unter **Handbuch → Handbücher** lässt sich es für ein ganzes Handbuch setzen: **erben** (jede Seite entscheidet selbst), **offen** oder **geschlossen**. Geschlossen blendet nur das Kommentarformular aus, vorhandene Kommentare bleiben stehen und werden nicht gelöscht.
+Neue Handbuch-Seiten haben die Kommentare standardmäßig geschlossen, ein Handbuch wird also nur dann zum Kommentarstrang, wenn du das willst. Das ist nur die Voreinstellung: für eine einzelne Seite schaltest du Kommentare im Feld **Diskussion** ein. Importierte Seiten, das App-Handbuch eingeschlossen, werden ebenso mit geschlossenen Kommentaren angelegt. Für ein ganzes Handbuch statt Seite für Seite setzt du das Feld **Kommentare** am Handbuch unter **Handbuch → Handbücher**: **offen** oder **geschlossen** übersteuert jede Seite dieses Handbuchs, und geschlossen blendet nur das Kommentarformular aus, vorhandene Kommentare bleiben stehen und werden nicht gelöscht.
 
 ## 4. Zuständigkeit und Aktualität setzen
 

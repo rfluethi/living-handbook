@@ -15,7 +15,7 @@ graph TD;
 
 | Oberfläche | Was sie zeigt | Adresse |
 |---|---|---|
-| **Übersicht** | Alle Handbücher, die die Besucherin lesen darf: Name, Beschreibung, Seitenzahl. | Frei wählbar, zum Beispiel `/handbuch/`. Die Aktivierung legt die Seite „Handbuch“ an. |
+| **Übersicht** | Alle Handbücher, die die Besucherin lesen darf: Name, Beschreibung, Seitenzahl. | Frei wählbar. Die Aktivierung legt die Seite „Handbuch“ unter `/handbooks/` an. |
 | **Einstiegsseite** | Die Startseite eines Handbuchs: Suche, Filter, Bereichs-Kacheln, zuletzt aktualisierte Seiten. Entsteht automatisch pro Handbuch. | `/handbook-set/<handbuch-name>/` |
 | **Einzelseite** | Eine Handbuch-Seite: Navigation, Inhalt, Inhaltsverzeichnis, Abzeichen, Feedback, Metadaten. | `/handbook/<seiten-name>/` |
 
@@ -44,11 +44,13 @@ Zwei Grenzen sind gewollt: Die normale WordPress-Suche der Website findet Handbu
 Für die Einstiegsseite und die Einzelseite bringt das Plugin fertige Seitenlayouts mit, sogenannte Templates. Alle Bausteine stehen darin schon an der richtigen Stelle. Du kannst die Templates im Website-Editor umbauen, unter **Design → Editor → Templates**. Beispiele: Navigation nach rechts, Inhaltsverzeichnis weg, Inhalt breiter. Die Übersicht ist dagegen eine ganz normale WordPress-Seite. Verschiebe oder ersetze sie nach Belieben.
 
 <details>
-<summary>Stolpersteine: Keine Unterseiten unter die Übersicht</summary>
+<summary>Stolpersteine: Eine Übersicht unter /handbook/ hat keine erreichbaren Unterseiten</summary>
 
-Die automatisch angelegte Übersicht heißt „Handbuch“ und liegt unter `/handbook/`. Unter genau diesem Wortteil liegen aber auch die Handbuch-Seiten, `/handbook/<seitenname>/`. Hängst du eine gewöhnliche WordPress-Seite als Unterseite unter die Übersicht, bekommt sie eine Adresse wie `/handbook/team/`, und WordPress sucht dort eine Handbuch-Seite namens „team“. Die Unterseite ist dann nicht erreichbar, Besucher sehen „Seite nicht gefunden“.
+Die automatisch angelegte Übersicht liegt unter `/handbooks/`. Liegen die Handbuch-Seiten selbst unter `/handbooks/`, weil ein Entwickler-Filter ihre Adresse so eingestellt hat, heißt die Übersicht stattdessen `/handbook-overview/`. So kommen sich Übersicht und Handbuch-Seiten nicht in die Quere.
 
-Lass die Übersicht deshalb ohne Unterseiten. Brauchst du Seiten rund um das Handbuch, hänge sie an eine andere Seite, oder gib der Übersicht eine andere Adresse, zum Beispiel `/handbuecher/`.
+Installationen von vor Version 0.76.0 behalten ihre Übersicht unter `/handbook/`. Unter genau diesem Wortteil liegen aber auch die Handbuch-Seiten, `/handbook/<seitenname>/`. Hängst du eine gewöhnliche WordPress-Seite als Unterseite unter eine solche Übersicht, bekommt sie eine Adresse wie `/handbook/team/`, und WordPress sucht dort eine Handbuch-Seite namens „team“. Die Unterseite ist dann nicht erreichbar, Besucher sehen „Seite nicht gefunden“.
+
+Abhilfe: Gib der Übersicht eine andere Adresse, zum Beispiel `/handbooks/`. Du änderst sie im Editor der Übersicht wie bei jeder WordPress-Seite. Links, die auf die alte Adresse zeigen, etwa im Menü, passt du danach an.
 
 </details>
 
@@ -79,6 +81,6 @@ Das Plugin bringt sechzehn eigene Blöcke mit, von der Handbuch-Übersicht bis z
 * Eltern-Seite: Oberfläche
 * Reihenfolge: 1
 * Textauszug: Ein Handbuch besteht auf der Website aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

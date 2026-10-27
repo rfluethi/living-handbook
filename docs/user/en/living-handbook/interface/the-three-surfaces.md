@@ -15,7 +15,7 @@ graph TD;
 
 | Surface | What it shows | Address |
 |---|---|---|
-| **Overview** | All handbooks the visitor may read: name, description, page count. | Your choice, for example `/handbook/`. Activation creates the "Handbook" page. |
+| **Overview** | All handbooks the visitor may read: name, description, page count. | Your choice. Activation creates the "Handbook" page at `/handbooks/`. |
 | **Entry page** | The start page of one handbook: search, filters, area tiles, recently updated pages. Created automatically per handbook. | `/handbook-set/<handbook-name>/` |
 | **Single page** | One handbook page: navigation, content, table of contents, badges, feedback, page details. | `/handbook/<page-name>/` |
 
@@ -44,11 +44,13 @@ Two limits are intentional: the normal WordPress site search does not find handb
 For the entry page and the single page the plugin ships finished page layouts, so-called templates. All building parts already sit in the right place. You can rebuild the templates in the Site Editor, under **Appearance → Editor → Templates**. Examples: navigation to the right, drop the table of contents, widen the content. The overview, by contrast, is an entirely normal WordPress page. Move or replace it as you like.
 
 <details>
-<summary>Pitfalls: No subpages under the overview</summary>
+<summary>Pitfalls: An overview at /handbook/ has no reachable subpages</summary>
 
-The overview created on activation is called "Handbook" and lives at `/handbook/`. The handbook pages live under exactly the same word, `/handbook/<page-name>/`. If you hang an ordinary WordPress page under the overview as a subpage, it gets an address like `/handbook/team/`, and WordPress looks for a handbook page called "team" there. The subpage is then unreachable; visitors see "page not found".
+The overview created on activation lives at `/handbooks/`. If the handbook pages themselves live under `/handbooks/`, because a developer filter set their address that way, the overview is called `/handbook-overview/` instead. That way the overview and the handbook pages never get in each other's way.
 
-So leave the overview without subpages. If you need pages around the handbook, hang them under another page, or give the overview a different address, for example `/handbooks/`.
+Installations from before version 0.76.0 keep their overview at `/handbook/`. The handbook pages live under exactly the same word, `/handbook/<page-name>/`. If you hang an ordinary WordPress page under such an overview as a subpage, it gets an address like `/handbook/team/`, and WordPress looks for a handbook page called "team" there. The subpage is then unreachable; visitors see "page not found".
+
+The remedy: give the overview a different address, for example `/handbooks/`. You change it in the overview's editor like for any WordPress page. Afterwards, adjust links that point to the old address, in the menu for instance.
 
 </details>
 
@@ -79,6 +81,6 @@ The plugin ships sixteen blocks of its own, from the handbook overview to the Me
 * Eltern-Seite: Interface
 * Reihenfolge: 1
 * Textauszug: On the website a handbook consists of three kinds of pages: the overview, the entry page and the single page; this page explains all three.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

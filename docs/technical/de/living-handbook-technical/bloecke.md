@@ -12,11 +12,11 @@ Vor den einzelnen Blöcken hilft es zu wissen, welche drei Seiten ein Handbuch h
 
 | Oberfläche | Was sie ist | URL |
 | --- | --- | --- |
-| **Übersicht** | Listet alle Handbücher, die eine Person lesen darf. Eine gewöhnliche WordPress-Seite mit dem Übersichts-Block; die Aktivierung legt dir eine an, und du kannst sie verschieben, umgestalten oder ersetzen. | Was du wählst, zum Beispiel `/handbook/` |
+| **Übersicht** | Listet alle Handbücher, die eine Person lesen darf. Eine gewöhnliche WordPress-Seite mit dem Übersichts-Block; die Aktivierung legt dir eine an, und du kannst sie verschieben, umgestalten oder ersetzen. | Was du wählst; die Aktivierung legt sie unter `/handbooks/` an |
 | **Einstiegsseite** | Die Startseite eines Handbuchs: Suche, Filter, Bereiche, zuletzt geändert. Wird für jedes Handbuch automatisch erzeugt. | `/handbook-set/<handbuch-slug>/` |
 | **Einzelseite** | Eine Handbuchseite: Navigation, Inhalt, Inhaltsverzeichnis, Abzeichen, Feedback, Metadaten. | `/handbook/<seiten-slug>/` |
 
-Die Einstiegsseite und die Einzelseite kommen mit Block-Templates, die die richtigen Blöcke bereits setzen, du musst sie also selten von Hand bauen. Die Übersicht ist eine gewöhnliche Seite: die Aktivierung legt eine namens „Handbuch" an, mit dem Block „Handbuch-Übersicht" bereits darauf, damit eine frische Installation etwas zeigt statt nichts. Weil es eine gewöhnliche Seite ist, kannst du sie verschieben, umgestalten oder durch eine eigene ersetzen. Ein automatisches Archiv unter `/handbook/` gibt es bewusst nicht, denn das wäre eine zweite, konkurrierende Übersicht, die du nicht gestalten kannst.
+Die Einstiegsseite und die Einzelseite kommen mit Block-Templates, die die richtigen Blöcke bereits setzen, du musst sie also selten von Hand bauen. Die Übersicht ist eine gewöhnliche Seite: die Aktivierung legt eine namens „Handbuch" an, mit dem Block „Handbuch-Übersicht" bereits darauf, damit eine frische Installation etwas zeigt statt nichts. Ihr Slug ist `handbooks`, oder `handbook-overview`, wenn `living_handbook_post_type_slug` die Handbuchseiten selbst auf `handbooks` legt. Installationen von vor 0.76.0 behalten ihre Übersicht unter `handbook`; dort ist eine Unterseite der Übersicht nicht erreichbar, weil WordPress `/handbook/<slug>/` als Handbuchseite liest. Abhilfe ist, den Slug der Übersicht zu ändern. Weil es eine gewöhnliche Seite ist, kannst du sie verschieben, umgestalten oder durch eine eigene ersetzen. Ein automatisches Archiv unter `/handbook/` gibt es bewusst nicht, denn das wäre eine zweite, konkurrierende Übersicht, die du nicht gestalten kannst.
 
 ## Handbuch-Übersicht (`living-handbook/overview`)
 
@@ -26,7 +26,7 @@ Listet jedes Handbuch, das die aktuell besuchende Person lesen darf: Name, Besch
 
 Darunter stehen die ersten Seitentitel, und die sind es, die zwei Handbücher unterscheidbar machen: Name und Seitenzahl sagen, wie ein Handbuch heißt und wie groß es ist, nicht was darin steht. Ein Link „Alle Seiten" erscheint genau dann, wenn es mehr gibt als gezeigt wird.
 
-Ein Handbuch, das zu einem anderen gehört, steht eingerückt darunter und nennt es („in Firma"). Die Gruppierungs-Taxonomie ist seit ihrer Registrierung hierarchisch, gelesen hat das niemand, eine gebaute Struktur war also bis 0.68.0 unsichtbar. Drei Regeln gehören dazu, alle bewusst: **Zugriff wird nicht vererbt**, jedes Handbuch entscheidet für sich, wer es lesen darf; ein Kind, dessen Elternteil die Besucherin nicht sehen darf, rückt auf die oberste Ebene statt mit ihm zu verschwinden, denn sonst gäbe es ein lesbares Handbuch, das niemand erreicht; und die Reihenfolge innerhalb einer Ebene ist der Name.
+Ein Handbuch, das zu einem anderen gehört, steht eingerückt darunter und nennt es („in Firma"). Die Gruppierungs-Taxonomie ist hierarchisch, und dieser Block zeigt die Struktur. Drei Regeln gehören dazu, alle bewusst: **Zugriff wird nicht vererbt**, jedes Handbuch entscheidet für sich, wer es lesen darf; ein Kind, dessen Elternteil die Besucherin nicht sehen darf, rückt auf die oberste Ebene statt mit ihm zu verschwinden, denn sonst gäbe es ein lesbares Handbuch, das niemand erreicht; und die Reihenfolge innerhalb einer Ebene ist der Name.
 
 **Einstellungen:** *Darstellung* wechselt zwischen **Liste** (Standard) und **Karten**. Eine Liste liest sich besser für die Handvoll Handbücher, die die meisten Websites haben; Karten passen auf eine Seite, auf der die Übersicht das tragende visuelle Element ist. *Seitentitel pro Handbuch* ist die Länge der Vorschau, 0 bis 10, standardmäßig drei; 0 schaltet sie ab.
 
@@ -34,9 +34,9 @@ Ein Handbuch, das zu einem anderen gehört, steht eingerückt darunter und nennt
 
 ## Die Einstiegsseite besteht aus drei Blöcken
 
-Eine Einstiegsseite hat drei Teile, und seit 0.66.0 ist jeder ein eigener Block: die **Suchleiste**, die **Ergebnisspalte** (der Eintrags-Block) und die **Filterleiste**. Das mitgelieferte Template „Handbuch-Einstieg" enthält alle drei, eine frische Installation sieht also aus wie zuvor; im Editor siehst du die Teile jetzt, kannst sie verschieben oder einen weglassen.
+Eine Einstiegsseite hat drei Teile, und jeder ist ein eigener Block: die **Suchleiste**, die **Ergebnisspalte** (der Eintrags-Block) und die **Filterleiste**. Das mitgelieferte Template „Handbuch-Einstieg" enthält alle drei; im Editor siehst du die Teile, kannst sie verschieben oder einen weglassen.
 
-Vor 0.66.0 zeichnete der Eintrags-Block alle drei selbst, und 0.65.0 gab ihm zwei Schalter, um Suchleiste und Filterleiste abzuschalten. Beide sind weg: eine Einstellung, die eine Schwäche verwaltet, ist schlechter als keine Schwäche. Was gesetzt ist, wird gezeichnet.
+Schalter, die im Eintrags-Block die Suchleiste oder die Filterleiste abschalten, gibt es deshalb nicht: wer eine Leiste nicht will, lässt ihren Block weg. Was gesetzt ist, wird gezeichnet.
 
 Die drei finden einander über die Handbuch-ID an der Ergebnisspalte, Suchleiste und Filterleiste wirken also unabhängig davon, wo auf der Seite sie stehen.
 
@@ -100,7 +100,7 @@ Zwei weitere Vorbehalte. Das Einhängen bildet das Markup des Core-Blocks Naviga
 
 ![](_attachments/handbook-navigation-en.png)
 
-Der Seitenbaum des aktuellen Handbuchs, als in sich geschlossene, einklappbare Liste, vom Plugin gestaltet. Ein weiteres Plugin ist nicht nötig. Die Titelzeile hat dieselbe Form wie jede Zeile mit Unterseiten: links ein Umschalt-Knopf, daneben der Handbuchname als gewöhnlicher Link auf die Einstiegsseite des Handbuchs. Es ist kein natives `<details>`-Element mehr, und einen kleinen Pfeil zur Startseite gibt es nicht mehr; der Umschalt-Knopf klappt die ganze Navigation auf oder zu, im geschlossenen Zustand trägt sie die Klasse `.living-handbook-nav.is-collapsed`. Auf dem Desktop verhält sie sich gleich wie auf schmalen Bildschirmen (dort startet sie eingeklappt). Die erste Ebene ist unter dem Titel eingerückt wie jede weitere Ebene. Der Baum ist auf das aktuelle Handbuch begrenzt und listet nie Seiten eines anderen, er wird bei jedem Aufruf frisch gebaut, und die aktuelle Seite wird automatisch markiert.
+Der Seitenbaum des aktuellen Handbuchs, als in sich geschlossene, einklappbare Liste, vom Plugin gestaltet. Ein weiteres Plugin ist nicht nötig. Die Titelzeile hat dieselbe Form wie jede Zeile mit Unterseiten: links ein Umschalt-Knopf, daneben der Handbuchname als gewöhnlicher Link auf die Einstiegsseite des Handbuchs. Es ist kein natives `<details>`-Element; der Umschalt-Knopf klappt die ganze Navigation auf oder zu, im geschlossenen Zustand trägt sie die Klasse `.living-handbook-nav.is-collapsed`. Auf dem Desktop verhält sie sich gleich wie auf schmalen Bildschirmen (dort startet sie eingeklappt). Die erste Ebene ist unter dem Titel eingerückt wie jede weitere Ebene. Der Baum ist auf das aktuelle Handbuch begrenzt und listet nie Seiten eines anderen, er wird bei jedem Aufruf frisch gebaut, und die aktuelle Seite wird automatisch markiert.
 
 **Einstellungen:** *Darstellung* wählt zwischen **Menü** (der ganze Baum ist zu sehen, nichts klappt ein) und **Akkordeon** (jeder Zweig mit Kindern klappt ein; der Zweig zur aktuellen Seite startet offen, der Rest geschlossen, und ein Schalter links am Zweig öffnet oder schließt ihn).
 
@@ -169,7 +169,7 @@ Ein kurzer Hinweis, der eine Seite als auf GitHub gepflegt und automatisch aktua
 
 Ein Suchfeld mit Vorschlägen beim Tippen für das aktuelle Handbuch. Während du tippst, listet es die passenden Seiten des Handbuchs als Links in einer Auswahl, du springst also direkt zu einer Seite, ohne die aktuelle zu verlassen. Die Ergebnisse sind auf das aktuelle Handbuch begrenzt und zugriffsgeprüft, sie zeigen also nie eine Seite, die du nicht lesen darfst.
 
-Das ist nicht die Suchleiste: die grenzt die Ergebnisspalte ein, diese hier führt weg von der aktuellen Seite. Bis 0.66.0 rendete sie nur auf Einzelseiten, wer sie auf einer Einstiegsseite setzte, bekam eine leere Stelle und keinen Hinweis warum; jetzt rendert sie überall dort, wo die Seite ihr Handbuch kennt.
+Das ist nicht die Suchleiste: die grenzt die Ergebnisspalte ein, diese hier führt weg von der aktuellen Seite. Sie rendert überall dort, wo die Seite ihr Handbuch kennt, auf Einzelseiten wie auf Einstiegsseiten.
 
 Unter jedem Treffer steht der Satz, in dem die Wörter gefunden wurden, mit den Wörtern hervorgehoben. Das ist der Text der Seite rund um die Fundstelle, nicht ihr Textauszug: der wäre bei jeder Suche derselbe und sagte nichts darüber, warum diese Seite passt. Eine Seite, die nur über den Titel getroffen wurde, zeigt keinen Satz, weil es keinen gibt. Die Teile reisen als Text, nicht als Markup, und der Browser baut die `<mark>`-Elemente daraus; so wird der Inhalt einer Seite unterwegs nie als HTML gelesen.
 
@@ -187,7 +187,7 @@ Die Liste wird für die lesende Person aufgelöst: eine Lektion, die gelöscht, 
 
 ## Lernpfad-Leiste (`living-handbook/path-nav`)
 
-Auf einer Handbuchseite, die aus einem Lernpfad geöffnet wurde: der Name des Pfads, «Lektion 3 von 9», und der Weg zur vorherigen und zur nächsten Lektion. Sie steht in der mitgelieferten Einzelseiten-Vorlage über dem Titel und rendert überhaupt nichts, solange nicht alles zutrifft: die Adresse nennt einen Pfad, dieser Pfad existiert, die lesende Person darf ihn sehen, und diese Seite ist für sie eine seiner Lektionen. Ein veraltetes oder geratenes `lh_path` ergibt darum eine gewöhnliche Seite, keine Fehlermeldung.
+Auf einer Handbuchseite, die aus einem Lernpfad geöffnet wurde: der Name des Pfads, «Lektion 3 von 9», und der Weg zur vorherigen und zur nächsten Lektion. Sie steht in der mitgelieferten Einzelseiten-Vorlage über dem Titel und rendert überhaupt nichts, solange nicht alles zutrifft: die Adresse nennt einen Pfad, dieser Pfad existiert, die lesende Person darf ihn sehen, und diese Seite ist für sie eine seiner Lektionen. Ein veraltetes oder geratenes `lh_path` ergibt darum eine gewöhnliche Seite, keine Fehlermeldung. Einen Pfad im Entwurf sehen alle, die ihn bearbeiten dürfen: in der Vorschau eines Lernpfad-Entwurfs zeigen die Lektionen die Leiste, Lernende sehen Entwürfe nicht.
 
 **Rendert auf:** Einzelseiten, die über einen Lernpfad geöffnet wurden.
 
@@ -207,7 +207,7 @@ Drei Ursachen erklären fast jede Meldung „der Block ist leer":
 
 ## Woher die Styles und Skripte kommen
 
-Jeder Block benennt seine eigenen Assets in seiner `block.json`: `style` und `viewScript` zeigen auf die gemeinsamen Frontend-Handles, `editorScript` auf das Editor-Bundle. WordPress lädt Stylesheet und Skript des Handbuchs dann genau dort, wo ein Block gerendert wird, und eine Seite ohne Blöcke des Plugins lädt nichts zusätzlich. Das ist wichtig für Blöcke, die außerhalb einer Handbuchseite stehen, in einem Kopfbereich, einem Fußbereich oder einem anderen Template-Teil: aus der aktuellen Query zu entscheiden, ob eine Seite „wie eine Handbuchansicht aussieht", erfasst diese nicht, und ein solcher Block wurde früher ohne Stile und ohne sein Skript ausgegeben. Die beiden gemeinsamen Handles werden einmal auf `init` registriert, mit ihren REST-Endpunkten und übersetzten Beschriftungen am Handle statt an einer einzelnen Aufrufstelle.
+Jeder Block benennt seine eigenen Assets in seiner `block.json`: `style` und `viewScript` zeigen auf die gemeinsamen Frontend-Handles, `editorScript` auf das Editor-Bundle. WordPress lädt Stylesheet und Skript des Handbuchs dann genau dort, wo ein Block gerendert wird, und eine Seite ohne Blöcke des Plugins lädt nichts zusätzlich. Das ist wichtig für Blöcke, die außerhalb einer Handbuchseite stehen, in einem Kopfbereich, einem Fußbereich oder einem anderen Template-Teil: aus der aktuellen Query zu entscheiden, ob eine Seite „wie eine Handbuchansicht aussieht", erfasst diese nicht, und ein solcher Block käme so ohne Stile und ohne sein Skript heraus. Die beiden gemeinsamen Handles werden einmal auf `init` registriert, mit ihren REST-Endpunkten und übersetzten Beschriftungen am Handle statt an einer einzelnen Aufrufstelle.
 
 ## Die Blöcke gestalten
 
@@ -217,4 +217,4 @@ Alle Blöcke nutzen CSS-Custom-Properties und stabile Klassennamen, du kannst si
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 3
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27

@@ -6,7 +6,7 @@ Living Handbook exposes extension points so you can adjust behaviour without pat
 
 ### `living_handbook_can_view_post`
 
-Filters the final decision on whether a user may view a handbook page. This is the single access decision used by every front-end read path (single pages, handbook entry pages, result sets, the facet filter endpoint, the feedback endpoint, single REST reads, and the comment channels), so a filter here takes effect everywhere.
+Filters the final decision on whether a user may view a handbook page. This is the single access decision used by every front-end read path (single pages, handbook entry pages, result sets, the facet filter endpoint, the feedback endpoint, single REST reads, and the comment channels), and by the website export and the bundle export, which leave out what it hides from the exporting person, so a filter here takes effect everywhere.
 
 Parameters:
 
@@ -14,9 +14,9 @@ Parameters:
 - `int $post_id` The handbook page ID.
 - `int $user_id` The user ID (0 for a guest).
 
-The built-in rules start with the role, not with the handbook: an account with `edit_others_posts` (Editor, Administrator) is allowed every page, restricted handbooks included and pages without a handbook too, and `$allowed` arrives as `true` for it. Only for everyone else are the handbook's visibility, roles and people consulted. Returning `false` here for such an account takes the page away from it wherever this check runs, and that includes the block editor, which loads a page through a REST read.
+The built-in rules start with the capabilities, not with the handbook: an account with `edit_others_posts` (Editor, Administrator) is allowed every page, restricted handbooks included and pages without a handbook too. Likewise, anyone is allowed a page they may edit under the WordPress rules (`edit_post`), so an author their own pages and a contributor their own drafts, without a handbook too. In both cases `$allowed` arrives as `true`. Only for everyone else are the handbook's visibility, roles and people consulted. Returning `false` here for such an account takes the page away from it wherever this check runs, and that includes the block editor, which loads a page through a REST read, and the preview.
 
-The bypass is per page. The handbook-level check, `AccessController::can_view_term()`, which decides the entry page, the overview, the menu and the search and filter endpoints, has no role shortcut and does not run this filter, so an editor reads every page of a restricted handbook they are not listed on, but does not get its entry page or see it in the overview.
+The handbook-level check, `AccessController::can_view_term()`, which decides the entry page, the overview, the menu, the learning paths and the search and filter endpoints, does not run this filter. It lets accounts with `edit_others_posts` through as well, so an editor reads a restricted handbook they are not listed on in full. The right to edit a single page means nothing to it: that right opens the one page, not the handbook, and lists, search and navigation still follow the handbook's rules for an author.
 
 Return a boolean. Example, grant a service account read access to everything:
 
@@ -79,7 +79,7 @@ add_filter(
 
 ### `living_handbook_uninstall_remove_content`
 
-Filters whether deleting the plugin also removes all handbook content. By default the uninstall keeps your content and only removes the plugin's own options and caches; the same choice is offered as a checkbox on the settings page. This filter is OR-combined with that checkbox, so returning `true` forces the full removal even when the option is off: the handbook pages, the handbooks and their metadata, the four seeded classifying taxonomies, the overview page created on activation, and any templates you edited in the Site Editor.
+Filters whether deleting the plugin also removes all handbook content. By default the uninstall keeps your content and only removes the plugin's own options and caches; the same choice is offered as a checkbox on the settings page. This filter is OR-combined with that checkbox, so returning `true` forces the full removal even when the option is off: the handbook pages, the handbooks and their metadata, the four seeded classifying taxonomies, the overview page created on activation, and any templates you edited in the Site Editor. Files in the media library stay in every case, the ones uploaded to handbook pages included.
 
 Parameters:
 
@@ -136,7 +136,7 @@ add_filter(
 
 ### `living_handbook_post_type_slug`
 
-Filters the URL base of a handbook page. The default is `handbook`, so a page lives at `/handbook/<slug>`. It is English and fixed by default, so permalinks stay stable and do not collide. Change it only with care: on a live site a new base rewrites every page URL, so flush the permalinks afterwards (Settings, Permalinks) and redirect the old links, or existing bookmarks and inbound links break.
+Filters the URL base of a handbook page. The default is `handbook`, so a page lives at `/handbook/<slug>`. It is English and fixed by default, so permalinks stay stable and do not collide. Set to `handbooks`, it makes activation create the overview page at `handbook-overview` instead of `handbooks`, so the two do not get in each other's way. Change it only with care: on a live site a new base rewrites every page URL, so flush the permalinks afterwards (Settings, Permalinks) and redirect the old links, or existing bookmarks and inbound links break.
 
 Parameters:
 
@@ -243,7 +243,7 @@ Return a float.
 
 ### `living_handbook_export_user_identifier`
 
-Filters how a reviewer is named in an export bundle. The default is the user's login, which is less personal than the e-mail address in a file that leaves the site. The importer reads either, so bundles written before this still resolve. The trade-off, stated rather than hidden: matching by login fails where the same person has a different login on the target site, and returning the e-mail address puts the old behaviour back.
+Filters how a reviewer is named in an export bundle. The default is the user's login, which is less personal than the e-mail address in a file that leaves the site. The importer reads either, so a bundle naming e-mail addresses resolves too. The trade-off, stated rather than hidden: matching by login fails where the same person has a different login on the target site; returning the e-mail address here matches by address instead.
 
 Parameters:
 
@@ -351,10 +351,10 @@ Return an array of the same shape; an entry without a label is dropped.
 
 ## Actions
 
-_None. The three that were listed here as planned, after an import, on the metadata and on the freshness evaluation, were removed in 0.60.0 rather than left standing as a promise: a hook is a commitment whose signature cannot be changed later without breaking whoever uses it, and these three came from a list rather than from a use. They are kept as a note in the project's own workspace, with signature and purpose, and will be built when something actually needs them._
+_None. A hook is a commitment whose signature cannot be changed later without breaking whoever uses it, so one is added when something actually needs it, not from a list. Three candidates, after an import, on the metadata and on the freshness evaluation, are kept as a note in the project's own workspace, with signature and purpose._
 
 ## Transport-Metadaten
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 8
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27

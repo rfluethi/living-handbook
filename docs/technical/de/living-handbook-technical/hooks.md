@@ -6,7 +6,7 @@ Living Handbook bietet Erweiterungspunkte, damit du das Verhalten anpassen kanns
 
 ### `living_handbook_can_view_post`
 
-Filtert die endgültige Entscheidung darüber, ob eine Person eine Handbuch-Seite sehen darf. Dies ist die eine Zugriffsentscheidung, die jeder Lesepfad im Frontend nutzt (Einzelseiten, Einstiegsseiten der Handbücher, Ergebnislisten, der Endpunkt für die Facettenfilter, der Feedback-Endpunkt, einzelne REST-Zugriffe und die Kommentar-Kanäle). Ein Filter an dieser Stelle wirkt sich deshalb überall aus.
+Filtert die endgültige Entscheidung darüber, ob eine Person eine Handbuch-Seite sehen darf. Dies ist die eine Zugriffsentscheidung, die jeder Lesepfad im Frontend nutzt (Einzelseiten, Einstiegsseiten der Handbücher, Ergebnislisten, der Endpunkt für die Facettenfilter, der Feedback-Endpunkt, einzelne REST-Zugriffe und die Kommentar-Kanäle), dazu der Website-Export und der Bündel-Export, die weglassen, was er vor der exportierenden Person verbirgt. Ein Filter an dieser Stelle wirkt sich deshalb überall aus.
 
 Parameter:
 
@@ -14,9 +14,9 @@ Parameter:
 - `int $post_id` Die ID der Handbuch-Seite.
 - `int $user_id` Die Benutzer-ID (0 für Gäste).
 
-Die eingebauten Regeln beginnen bei der Rolle, nicht beim Handbuch: ein Konto mit `edit_others_posts` (Redaktion, Administration) darf jede Seite lesen, auch in eingeschränkten Handbüchern und auch ohne Handbuch, und `$allowed` kommt für dieses Konto als `true` an. Erst für alle anderen zählen Sichtbarkeit, Rollen und Personen des Handbuchs. Gibst du hier für ein solches Konto `false` zurück, verliert es die Seite überall, wo diese Prüfung läuft, und dazu gehört der Block-Editor, der eine Seite über einen REST-Lesezugriff lädt.
+Die eingebauten Regeln beginnen bei den Rechten, nicht beim Handbuch: ein Konto mit `edit_others_posts` (Redaktion, Administration) darf jede Seite lesen, auch in eingeschränkten Handbüchern und auch ohne Handbuch. Ebenso darf jede Person eine Seite lesen, die sie nach WordPress-Regeln bearbeiten darf (`edit_post`), also eine Autorin ihre eigenen Seiten und eine Mitarbeiterin ihre eigenen Entwürfe, auch ohne Handbuch. In beiden Fällen kommt `$allowed` als `true` an. Erst für alle anderen zählen Sichtbarkeit, Rollen und Personen des Handbuchs. Gibst du hier für ein solches Konto `false` zurück, verliert es die Seite überall, wo diese Prüfung läuft, und dazu gehören der Block-Editor, der eine Seite über einen REST-Lesezugriff lädt, und die Vorschau.
 
-Die Ausnahme gilt pro Seite. Die Prüfung auf Handbuch-Ebene, `AccessController::can_view_term()`, die über Einstiegsseite, Übersicht, Menü sowie den Such- und den Filter-Endpunkt entscheidet, kennt keine Rollen-Abkürzung und läuft nicht durch diesen Filter. Eine Redakteurin liest also jede Seite eines eingeschränkten Handbuchs, in dem sie nicht eingetragen ist, bekommt aber dessen Einstiegsseite nicht und sieht es nicht in der Übersicht.
+Die Prüfung auf Handbuch-Ebene, `AccessController::can_view_term()`, die über Einstiegsseite, Übersicht, Menü, Lernpfade sowie den Such- und den Filter-Endpunkt entscheidet, läuft nicht durch diesen Filter. Sie lässt Konten mit `edit_others_posts` ebenfalls durch, eine Redakteurin liest ein eingeschränktes Handbuch, in dem sie nicht eingetragen ist, also vollständig. Das Recht, eine einzelne Seite zu bearbeiten, kennt sie dagegen nicht: es öffnet diese eine Seite, nicht das Handbuch, und Listen, Suche und Navigation folgen für eine Autorin weiter den Handbuch-Regeln.
 
 Gib einen Boolean zurück. Beispiel: Einem Servicekonto Lesezugriff auf alles geben.
 
@@ -79,7 +79,7 @@ add_filter(
 
 ### `living_handbook_uninstall_remove_content`
 
-Filtert, ob beim Löschen des Plugins auch alle Handbuch-Inhalte entfernt werden. Standardmäßig behält die Deinstallation deine Inhalte und entfernt nur die eigenen Optionen und Caches des Plugins; dieselbe Wahl gibt es als Häkchen auf der Einstellungsseite. Dieser Filter wird mit dem Häkchen ODER-verknüpft, `true` erzwingt also die vollständige Entfernung auch bei ausgeschalteter Option: die Handbuch-Seiten, die Handbücher und ihre Metadaten, die vier geseedeten Einordnungs-Taxonomien, die bei der Aktivierung angelegte Übersichtsseite und alle im Site-Editor bearbeiteten Vorlagen.
+Filtert, ob beim Löschen des Plugins auch alle Handbuch-Inhalte entfernt werden. Standardmäßig behält die Deinstallation deine Inhalte und entfernt nur die eigenen Optionen und Caches des Plugins; dieselbe Wahl gibt es als Häkchen auf der Einstellungsseite. Dieser Filter wird mit dem Häkchen ODER-verknüpft, `true` erzwingt also die vollständige Entfernung auch bei ausgeschalteter Option: die Handbuch-Seiten, die Handbücher und ihre Metadaten, die vier geseedeten Einordnungs-Taxonomien, die bei der Aktivierung angelegte Übersichtsseite und alle im Site-Editor bearbeiteten Vorlagen. Dateien der Mediathek bleiben in jedem Fall stehen, auch die zu Handbuch-Seiten hochgeladenen.
 
 Parameter:
 
@@ -136,7 +136,7 @@ add_filter(
 
 ### `living_handbook_post_type_slug`
 
-Filtert die URL-Basis einer Handbuch-Seite. Standard ist `handbook`, eine Seite liegt also unter `/handbook/<slug>`. Sie ist bewusst englisch und fest, damit die Permalinks stabil bleiben und nicht kollidieren. Ändere sie nur mit Bedacht: Auf einer laufenden Website schreibt eine neue Basis jede Seiten-URL um, danach musst du die Permalinks erneuern (Einstellungen, Permalinks) und die alten Links weiterleiten, sonst laufen Lesezeichen und eingehende Links ins Leere.
+Filtert die URL-Basis einer Handbuch-Seite. Standard ist `handbook`, eine Seite liegt also unter `/handbook/<slug>`. Sie ist bewusst englisch und fest, damit die Permalinks stabil bleiben und nicht kollidieren. Auf `handbooks` gesetzt, legt die Aktivierung die Übersichtsseite unter `handbook-overview` statt unter `handbooks` an, damit sich die beiden nicht in die Quere kommen. Ändere sie nur mit Bedacht: Auf einer laufenden Website schreibt eine neue Basis jede Seiten-URL um, danach musst du die Permalinks erneuern (Einstellungen, Permalinks) und die alten Links weiterleiten, sonst laufen Lesezeichen und eingehende Links ins Leere.
 
 Parameter:
 
@@ -218,7 +218,7 @@ Parameter:
 
 ### `living_handbook_export_user_identifier`
 
-Filtert, wie der Prüfer einer Seite im Export-Bündel benannt wird. Standard ist der Login. Damit stellst du die frühere Benennung über die E-Mail-Adresse wieder her, nach der ein Bündel am Ziel zugeordnet wurde.
+Filtert, wie der Prüfer einer Seite im Export-Bündel benannt wird. Standard ist der Login, der in einer Datei, die die Website verlässt, weniger über die Person verrät als die E-Mail-Adresse. Der Import liest beides, ein Bündel mit E-Mail-Adressen wird also ebenfalls zugeordnet. Der Preis, offen gesagt: die Zuordnung über den Login scheitert, wo dieselbe Person am Ziel einen anderen Login hat; gibst du hier die E-Mail-Adresse zurück, wird über sie zugeordnet.
 
 Parameter:
 
@@ -321,10 +321,10 @@ Gibt ein Array derselben Form zurück; ein Eintrag ohne Label fällt weg.
 
 ## Actions
 
-_Bisher keine._
+_Keine. Ein Hook ist eine Zusage, deren Signatur sich später nicht ändern lässt, ohne zu brechen, wer ihn nutzt; einer kommt also dazu, wenn etwas ihn wirklich braucht, nicht von einer Liste. Drei Kandidaten, nach einem Import, an den Metadaten und an der Aktualitätsbewertung, liegen als Notiz mit Signatur und Zweck im eigenen Arbeitsbereich des Projekts._
 
 ## Transport-Metadaten
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 7
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27

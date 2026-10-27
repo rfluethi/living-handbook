@@ -27,7 +27,7 @@ Willst du mehrere davon, wiederhole das mit einem anderen Ziel-Handbuch. Zwei Ha
 
 Der Haken ist gesetzt, und das ist für den Normalfall richtig: die Seiten sind im Editor gesperrt und ein späteres Laden frischt sie auf, das Handbuch folgt also dem Plugin.
 
-Nimm den Haken weg, wenn du ein mitgeliefertes Handbuch als Vorlage für dein eigenes nehmen willst. Dann kommen die Seiten als gewöhnliche Handbuch-Seiten an, die du frei bearbeitest. Der Preis: sie altern. Ein Plugin-Update rührt sie nicht mehr an, und was sich in der Vorlage ändert, erfährst du nicht. Lädst du später trotzdem noch einmal in dasselbe Handbuch, überschreibt das auch diese Seiten, mit oder ohne Haken; lade eine Vorlage, die du bearbeitest, deshalb nie ein zweites Mal in dasselbe Ziel.
+Nimm den Haken weg, wenn du ein mitgeliefertes Handbuch als Vorlage für dein eigenes nehmen willst. Dann kommen die Seiten als gewöhnliche Handbuch-Seiten an, die du frei bearbeitest. Der Preis: sie altern. Ein Plugin-Update rührt sie nicht mehr an, und was sich in der Vorlage ändert, erfährst du nicht. Auch ein späteres Laden in dasselbe Handbuch lässt diese Seiten unangetastet, deine Änderungen bleiben also erhalten, und die Ergebnisliste sagt das. Willst du für eine solche Seite doch die frische Fassung, lege sie zuerst in den Papierkorb und lade dann neu.
 
 ![Die Import-Seite mit geöffnetem Reiter „App-Handbuch“, markiert sind die Auswahl „Laden in“ und der Lade-Knopf.](../assets/import-app-handbuch.webp)
 
@@ -50,8 +50,8 @@ Welches der vier Handbücher du lädst, wählst du unter **Welches Handbuch**. V
 <summary>Stolpersteine: Drei Eigenheiten dieses Imports</summary>
 
 * **Die Seiten sind sofort veröffentlicht.** Jeder andere Import legt erst unveröffentlichte Entwürfe an. Hier ist das anders, mit Absicht: Es ist die geprüfte Dokumentation des Plugins, und wer sie sehen darf, regelt ohnehin das Ziel-Handbuch.
-* **Ein erneutes Laden überschreibt die Seiten.** Mit gesetztem Haken bei **Verbindung zur Quelle** sind die geladenen Seiten im Editor gesperrt, du kannst sie also gar nicht bearbeiten. Ohne Haken kannst du es, aber ein erneutes Laden in dasselbe Handbuch ersetzt sie trotzdem durch die mitgelieferte Fassung. Eigene, dauerhafte Änderungen machst du deshalb in einem eigenen Handbuch, nicht in den geladenen App-Handbuch-Seiten.
-* **Ein erneutes Laden löscht nichts.** Es aktualisiert die Seiten, die es noch gibt, und legt neue an. Eine Seite, die in einer neueren Plugin-Version entfernt oder umbenannt wurde, bleibt dagegen als alte Seite in deinem Handbuch stehen, samt ihrem Platz in der Navigation. So findest du sie: Die Ergebnisliste nach dem Laden nennt jede Seite, die geladen wurde. Öffne danach **Handbuch-Seiten**, filtere nach dem Ziel-Handbuch und vergleiche. Was dort steht, aber nicht in der Ergebnisliste, ist ein Überbleibsel; verschiebe es in den Papierkorb.
+* **Ein erneutes Laden überschreibt nur verbundene Seiten.** Mit gesetztem Haken bei **Verbindung zur Quelle** sind die geladenen Seiten im Editor gesperrt, und ein erneutes Laden ersetzt sie durch die mitgelieferte Fassung. Seiten, die ohne Haken geladen wurden, lässt es stehen, wie sie sind, und die Ergebnisliste nennt sie. Die frische Fassung einer solchen Seite bekommst du, indem du sie in den Papierkorb legst und neu lädst.
+* **Ein erneutes Laden löscht nichts.** Es aktualisiert die Seiten, die es noch gibt, und legt neue an. Eine Seite, die in einer neueren Plugin-Version entfernt oder umbenannt wurde, bleibt dagegen als alte Seite in deinem Handbuch stehen, samt ihrem Platz in der Navigation. Die Ergebnisliste nach dem Laden nennt solche Seiten, die nicht mehr zum mitgelieferten Handbuch gehören. Gelöscht werden sie nicht; brauchst du eine nicht mehr, verschiebe sie von Hand in den Papierkorb.
 
 </details>
 
@@ -69,6 +69,6 @@ Welches der vier Handbücher du lädst, wählst du unter **Welches Handbuch**. V
 * Eltern-Seite: Erste Schritte
 * Reihenfolge: 5
 * Textauszug: Dieses Handbuch wird mit dem Plugin ausgeliefert und lässt sich mit einem Klick in deine eigene Installation laden, passend zur installierten Version.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

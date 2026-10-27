@@ -6,7 +6,7 @@ Diese Anleitung erstellt deine erste Handbuch-Seite. Die Schritte: schreiben, ei
 <summary>Voraussetzungen: Was schon da sein muss</summary>
 
 * Ein angelegtes Handbuch, siehe [Erstes Handbuch anlegen](erstes-handbuch-anlegen.md).
-* Ein Benutzerkonto mit der Rolle Redakteur oder Administrator. Autorinnen und Mitarbeitende können eine Handbuch-Seite im Block-Editor nur öffnen, wenn sie deren Handbuch lesen dürfen. Eine neue Seite gehört noch keinem Handbuch, darum lässt sie sich mit diesen Rollen nicht beginnen.
+* Ein Benutzerkonto, das Seiten schreiben darf, zum Beispiel mit der Rolle Autor, Redakteur oder Administrator. Mit der Rolle Mitarbeiter schreibst du einen Entwurf, veröffentlichen muss ihn dann jemand aus der Redaktion. Deine eigene Seite kannst du bearbeiten und ansehen, auch bevor sie einem Handbuch gehört.
 
 </details>
 
@@ -48,6 +48,6 @@ Fast immer hat das eine von drei Ursachen: Die Seite hat kein Handbuch zugewiese
 * Eltern-Seite: Erste Schritte
 * Reihenfolge: 3
 * Textauszug: Diese Anleitung erstellt deine erste Handbuch-Seite: schreiben, einem Handbuch zuweisen, klassifizieren, Prüfdaten setzen, veröffentlichen.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

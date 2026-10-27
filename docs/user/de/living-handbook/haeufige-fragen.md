@@ -26,7 +26,7 @@ Das Plugin braucht ein Block-Theme und WordPress 6.8 oder neuer. Ein älteres, k
 <details>
 <summary>Warum ist eine Unterseite meiner Handbuch-Übersicht nicht erreichbar?</summary>
 
-Die Übersicht liegt unter `/handbook/`, und unter `/handbook/…` sucht WordPress nach Handbuch-Seiten. Eine gewöhnliche Unterseite der Übersicht, etwa `/handbook/team/`, findet es deshalb nicht. Hänge keine Unterseiten unter die Übersicht, oder gib ihr eine andere Adresse. Details: [Die drei Oberflächen](oberflaeche/die-drei-oberflaechen.md).
+Vermutlich liegt deine Übersicht noch unter `/handbook/`, wie bei Installationen von vor Version 0.76.0. Unter `/handbook/…` sucht WordPress nach Handbuch-Seiten. Eine gewöhnliche Unterseite der Übersicht, etwa `/handbook/team/`, findet es deshalb nicht. Gib der Übersicht eine andere Adresse, zum Beispiel `/handbooks/`, wie sie neue Installationen ohnehin bekommen. Details: [Die drei Oberflächen](oberflaeche/die-drei-oberflaechen.md).
 
 </details>
 
@@ -75,7 +75,7 @@ Standardmäßig erscheinen die Knöpfe nur für angemeldete Personen, mit einer 
 <details>
 <summary>Wird beim Löschen des Plugins mein Inhalt gelöscht?</summary>
 
-Nein, standardmäßig bleiben alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen des Plugins. Das vollständige Aufräumen ist eine bewusste Option unter **Handbuch → Einstellungen**. So kostet ein versehentliches Löschen nie das Handbuch. Details: [Die Einstellungen](die-einstellungen.md).
+Nein, standardmäßig bleiben alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen des Plugins. Das vollständige Aufräumen ist eine bewusste Option unter **Handbuch → Einstellungen**. Auch sie lässt die Dateien in der Mediathek stehen. So kostet ein versehentliches Löschen nie das Handbuch. Details: [Die Einstellungen](die-einstellungen.md).
 
 </details>
 
@@ -99,6 +99,6 @@ Inhalte deiner Website sendet es nirgendwohin. Zwei Dienste fragt es aber an. Gi
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 9
 * Textauszug: Kurze Antworten auf die häufigsten Fragen zu Living Handbook, jede mit Verweis auf die ausführliche Seite.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

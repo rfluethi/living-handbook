@@ -33,7 +33,7 @@ The derived status of a page (reviewed, review due, review overdue, not reviewed
 | `_lh_sync_status` | string | not registered | `GitSync` after every pull | The last result as text, shown as "Last sync" in the Source box. |
 | `_lh_sync_error` | `'1'` or absent | not registered | `GitSync` on a failed pull, removed on the next good one | Flags the page for the "could not be synced" admin notice. |
 | `_lh_github_folder` | string | not registered | GitHub folder import and app handbook load | Marks the page that stands for a folder without a Markdown file of its own, so a second import finds it again. `owner/repo@branch:path` for GitHub, `local:path` for the bundled handbooks. |
-| `_lh_app_handbook` | `'1'` or absent | not registered | App handbook load with **Connection to the source** on | Ties the page to the shipped copy: the editor is locked and a later load refreshes it. Absent when the connection was switched off. |
+| `_lh_app_handbook` | `'1'` or absent | not registered | App handbook load with **Connection to the source** on | Ties the page to the shipped copy: the editor is locked and a later load refreshes it. Absent when the connection was switched off; a later load leaves such a page untouched. |
 
 ### Import bookkeeping
 
@@ -88,4 +88,4 @@ Installations from before 0.56.0 carried some of these under other names. `Plugi
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 11
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27

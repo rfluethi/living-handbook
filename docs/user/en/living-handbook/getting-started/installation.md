@@ -24,7 +24,7 @@ Activation sets up three things for you:
 
 * Its own kind of page for handbook pages, separate from your normal pages and posts.
 * Four groups of tags for classifying pages: page type, topic, responsible role and audience. All come filled with starter terms.
-* A normal WordPress page called **Handbook**. It will later list your handbooks. You can move, restyle or replace it.
+* A normal WordPress page called **Handbook**, at `/handbooks/`. It will later list your handbooks. You can move, restyle or replace it.
 
 You can tell it worked by two things: the admin menu shows the entry **Handbook**, and the page **Handbook** is reachable on the website. It is empty at first. That is normal, because there is no handbook yet.
 
@@ -50,6 +50,6 @@ You can tell it worked by two things: the admin menu shows the entry **Handbook*
 * Eltern-Seite: Getting started
 * Reihenfolge: 1
 * Textauszug: How to get the plugin ready to use, from the ZIP file to the first visible handbook page in your WordPress installation.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

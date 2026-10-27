@@ -42,6 +42,8 @@ Ein Lernpfad gehört zu genau einem Handbuch und ist so sichtbar wie dieses Hand
 
 Lektionen laufen durch dieselbe Prüfung. Eine Seite, die jemand nicht sehen darf, erscheint für diese Person weder in der Liste noch im Zähler. Der Pfad ist damit für zwei Personen unterschiedlich lang, und das ist Absicht: die Alternative wäre, im Zähler zu verraten, wie viel jemandem fehlt.
 
+Einen Pfad im Entwurf sehen nur Personen, die ihn bearbeiten dürfen. In der Vorschau eines Lernpfad-Entwurfs zeigen die Lektionen die Pfadleiste, du kannst den Weg also vor dem Veröffentlichen durchklicken. Lernende sehen Entwürfe nicht.
+
 ## Wenn sich das Handbuch ändert
 
 Am Pfad ist nichts nachzuführen. Gespeichert sind Verweise und eine Reihenfolge, alles andere wird beim Lesen ermittelt. Eine Lektion fällt automatisch aus Liste, Nummerierung und Weiter-Knopf, sobald sie gelöscht, in den Entwurf zurückgesetzt oder in ein anderes Handbuch verschoben wird. Umbenannte oder verschobene Seiten erscheinen einfach mit ihrem neuen Titel.
@@ -54,7 +56,17 @@ Was der Pfad in dieser Etappe **nicht** tut: melden, dass sich eine Lektion wese
 * Ein Pfad kann nur Seiten aus seinem eigenen Handbuch enthalten.
 * Höchstens 200 Lektionen je Pfad.
 * Keine Wissensfragen und keine Abzeichen.
-* Ein Lernpfad reist beim [Umzug eines Handbuchs](handbuch-umziehen.md) nicht mit; auf der Ziel-Website legst du ihn neu an.
+
+## Beim Umzug auf eine andere Website
+
+Beim [Umzug eines Handbuchs](handbuch-umziehen.md) reisen seine Lernpfade im Bündel mit. Auf der Ziel-Website zeigen die Lektionen auf die importierten Seiten. Dabei gilt:
+
+* Mit dem ganzen Handbuch reisen alle Pfade mit, auch Entwürfe und Pfade ohne Lektionen.
+* Exportierst du nur einen Bereich, behält ein Pfad nur die Lektionen aus diesem Bereich. Ein Pfad ohne Lektion im Bereich bleibt zurück.
+* Eine Lektion, die das Bündel nicht enthält, fällt weg. Der Import weist darauf hin.
+* Gibt es den Pfad auf der Ziel-Website schon, gilt für ihn dieselbe Wahl wie für die Seiten: überspringen, aktualisieren oder neu anlegen.
+* Ist das Lernpfad-Modul auf der Ziel-Website aus, werden die Pfade trotzdem importiert. Sie erscheinen, sobald du es einschaltest.
+* Importierst du das Bündel als gewöhnliche WordPress-Seiten, kommen keine Pfade mit.
 
 ## Verwandte Seiten
 
@@ -70,6 +82,6 @@ Was der Pfad in dieser Etappe **nicht** tut: melden, dass sich eine Lektion wese
 * Eltern-Seite: Inhalte
 * Reihenfolge: 6
 * Textauszug: Eine geordnete Auswahl bestehender Handbuchseiten für Onboarding und Pflichtlektüre, mit Weiter-Navigation und einem Stand, den der Browser sich merkt.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-08-14
 * Prüfintervall: 180 Tage

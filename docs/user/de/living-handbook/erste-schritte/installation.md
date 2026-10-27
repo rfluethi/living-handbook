@@ -24,7 +24,7 @@ Die Aktivierung richtet drei Dinge für dich ein:
 
 * Eine eigene Seiten-Art für Handbuch-Seiten, getrennt von deinen normalen Seiten und Beiträgen.
 * Vier Gruppen zum Einordnen der Seiten: Seitentyp, Thema, verantwortliche Rolle und Zielgruppe. Alle sind mit Startwerten gefüllt.
-* Eine normale WordPress-Seite namens **Handbuch**. Sie zeigt später die Liste deiner Handbücher. Du kannst sie verschieben, umgestalten oder ersetzen.
+* Eine normale WordPress-Seite namens **Handbuch**, unter `/handbooks/`. Sie zeigt später die Liste deiner Handbücher. Du kannst sie verschieben, umgestalten oder ersetzen.
 
 Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **Handbuch**, und die Seite **Handbuch** ist auf der Website erreichbar. Sie ist anfangs leer. Das ist normal, denn es gibt noch kein Handbuch.
 
@@ -50,6 +50,6 @@ Den Erfolg erkennst du an zwei Dingen: Im Verwaltungsmenü steht der Eintrag **H
 * Eltern-Seite: Erste Schritte
 * Reihenfolge: 1
 * Textauszug: So machst du das Plugin einsatzbereit, von der ZIP-Datei bis zur ersten sichtbaren Handbuch-Seite in deiner WordPress-Installation.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

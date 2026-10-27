@@ -33,7 +33,7 @@ Der abgeleitete Zustand einer Seite (geprüft, Prüfung fällig, Prüfung überf
 | `_lh_sync_status` | string | nicht registriert | `GitSync` nach jedem Abruf | Das letzte Ergebnis als Text, in der Box Quelle als „Letzter Sync" gezeigt. |
 | `_lh_sync_error` | `'1'` oder fehlend | nicht registriert | `GitSync` bei einem gescheiterten Abruf, beim nächsten guten entfernt | Markiert die Seite für den Admin-Hinweis „konnte nicht abgeglichen werden". |
 | `_lh_github_folder` | string | nicht registriert | GitHub-Ordner-Import und Laden des App-Handbuchs | Markiert die Seite, die für einen Ordner ohne eigene Markdown-Datei steht, damit ein zweiter Import sie wiederfindet. `owner/repo@branch:pfad` für GitHub, `local:pfad` für die mitgelieferten Handbücher. |
-| `_lh_app_handbook` | `'1'` oder fehlend | nicht registriert | Laden des App-Handbuchs mit eingeschalteter **Verbindung zur Quelle** | Bindet die Seite an die mitgelieferte Kopie: der Editor ist gesperrt, und ein späteres Laden frischt sie auf. Fehlt, wenn die Verbindung ausgeschaltet war. |
+| `_lh_app_handbook` | `'1'` oder fehlend | nicht registriert | Laden des App-Handbuchs mit eingeschalteter **Verbindung zur Quelle** | Bindet die Seite an die mitgelieferte Kopie: der Editor ist gesperrt, und ein späteres Laden frischt sie auf. Fehlt, wenn die Verbindung ausgeschaltet war; eine solche Seite lässt ein späteres Laden unangetastet. |
 
 ### Import-Buchhaltung
 
@@ -88,4 +88,4 @@ Installationen von vor 0.56.0 trugen einige dieser Felder unter anderen Namen. `
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 10
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27

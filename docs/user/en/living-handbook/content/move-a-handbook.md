@@ -7,7 +7,7 @@ You want to move a handbook to another website? Export it as a bundle and import
 
 A bundle is a single ZIP file. It holds the handbook's pages: all pages with their order, the images, the classification (page type, topic, responsibility, audience), the review data and the visibility setting. The target site needs no contact with the old site. Two things are missing on purpose. First, the individually allowed people, because that is personal data, and a bundle is a file that gets passed around. Second, the feedback numbers, because they belong to the old site.
 
-And one thing is missing because the bundle only knows handbook pages: the [learning paths](learning-paths.md). They belong to the handbook but do not travel along. Create them again on the target site once the pages have arrived.
+The handbook's [learning paths](learning-paths.md) travel along too. On the target site their lessons point at the imported pages. If you export only an area, a path keeps only the lessons in that area; a path without a lesson in the area stays behind.
 
 </details>
 
@@ -21,23 +21,24 @@ And one thing is missing because the bundle only knows handbook pages: the [lear
 
 1. On the target site, open **Handbook → Import**, tab **Bundle**. Your account there needs at least the WordPress role Editor, because the import also changes pages by other authors.
 2. Upload the ZIP file.
-3. Choose what should happen to pages that already exist there:
+3. Choose what should happen to pages and learning paths that already exist there:
    * **Skip** (default): Existing pages are left untouched. Only new ones are created.
    * **Update:** Existing pages are refreshed from the bundle.
    * **Always create:** Every page in the bundle becomes a new page. Useful for cloning.
 4. Under **Import into**, choose which handbook the pages go to. Without a choice, the handbook from the bundle is created anew.
-5. Start the import and read the report. It lists what was created, updated or skipped.
+5. Start the import and read the report. It lists what was created, updated or skipped, for pages and learning paths separately.
 
 ## Result
 
-The pages are on the target site. Links between the pages lead to the new pages. Two protection rules always hold: nothing is ever deleted. And a page marked as protected on the target site is never overwritten.
+The pages and the learning paths are on the target site. Links between the pages lead to the new pages. Two protection rules always hold: nothing is ever deleted. And a page marked as protected on the target site is never overwritten.
 
 <details>
 <summary>Pitfalls: Safety beats convenience</summary>
 
 * **An imported handbook always starts with visibility "All members".** That holds even if it was public on the old site. An import must never publish anything by accident. Raise the visibility by hand afterwards.
 * **Individually allowed people must be entered again.** They do not travel along.
-* **Learning paths must be created again.** They do not travel along either.
+* **A learning path loses lessons that are not in the bundle.** They drop out of the path, and the report points this out. If you import the bundle as ordinary WordPress pages, no paths come along at all.
+* **Learning paths appear only with the module.** If the learning paths module is off on the target site, the paths are imported anyway. They become visible as soon as you switch it on under **Handbook → Settings → Learning paths**.
 * **On update, the target site's upkeep data survives.** Feedback numbers and review data are not overwritten.
 * **Read bundles from others before you publish them.** The content is cleaned on import like any external content. But it remains a text someone else wrote.
 
@@ -57,6 +58,6 @@ The pages are on the target site. Links between the pages lead to the new pages.
 * Eltern-Seite: Content
 * Reihenfolge: 4
 * Textauszug: A handbook can be exported as a self-contained bundle and imported again on another website; here is how.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

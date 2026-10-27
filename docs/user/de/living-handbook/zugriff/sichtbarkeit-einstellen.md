@@ -12,7 +12,7 @@ Die Sichtbarkeit wird pro Handbuch geregelt, nicht pro Seite. Diese Anleitung st
 3. Bei **Eingeschränkt**: Wähle die Rollen aus. Ergänze bei Bedarf einzelne Personen.
 4. Speichere.
 
-> **Wichtig:** Die Stufen gelten nicht für die Redaktion. Wer fremde Beiträge bearbeiten darf, also die WordPress-Rollen Redakteur und Administrator, liest jede Handbuch-Seite, auch in einem eingeschränkten Handbuch und auch ohne in dessen Rollen- oder Personenliste zu stehen. Ein Handbuch, das vor der Redaktion verborgen bleiben soll, lässt sich mit den eingebauten Stufen nicht einrichten. Nur Einstiegsseite, Übersicht und Menü folgen auch für die Redaktion den Stufen: ein eingeschränktes Handbuch, in dem eine Redakteurin nicht eingetragen ist, fehlt in ihrer Übersicht, seine Seiten öffnet sie trotzdem.
+> **Wichtig:** Die Stufen gelten nicht für die Redaktion. Wer fremde Beiträge bearbeiten darf, also die WordPress-Rollen Redakteur und Administrator, liest jedes Handbuch vollständig, auch ein eingeschränktes und auch ohne in dessen Rollen- oder Personenliste zu stehen: die Seiten, die Einstiegsseite, den Eintrag in der Übersicht und die Lernpfade. Ein Handbuch, das vor der Redaktion verborgen bleiben soll, lässt sich mit den eingebauten Stufen nicht einrichten.
 
 ![Die Bearbeitungsseite eines Handbuchs mit den drei Sichtbarkeits-Stufen und den Feldern für Rollen und Personen.](../assets/sichtbarkeit-einstellen.webp)
 
@@ -25,7 +25,7 @@ Die Regel wirkt sofort und überall: auf der Handbuch-Übersicht, auf den Seiten
 
 * **„Ich sehe mein Handbuch nicht“:** Du bist vermutlich abgemeldet, und das Handbuch steht auf „Alle Mitglieder“. Teste die Sicht deiner Leserinnen in einem privaten Browserfenster.
 * **Teste nie als Redaktion.** Mit einem Redakteur- oder Administrator-Konto siehst du jede Seite, auch solche, die deine Leserinnen nicht sehen. Prüfe die Sicht mit einem Konto, das dieselbe Rolle hat wie deine Leserinnen.
-* **Bearbeiten im Block-Editor setzt Lesen voraus.** Wer Seiten bearbeiten darf, regeln die WordPress-Benutzerrollen. Autorinnen und Mitarbeitende können eine Handbuch-Seite im Block-Editor aber nur öffnen, wenn sie deren Handbuch lesen dürfen. Eine neue Seite, die noch keinem Handbuch gehört, lässt sich für sie gar nicht öffnen. Neue Seiten legt deshalb am besten die Redaktion an und ordnet sie gleich einem Handbuch zu.
+* **Bearbeiten folgt den WordPress-Rollen.** Wer eine Seite nach den Regeln von WordPress bearbeiten darf, kann sie im Block-Editor öffnen, speichern, in der Vorschau ansehen und auf der Website lesen. Das gilt auch, wenn das Handbuch diese Person sonst ausschließt, und auch für eine neue Seite, die noch keinem Handbuch gehört. Autorinnen und Autoren bearbeiten nach den WordPress-Regeln nur ihre eigenen Seiten, Mitarbeitende nur ihre eigenen Entwürfe. Alles andere folgt weiter der Sichtbarkeit des Handbuchs: fremde Seiten, Listen, Suche und Navigation. Wer ein Handbuch nicht lesen darf, findet darin also auch die eigene Seite nicht über die Navigation.
 * **Beim Umzug auf eine andere Website reisen einzeln freigegebene Personen nicht mit.** Siehe [Handbuch umziehen](../inhalte/handbuch-umziehen.md).
 
 </details>
@@ -43,6 +43,6 @@ Die Regel wirkt sofort und überall: auf der Handbuch-Übersicht, auf den Seiten
 * Eltern-Seite: Zugriff
 * Reihenfolge: 1
 * Textauszug: Die Sichtbarkeit wird pro Handbuch geregelt; diese Anleitung stellt ein, wer ein Handbuch auf der Website lesen darf.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage
