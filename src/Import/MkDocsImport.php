@@ -79,8 +79,7 @@ final class MkDocsImport {
 	 * setup for Mermaid diagrams alone writes
 	 * "!!python/name:pymdownx.superfences.fence_code_format". A YAML parser in any
 	 * other language stops at that, which used to mean the whole file was
-	 * discarded and a documentation project was imported as a flat pile of files
-	 * with their file names as titles.
+	 * discarded and a documentation project was imported as a flat pile of files.
 	 *
 	 * So the file is read twice if need be. Whole, which is the normal case and
 	 * keeps anchors working; and if that fails, only the nav block, which is the
@@ -101,7 +100,7 @@ final class MkDocsImport {
 				return $config['nav'];
 			}
 			if ( is_array( $config ) && ! isset( $config['nav'] ) ) {
-				$notes[] = __( 'The mkdocs.yml has no nav section. The files were imported without structure: their file names became the page titles.', 'living-handbook' );
+				$notes[] = __( 'The mkdocs.yml has no nav section. The files were imported without structure; each page takes its first heading as its title, or its file name when it has none.', 'living-handbook' );
 				return array();
 			}
 		} catch ( \Throwable $e ) {
@@ -131,7 +130,7 @@ final class MkDocsImport {
 			// wording last.
 			$notes[] = sprintf(
 				/* translators: %s: the YAML parser's error message, in English. */
-				__( 'The structure from the mkdocs.yml could not be applied: the file has an error. The files were imported without structure, their file names became the page titles. The reader reports: %s', 'living-handbook' ),
+				__( 'The structure from the mkdocs.yml could not be applied: the file has an error. The files were imported without structure; each page takes its first heading as its title, or its file name when it has none. The reader reports: %s', 'living-handbook' ),
 				$reason
 			);
 		}

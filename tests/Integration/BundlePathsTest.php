@@ -674,14 +674,15 @@ final class BundlePathsTest extends WP_UnitTestCase {
 		ob_start();
 		$import->result_notice();
 		$html = (string) ob_get_clean();
-		$this->assertStringContainsString( '3 learning paths: 2 created, 0 updated, 1 skipped, 0 protected.', $html );
+		$this->assertStringContainsString( 'Bundle imported: 2 pages created.', $html );
+		$this->assertStringContainsString( 'Learning paths: 2 learning paths created and 1 learning path skipped.', $html );
 
 		unset( $report['paths'] );
 		set_transient( $key, $report );
 		ob_start();
 		$import->result_notice();
 		$html = (string) ob_get_clean();
-		$this->assertStringContainsString( 'Bundle imported: 2 created', $html );
+		$this->assertStringContainsString( 'Bundle imported: 2 pages created.', $html );
 		$this->assertStringNotContainsString( 'learning path', $html );
 
 		set_current_screen( 'front' );

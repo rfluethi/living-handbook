@@ -117,6 +117,23 @@ final class MarkdownImportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Past the entry limit the archive is refused, and the message names the
+	 * limit the code applies, not a number written into the sentence.
+	 *
+	 * @return void
+	 */
+	public function test_too_many_entries_names_the_limit(): void {
+		$entries = array();
+		for ( $i = 0; $i <= MarkdownImportPage::ZIP_MAX_ENTRIES; $i++ ) {
+			$entries[ 'docs/p' . $i . '.md' ] = '';
+		}
+		$read = MarkdownImportPage::read_zip( $this->make_zip( $entries ) );
+
+		$this->assertInstanceOf( WP_Error::class, $read );
+		$this->assertSame( 'The ZIP has too many entries (maximum is ' . MarkdownImportPage::ZIP_MAX_ENTRIES . ').', $read->get_error_message() );
+	}
+
+	/**
 	 * A single oversized file is skipped, the rest of the archive is still
 	 * imported: one huge file is not a reason to lose the other pages.
 	 *

@@ -279,7 +279,8 @@ final class MarkdownImportPage {
 		$file_count = $zip->numFiles;
 		if ( $file_count > self::ZIP_MAX_ENTRIES ) {
 			$zip->close();
-			return self::import_error( __( 'The ZIP has too many entries (maximum is 2000).', 'living-handbook' ) );
+			/* translators: %d: maximum number of entries in a ZIP. */
+			return self::import_error( sprintf( __( 'The ZIP has too many entries (maximum is %d).', 'living-handbook' ), self::ZIP_MAX_ENTRIES ) );
 		}
 
 		$markdown_files = array();
@@ -417,7 +418,7 @@ final class MarkdownImportPage {
 				);
 			}
 		} elseif ( '' !== $mkdocs_yaml ) {
-			$notes[] = __( 'The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its structure could not be applied. The files were imported with their file names as page titles.', 'living-handbook' );
+			$notes[] = __( 'The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its structure could not be applied. Each page takes its first heading as its title, or its file name when it has none.', 'living-handbook' );
 		}
 
 		$converter = new MarkdownConverter();

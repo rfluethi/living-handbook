@@ -772,25 +772,43 @@ final class HandbookImport {
 			}
 		}
 
+		$refused = array_values( array_unique( $refused ) );
 		if ( array() !== $refused ) {
 			$report['notes'][] = sprintf(
-				/* translators: %s: comma-separated file names. */
-				__( 'These files from the bundle were not imported, because their type is not accepted, their content does not match their name, or they could not be stored: %s. Pages that use them still point at the old site.', 'living-handbook' ),
-				implode( ', ', array_unique( $refused ) )
+				/* translators: %s: list of file names. */
+				_n(
+					'This file from the bundle was not imported, because its type is not accepted, its content does not match its name, or it could not be stored: %s. Pages that use it still point at the old site.',
+					'These files from the bundle were not imported, because their type is not accepted, their content does not match their name, or they could not be stored: %s. Pages that use them still point at the old site.',
+					count( $refused ),
+					'living-handbook'
+				),
+				wp_sprintf( '%l', $refused )
 			);
 		}
+		$too_large = array_values( array_unique( $too_large ) );
 		if ( array() !== $too_large ) {
 			$report['notes'][] = sprintf(
-				/* translators: %s: comma-separated file names. */
-				__( 'These files from the bundle were not imported, because they are too large for the import on this website: %s. Pages that use them still point at the old site.', 'living-handbook' ),
-				implode( ', ', array_unique( $too_large ) )
+				/* translators: %s: list of file names. */
+				_n(
+					'This file from the bundle was not imported, because it is too large for the import on this website: %s. Pages that use it still point at the old site.',
+					'These files from the bundle were not imported, because they are too large for the import on this website: %s. Pages that use them still point at the old site.',
+					count( $too_large ),
+					'living-handbook'
+				),
+				wp_sprintf( '%l', $too_large )
 			);
 		}
+		$missing = array_values( array_unique( $missing ) );
 		if ( array() !== $missing ) {
 			$report['notes'][] = sprintf(
-				/* translators: %s: comma-separated file names. */
-				__( 'These files are listed in the bundle but missing from it: %s. Pages that use them still point at the old site.', 'living-handbook' ),
-				implode( ', ', array_unique( $missing ) )
+				/* translators: %s: list of file names. */
+				_n(
+					'This file is listed in the bundle but missing from it: %s. Pages that use it still point at the old site.',
+					'These files are listed in the bundle but missing from it: %s. Pages that use them still point at the old site.',
+					count( $missing ),
+					'living-handbook'
+				),
+				wp_sprintf( '%l', $missing )
 			);
 		}
 		return $map;
@@ -1125,34 +1143,21 @@ final class HandbookImport {
 		}
 
 		$summary = sprintf(
-			/* translators: 1: created count, 2: updated count, 3: skipped count, 4: protected count. */
-			__( 'Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected.', 'living-handbook' ),
-			(int) $report['created'],
-			(int) $report['updated'],
-			(int) $report['skipped'],
-			(int) $report['protected']
+			/* translators: %s: list of page counts, such as "3 pages created and 1 page updated". */
+			__( 'Bundle imported: %s.', 'living-handbook' ),
+			wp_sprintf( '%l', self::page_counts( $report ) )
 		);
 
 		$paths = isset( $report['paths'] ) && is_array( $report['paths'] ) ? $report['paths'] : array();
 		$total = 0;
 		foreach ( array( 'created', 'updated', 'skipped', 'protected' ) as $count ) {
-			$paths[ $count ] = isset( $paths[ $count ] ) ? (int) $paths[ $count ] : 0;
-			$total          += $paths[ $count ];
+			$total += isset( $paths[ $count ] ) ? (int) $paths[ $count ] : 0;
 		}
 		if ( $total > 0 ) {
 			$summary .= ' ' . sprintf(
-				/* translators: 1: number of learning paths in the bundle, 2: created, 3: updated, 4: skipped, 5: protected. */
-				_n(
-					'%1$d learning path: %2$d created, %3$d updated, %4$d skipped, %5$d protected.',
-					'%1$d learning paths: %2$d created, %3$d updated, %4$d skipped, %5$d protected.',
-					$total,
-					'living-handbook'
-				),
-				$total,
-				$paths['created'],
-				$paths['updated'],
-				$paths['skipped'],
-				$paths['protected']
+				/* translators: %s: list of learning path counts, such as "1 learning path created and 2 learning paths updated". */
+				__( 'Learning paths: %s.', 'living-handbook' ),
+				wp_sprintf( '%l', self::path_counts( $paths ) )
 			);
 		}
 
@@ -1167,5 +1172,81 @@ final class HandbookImport {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html above.
 			'' !== $notes ? '<ul style="list-style:disc;margin-left:1.5em;">' . $notes . '</ul>' : ''
 		);
+	}
+
+	/**
+	 * The page counters of a report, each as its own sentence part.
+	 *
+	 * One part per number rather than one sentence with four of them, so each
+	 * number gets its own plural form. Up to 0.75.1 the summary read "2 created,
+	 * 0 updated", with no plural form for any of them.
+	 *
+	 * @param array<string, mixed> $report Import report.
+	 * @return array<int, string>
+	 */
+	private static function page_counts( array $report ): array {
+		$created   = (int) ( $report['created'] ?? 0 );
+		$updated   = (int) ( $report['updated'] ?? 0 );
+		$skipped   = (int) ( $report['skipped'] ?? 0 );
+		$protected = (int) ( $report['protected'] ?? 0 );
+
+		$parts = array(
+			/* translators: %d: number of pages. */
+			sprintf( _n( '%d page created', '%d pages created', $created, 'living-handbook' ), $created ),
+			/* translators: %d: number of pages. */
+			sprintf( _n( '%d page updated', '%d pages updated', $updated, 'living-handbook' ), $updated ),
+			/* translators: %d: number of pages. */
+			sprintf( _n( '%d page skipped', '%d pages skipped', $skipped, 'living-handbook' ), $skipped ),
+			/* translators: %d: number of pages. */
+			sprintf( _n( '%d page protected', '%d pages protected', $protected, 'living-handbook' ), $protected ),
+		);
+
+		return self::non_zero( $parts, array( $created, $updated, $skipped, $protected ) );
+	}
+
+	/**
+	 * The learning path counters of a report, each as its own sentence part.
+	 *
+	 * @param array<string, mixed> $paths Learning path counters of an import report.
+	 * @return array<int, string>
+	 */
+	private static function path_counts( array $paths ): array {
+		$created   = (int) ( $paths['created'] ?? 0 );
+		$updated   = (int) ( $paths['updated'] ?? 0 );
+		$skipped   = (int) ( $paths['skipped'] ?? 0 );
+		$protected = (int) ( $paths['protected'] ?? 0 );
+
+		$parts = array(
+			/* translators: %d: number of learning paths. */
+			sprintf( _n( '%d learning path created', '%d learning paths created', $created, 'living-handbook' ), $created ),
+			/* translators: %d: number of learning paths. */
+			sprintf( _n( '%d learning path updated', '%d learning paths updated', $updated, 'living-handbook' ), $updated ),
+			/* translators: %d: number of learning paths. */
+			sprintf( _n( '%d learning path skipped', '%d learning paths skipped', $skipped, 'living-handbook' ), $skipped ),
+			/* translators: %d: number of learning paths. */
+			sprintf( _n( '%d learning path protected', '%d learning paths protected', $protected, 'living-handbook' ), $protected ),
+		);
+
+		return self::non_zero( $parts, array( $created, $updated, $skipped, $protected ) );
+	}
+
+	/**
+	 * The parts whose number is not zero, or the first part when all are.
+	 *
+	 * "2 pages created" reads better than four numbers of which three are
+	 * nothing; an import that wrote nothing still says so, with the first part.
+	 *
+	 * @param array<int, string> $parts   Sentence parts.
+	 * @param array<int, int>    $numbers The number in each part, in the same order.
+	 * @return array<int, string>
+	 */
+	private static function non_zero( array $parts, array $numbers ): array {
+		$out = array();
+		foreach ( $parts as $index => $part ) {
+			if ( 0 !== ( $numbers[ $index ] ?? 0 ) ) {
+				$out[] = $part;
+			}
+		}
+		return array() !== $out ? $out : array( $parts[0] );
 	}
 }

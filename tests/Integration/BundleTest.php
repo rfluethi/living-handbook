@@ -573,7 +573,7 @@ final class BundleTest extends WP_UnitTestCase {
 	/**
 	 * A file of the bundle that does not arrive is named in the report: one
 	 * that is refused, and one the manifest lists but the archive lacks. Up to
-	 * 0.76.0 both were dropped without a word, and the page kept pointing at
+	 * 0.75.1 both were dropped without a word, and the page kept pointing at
 	 * the old site.
 	 *
 	 * @return void
@@ -608,11 +608,13 @@ final class BundleTest extends WP_UnitTestCase {
 		$notes = implode( "\n", (array) $report['notes'] );
 		$this->assertStringContainsString( '1-page.html', $notes, 'A refused file is named.' );
 		$this->assertStringContainsString( '2-gone.pdf', $notes, 'A missing file is named.' );
+		$this->assertStringContainsString( 'This file from the bundle was not imported', $notes, 'One file is one file.' );
+		$this->assertStringContainsString( 'This file is listed in the bundle but missing from it: 2-gone.pdf.', $notes );
 	}
 
 	/**
 	 * A file of the bundle that is too large to hold in memory is not read, and
-	 * the report names it; the rest of the bundle is imported. Up to 0.76.0
+	 * the report names it; the rest of the bundle is imported. Up to 0.75.1
 	 * every file was unpacked into memory whatever its size, and one video
 	 * past memory_limit ended the import in a fatal error half-way.
 	 *
