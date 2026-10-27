@@ -23,21 +23,37 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Taxonomies {
 
+	/**
+	 * Taxonomy of the page type, shown as a badge on a page and its card.
+	 */
 	public const PAGE_TYPE = 'handbook_type';
-	public const TOPIC     = 'handbook_topic';
-	public const ROLE      = 'handbook_role';
-	public const AUDIENCE  = 'handbook_audience';
 
 	/**
-	 * Which of the four classifying taxonomies this site uses. An array keyed by taxonomy,
-	 * '1' for on. Absent means all four, which is how every existing site
-	 * behaves after an update.
+	 * Taxonomy of the topics, shown as "Topics".
+	 */
+	public const TOPIC = 'handbook_topic';
+
+	/**
+	 * Taxonomy of the responsible role, shown as "Responsibility". The only flat
+	 * one of the four.
+	 */
+	public const ROLE = 'handbook_role';
+
+	/**
+	 * Taxonomy of the audiences.
+	 */
+	public const AUDIENCE = 'handbook_audience';
+
+	/**
+	 * Option naming which of the four classifying taxonomies this site uses: an
+	 * array keyed by taxonomy, '1' for on. Absent means all four, which is how
+	 * every existing site behaves after an update.
 	 */
 	public const OPTION_ENABLED = 'living_handbook_taxonomies';
 
 	/**
-	 * The four classifying taxonomies, taxonomy to label, in the order they
-	 * are offered.
+	 * Returns the four classifying taxonomies, taxonomy to label, in the order
+	 * they are offered.
 	 *
 	 * @return array<string, string>
 	 */
@@ -51,7 +67,7 @@ final class Taxonomies {
 	}
 
 	/**
-	 * Whether this site uses one of the four classifying taxonomies.
+	 * Tells whether this site uses one of the four classifying taxonomies.
 	 *
 	 * Switching one off hides it: the column and the filter in the backend, the
 	 * facet on the entry page, the badge on a page and on a card, the role line
@@ -74,7 +90,7 @@ final class Taxonomies {
 	}
 
 	/**
-	 * The classifying taxonomies this site uses, in the order of all().
+	 * Returns the classifying taxonomies this site uses, in the order of all().
 	 *
 	 * @return array<int, string>
 	 */
@@ -107,7 +123,7 @@ final class Taxonomies {
 	}
 
 	/**
-	 * Sanitize the switches from the settings form.
+	 * Sanitizes the switches from the settings form.
 	 *
 	 * Written as all four keys, present or absent, rather than as a list of the
 	 * ones that are on: an empty list and "nothing saved yet" would otherwise be
@@ -128,7 +144,7 @@ final class Taxonomies {
 	}
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -137,7 +153,7 @@ final class Taxonomies {
 	}
 
 	/**
-	 * Register the taxonomies.
+	 * Registers the taxonomies.
 	 *
 	 * @return void
 	 */
@@ -224,22 +240,19 @@ final class Taxonomies {
 	}
 
 	/**
-	 * The full label set of one of the plugin's taxonomies.
+	 * Returns the full label set of one of the plugin's taxonomies.
 	 *
-	 * Every label is a whole string of its own. They used to be assembled from
-	 * fragments, sprintf( __( 'Add new %s' ), $singular ), which English gets
-	 * away with and German does not: article and adjective ending follow the
-	 * gender of the noun, so "Add new %s" is "Neues Thema hinzufügen", "Neuen
-	 * Seitentyp hinzufügen" and "Neue Zielgruppe hinzufügen", and no single
-	 * translation of the fragment can be right for all of them. The catalogue
-	 * had settled on "%s hinzufügen" and dropped the "new". Spelled out, each
-	 * string can be translated as what it is.
+	 * Every label is a whole string of its own. Up to 0.75.1 they were assembled
+	 * from fragments, sprintf( __( 'Add new %s' ), $singular ), which English
+	 * gets away with and German does not: article and adjective ending follow
+	 * the gender of the noun, so no single translation of "Add new %s" fits
+	 * every taxonomy. Spelled out, each string can be translated as what it is.
 	 *
 	 * Hierarchical taxonomies get their parent labels, the one flat one
 	 * (responsibility) the labels of the tag-style box, so neither shows core's
 	 * "Parent Category" or "Popular Tags".
 	 *
-	 * Named taxonomy_labels() and not labels(): up to 0.75.x labels() took a
+	 * Named taxonomy_labels() and not labels(): up to 0.75.1 labels() took a
 	 * plural and a singular name, and a caller of that signature would have
 	 * received the labels of no taxonomy without an error. Under a new name it
 	 * fails loudly instead.

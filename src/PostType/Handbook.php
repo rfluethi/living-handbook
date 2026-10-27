@@ -9,7 +9,9 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\PostType;
 
+use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Setup\Settings;
+use LivingHandbook\Taxonomy\Taxonomies;
 use LivingHandbook\Training\Training;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,23 +21,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Registers the `handbook` custom post type.
  *
- * Access is enforced on the frontend per handbook (see the Access module).
- * Editing in wp-admin uses the standard WordPress roles and is not restricted
- * by this plugin.
+ * Access is enforced per handbook by the Access module, on the front end and in
+ * wp-admin: other people's pages in a handbook the user may not read stay out
+ * of the admin lists and the editor. One's own pages and pages without a
+ * handbook follow the usual WordPress roles.
  *
  * The type is registered with `public => false` and `publicly_queryable => true`:
  * single pages stay reachable (guarded by the Access module), but the type is
  * kept out of the XML sitemap and feeds so that titles and URLs of an internal
  * handbook do not leak to logged-out visitors or search engines. oEmbed needs
- * two things: `embeddable => false`, which WordPress honours from 6.8 on, and
- * the filters in the Access module, which cover every version and the case of a
- * site re-enabling embedding through the is_post_embeddable filter. The
+ * two things: `embeddable => false`, and the filters in the Access module,
+ * which also cover a site re-enabling embedding through the
+ * is_post_embeddable filter. The
  * post type archive is disabled (`has_archive => false`): the overview is a
  * normal page holding the living-handbook/overview block, so there is no second,
  * duplicate overview at /handbook/.
  */
 final class Handbook {
 
+	/**
+	 * Name of the post type of a handbook page.
+	 */
 	public const POST_TYPE = 'handbook';
 
 	/**
@@ -44,7 +50,7 @@ final class Handbook {
 	public const MENU_STYLE_HANDLE = 'living-handbook-admin-menu';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -57,12 +63,12 @@ final class Handbook {
 	}
 
 	/**
-	 * Default new handbook pages to comments closed, so a handbook is not a
+	 * Closes comments by default on new handbook pages, so a handbook is not a
 	 * comment thread unless the site wants one. This is only the default: an
-	 * editor can still switch comments on for a page in its Discussion panel, and
-	 * an imported page (the app handbook included) is created with comments off,
-	 * because the import writes no explicit status and so takes this default.
-	 * Other post types are untouched.
+	 * editor can still switch comments on for a page in its Discussion panel.
+	 * An imported page, the bundled app handbook (Import\AppHandbook) included,
+	 * is created with comments off, because the import writes no explicit status
+	 * and so takes this default. Other post types are untouched.
 	 *
 	 * @param string $status    The default comment status.
 	 * @param string $post_type The post type it is asked for.
@@ -73,9 +79,10 @@ final class Handbook {
 	}
 
 	/**
-	 * Draw a thin divider in the handbook submenu between the three usage pages
-	 * (pages, add new, import) and the six configuration pages (the taxonomies
-	 * and the settings), so the split is visible at a glance.
+	 * Draws a thin divider in the handbook submenu between the usage pages
+	 * (pages, add new, import, export, learning paths) and the configuration
+	 * pages (handbooks, the classifying taxonomies, settings), so the split is
+	 * visible at a glance.
 	 *
 	 * WordPress submenus have no native separators, so this styles the first
 	 * configuration item (the Handbooks taxonomy) with a top border and some
@@ -101,13 +108,13 @@ final class Handbook {
 		wp_enqueue_style( self::MENU_STYLE_HANDLE );
 		wp_add_inline_style(
 			self::MENU_STYLE_HANDLE,
-			'#menu-posts-' . self::POST_TYPE . ' .wp-submenu li a[href*="taxonomy=handbook_set"]{'
+			'#menu-posts-' . self::POST_TYPE . ' .wp-submenu li a[href*="taxonomy=' . Handbooks::TAXONOMY . '"]{'
 			. 'margin-top:6px;padding-top:12px;border-top:1px solid rgba(140,140,140,.4);}'
 		);
 	}
 
 	/**
-	 * Register the post type.
+	 * Registers the post type.
 	 *
 	 * @return void
 	 */
@@ -129,9 +136,9 @@ final class Handbook {
 				'labels'              => $labels,
 				'public'              => false,
 				'publicly_queryable'  => true,
-				// Since WordPress 6.8 this is what keeps the type out of oEmbed. Older
-				// versions ignore the argument, which is why the Access module also
-				// filters the oEmbed lookup and response.
+				// Keeps the type out of oEmbed. The Access module also filters the
+				// oEmbed lookup and response, for a site that turns embedding back on
+				// through the is_post_embeddable filter.
 				'embeddable'          => false,
 				'exclude_from_search' => true,
 				'show_ui'             => true,
@@ -157,7 +164,7 @@ final class Handbook {
 	}
 
 	/**
-	 * Keep the handbook type out of the core XML sitemap.
+	 * Removes the handbook type from the core XML sitemap.
 	 *
 	 * @param array<string, \WP_Post_Type> $post_types Registered sitemap post types.
 	 * @return array<string, \WP_Post_Type> Filtered list.
@@ -169,8 +176,9 @@ final class Handbook {
 	}
 
 	/**
-	 * Put the handbook submenu into a task-oriented order: pages, add new,
-	 * import, the handbook types, the four taxonomies, then the settings.
+	 * Sorts the handbook submenu into a task-oriented order: pages, add new,
+	 * import, export, learning paths, handbooks, the four classifying
+	 * taxonomies, then the settings.
 	 *
 	 * @return void
 	 */
@@ -188,11 +196,11 @@ final class Handbook {
 			'living-handbook-import',
 			'living-handbook-export',
 			'post_type=' . Training::POST_TYPE,
-			'taxonomy=handbook_set',
-			'taxonomy=handbook_type',
-			'taxonomy=handbook_topic',
-			'taxonomy=handbook_audience',
-			'taxonomy=handbook_role',
+			'taxonomy=' . Handbooks::TAXONOMY,
+			'taxonomy=' . Taxonomies::PAGE_TYPE,
+			'taxonomy=' . Taxonomies::TOPIC,
+			'taxonomy=' . Taxonomies::AUDIENCE,
+			'taxonomy=' . Taxonomies::ROLE,
 			Settings::PAGE_SLUG,
 		);
 
@@ -203,12 +211,11 @@ final class Handbook {
 				return self::submenu_rank( (string) ( $a[2] ?? '' ), $order ) <=> self::submenu_rank( (string) ( $b[2] ?? '' ), $order );
 			}
 		);
-		// Reordering the admin submenu requires writing to the $submenu global; core does the same.
-		$submenu[ $parent ] = array_values( $items ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$submenu[ $parent ] = array_values( $items ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Reordering the admin submenu means writing the $submenu global; core does the same.
 	}
 
 	/**
-	 * Rank a submenu slug against the desired order.
+	 * Ranks a submenu slug against the desired order.
 	 *
 	 * @param string   $slug  Submenu slug.
 	 * @param string[] $order Ordered list of slug fragments.
