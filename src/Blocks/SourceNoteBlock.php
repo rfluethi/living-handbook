@@ -79,8 +79,11 @@ final class SourceNoteBlock {
 		$link = self::source_link( (int) $post_id );
 		$body = esc_html( $label );
 		if ( '' !== $link ) {
+			// The link opens a new tab, which a sighted reader sees happen and a
+			// screen reader user does not, so the link text says it.
 			$body .= ' <a href="' . esc_url( $link ) . '" rel="noopener" target="_blank">'
-				. esc_html__( 'View the source file', 'living-handbook' ) . '</a>';
+				. esc_html__( 'View the source file', 'living-handbook' )
+				. '<span class="living-handbook-visually-hidden"> ' . esc_html__( '(opens in a new tab)', 'living-handbook' ) . '</span></a>';
 		}
 
 		$wrapper = Blocks::wrapper_attributes( 'lh-source-note' );

@@ -77,4 +77,19 @@ final class ContentBlockCallbacksTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'wp-block-living-handbook-mermaid', $out );
 		$this->assertStringContainsString( 'is-wide', $out );
 	}
+
+	/**
+	 * The link to the source opens a new tab and says so, for a reader who
+	 * does not see that happen.
+	 *
+	 * @return void
+	 */
+	public function test_the_source_link_announces_the_new_tab(): void {
+		$this->go_to_synced_page();
+		$note = ( new SourceNoteBlock() )->render( array() );
+
+		$this->assertStringContainsString( 'href="https://github.com/acme/docs/blob/main/start.md"', $note );
+		$this->assertStringContainsString( 'target="_blank"', $note );
+		$this->assertStringContainsString( '<span class="living-handbook-visually-hidden"> (opens in a new tab)</span>', $note );
+	}
 }
