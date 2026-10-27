@@ -62,15 +62,26 @@ final class GitSync {
 	 * living_handbook_source and living_handbook_markdown_source, which put them
 	 * in the Custom Fields box of every handbook page: switching the source from
 	 * GitHub to WordPress there silently stopped the sync, and setting it the
-	 * other way round handed a hand-written page to the next sync. The values are
-	 * readable and writable over the REST API, where the auth callback asks for
-	 * edit_post, because the editor needs them.
+	 * other way round handed a hand-written page to the next sync. They are not
+	 * in the REST API, and writing them takes edit_post and upload_files, see
+	 * register_meta().
 	 */
 	public const META_SOURCE = '_lh_source';
-	public const META_URL    = '_lh_source_url';
 
+	/**
+	 * The Markdown source URL of a GitHub page, normalized to its raw form.
+	 */
+	public const META_URL = '_lh_source_url';
+
+	/**
+	 * Source value of a page written and edited in WordPress (the default).
+	 */
 	public const SOURCE_WORDPRESS = 'wordpress';
-	public const SOURCE_GITHUB    = 'github';
+
+	/**
+	 * Source value of a page pulled from a Markdown file on GitHub.
+	 */
+	public const SOURCE_GITHUB = 'github';
 
 	/**
 	 * Option that decides whether uninstall removes all handbook content.
@@ -1980,16 +1991,23 @@ final class GitSync {
 	}
 
 	/**
-	 * Register the source and Markdown URL meta, REST-readable.
+	 * Registers the source and Markdown URL meta.
+	 *
+	 * Neither key is in the REST API. Nothing in the editor reads them there:
+	 * the source box is a classic meta box that posts with the form. Up to
+	 * 0.75.1 both were writable over REST for anybody with edit_post, which
+	 * let a contributor set a GitHub source the source box refuses them, and
+	 * the scheduled sync then stored that page's images in the media library.
 	 *
 	 * @return void
 	 */
 	public function register_meta(): void {
-		// Ask whether the user may edit this post, not whether they may edit
-		// posts at all; WordPress passes the object id as the third argument.
+		// The same rule as the source box: edit this post, and upload files,
+		// because every pull sideloads the images the Markdown references.
+		// WordPress passes the object id as the third argument.
 		$auth = static function ( $allowed, $meta_key, $object_id ): bool {
 			unset( $allowed, $meta_key );
-			return current_user_can( 'edit_post', (int) $object_id );
+			return current_user_can( 'edit_post', (int) $object_id ) && self::may_pull();
 		};
 		register_post_meta(
 			Handbook::POST_TYPE,
@@ -1998,7 +2016,7 @@ final class GitSync {
 				'type'              => 'string',
 				'single'            => true,
 				'default'           => self::SOURCE_WORDPRESS,
-				'show_in_rest'      => true,
+				'show_in_rest'      => false,
 				// Only the two known values; anything else would leave a page in a
 				// state neither the editor lock nor the sync knows how to read.
 				'sanitize_callback' => static function ( $value ): string {
@@ -2014,7 +2032,7 @@ final class GitSync {
 				'type'              => 'string',
 				'single'            => true,
 				'default'           => '',
-				'show_in_rest'      => true,
+				'show_in_rest'      => false,
 				// The host allowlist is checked again before every fetch; this only
 				// keeps the stored value a URL.
 				'sanitize_callback' => static function ( $value ): string {

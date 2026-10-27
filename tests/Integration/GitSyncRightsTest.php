@@ -19,6 +19,8 @@ use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
 use RuntimeException;
 use WPDieException;
+use WP_REST_Request;
+use WP_REST_Server;
 use WP_UnitTestCase;
 
 /**
@@ -168,6 +170,40 @@ final class GitSyncRightsTest extends WP_UnitTestCase {
 		remove_filter( 'wp_redirect', $redirect );
 
 		$this->assertTrue( $refused, 'The request is refused.' );
+		$this->assertSame( array(), $this->requested, 'Nothing is pulled.' );
+	}
+
+	/**
+	 * Nor can a contributor set it over the REST API, which the source box does
+	 * not go through. Up to 0.75.1 both keys were writable there for anybody
+	 * with edit_post, and the scheduled sync then pulled the page and stored its
+	 * images: the upload_files rule of the source box, bypassed.
+	 *
+	 * @return void
+	 */
+	public function test_a_contributor_cannot_set_the_source_over_rest(): void {
+		$post_id = $this->own_draft( 'contributor' );
+		// The test case resets the registered meta between tests.
+		( new GitSync() )->register_meta();
+
+		global $wp_rest_server;
+		$wp_rest_server = new WP_REST_Server();
+		do_action( 'rest_api_init' );
+
+		$request = new WP_REST_Request( 'POST', '/wp/v2/' . Handbook::POST_TYPE . '/' . $post_id );
+		$request->set_body_params(
+			array(
+				'meta' => array(
+					GitSync::META_SOURCE => GitSync::SOURCE_GITHUB,
+					GitSync::META_URL    => GitSync::normalize_url( self::URL ),
+				),
+			)
+		);
+		rest_do_request( $request );
+
+		$this->assertNotSame( GitSync::SOURCE_GITHUB, get_post_meta( $post_id, GitSync::META_SOURCE, true ), 'The source stays as it was.' );
+		$this->assertSame( '', get_post_meta( $post_id, GitSync::META_URL, true ), 'So does the address.' );
+		$this->assertFalse( current_user_can( 'edit_post_meta', $post_id, GitSync::META_SOURCE ), 'No other write path lets it through either.' );
 		$this->assertSame( array(), $this->requested, 'Nothing is pulled.' );
 	}
 
