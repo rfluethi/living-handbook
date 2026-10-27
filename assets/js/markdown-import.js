@@ -500,15 +500,16 @@
 						return pass( { job: res.job } );
 					}
 
+					// Notes report what needs attention: links that resolved to no
+					// page, or an import cut short by the file or tree limit. They go
+					// in their own highlighted block above the page list, not lost at
+					// the end of it, and before the check for an empty result, since
+					// then they are the reason.
+					showNotes( notes );
 					if ( ! created ) {
 						setStatus( __( 'No Markdown pages found.', 'living-handbook' ) );
 						return;
 					}
-					// Notes report what needs attention: links that resolved to no
-					// page, or an import cut short by the file or tree limit. They go
-					// in their own highlighted block above the page list, not lost at
-					// the end of it.
-					showNotes( notes );
 					// translators: %d is the number of pages created from GitHub.
 					setStatus( sprintf( _n( 'Done: created %d GitHub page.', 'Done: created %d GitHub pages.', created, 'living-handbook' ), created ) );
 				} );
@@ -538,6 +539,9 @@
 				}
 			} ).then( function ( res ) {
 				var pages = ( res && res.pages ) ? res.pages : [];
+				// The notes first: when nothing was loaded they are the reason why,
+				// and up to 0.75.1 they were dropped in exactly that case.
+				showNotes( ( res && res.notes ) ? res.notes : [] );
 				if ( ! pages.length ) {
 					setStatus( __( 'No pages were loaded.', 'living-handbook' ) );
 					return;
@@ -545,7 +549,6 @@
 				pages.forEach( function ( p ) {
 					addResult( p, p.title );
 				} );
-				showNotes( ( res && res.notes ) ? res.notes : [] );
 				// translators: %d is the number of pages loaded.
 				setStatus( sprintf( _n( 'Done: loaded %d page.', 'Done: loaded %d pages.', pages.length, 'living-handbook' ), pages.length ) );
 			} ).catch( function ( err ) {
