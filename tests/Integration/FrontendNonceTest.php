@@ -73,4 +73,14 @@ final class FrontendNonceTest extends WP_UnitTestCase {
 		$this->assertSame( 1, substr_count( $script, "'X-WP-Nonce'" ), 'One place sets the header, behind the check.' );
 		$this->assertStringContainsString( 'window.livingHandbook.nonce ) {', $script );
 	}
+
+	/**
+	 * The quick search has its own sentence for a failed search, which the
+	 * script shows where the results would be.
+	 *
+	 * @return void
+	 */
+	public function test_the_quick_search_has_an_error_message(): void {
+		$this->assertSame( 'The search failed. Please reload the page.', $this->localized()['searchError'] ?? null );
+	}
 }

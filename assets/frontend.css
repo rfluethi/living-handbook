@@ -1130,6 +1130,10 @@ h4:hover > .living-handbook-anchor,
 	color: var(--lh-muted, #5f6b75);
 }
 
+.living-handbook-page-search__error {
+	color: var(--lh-overdue-on-surface, var(--lh-overdue, #c0392b));
+}
+
 /* The quoted sentence under a result. Smaller and quieter than the title, and
  * limited to two lines, so eight results stay a list one can scan. */
 .living-handbook-page-search__snippet {

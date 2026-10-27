@@ -17,14 +17,54 @@
 
 	/* ---------- REST headers ---------- */
 
+	// Set once core has refused the nonce of this page; see restFetch().
+	var nonceRejected = false;
+
 	// The nonce is only there for a signed-in reader. Sending an empty or stale
 	// one makes core refuse the request, so a guest sends none.
 	function restHeaders( extra ) {
 		var headers = extra || {};
-		if ( window.livingHandbook && window.livingHandbook.nonce ) {
+		if ( ! nonceRejected && window.livingHandbook && window.livingHandbook.nonce ) {
 			headers[ 'X-WP-Nonce' ] = window.livingHandbook.nonce;
 		}
 		return headers;
+	}
+
+	// Every request to the plugin's endpoints goes through here.
+	//
+	// A page cache can hand the page of a signed-in reader, nonce and all, to
+	// a guest. Core checks that nonce against the cookies of whoever asks and
+	// refuses with 403 rest_cookie_invalid_nonce before the endpoint runs: up
+	// to 0.75.1 the filters failed on such a page and the quick search said
+	// nothing at all. Without the header the request runs as a guest, which is
+	// who the reader then is, and the endpoints decide what a guest may see.
+	// So that answer is asked again once without the nonce, and the nonce
+	// stays off for the rest of the page. The refused request never reached
+	// the endpoint, so asking again counts no feedback twice.
+	function restFetch( url, options ) {
+		var extra = options.headers || {};
+		var withNonce = ! nonceRejected && !! ( window.livingHandbook && window.livingHandbook.nonce );
+
+		function attempt() {
+			var settings = Object.assign( {}, options );
+			settings.headers = restHeaders( Object.assign( {}, extra ) );
+			return fetch( url, settings );
+		}
+
+		return attempt().then( function ( response ) {
+			if ( ! withNonce || 403 !== response.status ) {
+				return response;
+			}
+			return response.clone().json().then( function ( body ) {
+				if ( ! body || 'rest_cookie_invalid_nonce' !== body.code ) {
+					return response;
+				}
+				nonceRejected = true;
+				return attempt();
+			}, function () {
+				return response;
+			} );
+		} );
 	}
 
 	/* ---------- Small debounce helper for live search ---------- */
@@ -123,8 +163,7 @@
 		entry.lhController = controller;
 
 		main.setAttribute( 'aria-busy', 'true' );
-		fetch( window.livingHandbook.filter + '?' + params.toString(), {
-			headers: restHeaders(),
+		restFetch( window.livingHandbook.filter + '?' + params.toString(), {
 			credentials: 'same-origin',
 			signal: controller ? controller.signal : undefined
 		} ).then( function ( response ) {
@@ -298,6 +337,19 @@
 			say( '' );
 		}
 
+		// A search that fails says so where the results would be. Up to 0.75.1
+		// the list closed without a word, and the field looked as if it did
+		// nothing.
+		function fail() {
+			results.innerHTML = '';
+			var error = document.createElement( 'li' );
+			error.className = 'living-handbook-page-search__empty living-handbook-page-search__error';
+			error.textContent = window.livingHandbook.searchError || 'The search failed. Please reload the page.';
+			results.appendChild( error );
+			say( error.textContent );
+			results.hidden = false;
+		}
+
 		function render( items, summary ) {
 			results.innerHTML = '';
 			if ( ! items.length ) {
@@ -378,8 +430,7 @@
 			var params = new URLSearchParams();
 			params.set( 'term_id', termId );
 			params.set( 'q', q );
-			fetch( window.livingHandbook.search + '?' + params.toString(), {
-				headers: restHeaders(),
+			restFetch( window.livingHandbook.search + '?' + params.toString(), {
 				credentials: 'same-origin',
 				signal: controller ? controller.signal : undefined
 			} ).then( function ( response ) {
@@ -393,7 +444,7 @@
 				if ( err && 'AbortError' === err.name ) {
 					return;
 				}
-				hide();
+				fail();
 			} );
 		}
 
@@ -576,9 +627,9 @@
 			b.disabled = true;
 		} );
 
-		fetch( window.livingHandbook.rest, {
+		restFetch( window.livingHandbook.rest, {
 			method: 'POST',
-			headers: restHeaders( { 'Content-Type': 'application/json' } ),
+			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify( { post_id: postId, value: value } )
 		} ).then( function ( response ) {
 			if ( ! response.ok ) {
