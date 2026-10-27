@@ -31,8 +31,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Implements the GitHub sync hybrid (concept 06, way 1). Each handbook page has
- * a source, WordPress or GitHub. A GitHub page carries a Markdown source URL and
+ * Keeps handbook pages in step with Markdown files on GitHub. Each handbook
+ * page has a source, WordPress or GitHub. A GitHub page carries a Markdown source URL and
  * is pulled and re-rendered when it is saved, on demand, and on a schedule whose
  * frequency is configurable. On each pull the transport metadata is applied and
  * parents and internal links are resolved, just like the import. Its content
@@ -52,6 +52,27 @@ if ( ! defined( 'ABSPATH' ) ) {
  * settings page, which lives in the Settings class and uses the Settings API;
  * this class only owns the option names and the scheduling. Sync failures are
  * flagged per page and surfaced as an admin notice.
+ *
+ * The folder import runs in passes and keeps its place between them in a job
+ * state of this shape. final and archive are optional because a state saved
+ * by an earlier version may lack them; job is set once the job has paused.
+ *
+ * @phpstan-type ImportItem array{kind: string, path: string, index?: string, folder?: string}
+ * @phpstan-type ImportJob array{
+ *     parsed: array{owner: string, repo: string, branch: string, path: string},
+ *     handbook: int,
+ *     publish: bool,
+ *     queue: array<int, ImportItem>,
+ *     position: int,
+ *     final?: int,
+ *     folder_id: array<string, int>,
+ *     ids: array<int, int>,
+ *     auto: int,
+ *     notes: array<int, string>,
+ *     archive?: string,
+ *     user: int,
+ *     job?: string
+ * }
  */
 final class GitSync {
 
@@ -94,8 +115,14 @@ final class GitSync {
 	 */
 	public const OPTION_SCHEDULE = 'living_handbook_sync_schedule';
 
+	/**
+	 * The result of a page's last sync, as the source box shows it.
+	 */
 	private const META_STATUS = '_lh_sync_status';
 
+	/**
+	 * Set to "1" on a page whose last sync failed, so the notice can list it.
+	 */
 	private const META_ERROR = '_lh_sync_error';
 
 	/**
@@ -175,8 +202,10 @@ final class GitSync {
 	 * carry on and write an error onto every remaining page, which leaves a
 	 * half-imported handbook that looks finished. The limit is now read from the
 	 * answers, and the import stops on a whole page and says when it can be
-	 * continued. The headers come from api.github.com; the raw file host and the
-	 * archive download have their own, opaque limits and do not report them.
+	 * continued. The headers come from api.github.com, and only the requests of
+	 * this class are read for them: the tree and, through note_rate_limit(),
+	 * every file and image. ArchiveSource asks api.github.com for the archive
+	 * once and checks the limit on its own.
 	 *
 	 * @var int
 	 */
@@ -210,8 +239,16 @@ final class GitSync {
 	 */
 	private static array $archive_repo = array();
 
+	/**
+	 * The recurring scheduled sync. Follow-up runs use the same name with
+	 * "_continue" appended.
+	 */
 	private const CRON_HOOK = 'living_handbook_git_sync';
 
+	/**
+	 * Option holding where in the list of GitHub pages the next scheduled batch
+	 * starts.
+	 */
 	public const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
 
 	/**
@@ -227,8 +264,9 @@ final class GitSync {
 	 * but a run that is only slow must not be joined by a second one. A batch
 	 * is CRON_BATCH pages, each one request for the Markdown and one per image,
 	 * every request with a 15-second timeout that counts wall time, not PHP's
-	 * execution time. Twenty pages with up to eleven images each, every request
-	 * running into its timeout, is 20 x 12 x 15 s = 3600 s. An hour also costs
+	 * execution time. Twenty pages with ten images each, every request running
+	 * into its timeout, is 20 x 11 x 15 s = 3300 s. Nothing caps the images of
+	 * a page, so a run can take longer than that. An hour also costs
 	 * little when a run did die: the shortest recurring schedule is hourly, so
 	 * the sync loses at most one turn. A slower run than that is joined by the
 	 * next one but keeps working, and it no longer releases the newcomer's lock
@@ -236,6 +274,11 @@ final class GitSync {
 	 */
 	private const SYNC_LOCK_TTL = HOUR_IN_SECONDS;
 
+	/**
+	 * Valid values of OPTION_SCHEDULE. Keep in step with schedule_choices().
+	 *
+	 * @var array<int, string>
+	 */
 	private const SCHEDULES = array( 'off', 'hourly', 'twicedaily', 'daily', 'weekly' );
 
 	/**
@@ -256,7 +299,7 @@ final class GitSync {
 	private static bool $is_syncing = false;
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -275,9 +318,9 @@ final class GitSync {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend' ) );
 		add_filter( 'manage_' . Handbook::POST_TYPE . '_posts_columns', array( $this, 'add_column' ) );
 		add_action( 'manage_' . Handbook::POST_TYPE . '_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
-		// Priority 20 so the source dropdown renders after the taxonomy filters
-		// (Maintenance, priority 10), keeping the on-screen order in step with the
-		// list columns: the taxonomies, the handbook, then the source.
+		// Priority 20, in the order of the list columns: after Maintenance's
+		// handbook and taxonomy filters (priority 10) and its review status
+		// filter (15).
 		add_action( 'restrict_manage_posts', array( $this, 'source_filter_dropdown' ), 20 );
 		// filter_by_source() merges with any existing meta_query instead of
 		// overwriting it, so the source filter coexists with other list filters.
@@ -285,7 +328,7 @@ final class GitSync {
 	}
 
 	/**
-	 * The selectable sync frequencies, as a value to label map. Used by the
+	 * Returns the selectable sync frequencies, as a value to label map. Used by the
 	 * settings page and to validate the stored option.
 	 *
 	 * @return array<string, string>
@@ -301,7 +344,7 @@ final class GitSync {
 	}
 
 	/**
-	 * The timestamp of the next scheduled background sync, or 0 when none is
+	 * Returns the timestamp of the next scheduled background sync, or 0 when none is
 	 * scheduled. Exposed so the settings page can show it without knowing the
 	 * cron hook name.
 	 *
@@ -313,7 +356,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Schedule the recurring sync from the configured frequency.
+	 * Schedules the recurring sync from the configured frequency.
 	 *
 	 * @return void
 	 */
@@ -328,7 +371,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Clear the scheduled sync. Clears every event for the hook, including any
+	 * Clears the scheduled sync: every event for the hook, including any
 	 * one-off follow-up runs, so no straggler is left behind.
 	 *
 	 * @return void
@@ -339,7 +382,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Re-apply the schedule after the frequency changes.
+	 * Re-applies the schedule after the frequency changes.
 	 *
 	 * @return void
 	 */
@@ -359,7 +402,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Turn a github.com blob URL into a raw.githubusercontent.com URL.
+	 * Turns a github.com blob URL into a raw.githubusercontent.com URL.
 	 *
 	 * @param string $url URL.
 	 * @return string
@@ -394,7 +437,7 @@ final class GitSync {
 		}
 
 		/**
-		 * Filter the hosts a Markdown source may be fetched from.
+		 * Filters the hosts a Markdown source may be fetched from.
 		 *
 		 * @param string[] $hosts Allowed host names.
 		 */
@@ -404,7 +447,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Create a locked GitHub page from a source URL and pull it once, or refresh
+	 * Creates a locked GitHub page from a source URL and pulls it once, or refreshes
 	 * the existing page for that URL on a re-import.
 	 *
 	 * The slug is taken from the source file name so that internal .md links,
@@ -431,7 +474,8 @@ final class GitSync {
 
 		// Re-import protection: if a page already tracks this source URL, refresh
 		// it instead of creating a duplicate. But never refresh a page the
-		// current user may not edit (the import needs only edit_posts); create a
+		// current user may not edit (the import asks for edit_posts and
+		// upload_files, not edit_others_posts); create a
 		// fresh page for this user instead.
 		$post_id = self::find_by_meta( self::META_URL, $url, $handbook_id );
 		if ( $post_id > 0 && ! current_user_can( 'edit_post', $post_id ) ) {
@@ -512,7 +556,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Import every Markdown file under a GitHub folder (a tree URL) as a locked
+	 * Imports every Markdown file under a GitHub folder (a tree URL) as a locked
 	 * page, keeping the folder structure as page hierarchy.
 	 *
 	 * Subfolders are descended into. The whole repository tree is read in a
@@ -607,6 +651,7 @@ final class GitSync {
 	 * @param int    $handbook_id Optional handbook term id.
 	 * @param bool   $publish     Whether newly created pages are published.
 	 * @return array<string, mixed>|WP_Error The job state, ready to run.
+	 * @phpstan-return ImportJob|WP_Error
 	 */
 	private function plan_job( string $tree_url, int $handbook_id, bool $publish ) {
 		// The scheduled sync collects archives of abandoned imports, but a site
@@ -653,7 +698,12 @@ final class GitSync {
 			$files   = array_slice( $files, 0, self::MAX_FOLDER_FILES );
 			$notes[] = sprintf(
 				/* translators: %d: maximum number of files imported from one folder. */
-				__( 'Only the first %d files were imported. Import the remaining subfolders separately.', 'living-handbook' ),
+				_n(
+					'Only the first %d file was imported. Import the remaining subfolders separately.',
+					'Only the first %d files were imported. Import the remaining subfolders separately.',
+					self::MAX_FOLDER_FILES,
+					'living-handbook'
+				),
 				self::MAX_FOLDER_FILES
 			);
 		}
@@ -700,6 +750,7 @@ final class GitSync {
 	 * Work through the queue until it is empty or the time budget is spent.
 	 *
 	 * @param array<string, mixed> $state Job state from plan_job() or a transient.
+	 * @phpstan-param ImportJob $state
 	 * @return array<string, mixed> Pages created in this pass, plus a job id when
 	 *                              there is more to do.
 	 */
@@ -788,6 +839,7 @@ final class GitSync {
 	 *
 	 * @param array<string, mixed> $state    Job state, updated in place.
 	 * @param float                $deadline When this pass has to stop.
+	 * @phpstan-param ImportJob $state
 	 * @return bool True when every page is done, false when it paused.
 	 */
 	private function finalize_job( array &$state, float $deadline ): bool {
@@ -841,6 +893,8 @@ final class GitSync {
 	 *
 	 * @param array<string, string> $item  Queue entry.
 	 * @param array<string, mixed>  $state Job state, updated in place.
+	 * @phpstan-param ImportItem $item
+	 * @phpstan-param ImportJob $state
 	 * @return int Post id, or 0 when nothing was created.
 	 */
 	private function import_one( array $item, array &$state ): int {
@@ -886,11 +940,12 @@ final class GitSync {
 	 * The downloaded archive is kept, not deleted: the next pass reopens the same
 	 * file instead of downloading the repository again.
 	 *
-	 * @param array<string, mixed>             $state Job state.
-	 * @param array<int, array<string, mixed>> $pages Pages created in this pass.
-	 * @param int                              $total Length of the work list of this phase.
-	 * @param string                           $phase 'pages' while importing, 'links' while resolving.
+	 * @param array<string, mixed>             $state    Job state.
+	 * @param array<int, array<string, mixed>> $pages    Pages created in this pass.
+	 * @param int                              $total    Length of the work list of this phase.
+	 * @param string                           $phase    'pages' while importing, 'links' while resolving.
 	 * @param int                              $retry_at Unix time before which it makes no sense to continue, or 0.
+	 * @phpstan-param ImportJob $state
 	 * @return array<string, mixed>
 	 */
 	private function pause_job( array $state, array $pages, int $total, string $phase = 'pages', int $retry_at = 0 ): array {
@@ -931,6 +986,7 @@ final class GitSync {
 	 *
 	 * @param string $job Job id from the browser.
 	 * @return array<string, mixed>|null
+	 * @phpstan-return ImportJob|null
 	 */
 	private static function load_job( string $job ) {
 		$job = TimeBudget::job_id( $job );
@@ -956,6 +1012,7 @@ final class GitSync {
 	 * Drop a finished import's saved state.
 	 *
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param ImportJob $state
 	 * @return void
 	 */
 	private static function forget_job( array $state ): void {
@@ -992,6 +1049,7 @@ final class GitSync {
 	 *
 	 * @param array<string, mixed> $state     Job state, updated in place.
 	 * @param int                  $remaining Pages still to import.
+	 * @phpstan-param ImportJob $state
 	 * @return string A note for the import report, or an empty string.
 	 */
 	private function open_archive_for_job( array &$state, int $remaining ): string {
@@ -1080,20 +1138,27 @@ final class GitSync {
 	}
 
 	/**
-	 * Import a local folder of Markdown as handbook pages, the same way the GitHub
-	 * folder import does, but reading the files from disk. This is how the app
-	 * handbook that ships inside the plugin is loaded, so it needs no network and
-	 * always matches the installed version. Images referenced by a relative path
-	 * are sideloaded from the folder, and internal links are resolved once every
-	 * page of the import exists. The pages are ordinary WordPress pages, editable
-	 * and not synced, distinguished by their stored source path so a re-import
-	 * refreshes them instead of duplicating.
+	 * Imports a local folder of Markdown as handbook pages, the same way the
+	 * GitHub folder import does, but reading the files from disk.
+	 *
+	 * This is how the app handbook that ships inside the plugin is loaded, so it
+	 * needs no network and always matches the installed version. Images
+	 * referenced by a relative path are sideloaded from the folder, and internal
+	 * links are resolved once every page of the import exists. The pages are
+	 * found again by their stored source path, so a re-load refreshes them
+	 * instead of duplicating.
+	 *
+	 * With $managed (the default) the pages are marked as part of the shipped
+	 * copy: their editor is locked and a later load replaces their content.
+	 * Without it, new pages are ordinary pages, free to edit and never touched
+	 * by a later load. A page that already carries the mark from an earlier
+	 * managed load keeps it, and with it the lock.
 	 *
 	 * @param string $dir         Absolute path to the folder.
 	 * @param int    $handbook_id Optional handbook term id.
 	 * @param bool   $publish     Whether new pages are published rather than drafted.
 	 * @param bool   $managed     Whether the pages stay tied to the shipped copy: locked in the editor
-	 *                            and refreshed by a later load. False makes them ordinary pages.
+	 *                            and refreshed by a later load.
 	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
 	 */
 	public function import_local_folder( string $dir, int $handbook_id = 0, bool $publish = false, bool $managed = true ) {
@@ -1112,7 +1177,7 @@ final class GitSync {
 			$files   = array_slice( $files, 0, self::MAX_FOLDER_FILES );
 			$notes[] = sprintf(
 				/* translators: %d: maximum number of files imported from one folder. */
-				__( 'Only the first %d files were imported.', 'living-handbook' ),
+				_n( 'Only the first %d file was imported.', 'Only the first %d files were imported.', self::MAX_FOLDER_FILES, 'living-handbook' ),
 				self::MAX_FOLDER_FILES
 			);
 		}
@@ -1222,9 +1287,9 @@ final class GitSync {
 					'posts_per_page' => -1,
 					'fields'         => 'ids',
 					'no_found_rows'  => true,
-					'meta_key'       => self::META_APP, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-					'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					'meta_key'       => self::META_APP, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- once per load of the shipped handbook, on a key only its pages carry.
+					'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
+					'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- narrows the lookup to the target handbook.
 						array(
 							'taxonomy'         => Handbooks::TAXONOMY,
 							'field'            => 'term_id',
@@ -1259,8 +1324,8 @@ final class GitSync {
 	/**
 	 * Remember what a GitHub answer says about the remaining request quota.
 	 *
-	 * Called after every request to GitHub. A response without the headers (the
-	 * raw file host, the archive download) says nothing and changes nothing.
+	 * Called after every request this class makes to GitHub. A response without
+	 * the headers (the raw file host) says nothing and changes nothing.
 	 *
 	 * @param array<string, mixed>|WP_Error $response Response from wp_safe_remote_get().
 	 * @return void
@@ -1309,7 +1374,12 @@ final class GitSync {
 	private static function rate_limit_note( int $done, int $total ): string {
 		return sprintf(
 			/* translators: 1: pages imported so far, 2: total pages, 3: local time the limit resets. */
-			__( 'GitHub\'s hourly request limit is used up. The import stopped after %1$d of %2$d pages, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated.', 'living-handbook' ),
+			_n(
+				'GitHub\'s hourly request limit is used up. The import stopped after %1$d of %2$d page, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated.',
+				'GitHub\'s hourly request limit is used up. The import stopped after %1$d of %2$d pages, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated.',
+				$total,
+				'living-handbook'
+			),
 			$done,
 			$total,
 			wp_date( (string) get_option( 'time_format', 'H:i' ), self::$rate_limit_reset )
@@ -1380,7 +1450,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Work out which page each repository path becomes, and what hangs under what.
+	 * Works out which page each repository path becomes, and what hangs under what.
 	 *
 	 * Separated from the import because this is the part that is easy to get
 	 * wrong and impossible to check by looking at it: it decides whether a folder
@@ -1430,7 +1500,7 @@ final class GitSync {
 	}
 
 	/**
-	 * The Markdown files under a base path, shallow first and alphabetical.
+	 * Returns the Markdown files under a base path, shallow first and alphabetical.
 	 *
 	 * @param array<int, array<string, mixed>> $entries Tree entries from the API.
 	 * @param string                           $base    Base path.
@@ -1719,9 +1789,14 @@ final class GitSync {
 	}
 
 	/**
-	 * Create, or refresh on a re-import, a handbook page from a local Markdown
-	 * file. The page is an ordinary WordPress page (editable, not synced); its
-	 * source path is stored so a re-import finds it again instead of duplicating.
+	 * Creates, or refreshes on a re-load, a handbook page from a local Markdown
+	 * file.
+	 *
+	 * Its source path is stored so a re-load finds it again instead of
+	 * duplicating. With $managed the page is marked as part of the shipped copy
+	 * (locked editor, refreshed on reload); without it a new page is an ordinary
+	 * page. The mark is only ever set here, never removed: a page marked by an
+	 * earlier load stays marked.
 	 *
 	 * @param string $base_dir      Absolute folder the import points at.
 	 * @param string $rel_path      File path relative to that folder.
@@ -1773,7 +1848,8 @@ final class GitSync {
 		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
 		// The marker is what ties the page to the shipped copy: it locks the
 		// editor and lets a later load refresh the page. Without it the page is an
-		// ordinary handbook page, free to edit and on its own from then on.
+		// ordinary handbook page, free to edit and on its own from then on. A
+		// load without $managed does not remove a marker an earlier load set.
 		if ( $managed ) {
 			update_post_meta( $post_id, self::META_APP, '1' );
 		}
@@ -1846,11 +1922,12 @@ final class GitSync {
 	}
 
 	/**
-	 * Place a page under its parent, and give it a menu order only when its own
-	 * content did not already carry one.
+	 * Places a page under its parent, and gives it a menu order only when its
+	 * own content did not already carry one.
 	 *
-	 * A page with a transport "Reihenfolge" block has had its menu order set by
-	 * the sync, and that wins: the repository states the order explicitly.
+	 * A page whose transport block has an order field ("Reihenfolge") has had
+	 * its menu order set by the sync, and that wins: the repository states the
+	 * order explicitly.
 	 * Everything else falls back to the import position, so a folder without
 	 * transport metadata is still ordered sensibly rather than all at zero.
 	 *
@@ -1861,7 +1938,7 @@ final class GitSync {
 	 */
 	private function place( int $post_id, int $parent_id, int $fallback ): void {
 		// Asked of the transport block, not of the current value: since a sync
-		// no longer resets a page without "Reihenfolge" to 0, a value above 0
+		// no longer resets a page without an order field to 0, a value above 0
 		// may be the position an earlier import gave it, and that one has to
 		// move with the repository like the rest of the structure.
 		$this->set_parent( $post_id, $parent_id, Postprocessor::order_from_transport( $post_id ) ? 0 : $fallback );
@@ -1914,7 +1991,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Every way a tree URL can be read, shortest branch first.
+	 * Returns every way a tree URL can be read, shortest branch first.
 	 *
 	 * The segments are decoded: a folder with a space or an umlaut arrives as
 	 * "Benutzer%20Handbuch" when the URL is copied from the address bar, and
@@ -2008,7 +2085,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Register the editor meta box.
+	 * Registers the source meta box.
 	 *
 	 * @return void
 	 */
@@ -2023,7 +2100,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Render the meta box.
+	 * Renders the source meta box.
 	 *
 	 * @param WP_Post $post Current post.
 	 * @return void
@@ -2060,7 +2137,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Save the meta box fields, then pull the page if it is GitHub-sourced.
+	 * Saves the source box fields, then pulls the page if it is GitHub-sourced.
 	 *
 	 * @param int $post_id Post id.
 	 * @return void
@@ -2125,7 +2202,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Remove the content editor for a page whose content is managed, so it cannot
+	 * Removes the content editor for a page whose content is managed, so it cannot
 	 * be edited by hand: a GitHub-synced page, or a page from the bundled app
 	 * handbook (which a re-load replaces).
 	 *
@@ -2157,7 +2234,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Show a notice on the edit screen of a page whose content is managed.
+	 * Shows a notice on the edit screen of a page whose content is managed.
 	 *
 	 * @return void
 	 */
@@ -2266,7 +2343,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Handle the "Sync now" action.
+	 * Handles the "Sync now" action.
 	 *
 	 * @return void
 	 */
@@ -2286,7 +2363,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Cron handler: sync GitHub-sourced pages in bounded batches.
+	 * Syncs GitHub-sourced pages in bounded batches, as the scheduled event.
 	 *
 	 * Each run pulls at most CRON_BATCH pages, advancing a stored offset so that,
 	 * over several runs, every page is covered without one run fetching them all.
@@ -2333,8 +2410,8 @@ final class GitSync {
 					'no_found_rows'  => true,
 					'orderby'        => 'ID',
 					'order'          => 'ASC',
-					'meta_key'       => self::META_SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'meta_value'     => self::SOURCE_GITHUB, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					'meta_key'       => self::META_SOURCE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- the scheduled sync lists its pages once per run.
+					'meta_value'     => self::SOURCE_GITHUB, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
 				)
 			)
 		);
@@ -2663,7 +2740,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Load mermaid.js on the frontend for a handbook page whose stored HTML
+	 * Loads mermaid.js on the frontend for a handbook page whose stored HTML
 	 * contains a Mermaid diagram. This covers any page rendered from Markdown to
 	 * HTML, a GitHub-synced page as well as one from the bundled app handbook; the
 	 * plugin's Mermaid block loads the library itself, so it is not handled here.
@@ -2685,7 +2762,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Add a source column to the handbook list table.
+	 * Adds a source column to the handbook list table.
 	 *
 	 * @param array<string, string> $columns Columns.
 	 * @return array<string, string>
@@ -2696,7 +2773,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Render the source column.
+	 * Renders the source column.
 	 *
 	 * @param string $column  Column key.
 	 * @param int    $post_id Post id.
@@ -2716,7 +2793,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Add a "Source" filter dropdown above the handbook list (all, GitHub,
+	 * Adds a "Source" filter dropdown above the handbook list (all, GitHub,
 	 * WordPress), matching the Source column.
 	 *
 	 * @param string $post_type The post type of the list being shown.
@@ -2726,7 +2803,7 @@ final class GitSync {
 		if ( Handbook::POST_TYPE !== $post_type ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reading a list filter from the URL; nothing is changed.
 		$current = isset( $_GET['lh_source'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_source'] ) ) : '';
 
 		$options = array(
@@ -2754,7 +2831,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Translate the source filter into a meta query on the handbook list.
+	 * Translates the source filter into a meta query on the handbook list.
 	 * "WordPress" matches every page that is not GitHub, including pages that never
 	 * stored a source row (the registered default is WordPress but writes no row),
 	 * so the filter never drops manually created pages. Merges with any existing
@@ -2770,7 +2847,7 @@ final class GitSync {
 		if ( Handbook::POST_TYPE !== $query->get( 'post_type' ) ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reading a list filter from the URL; nothing is changed.
 		$source = isset( $_GET['lh_source'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_source'] ) ) : '';
 		if ( self::SOURCE_GITHUB !== $source && self::SOURCE_WORDPRESS !== $source ) {
 			return;
@@ -2798,10 +2875,10 @@ final class GitSync {
 
 		$existing = $query->get( 'meta_query' );
 		if ( empty( $existing ) || ! is_array( $existing ) ) {
-			$query->set( 'meta_query', array( $clause ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			$query->set( 'meta_query', array( $clause ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the filter the user chose on the page list.
 			return;
 		}
-		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- the filter the user chose on the page list.
 			'meta_query',
 			array(
 				'relation' => 'AND',

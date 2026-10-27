@@ -293,7 +293,7 @@ final class StaticSite {
 					'no_found_rows'  => true,
 					// include_children off, like every handbook query: a handbook's
 					// pages are its own, not those of the handbooks below it.
-					'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- every export reads one handbook, by its term.
 						array(
 							'taxonomy'         => Handbooks::TAXONOMY,
 							'field'            => 'term_id',
