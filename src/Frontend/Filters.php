@@ -151,6 +151,11 @@ final class Filters {
 			)
 		);
 
+		// The hits link to their pages, and the address of a page below another
+		// is built from its parents: read the parents of all hits at once rather
+		// than one by one in get_permalink().
+		PageTree::prime_ancestors( $query->posts );
+
 		$user_id = get_current_user_id();
 		$results = array();
 		foreach ( $query->posts as $post ) {
@@ -698,6 +703,10 @@ final class Filters {
 		}
 
 		$query = new WP_Query( $args );
+
+		// Each card links to its page; see rest_search() for why the parents
+		// are read first.
+		PageTree::prime_ancestors( $query->posts );
 
 		$cards    = '';
 		$rendered = 0;

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Training;
 
 use LivingHandbook\Access\AccessController;
+use LivingHandbook\Frontend\PageTree;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use WP_Post;
@@ -161,6 +162,12 @@ final class Lessons {
 			}
 			$lessons[] = $post;
 		}
+
+		// Every caller links the lessons, and the address of a page below
+		// another is built from its parents. Lessons come from all over the
+		// handbook, so without this each one loaded its parents one by one: a
+		// path of twenty lessons took 31 queries to show its list.
+		PageTree::prime_ancestors( $lessons );
 
 		return $lessons;
 	}
