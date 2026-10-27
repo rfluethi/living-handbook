@@ -80,14 +80,17 @@ final class Navigation {
 			return '';
 		}
 
+		// The whole handbook at once; the tree is built from the map. Read before
+		// the ancestors of the current page, which the map has just put into the
+		// cache, so they cost nothing more.
+		$map = PageTree::children_map( $term_id );
+
 		$current  = self::current_post_id();
 		$open_ids = $current > 0 ? array_map( 'intval', get_post_ancestors( $current ) ) : array();
 		if ( $current > 0 ) {
 			$open_ids[] = $current;
 		}
 
-		// One query for the whole handbook; the tree is built from the map.
-		$map  = PageTree::children_map( $term_id );
 		$tree = self::branch( 0, $map, $current, $open_ids );
 		if ( '' === $tree ) {
 			return '';

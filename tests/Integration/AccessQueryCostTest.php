@@ -54,10 +54,10 @@ final class AccessQueryCostTest extends WP_UnitTestCase {
 	/**
 	 * Read a whole handbook as a guest and count the queries it took.
 	 *
-	 * PageTree::children_map() is the real path: an unlimited query, which
-	 * WP_Query does not split into ids-then-objects, so nothing is cached when
-	 * the access filter runs. A limited query would prime the caches by itself
-	 * and hide the very thing this test is about.
+	 * PageTree::children_map() is the real path: the whole handbook at once,
+	 * with nothing in the caches when the access decision runs on every page.
+	 * A limited WP_Query would prime the caches by itself and hide the very
+	 * thing this test is about.
 	 *
 	 * @param int $term_id Handbook term ID.
 	 * @param int $expected How many pages must come back.

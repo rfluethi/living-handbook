@@ -559,8 +559,6 @@ final class AccessController {
 			return $posts;
 		}
 
-		$user_id = get_current_user_id();
-
 		// Read the handbook membership of the whole result set in one query
 		// instead of one per row. Without this, filtering a set costs a query per
 		// post, which a navigation tree over a few thousand pages turns into a few
@@ -568,6 +566,82 @@ final class AccessController {
 		// priming it here is what makes the decision a cache hit.
 		self::prime_post_terms( $posts );
 
+		return self::drop_unreadable( $posts, get_current_user_id() );
+	}
+
+	/**
+	 * The posts of a set the current user may read, for posts that were not read
+	 * through WP_Query.
+	 *
+	 * The same decision filter_posts() and restrict_query() make for a query, in
+	 * one call, for a caller that loads its rows itself: PageTree reads the few
+	 * columns a navigation needs instead of whole posts, and WP_Query cannot do
+	 * that. Both layers are applied, the coarse one (at least one handbook of the
+	 * page is readable, which is what restrict_query() adds to a query) and the
+	 * precise one (can_view_post(), with its filter, per page), so a page that is
+	 * dropped from a query is dropped here as well.
+	 *
+	 * Unlike filter_posts(), this puts nothing into the post cache. The posts
+	 * handed in may be partial objects, and a partial object in the cache would
+	 * be what get_post() returns everywhere else for the rest of the request.
+	 * Only the handbook membership is read, into the term relationship cache.
+	 *
+	 * @param array<int, mixed> $posts Posts to decide on.
+	 * @return array<int, mixed> The readable ones, in their order, reindexed.
+	 */
+	public static function readable_posts( array $posts ): array {
+		if ( is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) ) ) {
+			return array_values( $posts );
+		}
+
+		$guarded = array();
+		foreach ( $posts as $post ) {
+			if ( $post instanceof WP_Post && in_array( $post->post_type, self::guarded_post_types(), true ) ) {
+				$guarded[] = (int) $post->ID;
+			}
+		}
+		self::prime_handbook_terms( $guarded );
+
+		$user_id = get_current_user_id();
+
+		// The coarse layer, as restrict_query() would have added it to a query.
+		// can_view_post() alone is not the same thing: its filter can let a page
+		// through that no readable handbook holds, and in a query such a page
+		// never reaches the filter.
+		if ( ! current_user_can( 'edit_others_posts' ) ) {
+			$viewable = array_flip( self::viewable_term_ids( $user_id ) );
+			$posts    = array_filter(
+				$posts,
+				static function ( $post ) use ( $viewable ): bool {
+					if ( ! $post instanceof WP_Post || ! in_array( $post->post_type, self::guarded_post_types(), true ) ) {
+						return true;
+					}
+					$terms = get_the_terms( $post, Handbooks::TAXONOMY );
+					if ( ! is_array( $terms ) ) {
+						return false;
+					}
+					foreach ( $terms as $term ) {
+						if ( $term instanceof WP_Term && isset( $viewable[ $term->term_id ] ) ) {
+							return true;
+						}
+					}
+					return false;
+				}
+			);
+		}
+
+		return self::drop_unreadable( $posts, $user_id );
+	}
+
+	/**
+	 * Drop the posts a user may not read: guarded posts by can_view_post(), and
+	 * attachments by the page they belong to.
+	 *
+	 * @param array<int|string, mixed> $posts   Posts to decide on.
+	 * @param int                      $user_id User ID (0 for a guest).
+	 * @return array<int, mixed>
+	 */
+	private static function drop_unreadable( array $posts, int $user_id ): array {
 		return array_values(
 			array_filter(
 				$posts,
@@ -576,7 +650,11 @@ final class AccessController {
 						return true;
 					}
 					if ( in_array( $post->post_type, self::guarded_post_types(), true ) ) {
-						return self::can_view_post( $post->ID, $user_id );
+						// The object, not the id: get_the_terms() then works on the
+						// post it is handed, where an id would make it load the
+						// post first, which for a partial post from readable_posts()
+						// is one query per row.
+						return self::can_view_post( $post, $user_id );
 					}
 					// An attachment of a handbook page inherits that page's
 					// visibility: the media library of an internal handbook is part
@@ -861,6 +939,58 @@ final class AccessController {
 	}
 
 	/**
+	 * Read the handbook membership of a set of posts into the term cache, in one
+	 * query, and nothing else.
+	 *
+	 * What update_object_term_cache() does, for the one taxonomy the access
+	 * decision reads. That function cannot be narrowed: it reads every taxonomy
+	 * of the post type, and for a navigation over two thousand pages the terms
+	 * nobody looks at are most of what it loads. A post without a handbook gets
+	 * an empty entry, so asking again does not query again.
+	 *
+	 * @param array<int, int> $ids Post IDs.
+	 * @return void
+	 */
+	private static function prime_handbook_terms( array $ids ): void {
+		$ids = array_values( array_unique( array_filter( array_map( 'intval', $ids ) ) ) );
+		if ( array() === $ids ) {
+			return;
+		}
+
+		$group   = Handbooks::TAXONOMY . '_relationships';
+		$missing = array();
+		foreach ( wp_cache_get_multiple( $ids, $group ) as $id => $value ) {
+			if ( false === $value ) {
+				$missing[] = (int) $id;
+			}
+		}
+		if ( array() === $missing ) {
+			return;
+		}
+
+		$terms = wp_get_object_terms(
+			$missing,
+			Handbooks::TAXONOMY,
+			array(
+				'fields'                 => 'all_with_object_id',
+				'orderby'                => 'name',
+				'update_term_meta_cache' => false,
+			)
+		);
+		if ( is_wp_error( $terms ) ) {
+			return;
+		}
+
+		$by_object = array_fill_keys( $missing, array() );
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term && isset( $term->object_id ) ) {
+				$by_object[ (int) $term->object_id ][] = (int) $term->term_id;
+			}
+		}
+		wp_cache_add_multiple( $by_object, $group );
+	}
+
+	/**
 	 * Whether a user may view a handbook page.
 	 *
 	 * A page may belong to more than one handbook. Access is combined
@@ -871,15 +1001,23 @@ final class AccessController {
 	 * term cache; wp_get_object_terms() would query every time. See
 	 * prime_post_terms(), which fills that cache for a whole result set at once.
 	 *
-	 * @param int $post_id Post ID.
-	 * @param int $user_id User ID (0 for a guest).
+	 * The post can be handed in as an object. get_the_terms() then works on that
+	 * object rather than loading the post by its id, which matters for the
+	 * partial posts PageTree reads: loading them by id would be one query per
+	 * page, and would put the whole post back into memory. The filter is given
+	 * the id either way.
+	 *
+	 * @param int|WP_Post $post    Post ID or post object.
+	 * @param int         $user_id User ID (0 for a guest).
 	 * @return bool
 	 */
-	public static function can_view_post( int $post_id, int $user_id ): bool {
+	public static function can_view_post( int|WP_Post $post, int $user_id ): bool {
+		$post_id = $post instanceof WP_Post ? (int) $post->ID : $post;
+
 		if ( user_can( $user_id, 'edit_others_posts' ) ) {
 			$allowed = true;
 		} else {
-			$terms = get_the_terms( $post_id, Handbooks::TAXONOMY );
+			$terms = get_the_terms( $post, Handbooks::TAXONOMY );
 			if ( is_wp_error( $terms ) || ! is_array( $terms ) || empty( $terms ) ) {
 				$allowed = false;
 			} else {

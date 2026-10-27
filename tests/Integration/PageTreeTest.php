@@ -16,6 +16,7 @@ namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Frontend\Cards;
 use LivingHandbook\Frontend\FreshnessStatus;
+use LivingHandbook\Frontend\Navigation;
 use LivingHandbook\Frontend\PageMeta;
 use LivingHandbook\Frontend\PageTree;
 use LivingHandbook\Handbook\Handbooks;
@@ -364,5 +365,182 @@ final class PageTreeTest extends WP_UnitTestCase {
 		$this->assertSame( array( $page ), wp_list_pluck( $map[0], 'ID' ) );
 		$this->assertFalse( wp_cache_get( $page, 'post_meta' ), 'The meta of the page was loaded with the tree.' );
 		$this->assertSame( '2026-01-01', get_post_meta( $page, Metadata::REVIEWED, true ), 'Meta is still there on demand.' );
+	}
+	/**
+	 * The pages in the map carry what the navigation reads and not their text,
+	 * and nothing of that partial page is left in the post cache: get_post()
+	 * anywhere else still hands out the whole page.
+	 *
+	 * Up to 0.75.1 the map held whole posts. On 2000 pages of about 8 KB each
+	 * the navigation alone peaked at about 54 MB per page view.
+	 *
+	 * @return void
+	 */
+	public function test_the_tree_holds_partial_pages_and_leaves_none_in_the_cache(): void {
+		$handbook = $this->handbook( 'Partial' );
+		$top      = $this->page( $handbook, 'Top' );
+		$leaf     = $this->page( $handbook, 'Leaf', $top );
+		wp_update_post(
+			array(
+				'ID'           => $leaf,
+				'post_content' => 'The whole text of the leaf.',
+				'post_excerpt' => 'A summary.',
+			)
+		);
+
+		wp_set_current_user( 0 );
+		wp_cache_flush();
+		$map = PageTree::children_map( $handbook );
+
+		$partial = $map[ $top ][0];
+		$this->assertSame( $leaf, $partial->ID );
+		$this->assertSame( 'Leaf', $partial->post_title );
+		$this->assertSame( $top, $partial->post_parent, 'The parent is an integer, as on a whole post.' );
+		$this->assertSame( 'publish', $partial->post_status );
+		$this->assertSame( Handbook::POST_TYPE, $partial->post_type );
+		$this->assertSame( '', $partial->post_content, 'The map carries no text.' );
+		$this->assertSame( '', $partial->post_excerpt );
+
+		$this->assertFalse( wp_cache_get( $leaf, 'posts' ), 'The partial page went into the post cache.' );
+		$whole = get_post( $leaf );
+		$this->assertInstanceOf( \WP_Post::class, $whole );
+		$this->assertSame( 'The whole text of the leaf.', $whole->post_content, 'get_post() must still return the whole page.' );
+		$this->assertSame( 'A summary.', $whole->post_excerpt );
+	}
+
+	/**
+	 * The addresses in the navigation are what get_permalink() gives for the
+	 * whole page: the hierarchical path through every parent, and whatever a
+	 * post_type_link filter makes of it.
+	 *
+	 * @return void
+	 */
+	public function test_the_navigation_links_are_the_real_permalinks(): void {
+		$this->set_permalink_structure( '/%postname%/' );
+		// set_permalink_structure() re-initialises WP_Rewrite and drops the
+		// permastruct the handbook type added at init; register it again, as a
+		// fresh request would.
+		( new Handbook() )->register_post_type();
+
+		$handbook = $this->handbook( 'Links' );
+		$top      = $this->page( $handbook, 'Top' );
+		$child    = $this->page( $handbook, 'Child', $top );
+		$grand    = $this->page( $handbook, 'Grandchild', $child );
+
+		$filter = static function ( string $link ): string {
+			return add_query_arg( 'via', 'filter', $link );
+		};
+		add_filter( 'post_type_link', $filter );
+
+		wp_set_current_user( 0 );
+		wp_cache_flush();
+		$html = Navigation::render( $handbook );
+
+		wp_cache_flush();
+		$expected = (string) get_permalink( $grand );
+		remove_filter( 'post_type_link', $filter );
+		$this->set_permalink_structure( '' );
+
+		$this->assertStringContainsString( '/top/child/grandchild/', $expected, 'Precondition: the address is hierarchical.' );
+		$this->assertStringContainsString( 'via=filter', $expected, 'Precondition: the filter ran.' );
+		$this->assertStringContainsString( 'href="' . esc_url( $expected ) . '"', $html );
+	}
+
+	/**
+	 * The access decision on the tree is the one on a query: the filter is asked
+	 * for every page, by id, and what it refuses is not in the tree.
+	 *
+	 * @return void
+	 */
+	public function test_the_access_filter_decides_every_page_of_the_tree(): void {
+		$handbook = $this->handbook( 'Filtered' );
+		$open     = $this->page( $handbook, 'Open' );
+		$closed   = $this->page( $handbook, 'Closed' );
+
+		$asked  = array();
+		$filter = static function ( $allowed, $post_id ) use ( $closed, &$asked ) {
+			$asked[] = $post_id;
+			return $post_id === $closed ? false : $allowed;
+		};
+		add_filter( 'living_handbook_can_view_post', $filter, 10, 2 );
+
+		wp_set_current_user( 0 );
+		wp_cache_flush();
+		$map = PageTree::children_map( $handbook );
+		remove_filter( 'living_handbook_can_view_post', $filter, 10 );
+
+		$this->assertSame( array( $open ), wp_list_pluck( $map[0], 'ID' ) );
+		$this->assertContains( $open, $asked, 'The filter is asked with the page id.' );
+		$this->assertContains( $closed, $asked );
+	}
+
+	/**
+	 * A page in two handbooks, one of them closed to the visitor, is not in the
+	 * tree of the open one: every handbook of a page has to allow the reader.
+	 * Such a page is left over from before one handbook per page was enforced.
+	 *
+	 * @return void
+	 */
+	public function test_a_page_also_in_a_closed_handbook_is_not_in_the_tree(): void {
+		global $wpdb;
+
+		$open   = $this->handbook( 'Open book' );
+		$closed = $this->handbook( 'Closed book', 'members' );
+		$page   = $this->page( $open, 'In both' );
+		$single = $this->page( $open, 'Only here' );
+		$this->page( $closed, 'Only closed' );
+
+		$closed_term = get_term( $closed, Handbooks::TAXONOMY );
+		$this->assertInstanceOf( \WP_Term::class, $closed_term );
+		$wpdb->insert(
+			$wpdb->term_relationships,
+			array(
+				'object_id'        => $page,
+				'term_taxonomy_id' => (int) $closed_term->term_taxonomy_id,
+				'term_order'       => 0,
+			)
+		);
+		clean_object_term_cache( $page, Handbook::POST_TYPE );
+
+		wp_set_current_user( 0 );
+		wp_cache_flush();
+		$this->assertSame( array( $single ), wp_list_pluck( PageTree::children_map( $open )[0] ?? array(), 'ID' ) );
+
+		// The filter can open a page, but not one no readable handbook holds,
+		// just as on a query, where such a page never reaches the filter. The
+		// page in both handbooks is held by a readable one, so the filter
+		// decides it; the page only in the closed handbook stays out.
+		$grant = static fn(): bool => true;
+		add_filter( 'living_handbook_can_view_post', $grant );
+		wp_cache_flush();
+		$granted = wp_list_pluck( PageTree::children_map( $closed )[0] ?? array(), 'ID' );
+		remove_filter( 'living_handbook_can_view_post', $grant );
+		$this->assertSame( array( $page ), $granted, 'A guest gets nothing of a members handbook that no readable handbook also holds.' );
+	}
+
+	/**
+	 * The area tiles still show the first words of a top-level page, which the
+	 * partial pages of the map do not carry.
+	 *
+	 * @return void
+	 */
+	public function test_the_area_tiles_still_show_the_first_words(): void {
+		$handbook = $this->handbook( 'Tiles' );
+		$top      = $this->page( $handbook, 'Area' );
+		wp_update_post(
+			array(
+				'ID'           => $top,
+				'post_content' => 'Everything about the area.',
+				'post_excerpt' => '',
+			)
+		);
+		$this->page( $handbook, 'Sub', $top );
+
+		wp_set_current_user( 0 );
+		wp_cache_flush();
+		$html = Cards::areas( $handbook );
+
+		$this->assertStringContainsString( 'Everything about the area.', $html );
+		$this->assertStringContainsString( '1 subpage', $html );
 	}
 }

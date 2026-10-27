@@ -237,6 +237,11 @@ final class Cards {
 			return '';
 		}
 
+		// The map holds partial pages without their text, and a tile shows the
+		// first words of each top-level page. Read those pages whole in one
+		// query, rather than one get_post() per tile in excerpt().
+		_prime_post_caches( array_map( static fn( WP_Post $post ): int => (int) $post->ID, $tops ), false, false );
+
 		$out = '<div class="living-handbook-cards living-handbook-cards--areas">';
 		foreach ( $tops as $post ) {
 			$children = count( $map[ (int) $post->ID ] ?? array() );
