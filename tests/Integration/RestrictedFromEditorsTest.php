@@ -310,6 +310,93 @@ final class RestrictedFromEditorsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Returns the ids of the approved comments the current user gets from a
+	 * comment query.
+	 *
+	 * The comment query cache is keyed by the arguments, not by the user, so it
+	 * is emptied first; a real request runs as one user only.
+	 *
+	 * @return array<int, int>
+	 */
+	private function comments_listed(): array {
+		wp_cache_flush();
+
+		return array_map(
+			'intval',
+			(array) get_comments(
+				array(
+					'status' => 'approve',
+					'fields' => 'ids',
+				)
+			)
+		);
+	}
+
+	/**
+	 * Adds an approved comment to a page.
+	 *
+	 * @param int $post_id Page.
+	 * @return int Comment id.
+	 */
+	private function comment_on( int $post_id ): int {
+		return (int) self::factory()->comment->create(
+			array(
+				'comment_post_ID'  => $post_id,
+				'comment_approved' => '1',
+			)
+		);
+	}
+
+	/**
+	 * On the site, comments follow can_view_post(): an editor reads the
+	 * comments on a page in no handbook, as they read the page, and not those
+	 * on a page in the handbook kept from them; a subscriber reads neither.
+	 * Up to 0.75.1 the comment query hid the page in no handbook from editors
+	 * as well, while the page itself and a single comment over REST were open.
+	 *
+	 * @return void
+	 */
+	public function test_comments_on_the_site_follow_the_page(): void {
+		$loose  = $this->comment_on( $this->page( $this->admin, 0, 'Not filed yet' ) );
+		$secret = $this->comment_on( $this->page( $this->admin, $this->board, 'Minutes' ) );
+		$team   = $this->comment_on( $this->page( $this->admin, $this->team, 'Team page' ) );
+
+		wp_set_current_user( $this->editor );
+		$listed = $this->comments_listed();
+		$this->assertContains( $loose, $listed );
+		$this->assertContains( $team, $listed );
+		$this->assertNotContains( $secret, $listed );
+
+		wp_set_current_user( (int) self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+		$listed = $this->comments_listed();
+		$this->assertNotContains( $loose, $listed );
+		$this->assertContains( $team, $listed );
+		$this->assertNotContains( $secret, $listed );
+	}
+
+	/**
+	 * In the back end, comments follow visible_in_backend(): the comments on
+	 * one's own page in the handbook kept from the editor stay, those on
+	 * somebody else's page there do not. Up to 0.75.1 the comment screen hid
+	 * the comments on the editor's own page too.
+	 *
+	 * @return void
+	 */
+	public function test_comments_in_the_back_end_follow_the_page(): void {
+		$own    = $this->comment_on( $this->page( $this->editor, $this->board, 'My note' ) );
+		$secret = $this->comment_on( $this->page( $this->admin, $this->board, 'Minutes' ) );
+		$loose  = $this->comment_on( $this->page( $this->admin, 0, 'Not filed yet' ) );
+
+		wp_set_current_user( $this->editor );
+		set_current_screen( 'edit-comments' );
+
+		$listed = $this->comments_listed();
+		$this->assertContains( $own, $listed );
+		$this->assertContains( $loose, $listed );
+		$this->assertNotContains( $secret, $listed );
+	}
+
+	/**
 	 * A bundle and a Markdown import do not write into the handbook kept from
 	 * the importing editor: an update would overwrite pages they may not read.
 	 *

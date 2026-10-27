@@ -140,6 +140,23 @@ final class AccessController {
 	}
 
 	/**
+	 * Determines whether a user reads the pages that are in no handbook yet.
+	 *
+	 * A page in no handbook is work in progress rather than content of any
+	 * handbook, so whoever looks after other people's pages (edit_others_posts,
+	 * the editor role and up) reads it, and nobody else does. The same people's
+	 * admin-ajax tools count as back-end reads (is_backend_read()). This is the
+	 * one exception to "a handbook decides" besides reads_everything(); every
+	 * read channel asks here instead of naming the capability itself.
+	 *
+	 * @param int $user_id User ID (0 for a guest).
+	 * @return bool
+	 */
+	public static function reads_unassigned( int $user_id ): bool {
+		return $user_id > 0 && user_can( $user_id, 'edit_others_posts' );
+	}
+
+	/**
 	 * The handbooks a user may not read.
 	 *
 	 * @param int $user_id User ID (0 for a guest).
@@ -299,7 +316,7 @@ final class AccessController {
 	 * @return bool
 	 */
 	private static function is_backend_read(): bool {
-		return is_admin() && ( ! wp_doing_ajax() || current_user_can( 'edit_others_posts' ) );
+		return is_admin() && ( ! wp_doing_ajax() || self::reads_unassigned( get_current_user_id() ) );
 	}
 
 	/**
@@ -810,10 +827,9 @@ final class AccessController {
 			return;
 		}
 
-		if ( current_user_can( 'edit_others_posts' ) ) {
-			// Editors also read pages in no handbook (see can_view_post()), so
-			// their restriction names what they may not read rather than what
-			// they may.
+		if ( self::reads_unassigned( $user_id ) ) {
+			// They also read pages in no handbook, so their restriction names
+			// what they may not read rather than what they may.
 			$hidden = self::hidden_term_ids( $user_id );
 			if ( array() === $hidden ) {
 				return;
@@ -958,7 +974,7 @@ final class AccessController {
 		// can_view_post() alone is not the same thing: its filter can let a page
 		// through that no readable handbook holds, and in a query such a page
 		// never reaches the filter.
-		if ( current_user_can( 'edit_others_posts' ) ) {
+		if ( self::reads_unassigned( $user_id ) ) {
 			$posts = array_filter(
 				$posts,
 				static fn( $post ): bool => ! $post instanceof WP_Post
@@ -1101,7 +1117,8 @@ final class AccessController {
 	}
 
 	/**
-	 * Exclude comments on non-viewable handbook pages from a comment query.
+	 * Excludes the comments on guarded pages the current user may not read
+	 * from a comment query.
 	 *
 	 * @param array<string, string> $clauses Comment query clauses.
 	 * @param mixed                 $query   The comment query (unused).
@@ -1117,8 +1134,9 @@ final class AccessController {
 	}
 
 	/**
-	 * Exclude comments on non-viewable handbook pages from the comment feeds,
-	 * which build their own query and do not run through comments_clauses.
+	 * Excludes the comments on guarded pages the current user may not read from
+	 * the comment feeds, which build their own query and do not run through
+	 * comments_clauses.
 	 *
 	 * @param string $where The feed WHERE clause.
 	 * @param mixed  $query The query (unused).
@@ -1133,10 +1151,13 @@ final class AccessController {
 	}
 
 	/**
-	 * Return a 404 for a single comment REST read on a non-viewable handbook
-	 * page. The collection is already filtered by filter_comment_clauses; this
+	 * Returns a 404 for a single comment REST read on a guarded page the
+	 * current user may not read.
+	 *
+	 * The collection is already filtered by filter_comment_clauses(); this
 	 * closes the single-read path, which core serves from the comment cache and
-	 * does not run through the comment query.
+	 * does not run through the comment query. REST is not the back end, so the
+	 * decision is can_view_post(), as for the page itself.
 	 *
 	 * @param mixed      $response The prepared response.
 	 * @param WP_Comment $comment  The comment being prepared.
@@ -1157,13 +1178,12 @@ final class AccessController {
 	}
 
 	/**
-	 * Whether the comment channels should be filtered for the current request.
+	 * Determines whether the comment channels are filtered for this request.
 	 *
-	 * Always, except for those who read every handbook. Up to 0.76.0 wp-admin
-	 * and everybody who may edit other people's posts were let through: the
+	 * Always, except for those who read every handbook. Up to 0.75.1 wp-admin
+	 * and everybody who may edit other people's posts were let through, so the
 	 * comment screen showed every comment on every handbook page to every
-	 * editor, which a handbook kept to administrators cannot allow. Moderators
-	 * now see the comments on the handbooks they may read.
+	 * editor, which a handbook kept to administrators cannot allow.
 	 *
 	 * @return bool
 	 */
@@ -1172,27 +1192,59 @@ final class AccessController {
 	}
 
 	/**
-	 * SQL fragment that keeps a comment only when its post is not a handbook
-	 * page, or is a handbook page in a handbook the current user may view. Built
-	 * from fixed identifiers and integer term ids, so it needs no placeholders.
+	 * SQL fragment that keeps a comment only when the current user may read
+	 * the page it belongs to.
+	 *
+	 * Comments follow the page. In the back end that is visible_in_backend():
+	 * one's own pages always, other people's pages unless they are in a
+	 * handbook the user may not read. Everywhere else it is can_view_post():
+	 * every handbook of the page allows the user, or the page is in no
+	 * handbook and the user reads such pages (reads_unassigned()). Comments on
+	 * posts of other types are not touched. What SQL cannot express is the
+	 * living_handbook_can_view_post filter; a site that widens access through
+	 * it gets the stricter answer here, which is the safe direction.
+	 *
+	 * Built from fixed identifiers, escaped type names and integer ids, so it
+	 * needs no placeholders.
 	 *
 	 * @return string
 	 */
 	private static function hidden_comments_sql(): string {
 		global $wpdb;
 
-		$viewable = self::viewable_term_ids( get_current_user_id() );
-		$in       = empty( $viewable ) ? '0' : implode( ',', array_map( 'absint', $viewable ) );
+		$user_id  = get_current_user_id();
+		$column   = "{$wpdb->comments}.comment_post_ID";
 		$types    = "'" . implode( "','", array_map( static fn( string $type ): string => (string) esc_sql( $type ), self::guarded_post_types() ) ) . "'";
 		$taxonomy = esc_sql( Handbooks::TAXONOMY );
-
-		return " AND ( {$wpdb->comments}.comment_post_ID NOT IN ("
-			. " SELECT lhp.ID FROM {$wpdb->posts} lhp WHERE lhp.post_type IN ({$types})"
-			. " ) OR {$wpdb->comments}.comment_post_ID IN ("
-			. " SELECT lhtr.object_id FROM {$wpdb->term_relationships} lhtr"
+		$filed    = "SELECT lhtr.object_id FROM {$wpdb->term_relationships} lhtr"
 			. " INNER JOIN {$wpdb->term_taxonomy} lhtt ON lhtt.term_taxonomy_id = lhtr.term_taxonomy_id"
-			. " WHERE lhtt.taxonomy = '{$taxonomy}' AND lhtt.term_id IN ({$in})"
-			. ' ) )';
+			. " WHERE lhtt.taxonomy = '{$taxonomy}'";
+
+		if ( self::is_backend_read() ) {
+			$hidden = self::hidden_term_ids( $user_id );
+			if ( array() === $hidden ) {
+				return '';
+			}
+			$in = implode( ',', array_map( 'absint', $hidden ) );
+
+			return " AND {$column} NOT IN ("
+				. " SELECT lhp.ID FROM {$wpdb->posts} lhp WHERE lhp.post_type IN ({$types})"
+				. ' AND lhp.post_author <> ' . absint( $user_id )
+				. " AND lhp.ID IN ( {$filed} AND lhtt.term_id IN ({$in}) )"
+				. ' )';
+		}
+
+		$viewable = self::viewable_term_ids( $user_id );
+		$in       = empty( $viewable ) ? '0' : implode( ',', array_map( 'absint', $viewable ) );
+		$readable = "( {$column} IN ( {$filed} AND lhtt.term_id IN ({$in}) )"
+			. " AND {$column} NOT IN ( {$filed} AND lhtt.term_id NOT IN ({$in}) ) )";
+		if ( self::reads_unassigned( $user_id ) ) {
+			$readable .= " OR {$column} NOT IN ( {$filed} )";
+		}
+
+		return " AND ( {$column} NOT IN ("
+			. " SELECT lhp.ID FROM {$wpdb->posts} lhp WHERE lhp.post_type IN ({$types})"
+			. " ) OR {$readable} )";
 	}
 
 	/**
@@ -1386,10 +1438,8 @@ final class AccessController {
 			if ( is_wp_error( $terms ) ) {
 				$allowed = false;
 			} elseif ( ! is_array( $terms ) || empty( $terms ) ) {
-				// A page in no handbook is work in progress, not yet content of
-				// any handbook: whoever looks after other people's pages reads it,
-				// nobody else does.
-				$allowed = user_can( $user_id, 'edit_others_posts' );
+				// A page in no handbook is work in progress: see reads_unassigned().
+				$allowed = self::reads_unassigned( $user_id );
 			} else {
 				$allowed = true;
 				foreach ( $terms as $term ) {
