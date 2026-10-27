@@ -288,7 +288,12 @@
 		const pasteBtn = document.getElementById( 'lh-import-run-paste' );
 		const zipBtn = document.getElementById( 'lh-import-run-zip' );
 		const githubBtn = document.getElementById( 'lh-import-run-github' );
-		const runButtons = [ pasteBtn, zipBtn, githubBtn ].filter( Boolean );
+		const appBtn = document.getElementById( 'lh-app-btn' );
+		// Every button that starts an import is locked while one runs, so a
+		// second click cannot start a second import of the same pages.
+		const runButtons = [ pasteBtn, zipBtn, githubBtn, appBtn ].filter(
+			Boolean
+		);
 		if ( ! runButtons.length ) {
 			return;
 		}
@@ -1062,7 +1067,6 @@
 				}
 			} );
 		}
-		const appBtn = document.getElementById( 'lh-app-btn' );
 		if ( appBtn ) {
 			appBtn.addEventListener( 'click', () => {
 				if ( begin() ) {
