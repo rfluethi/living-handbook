@@ -94,4 +94,39 @@ final class ActivationTest extends WP_UnitTestCase {
 			'The overview page should hold the overview block.'
 		);
 	}
+
+	/**
+	 * The overview page of a new installation does not share its address with
+	 * the handbook pages. Up to 0.75.1 it was /handbook/, the base of every
+	 * handbook page, and a subpage of the overview answered 404 because the
+	 * post type's rule took the address first.
+	 *
+	 * @return void
+	 */
+	public function test_a_subpage_of_the_overview_page_is_reachable(): void {
+		global $wp_rewrite;
+
+		delete_option( Onboarding::OPTION_OVERVIEW_PAGE );
+		$wp_rewrite->set_permalink_structure( '/%postname%/' );
+
+		Plugin::activate();
+		$overview = (int) get_option( Onboarding::OPTION_OVERVIEW_PAGE, 0 );
+		$this->assertNotSame( 'handbook', get_post_field( 'post_name', $overview ) );
+
+		$child = (int) self::factory()->post->create(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'publish',
+				'post_title'  => 'Team',
+				'post_name'   => 'team',
+				'post_parent' => $overview,
+			)
+		);
+		flush_rewrite_rules( false );
+
+		$this->go_to( (string) get_permalink( $child ) );
+		$this->assertSame( $child, get_queried_object_id(), 'The subpage is found at its own address.' );
+
+		$wp_rewrite->set_permalink_structure( '' );
+	}
 }

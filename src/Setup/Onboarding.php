@@ -98,13 +98,38 @@ final class Onboarding {
 				'post_type'    => 'page',
 				'post_status'  => 'publish',
 				'post_title'   => __( 'Handbook', 'living-handbook' ),
-				'post_name'    => 'handbook',
+				'post_name'    => self::overview_slug(),
 				'post_content' => '<!-- ' . self::OVERVIEW_BLOCK . ' /-->',
 			),
 			true
 		);
 
 		update_option( self::OPTION_OVERVIEW_PAGE, is_wp_error( $page_id ) ? 0 : (int) $page_id );
+	}
+
+	/**
+	 * The slug of a newly created overview page.
+	 *
+	 * Up to 0.75.1 it was "handbook", the same as the URL base of handbook
+	 * pages. The page itself worked, because the post type has no archive, but
+	 * the post type's rule matches every address below it first, so a subpage
+	 * of the overview at /handbook/team/ was read as a handbook page called
+	 * "team" and answered 404. Decided on 2026-10-27: new installations get a
+	 * slug of their own. An existing overview page keeps its address; changing
+	 * a published URL is the site's call, not an update's.
+	 *
+	 * The handbook base can be changed by a filter, so the slug is checked
+	 * against the base actually in use.
+	 *
+	 * @return string
+	 */
+	private static function overview_slug(): string {
+		$object = get_post_type_object( Handbook::POST_TYPE );
+		$base   = ( null !== $object && is_array( $object->rewrite ) && isset( $object->rewrite['slug'] ) )
+			? (string) $object->rewrite['slug']
+			: (string) apply_filters( 'living_handbook_post_type_slug', 'handbook' );
+
+		return 'handbooks' === trim( $base, '/' ) ? 'handbook-overview' : 'handbooks';
 	}
 
 	/**
