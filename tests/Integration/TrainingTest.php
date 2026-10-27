@@ -460,4 +460,33 @@ final class TrainingTest extends WP_UnitTestCase {
 			$this->assertMatchesRegularExpression( "#registerBlockType\\(\\s*'living-handbook/{$name}'|dynamic\\(\\s*'living-handbook/{$name}'#", $script, "living-handbook/{$name} has no editor registration." );
 		}
 	}
+
+	/**
+	 * Whoever builds a path can walk through it before publishing it: the bar
+	 * appears on its lessons for people who may edit the path. Readers still
+	 * see nothing, whatever the URL says. Up to 0.75.1 the bar needed a
+	 * published path, for everyone.
+	 *
+	 * @return void
+	 */
+	public function test_a_draft_path_shows_its_bar_to_whoever_may_edit_it(): void {
+		$one  = $this->page( 'First' );
+		$two  = $this->page( 'Second' );
+		$path = $this->path( array( $one, $two ) );
+		wp_update_post(
+			array(
+				'ID'          => $path,
+				'post_status' => 'draft',
+			)
+		);
+		$url = add_query_arg( PathView::QUERY_ARG, $path, (string) get_permalink( $one ) );
+
+		wp_set_current_user( (int) self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$this->go_to( $url );
+		$this->assertStringContainsString( 'Lesson 1 of 2', PathView::render_path_nav(), 'The editor walks through the draft.' );
+
+		wp_set_current_user( (int) self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+		$this->go_to( $url );
+		$this->assertSame( '', PathView::render_path_nav(), 'A reader gets nothing from a draft.' );
+	}
 }

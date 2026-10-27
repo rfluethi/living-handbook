@@ -224,10 +224,34 @@ final class PathView {
 	}
 
 	/**
+	 * Whether a path in this state may put its bar on a lesson.
+	 *
+	 * A published path does, for everyone who may read it. A path that is not
+	 * published yet does only for people who may edit it: up to 0.75.1 it never
+	 * did, so whoever built a path could not walk through it before publishing
+	 * it, which is the moment it matters most (decided on 2026-10-27). Readers
+	 * cannot reach an unpublished path anyway; the edit right keeps it that way
+	 * even for a URL that names one.
+	 *
+	 * @param WP_Post $training The path.
+	 * @return bool
+	 */
+	private static function shows_bar_for( WP_Post $training ): bool {
+		if ( 'publish' === $training->post_status ) {
+			return true;
+		}
+		if ( ! in_array( $training->post_status, array( 'draft', 'pending', 'future', 'private' ), true ) ) {
+			return false;
+		}
+		return current_user_can( 'edit_post', $training->ID );
+	}
+
+	/**
 	 * Render the path bar on a handbook page that is being read as a lesson.
 	 *
 	 * Renders nothing at all unless every condition holds: the module is on, the
-	 * URL names a path, that path exists and is published, the reader may view
+	 * URL names a path, that path exists and is published (or the reader may
+	 * edit it, see shows_bar_for()), the reader may view
 	 * it, and this page is one of its lessons for this reader. A page that is
 	 * not in the path renders nothing rather than an error, because the argument
 	 * can be stale, guessed or simply wrong, and none of that is worth a message.
@@ -252,7 +276,7 @@ final class PathView {
 		$training = get_post( $training_id );
 		if ( ! $training instanceof WP_Post
 			|| Training::POST_TYPE !== $training->post_type
-			|| 'publish' !== $training->post_status ) {
+			|| ! self::shows_bar_for( $training ) ) {
 			return '';
 		}
 
