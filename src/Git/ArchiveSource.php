@@ -40,14 +40,18 @@ final class ArchiveSource {
 	 *
 	 * The API endpoint answers with a 302 to this host. The redirect is followed
 	 * by hand rather than by the HTTP client, so the target host is checked
-	 * against this list instead of being trusted.
+	 * against this list instead of being trusted. api.github.com is allowed as
+	 * well, for a setup that answers the API request with the archive itself.
+	 *
+	 * @var array<int, string>
 	 */
 	private const ARCHIVE_HOSTS = array( 'codeload.github.com' );
 
 	/**
-	 * Largest archive that is downloaded, in bytes.
+	 * Largest archive that is downloaded, in bytes (50 MB). An archive of
+	 * exactly this size is refused too, see download().
 	 */
-	private const MAX_ARCHIVE_BYTES = 52428800; // 50 MB.
+	private const MAX_ARCHIVE_BYTES = 52428800;
 
 	/**
 	 * Most entries an archive may hold.
@@ -58,6 +62,11 @@ final class ArchiveSource {
 	 * Largest single file that is read out of the archive, in bytes.
 	 */
 	private const MAX_FILE_BYTES = 5242880; // 5 MB.
+
+	/**
+	 * Youngest a left-over archive may be to be collected, in seconds.
+	 */
+	private const MIN_STALE_AGE = 10 * MINUTE_IN_SECONDS;
 
 	/**
 	 * Path of the downloaded archive on disk.
@@ -83,7 +92,7 @@ final class ArchiveSource {
 	private array $entries = array();
 
 	/**
-	 * Download the archive of a repository and open it.
+	 * Downloads the archive of a repository and opens it.
 	 *
 	 * @param string $owner  Repository owner.
 	 * @param string $repo   Repository name.
@@ -113,11 +122,13 @@ final class ArchiveSource {
 	}
 
 	/**
-	 * Open an archive that was already downloaded.
+	 * Opens an archive that was already downloaded.
 	 *
 	 * A large import runs in several passes, and each pass is its own request. The
 	 * downloaded file outlives the request that fetched it, so the next pass reads
 	 * the same repository without downloading it again.
+	 *
+	 * When the file cannot be opened as an archive, it is deleted.
 	 *
 	 * @param string $path Path of a file this class downloaded earlier.
 	 * @return true|WP_Error
@@ -139,7 +150,7 @@ final class ArchiveSource {
 	}
 
 	/**
-	 * Where the downloaded archive lies on disk.
+	 * Returns where the downloaded archive lies on disk.
 	 *
 	 * @return string Empty when nothing is open.
 	 */
@@ -148,7 +159,7 @@ final class ArchiveSource {
 	}
 
 	/**
-	 * Close the archive but keep the downloaded file.
+	 * Closes the archive but keeps the downloaded file.
 	 *
 	 * The counterpart to open_file(): this is how a paused import hands its
 	 * download on to the pass that continues it. Whoever calls this owns the file
@@ -233,7 +244,7 @@ final class ArchiveSource {
 	}
 
 	/**
-	 * Whether an archive URL may be fetched.
+	 * Whether an archive URL may be fetched: https, and a host on the list.
 	 *
 	 * Deliberately separate from the Markdown source check in GitSync: this list
 	 * exists only for the archive download, so widening it cannot widen where
@@ -252,12 +263,12 @@ final class ArchiveSource {
 		}
 
 		/**
-		 * Filter the hosts a repository archive may be downloaded from.
+		 * Filters the hosts a repository archive may be downloaded from.
 		 *
 		 * A host added here is trusted to serve archive content. It does not
 		 * become an allowed source for individual pages, that list is separate.
 		 *
-		 * @param string[] $hosts Allowed host names.
+		 * @param string[] $hosts Allowed host names. Default codeload.github.com and api.github.com.
 		 */
 		$allowed = apply_filters( 'living_handbook_archive_allowed_hosts', array_merge( self::ARCHIVE_HOSTS, array( 'api.github.com' ) ) );
 
@@ -276,15 +287,16 @@ final class ArchiveSource {
 	private function download( string $url ) {
 		$tmp = tempnam( sys_get_temp_dir(), 'lh-archive' );
 		if ( ! is_string( $tmp ) ) {
-			// The system temp directory is not writable: fall back to the
-			// WordPress temp file, which lives in uploads.
+			// The system temp directory is not writable: fall back to
+			// wp_tempnam(), which writes to get_temp_dir(): WP_TEMP_DIR when it is
+			// set, otherwise upload_tmp_dir or wp-content.
 			$tmp = wp_tempnam( 'lh-archive' );
 		}
 
 		/**
-		 * Filter the largest repository archive that is downloaded, in bytes.
+		 * Filters the largest repository archive that is downloaded, in bytes.
 		 *
-		 * @param int $bytes Maximum size.
+		 * @param int $bytes Maximum size. Default 50 MB.
 		 */
 		$max = (int) apply_filters( 'living_handbook_archive_max_bytes', self::MAX_ARCHIVE_BYTES );
 
@@ -323,11 +335,10 @@ final class ArchiveSource {
 		}
 		// limit_response_size stops the download at exactly $max bytes, so a
 		// larger archive arrives cut off at that size and is never larger than
-		// it. Up to 0.75.0 this compared with ">", which could not be true: the
-		// truncated file went on to ZipArchive and the import reported "could
-		// not open the repository archive" instead of saying it was too large.
-		// An archive of exactly the limit is refused with it; one byte is not
-		// worth a second request to tell the two apart.
+		// it: reaching the limit means too large. An archive of exactly the
+		// limit is refused with it; one byte is not worth a second request to
+		// tell the two apart. Up to 0.75.0 this compared with ">", which could
+		// not be true, and the cut-off file was reported as unreadable.
 		if ( $size >= $max ) {
 			wp_delete_file( $tmp );
 			return new WP_Error(
@@ -397,8 +408,8 @@ final class ArchiveSource {
 	}
 
 	/**
-	 * All file paths in the archive under a folder, relative to the repository
-	 * root, sorted so an import runs in a predictable order.
+	 * Returns all file paths in the archive under a folder, relative to the
+	 * repository root, sorted so an import runs in a predictable order.
 	 *
 	 * @param string $folder Folder path, empty for the whole repository.
 	 * @param string $suffix Optional file name suffix filter, for example '.md'.
@@ -424,7 +435,7 @@ final class ArchiveSource {
 	}
 
 	/**
-	 * Read one file out of the archive.
+	 * Reads one file out of the archive.
 	 *
 	 * @param string $path Path relative to the repository root.
 	 * @return string|null The file contents, or null when it is missing or too large.
@@ -455,26 +466,25 @@ final class ArchiveSource {
 	}
 
 	/**
-	 * Delete archives left behind by imports that were never finished.
+	 * Deletes archives left behind by imports that were never finished.
 	 *
 	 * A paused import keeps its download for the next pass. If that pass never
 	 * comes, because the browser tab was closed, the file would stay for good.
 	 * Anything older than the time a paused import may wait is nobody's any more.
 	 *
-	 * @param int $older_than Age in seconds from which a file is collected.
+	 * @param int $older_than Age in seconds from which a file is collected. Default two hours,
+	 *                        twice the hour a paused import waits to be continued.
 	 * @return int How many files were deleted.
 	 */
-	public static function cleanup_stale( int $older_than = 7200 ): int {
-		// Also in the WordPress temp folder, where download() falls back to when
-		// the system one is not writable; up to 0.75.0 only the system one was
-		// looked at.
+	public static function cleanup_stale( int $older_than = 2 * HOUR_IN_SECONDS ): int {
+		// Swept in the system and in the WordPress temp folder, see TempFiles.
 		// Never younger than ten minutes, whatever the caller asks: a pass of an
 		// import may be reading its archive right now.
-		return TempFiles::sweep( 'lh-archive', max( 600, $older_than ) );
+		return TempFiles::sweep( 'lh-archive', max( self::MIN_STALE_AGE, $older_than ) );
 	}
 
 	/**
-	 * Close the archive and delete the downloaded file.
+	 * Closes the archive and deletes the downloaded file.
 	 *
 	 * @return void
 	 */
