@@ -36,10 +36,30 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Blocks {
 
+	/**
+	 * Slug of the block inserter category the plugin's blocks are listed under.
+	 */
 	public const CATEGORY = 'living-handbook';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Page titles the overview lists under a handbook when the block says
+	 * nothing, the block.json default.
+	 */
+	private const PREVIEW_DEFAULT = 3;
+
+	/**
+	 * Most page titles the overview lists under a handbook. Not a technical
+	 * limit: it is where a preview stops being one.
+	 */
+	private const PREVIEW_MAX = 10;
+
+	/**
+	 * Deepest heading level the table of contents can list.
+	 */
+	private const TOC_MAX_DEPTH = 6;
+
+	/**
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -62,7 +82,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Register the block types with their server render callbacks.
+	 * Registers the block types with their server render callbacks.
 	 *
 	 * @return void
 	 */
@@ -95,7 +115,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Add a dedicated block category so the blocks group together.
+	 * Adds a dedicated block category so the blocks group together.
 	 *
 	 * @param array<int, array<string, mixed>> $categories Existing categories.
 	 * @return array<int, array<string, mixed>>
@@ -110,7 +130,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the lesson list of a learning path.
+	 * Renders the lesson list of a learning path.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -122,7 +142,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the learning paths of a handbook on its entry page.
+	 * Renders the learning paths of a handbook on its entry page.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -134,7 +154,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the path bar on a handbook page read as a lesson.
+	 * Renders the path bar on a handbook page read as a lesson.
 	 *
 	 * Returns an empty string on every page that is not being read through a
 	 * learning path, which is nearly all of them: the block sits in the shipped
@@ -150,7 +170,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the overview block (the handbook chooser).
+	 * Renders the overview block (the handbook chooser).
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -163,23 +183,23 @@ final class Blocks {
 	}
 
 	/**
-	 * How many page titles the overview lists under a handbook, clamped to 0..10.
+	 * Returns how many page titles the overview lists under a handbook, clamped
+	 * to 0..PREVIEW_MAX.
 	 *
-	 * Ten is not a technical limit, it is where a preview stops being one. The
-	 * value comes from post content and can be anything, so it is bounded here
-	 * rather than trusted.
+	 * The value comes from post content and can be anything, so it is bounded
+	 * here rather than trusted.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return int
 	 */
 	private static function preview_count( array $attributes ): int {
-		$count = isset( $attributes['previewCount'] ) ? (int) $attributes['previewCount'] : 3;
+		$count = isset( $attributes['previewCount'] ) ? (int) $attributes['previewCount'] : self::PREVIEW_DEFAULT;
 
-		return max( 0, min( 10, $count ) );
+		return max( 0, min( self::PREVIEW_MAX, $count ) );
 	}
 
 	/**
-	 * Render the entry block for the queried handbook term archive.
+	 * Renders the entry block for the queried handbook term archive.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -190,12 +210,11 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the handbook search bar as its own block.
+	 * Renders the handbook search bar block.
 	 *
-	 * Same control as the one inside the entry block, so a template can put it
-	 * where it wants instead of taking the layout the entry block draws. It finds
-	 * its handbook itself: the queried handbook on an entry page, the page's
-	 * handbook on a single page.
+	 * A block of its own since 0.66.0, so a template can put it where it wants.
+	 * It finds its handbook itself: the queried handbook on an entry page, the
+	 * page's or the path's handbook on a single page or a learning path.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -224,7 +243,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the handbook filter bar as its own block.
+	 * Renders the handbook filter bar block.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -273,7 +292,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the handbook menu block (accessible handbooks as a list).
+	 * Renders the handbook menu block (accessible handbooks as a list).
 	 *
 	 * The block can sit in a header shown on every page. Its stylesheet and the
 	 * frontend script come with it through block.json, so they arrive there too,
@@ -287,7 +306,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the navigation block for the current handbook.
+	 * Renders the navigation block for the current handbook.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -299,7 +318,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the single-page badge row.
+	 * Renders the single-page badge row.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -310,7 +329,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the on-this-page table of contents container (filled by JS).
+	 * Renders the on-this-page table of contents container (filled by JS).
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -332,7 +351,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the feedback prompt for the current page.
+	 * Renders the feedback prompt for the current page.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -343,7 +362,8 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the on-page search box for the current handbook (single page only).
+	 * Renders the quick search box for the current handbook (single page,
+	 * learning path or entry page).
 	 *
 	 * A search-as-you-type field: the frontend script queries the handbook's
 	 * pages and shows the matches as links in a dropdown, so the visitor jumps
@@ -396,7 +416,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Render the metadata footer for the current page.
+	 * Renders the metadata footer for the current page.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
@@ -411,7 +431,7 @@ final class Blocks {
 	}
 
 	/**
-	 * Resolve the card/list display attribute.
+	 * Resolves the card/list display attribute.
 	 *
 	 * The registered block defaults normally fill the attribute in, so the
 	 * fallback only applies to a block saved before the attribute existed. It
@@ -430,8 +450,8 @@ final class Blocks {
 	}
 
 	/**
-	 * Resolve the table-of-contents depth: a per-page override wins, otherwise
-	 * the block attribute, clamped to 1..6.
+	 * Resolves the table-of-contents depth: a per-page override wins, otherwise
+	 * the block attribute, clamped to 1..TOC_MAX_DEPTH.
 	 *
 	 * @param int                  $post_id    Post ID.
 	 * @param array<string, mixed> $attributes Block attributes.
@@ -439,12 +459,12 @@ final class Blocks {
 	 */
 	private static function toc_depth( int $post_id, array $attributes ): int {
 		$override = (int) get_post_meta( $post_id, Metadata::TOC_DEPTH, true );
-		if ( $override >= 1 && $override <= 6 ) {
+		if ( $override >= 1 && $override <= self::TOC_MAX_DEPTH ) {
 			return $override;
 		}
-		$depth = isset( $attributes['maxDepth'] ) ? (int) $attributes['maxDepth'] : 6;
-		if ( $depth < 1 || $depth > 6 ) {
-			$depth = 6;
+		$depth = isset( $attributes['maxDepth'] ) ? (int) $attributes['maxDepth'] : self::TOC_MAX_DEPTH;
+		if ( $depth < 1 || $depth > self::TOC_MAX_DEPTH ) {
+			$depth = self::TOC_MAX_DEPTH;
 		}
 		return $depth;
 	}
@@ -491,9 +511,9 @@ final class Blocks {
 	}
 
 	/**
-	 * Put a block's HTML anchor on the root element of its rendered markup.
+	 * Sets a block's HTML anchor on the root element of its rendered markup.
 	 *
-	 * For the blocks that build their wrapper with get_block_wrapper_attributes().
+	 * For the blocks that build their wrapper with wrapper_attributes().
 	 * From WordPress 7.0 that call adds the anchor itself, through the anchor
 	 * block support; 6.8 has no such support on the server, so there the id the
 	 * editor saved never reached the page. Setting it afterwards with the HTML API

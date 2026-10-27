@@ -30,10 +30,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class MermaidBlock {
 
+	/**
+	 * Name of the block type.
+	 */
 	public const BLOCK = 'living-handbook/mermaid';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -42,7 +45,7 @@ final class MermaidBlock {
 	}
 
 	/**
-	 * Register the mermaid library, the block scripts, and the block type.
+	 * Registers the mermaid library, the block scripts, and the block type.
 	 *
 	 * @return void
 	 */
@@ -107,7 +110,7 @@ final class MermaidBlock {
 	}
 
 	/**
-	 * Render the block on the frontend: a figure holding the mermaid.js container
+	 * Renders the block on the frontend: a figure holding the mermaid.js container
 	 * and an optional caption. The view script gives the rendered SVG a text
 	 * alternative from the title and description.
 	 *

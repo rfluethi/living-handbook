@@ -18,19 +18,48 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Native custom fields for the freshness mechanic, plus a small meta box.
+ * Native custom fields for the freshness mechanic and the page settings: their
+ * registration, the meta box, Quick Edit and Bulk Edit, and the read-only REST
+ * status field.
  */
 final class Metadata {
 
-	public const UPDATED    = 'living_handbook_last_updated';
-	public const REVIEWED   = 'living_handbook_last_reviewed';
-	public const INTERVAL   = 'living_handbook_review_interval';
-	public const REVIEWER   = 'living_handbook_reviewer';
-	public const TOC_DEPTH  = 'living_handbook_toc_depth';
+	/**
+	 * Meta key: the day of the last save, Y-m-d in the site's time zone, set by
+	 * set_updated() on every save.
+	 */
+	public const UPDATED = 'living_handbook_last_updated';
+
+	/**
+	 * Meta key: the day of the last review, Y-m-d in the site's time zone, or
+	 * empty for never.
+	 */
+	public const REVIEWED = 'living_handbook_last_reviewed';
+
+	/**
+	 * Meta key: the review interval in days; 0 means none.
+	 */
+	public const INTERVAL = 'living_handbook_review_interval';
+
+	/**
+	 * Meta key: the user id of the last reviewer; 0 means nobody.
+	 */
+	public const REVIEWER = 'living_handbook_reviewer';
+
+	/**
+	 * Meta key: the deepest heading level the table of contents lists, 1 to 6;
+	 * 0 means the block's own setting.
+	 */
+	public const TOC_DEPTH = 'living_handbook_toc_depth';
+
+	/**
+	 * Meta key: true when the page asks AI tools to skip it. A marker only,
+	 * published in the REST status field; it blocks nothing by itself.
+	 */
 	public const AI_EXCLUDE = 'living_handbook_ai_exclude';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -54,7 +83,8 @@ final class Metadata {
 	}
 
 	/**
-	 * Register the meta fields, REST-readable.
+	 * Registers the meta fields, readable over REST and writable there for a
+	 * user who may edit the page.
 	 *
 	 * @return void
 	 */
@@ -115,9 +145,9 @@ final class Metadata {
 	}
 
 	/**
-	 * Keep a date field to YYYY-MM-DD, the format the meta box and the freshness
+	 * Keeps a date field to YYYY-MM-DD, the format the meta box and the freshness
 	 * calculation expect. Anything else becomes an empty value rather than a
-	 * string strtotime() would later guess at.
+	 * string a date parser would later guess at.
 	 *
 	 * @param mixed $value Incoming value.
 	 * @return string
@@ -128,7 +158,7 @@ final class Metadata {
 	}
 
 	/**
-	 * A reviewer is a user ID, or 0 for nobody.
+	 * Sanitizes a reviewer to a user ID, or 0 for nobody.
 	 *
 	 * The empty choice of a user dropdown posts -1 unless told otherwise, and
 	 * absint() turns that into 1: up to 0.75.1 every save of the meta box
@@ -165,8 +195,8 @@ final class Metadata {
 	}
 
 	/**
-	 * Keep the heading depth within the range the table of contents renders,
-	 * matching save(): anything above 6 falls back to 0 (use the default).
+	 * Keeps the heading depth within the range the table of contents renders:
+	 * anything above 6 falls back to 0 (use the block's setting).
 	 *
 	 * @param mixed $value Incoming value.
 	 * @return int
@@ -177,9 +207,9 @@ final class Metadata {
 	}
 
 	/**
-	 * Expose an aggregated, read-only status field over REST so a later AI
-	 * reader gets the derived freshness (due/overdue), the permalink and the
-	 * AI-exclusion flag in one place, next to the raw meta.
+	 * Exposes an aggregated, read-only status field over REST, so a later AI
+	 * reader gets the derived freshness (one of FreshnessStatus::all()), the
+	 * permalink and the AI-exclusion flag in one place, next to the raw meta.
 	 *
 	 * @return void
 	 */
@@ -215,7 +245,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Register the editor meta box.
+	 * Registers the editor meta box.
 	 *
 	 * @return void
 	 */
@@ -230,7 +260,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Render the meta box.
+	 * Renders the meta box.
 	 *
 	 * @param WP_Post $post Current post.
 	 * @return void
@@ -292,7 +322,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Save the meta box fields.
+	 * Saves the meta box fields.
 	 *
 	 * @param int $post_id Post ID.
 	 * @return void
@@ -326,7 +356,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Set the last updated date automatically on every save.
+	 * Sets the last updated date automatically on every save.
 	 *
 	 * @param int $post_id Post ID.
 	 * @return void
@@ -339,7 +369,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Carry the current freshness values into the review column as data
+	 * Prints the current freshness values into the review column as data
 	 * attributes, so the Quick Edit script can prefill its fields (the inline
 	 * editor renders them empty and does not know the stored values).
 	 *
@@ -360,7 +390,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Render the three freshness fields in the Quick Edit form: last reviewed,
+	 * Renders the three freshness fields in the Quick Edit form: last reviewed,
 	 * review interval and reviewer. Hooked once, on the review column.
 	 *
 	 * @param string $column_name Column being rendered.
@@ -401,13 +431,12 @@ final class Metadata {
 	}
 
 	/**
-	 * The three freshness fields in Bulk Edit.
+	 * Renders the three freshness fields in Bulk Edit.
 	 *
 	 * Quick Edit answers "I reviewed this page today". Bulk Edit answers the
 	 * question a large handbook actually raises, "these forty pages are all
-	 * reviewed yearly by the same person", which today means opening forty
-	 * pages. WordPress offers the responsible role by itself, because that
-	 * taxonomy is flat, and offers nothing for meta.
+	 * reviewed yearly by the same person", which would otherwise mean opening
+	 * forty pages. WordPress offers nothing for meta in Bulk Edit.
 	 *
 	 * Every field defaults to "leave unchanged" rather than to empty, because a
 	 * bulk action that silently clears a field it was not asked about is the one
@@ -453,7 +482,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Apply the Bulk Edit fields to one page.
+	 * Applies the Bulk Edit fields to one page.
 	 *
 	 * Guarded by its own nonce and by the presence of WordPress's bulk_edit
 	 * marker, so this path cannot run from an ordinary save or from Quick Edit,
@@ -468,7 +497,7 @@ final class Metadata {
 		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only looks for the marker; the nonce is verified right below.
 		if ( ! isset( $_REQUEST['bulk_edit'] ) ) {
 			return;
 		}
@@ -500,7 +529,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Enqueue the Quick Edit prefill script, only on the handbook list screen.
+	 * Enqueues the Quick Edit prefill script, only on the handbook list screen.
 	 *
 	 * @param string $hook Current admin page hook.
 	 * @return void
@@ -523,7 +552,7 @@ final class Metadata {
 	}
 
 	/**
-	 * Save the three freshness fields submitted from Quick Edit. Guarded by its
+	 * Saves the three freshness fields submitted from Quick Edit. Guarded by its
 	 * own nonce, which is absent on a normal editor save and on bulk edit, so
 	 * this path runs for the inline Quick Edit only.
 	 *

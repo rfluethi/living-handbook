@@ -17,16 +17,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * A dynamic block you place in the single-handbook template. On a GitHub-synced
+ * A dynamic block in the single-handbook template. On a GitHub-synced
  * page it renders a short note; on a page maintained in WordPress it renders
  * nothing, so the template can carry it unconditionally.
  */
 final class SourceNoteBlock {
 
+	/**
+	 * Name of the block type.
+	 */
 	public const BLOCK = 'living-handbook/git-source-note';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -35,7 +38,7 @@ final class SourceNoteBlock {
 	}
 
 	/**
-	 * Register the editor script and the block type.
+	 * Registers the editor script and the block type.
 	 *
 	 * @return void
 	 */
@@ -58,7 +61,7 @@ final class SourceNoteBlock {
 	}
 
 	/**
-	 * Render the note on the frontend, only on a GitHub-synced handbook page.
+	 * Renders the note on the frontend, only on a GitHub-synced handbook page.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @return string
