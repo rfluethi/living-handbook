@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-10-27T15:44:16+00:00\n"
+"POT-Creation-Date: 2026-10-27T15:54:54+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -101,7 +101,7 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:268 src/Admin/Maintenance.php:272
-#: src/Export/SiteRenderer.php:288 src/Export/StaticSite.php:1225
+#: src/Export/SiteRenderer.php:288 src/Export/StaticSite.php:1236
 #: src/Import/HandbookExport.php:141 src/PostType/Handbook.php:123
 #: src/PostType/Handbook.php:125 src/Privacy/Privacy.php:208
 #: src/Setup/Onboarding.php:148 src/Taxonomy/Taxonomies.php:271
@@ -162,7 +162,10 @@ msgstr ""
 msgid ""
 "Nothing was moved: you may not move pages into that handbook, because it is "
 "kept from you. Pick one from the dropdown beside the bulk action."
-msgstr "Es wurde nichts verschoben: In dieses Handbuch darfst du keine Seiten verschieben, weil es dir nicht offensteht. Wähle eines im Auswahlfeld neben der Mehrfachaktion."
+msgstr ""
+"Es wurde nichts verschoben: In dieses Handbuch darfst du keine Seiten "
+"verschieben, weil es dir nicht offensteht. Wähle eines im Auswahlfeld neben "
+"der Mehrfachaktion."
 
 #. translators: %d: number of pages moved.
 #: src/Admin/MoveToHandbook.php:480
@@ -367,21 +370,25 @@ msgid "You cannot read this handbook, so you cannot export it either."
 msgstr ""
 "Du darfst dieses Handbuch nicht lesen und deshalb auch nicht exportieren."
 
-#: src/Export/StaticSite.php:267
+#: src/Export/StaticSite.php:271 src/Import/HandbookExport.php:302
+msgid "That area cannot be exported."
+msgstr "Dieser Bereich kann nicht exportiert werden."
+
+#: src/Export/StaticSite.php:278
 msgid "There is nothing to export: this handbook has no pages you can read."
 msgstr ""
 "Es gibt nichts zu exportieren: Dieses Handbuch hat keine Seiten, die du "
 "lesen darfst."
 
-#: src/Export/StaticSite.php:438
+#: src/Export/StaticSite.php:449
 msgid "The export file could not be written on this server."
 msgstr "Die Export-Datei konnte auf diesem Server nicht geschrieben werden."
 
-#: src/Export/StaticSite.php:1133 src/Import/HandbookExport.php:258
+#: src/Export/StaticSite.php:1144 src/Import/HandbookExport.php:258
 msgid "You are not allowed to export handbooks."
 msgstr "Du darfst keine Handbücher exportieren."
 
-#: src/Export/StaticSite.php:1144
+#: src/Export/StaticSite.php:1155
 msgid ""
 "This file has already been downloaded, or the export has expired. Build the "
 "website again if you need another copy."
@@ -389,11 +396,11 @@ msgstr ""
 "Diese Datei wurde bereits heruntergeladen, oder der Export ist abgelaufen. "
 "Erzeuge die Website neu, wenn du eine weitere Kopie brauchst."
 
-#: src/Export/StaticSite.php:1217
+#: src/Export/StaticSite.php:1228
 msgid "Export as a website"
 msgstr "Als Website exportieren"
 
-#: src/Export/StaticSite.php:1218
+#: src/Export/StaticSite.php:1229
 msgid ""
 "A ZIP of plain HTML files: the pages, their images, a page list and a "
 "search. It opens by double-clicking index.html, with no server and no "
@@ -404,7 +411,7 @@ msgstr ""
 "und ohne Internetverbindung. Für Leserinnen und Leser, die gar keinen Zugang "
 "zu dieser Website haben."
 
-#: src/Export/StaticSite.php:1220
+#: src/Export/StaticSite.php:1231
 msgid ""
 "A static copy has no access rules. It contains every page you can read in "
 "the handbook you choose, and whoever holds the file can read all of it. It "
@@ -414,33 +421,37 @@ msgstr ""
 "du im gewählten Handbuch lesen darfst, und wer die Datei hat, liest alles "
 "davon. Ausserdem veraltet sie ab dem Moment, in dem sie entsteht."
 
-#: src/Export/StaticSite.php:1228 src/Import/HandbookExport.php:144
+#: src/Export/StaticSite.php:1239 src/Import/HandbookExport.php:144
 #: src/Import/MarkdownImportPage.php:1202
 msgid "— select a handbook —"
 msgstr "— Handbuch wählen —"
 
-#: src/Export/StaticSite.php:1238 src/Import/HandbookExport.php:154
+#: src/Export/StaticSite.php:1249 src/Import/HandbookExport.php:154
 msgid "What to export"
 msgstr "Was exportieren"
 
-#: src/Export/StaticSite.php:1240 src/Export/StaticSite.php:1241
+#: src/Export/StaticSite.php:1251 src/Export/StaticSite.php:1252
 #: src/Import/HandbookExport.php:156 src/Import/HandbookExport.php:157
 msgid "— the whole handbook —"
 msgstr "— das ganze Handbuch —"
 
-#: src/Export/StaticSite.php:1246
+#: src/Export/StaticSite.php:1257
 msgid "Look"
 msgstr "Gestaltung"
 
-#: src/Export/StaticSite.php:1253
+#: src/Export/StaticSite.php:1264
 msgid ""
 "\"Like this site\" takes your theme along: its palette, its fonts, its "
 "spacing, plus what you set under Appearance. The other looks leave all of "
 "that behind and bring their own, which is often the better choice for a copy "
 "that goes outside the team."
-msgstr "„Wie diese Website“ nimmt dein Theme mit: seine Palette, seine Schriften, seine Abstände, dazu deine Einstellungen unter Darstellung. Die anderen Gestaltungen lassen all das hinter sich und bringen ihre eigene mit, was für eine Kopie, die das Team verlässt, oft die bessere Wahl ist."
+msgstr ""
+"„Wie diese Website“ nimmt dein Theme mit: seine Palette, seine Schriften, "
+"seine Abstände, dazu deine Einstellungen unter Darstellung. Die anderen "
+"Gestaltungen lassen all das hinter sich und bringen ihre eigene mit, was für "
+"eine Kopie, die das Team verlässt, oft die bessere Wahl ist."
 
-#: src/Export/StaticSite.php:1258
+#: src/Export/StaticSite.php:1269
 msgid "Build the website"
 msgstr "Website erzeugen"
 
@@ -1263,10 +1274,6 @@ msgstr "Wähle, was exportiert werden soll."
 msgid "You are not allowed to export this handbook."
 msgstr "Du darfst dieses Handbuch nicht exportieren."
 
-#: src/Import/HandbookExport.php:302
-msgid "That area cannot be exported."
-msgstr "Dieser Bereich kann nicht exportiert werden."
-
 #: src/Import/HandbookExport.php:316
 msgid "The export bundle could not be created."
 msgstr "Das Export-Bündel konnte nicht erstellt werden."
@@ -1630,7 +1637,10 @@ msgid ""
 "The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its "
 "structure could not be applied. Each page takes its first heading as its "
 "title, or its file name when it has none."
-msgstr "Das ZIP enthält eine mkdocs.yml, aber dieser Server hat keinen YAML-Leser, deshalb konnte ihre Struktur nicht übernommen werden. Jede Seite erhält ihre erste Überschrift als Titel, ohne Überschrift ihren Dateinamen."
+msgstr ""
+"Das ZIP enthält eine mkdocs.yml, aber dieser Server hat keinen YAML-Leser, "
+"deshalb konnte ihre Struktur nicht übernommen werden. Jede Seite erhält ihre "
+"erste Überschrift als Titel, ohne Überschrift ihren Dateinamen."
 
 #: src/Import/MarkdownImportPage.php:500
 msgid "You are not allowed to load the app handbook."
@@ -1888,7 +1898,10 @@ msgid ""
 "The mkdocs.yml has no nav section. The files were imported without "
 "structure; each page takes its first heading as its title, or its file name "
 "when it has none."
-msgstr "Die mkdocs.yml enthält keinen nav-Abschnitt. Die Dateien wurden ohne Struktur importiert; jede Seite erhält ihre erste Überschrift als Titel, ohne Überschrift ihren Dateinamen."
+msgstr ""
+"Die mkdocs.yml enthält keinen nav-Abschnitt. Die Dateien wurden ohne "
+"Struktur importiert; jede Seite erhält ihre erste Überschrift als Titel, "
+"ohne Überschrift ihren Dateinamen."
 
 #. translators: %s: the YAML parser's error message, in English.
 #: src/Import/MkDocsImport.php:133
@@ -1898,7 +1911,11 @@ msgid ""
 "error. The files were imported without structure; each page takes its first "
 "heading as its title, or its file name when it has none. The reader reports: "
 "%s"
-msgstr "Die Struktur aus der mkdocs.yml konnte nicht übernommen werden: Die Datei enthält einen Fehler. Die Dateien wurden ohne Struktur importiert; jede Seite erhält ihre erste Überschrift als Titel, ohne Überschrift ihren Dateinamen. Der Leser meldet: %s"
+msgstr ""
+"Die Struktur aus der mkdocs.yml konnte nicht übernommen werden: Die Datei "
+"enthält einen Fehler. Die Dateien wurden ohne Struktur importiert; jede "
+"Seite erhält ihre erste Überschrift als Titel, ohne Überschrift ihren "
+"Dateinamen. Der Leser meldet: %s"
 
 #. translators: %s: the navigation entry's title or address.
 #: src/Import/MkDocsImport.php:214
@@ -2148,7 +2165,10 @@ msgid ""
 "A handbook can be opened to named people only. Their user accounts are "
 "stored with the handbook's settings for as long as they are meant to read "
 "it, and are removed when an account is deleted."
-msgstr "Ein Handbuch kann nur für namentlich genannte Personen geöffnet werden. Ihre Benutzerkonten werden mit den Einstellungen des Handbuchs gespeichert, solange sie es lesen sollen, und beim Löschen eines Kontos entfernt."
+msgstr ""
+"Ein Handbuch kann nur für namentlich genannte Personen geöffnet werden. Ihre "
+"Benutzerkonten werden mit den Einstellungen des Handbuchs gespeichert, "
+"solange sie es lesen sollen, und beim Löschen eines Kontos entfernt."
 
 #: src/Privacy/Privacy.php:386
 msgid "Content from GitHub"

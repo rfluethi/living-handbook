@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-27T15:44:16+00:00\n"
+"POT-Creation-Date: 2026-10-27T15:54:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -91,7 +91,7 @@ msgstr ""
 #: src/Admin/Maintenance.php:268
 #: src/Admin/Maintenance.php:272
 #: src/Export/SiteRenderer.php:288
-#: src/Export/StaticSite.php:1225
+#: src/Export/StaticSite.php:1236
 #: src/Import/HandbookExport.php:141
 #: src/PostType/Handbook.php:123
 #: src/PostType/Handbook.php:125
@@ -332,62 +332,67 @@ msgstr ""
 msgid "You cannot read this handbook, so you cannot export it either."
 msgstr ""
 
-#: src/Export/StaticSite.php:267
+#: src/Export/StaticSite.php:271
+#: src/Import/HandbookExport.php:302
+msgid "That area cannot be exported."
+msgstr ""
+
+#: src/Export/StaticSite.php:278
 msgid "There is nothing to export: this handbook has no pages you can read."
 msgstr ""
 
-#: src/Export/StaticSite.php:438
+#: src/Export/StaticSite.php:449
 msgid "The export file could not be written on this server."
 msgstr ""
 
-#: src/Export/StaticSite.php:1133
+#: src/Export/StaticSite.php:1144
 #: src/Import/HandbookExport.php:258
 msgid "You are not allowed to export handbooks."
 msgstr ""
 
-#: src/Export/StaticSite.php:1144
+#: src/Export/StaticSite.php:1155
 msgid "This file has already been downloaded, or the export has expired. Build the website again if you need another copy."
 msgstr ""
 
-#: src/Export/StaticSite.php:1217
+#: src/Export/StaticSite.php:1228
 msgid "Export as a website"
 msgstr ""
 
-#: src/Export/StaticSite.php:1218
+#: src/Export/StaticSite.php:1229
 msgid "A ZIP of plain HTML files: the pages, their images, a page list and a search. It opens by double-clicking index.html, with no server and no internet connection. For readers who have no access to this site at all."
 msgstr ""
 
-#: src/Export/StaticSite.php:1220
+#: src/Export/StaticSite.php:1231
 msgid "A static copy has no access rules. It contains every page you can read in the handbook you choose, and whoever holds the file can read all of it. It also stops being current the moment it is made."
 msgstr ""
 
-#: src/Export/StaticSite.php:1228
+#: src/Export/StaticSite.php:1239
 #: src/Import/HandbookExport.php:144
 #: src/Import/MarkdownImportPage.php:1202
 msgid "— select a handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:1238
+#: src/Export/StaticSite.php:1249
 #: src/Import/HandbookExport.php:154
 msgid "What to export"
 msgstr ""
 
-#: src/Export/StaticSite.php:1240
-#: src/Export/StaticSite.php:1241
+#: src/Export/StaticSite.php:1251
+#: src/Export/StaticSite.php:1252
 #: src/Import/HandbookExport.php:156
 #: src/Import/HandbookExport.php:157
 msgid "— the whole handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:1246
+#: src/Export/StaticSite.php:1257
 msgid "Look"
 msgstr ""
 
-#: src/Export/StaticSite.php:1253
+#: src/Export/StaticSite.php:1264
 msgid "\"Like this site\" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other looks leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team."
 msgstr ""
 
-#: src/Export/StaticSite.php:1258
+#: src/Export/StaticSite.php:1269
 msgid "Build the website"
 msgstr ""
 
@@ -1097,10 +1102,6 @@ msgstr ""
 
 #: src/Import/HandbookExport.php:295
 msgid "You are not allowed to export this handbook."
-msgstr ""
-
-#: src/Import/HandbookExport.php:302
-msgid "That area cannot be exported."
 msgstr ""
 
 #: src/Import/HandbookExport.php:316
