@@ -10,7 +10,7 @@ Jede Seite trägt zwei Daten und ein Intervall:
 - **Zuletzt geprüft** ist der Zeitpunkt, an dem zuletzt jemand die Seite auf Richtigkeit durchgesehen hat, auch wenn nichts zu ändern war. Das setzt du von Hand, denn nur ein Mensch kann sagen „ich habe das gelesen und es stimmt noch".
 - **Prüfintervall** ist, wie lange eine Prüfung für diese Seite gilt. Schnelllebige Themen (Werkzeuge, externe Dienste) bekommen ein kurzes Intervall, stabile Themen (Grundsätze, Organisationsstruktur) ein langes.
 
-Aus Prüfdatum und Intervall berechnet das Plugin einen **Prüfstatus** und zeigt ihn als Badge in der Metadaten-Fusszeile der Seite.
+Aus Prüfdatum und Intervall berechnet das Plugin einen **Prüfstatus** und zeigt ihn als Badge in der Metadaten-Fußzeile der Seite.
 
 ## Die vier Zustände
 
@@ -53,7 +53,7 @@ Die übergreifende Arbeit, die zu keiner einzelnen Seite gehört (Navigationsstr
 
 ## Zwei Wege, wie eine Seite gepflegt wird
 
-- **Nach Plan.** Jede Seite wird regelmässig von ihrer verantwortlichen Rolle geprüft. „Regelmässig" ist das Prüfintervall, das du pro Seite setzt. Wird eine Prüfung fällig, bringt das Dashboard sie hoch; bleibt sie über das doppelte Intervall hinaus liegen, eskaliert der Badge auf *Prüfung überfällig*, damit die Seite nicht still veraltet.
+- **Nach Plan.** Jede Seite wird regelmäßig von ihrer verantwortlichen Rolle geprüft. „Regelmäßig" ist das Prüfintervall, das du pro Seite setzt. Wird eine Prüfung fällig, bringt das Dashboard sie hoch; bleibt sie über das doppelte Intervall hinaus liegen, eskaliert der Badge auf *Prüfung überfällig*, damit die Seite nicht still veraltet.
 - **Aus Anlass.** Eine Seite wird sofort aktualisiert, wenn sich ein Prozess ändert, ein Werkzeug getauscht oder abgeschafft wird, ein Fehler auffällt, oder wenn mehrere Leute dieselbe Frage stellen, die das Handbuch nicht beantwortet. Das ist die gesündeste Pflege: die Seite im selben Arbeitsschritt wie die Änderung richtigstellen, nicht später als eigene Pflichtübung.
 
 ## Versionierung
@@ -64,7 +64,7 @@ Weil die Seiten in WordPress gepflegt werden, sind die WordPress-Revisionen die 
 
 Die Frage **War das hilfreich?** auf jeder Seite (siehe [bloecke.md](bloecke.md)) zählt eine Stimme pro berechtigter Leserin und meldet die Summen ans Dashboard. Eine Seite, die dauerhaft „Nein" einsammelt, ist ein Wartungssignal: Sie beantwortet die Frage nicht, mit der die Leute ankommen.
 
-Standardmässig stimmen nur angemeldete Leserinnen und Leser ab, die die Seite sehen dürfen, je eine Stimme. Unter Handbuch, Einstellungen lässt sich **Öffentliches Feedback** einschalten, dann stimmen auch abgemeldete Besuchende auf öffentlichen Seiten ab. Zum Schutz der Privatsphäre speichern solche Stimmen nichts Persönliches (kein Cookie, keine IP, keine Kennung), sie haben deshalb keine Begrenzung auf eine Stimme. Nach einer Überarbeitung kannst du die Zähler einer Seite zurücksetzen: die Handbuch-Liste zeigt bei jeder Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler leert.
+Standardmäßig stimmen nur angemeldete Leserinnen und Leser ab, die die Seite sehen dürfen, je eine Stimme. Unter Handbuch, Einstellungen lässt sich **Öffentliches Feedback** einschalten, dann stimmen auch abgemeldete Besuchende auf öffentlichen Seiten ab. Zum Schutz der Privatsphäre speichern solche Stimmen nichts Persönliches (kein Cookie, keine IP, keine Kennung), sie haben deshalb keine Begrenzung auf eine Stimme. Nach einer Überarbeitung kannst du die Zähler einer Seite zurücksetzen: die Handbuch-Liste zeigt bei jeder Seite mit Stimmen die Aktion **Feedback zurücksetzen**, die deren Ja- und Nein-Zähler leert.
 
 ## Transport-Metadaten
 * Seitentyp: Prozessbeschreibung

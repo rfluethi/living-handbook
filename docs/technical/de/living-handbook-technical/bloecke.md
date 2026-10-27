@@ -2,7 +2,7 @@
 
 Living Handbook bringt sechzehn Blöcke mit, im Block-Einfüger unter der Kategorie **Living Handbook** gruppiert, je mit einer eigenen `block.json` unter `blocks/`. Sie werden auf dem Server gerendert: jeder baut sein Markup beim Seitenaufruf aus dem aktuellen Zusammenhang. Die meisten geben nur in dem Zusammenhang etwas aus, für den sie gedacht sind; woanders platziert rendern sie gar nichts.
 
-Jeder von ihnen bietet ausserdem einen **HTML-Anker** und eine **zusätzliche CSS-Klasse** im Bereich **Erweitert** des Blocks: der Anker wird zur ID des Wurzelelements, die Klasse wird ihm hinzugefügt. So kannst du direkt auf einen Block verlinken oder eine einzelne Instanz gestalten. Siehe [Anpassung](anpassung.md#klassen).
+Jeder von ihnen bietet außerdem einen **HTML-Anker** und eine **zusätzliche CSS-Klasse** im Bereich **Erweitert** des Blocks: der Anker wird zur ID des Wurzelelements, die Klasse wird ihm hinzugefügt. So kannst du direkt auf einen Block verlinken oder eine einzelne Instanz gestalten. Siehe [Anpassung](anpassung.md#klassen).
 
 ![Living Handbook Blocks](_attachments/living-handbook-blocks.png)
 
@@ -24,11 +24,11 @@ Die Einstiegsseite und die Einzelseite kommen mit Block-Templates, die die richt
 
 Listet jedes Handbuch, das die aktuell besuchende Person lesen darf: Name, Beschreibung und Seitenzahl, jeweils verlinkt auf die Einstiegsseite dieses Handbuchs. Handbücher, die sie nicht lesen darf, fehlen vollständig.
 
-Darunter stehen die ersten Seitentitel, und die sind es, die zwei Handbücher unterscheidbar machen: Name und Seitenzahl sagen, wie ein Handbuch heisst und wie gross es ist, nicht was darin steht. Ein Link „Alle Seiten" erscheint genau dann, wenn es mehr gibt als gezeigt wird.
+Darunter stehen die ersten Seitentitel, und die sind es, die zwei Handbücher unterscheidbar machen: Name und Seitenzahl sagen, wie ein Handbuch heißt und wie groß es ist, nicht was darin steht. Ein Link „Alle Seiten" erscheint genau dann, wenn es mehr gibt als gezeigt wird.
 
 Ein Handbuch, das zu einem anderen gehört, steht eingerückt darunter und nennt es („in Firma"). Die Gruppierungs-Taxonomie ist seit ihrer Registrierung hierarchisch, gelesen hat das niemand, eine gebaute Struktur war also bis 0.68.0 unsichtbar. Drei Regeln gehören dazu, alle bewusst: **Zugriff wird nicht vererbt**, jedes Handbuch entscheidet für sich, wer es lesen darf; ein Kind, dessen Elternteil die Besucherin nicht sehen darf, rückt auf die oberste Ebene statt mit ihm zu verschwinden, denn sonst gäbe es ein lesbares Handbuch, das niemand erreicht; und die Reihenfolge innerhalb einer Ebene ist der Name.
 
-**Einstellungen:** *Darstellung* wechselt zwischen **Liste** (Standard) und **Karten**. Eine Liste liest sich besser für die Handvoll Handbücher, die die meisten Websites haben; Karten passen auf eine Seite, auf der die Übersicht das tragende visuelle Element ist. *Seitentitel pro Handbuch* ist die Länge der Vorschau, 0 bis 10, standardmässig drei; 0 schaltet sie ab.
+**Einstellungen:** *Darstellung* wechselt zwischen **Liste** (Standard) und **Karten**. Eine Liste liest sich besser für die Handvoll Handbücher, die die meisten Websites haben; Karten passen auf eine Seite, auf der die Übersicht das tragende visuelle Element ist. *Seitentitel pro Handbuch* ist die Länge der Vorschau, 0 bis 10, standardmäßig drei; 0 schaltet sie ab.
 
 **Rendert auf:** jeder Seite oder jedem Template, auf das du ihn setzt. Anders als die übrigen Blöcke braucht er keinen besonderen Zusammenhang.
 
@@ -54,7 +54,7 @@ Die Ergebnisspalte der Startseite eines Handbuchs: die Bereiche des Handbuchs (s
 
 Die Suchleiste eines Handbuchs. Sie sucht im Handbuch und grenzt die Ergebnisspalte ein; die gesetzten Facetten reisen als versteckte Felder mit, damit eine Suche die Filter nicht stillschweigend verwirft. Mit JavaScript aktualisiert sich die Spalte beim Tippen, ohne wird das Formular abgeschickt und die Seite lädt mit der Suche in der URL neu.
 
-**Einstellungen:** *Beschriftung anzeigen* samt Wortlaut, Platzhaltertext, Aufschrift der Schaltfläche und deren Position (neben dem Feld, im Feld, oder keine). Ohne Schaltfläche sucht die Eingabetaste. Die Beschriftung steht in jedem Fall im Dokument: ein Suchfeld mit blossem Platzhalter verliert seinen zugänglichen Namen, sobald etwas hineingeschrieben wird.
+**Einstellungen:** *Beschriftung anzeigen* samt Wortlaut, Platzhaltertext, Aufschrift der Schaltfläche und deren Position (neben dem Feld, im Feld, oder keine). Ohne Schaltfläche sucht die Eingabetaste. Die Beschriftung steht in jedem Fall im Dokument: ein Suchfeld mit bloßem Platzhalter verliert seinen zugänglichen Namen, sobald etwas hineingeschrieben wird.
 
 Farben, Rahmen, Schrift und Abstände sind keine Einstellungen dieses Blocks, sondern seine `supports` in der Seitenleiste, dieselben, die die Kern-Blöcke nutzen. Was der Kern-Suchblock hat und dieser nicht, ist die ausklappbare Variante; sie bleibt weg, bis jemand sie verlangt.
 
@@ -74,7 +74,7 @@ Mit JavaScript filtert er die Ergebnisliste an Ort und Stelle, ohne lädt sein A
 
 Eine kompakte Liste der Handbücher, die die besuchende Person lesen darf, gedacht für einen Seitenkopf oder einen Navigationsbereich. Auf schmalen Bildschirmen klappt sie hinter einen Umschaltknopf. Wie die Übersicht listet er nur Handbücher, die sie sehen darf.
 
-**Rendert auf:** überall. Er ist der eine Block, der dafür gemacht ist, ausserhalb des Handbuchs zu stehen.
+**Rendert auf:** überall. Er ist der eine Block, der dafür gemacht ist, außerhalb des Handbuchs zu stehen.
 
 ### Die Handbücher in die Navigation deines Themes bringen
 
@@ -87,7 +87,7 @@ Du markierst das Ziel mit der CSS-Klasse **`has-handbook-menu`**.
 Es gibt drei Stellen, an die du diese Klasse setzen kannst, und sie verhalten sich unterschiedlich:
 
 1. **An einen einzelnen Navigationslink (empfohlen).** Der Link wird zu einem Untermenü, dessen Kinder die Handbücher sind. Er behält seine eigene Beschriftung und sein eigenes Ziel, ein Link namens „Handbuch", der auf deine Übersichtsseite zeigt, funktioniert beim Klick also weiterhin und öffnet die Handbuchliste als Untermenü.
-2. **An ein Navigations-Untermenü.** Die Kinder des Untermenüs werden die Handbücher. Es behält Beschriftung und Link, du entscheidest also, wie es heisst und wohin es zeigt. Nimm das, wenn du bereits ein Untermenü hast. Es funktioniert auch für ein Untermenü, das in einem anderen liegt, und für eines, das noch leer ist.
+2. **An ein Navigations-Untermenü.** Die Kinder des Untermenüs werden die Handbücher. Es behält Beschriftung und Link, du entscheidest also, wie es heißt und wohin es zeigt. Nimm das, wenn du bereits ein Untermenü hast. Es funktioniert auch für ein Untermenü, das in einem anderen liegt, und für eines, das noch leer ist.
 3. **An den ganzen Navigations-Block.** Ein Untermenü namens „Handbücher" wird als erster Eintrag ergänzt und zeigt auf die Übersichtsseite, die bei der Aktivierung entstanden ist. Die Beschriftung änderst du über den Filter `living_handbook_nav_label` (siehe [hooks.md](hooks.md)). Gibt es diese Übersichtsseite nicht mehr oder ist sie nicht veröffentlicht, wird nichts eingehängt: ein Menüeintrag, der ins Leere führt, wäre schlimmer als keiner.
 
 Empfehlung: nimm Variante 1 oder 2. Beide behalten einen Elternlink, den du steuerst und der nicht von der Übersichtsseite abhängt, die das Plugin angelegt hat.
@@ -102,7 +102,7 @@ Zwei weitere Vorbehalte. Das Einhängen bildet das Markup des Core-Blocks Naviga
 
 Der Seitenbaum des aktuellen Handbuchs, als in sich geschlossene, einklappbare Liste, vom Plugin gestaltet. Ein weiteres Plugin ist nicht nötig. Die Titelzeile hat dieselbe Form wie jede Zeile mit Unterseiten: links ein Umschalt-Knopf, daneben der Handbuchname als gewöhnlicher Link auf die Einstiegsseite des Handbuchs. Es ist kein natives `<details>`-Element mehr, und einen kleinen Pfeil zur Startseite gibt es nicht mehr; der Umschalt-Knopf klappt die ganze Navigation auf oder zu, im geschlossenen Zustand trägt sie die Klasse `.living-handbook-nav.is-collapsed`. Auf dem Desktop verhält sie sich gleich wie auf schmalen Bildschirmen (dort startet sie eingeklappt). Die erste Ebene ist unter dem Titel eingerückt wie jede weitere Ebene. Der Baum ist auf das aktuelle Handbuch begrenzt und listet nie Seiten eines anderen, er wird bei jedem Aufruf frisch gebaut, und die aktuelle Seite wird automatisch markiert.
 
-**Einstellungen:** *Darstellung* wählt zwischen **Menü** (der ganze Baum ist zu sehen, nichts klappt ein) und **Akkordeon** (jeder Zweig mit Kindern klappt ein; der Zweig zur aktuellen Seite startet offen, der Rest geschlossen, und ein Schalter links am Zweig öffnet oder schliesst ihn).
+**Einstellungen:** *Darstellung* wählt zwischen **Menü** (der ganze Baum ist zu sehen, nichts klappt ein) und **Akkordeon** (jeder Zweig mit Kindern klappt ein; der Zweig zur aktuellen Seite startet offen, der Rest geschlossen, und ein Schalter links am Zweig öffnet oder schließt ihn).
 
 **Rendert auf:** Einzelseiten und Einstiegsseiten.
 
@@ -130,7 +130,7 @@ Die Templates setzen zwei Instanzen: eine klebende für den Desktop in der Seite
 
 ![](_attachments/handbook-feedback-en.png)
 
-Die Frage „War das hilfreich?" mit den Knöpfen Ja und Nein. Standardmässig zählt eine Stimme pro Person und Seite, und nur Personen, die diese Seite lesen dürfen, stimmen ab; die Knöpfe erscheinen dann nur für Angemeldete. Ist in den Einstellungen **Öffentliches Feedback** eingeschaltet, sehen die Knöpfe auch abgemeldete Besuchende auf öffentlichen Seiten. Solche Stimmen speichern nichts Persönliches (kein Cookie, keine IP) und haben deshalb keine Begrenzung auf eine Stimme. Das Wartungs-Dashboard zeigt die Summen.
+Die Frage „War das hilfreich?" mit den Knöpfen Ja und Nein. Standardmäßig zählt eine Stimme pro Person und Seite, und nur Personen, die diese Seite lesen dürfen, stimmen ab; die Knöpfe erscheinen dann nur für Angemeldete. Ist in den Einstellungen **Öffentliches Feedback** eingeschaltet, sehen die Knöpfe auch abgemeldete Besuchende auf öffentlichen Seiten. Solche Stimmen speichern nichts Persönliches (kein Cookie, keine IP) und haben deshalb keine Begrenzung auf eine Stimme. Das Wartungs-Dashboard zeigt die Summen.
 
 **Rendert auf:** nur auf Einzelseiten.
 
@@ -138,7 +138,7 @@ Die Frage „War das hilfreich?" mit den Knöpfen Ja und Nein. Standardmässig z
 
 ![](_attachments/handbook-page-meta-en.png)
 
-Die Metadaten-Fusszeile einer Einzelseite: erstellt, zuletzt geändert, zuletzt geprüft und die verantwortliche Rolle, jeweils mit der Person (Avatar und Name), wo eine zugewiesen ist. Das Prüfdatum trägt ein Aktualitäts-Abzeichen mit einem von vier Zuständen:
+Die Metadaten-Fußzeile einer Einzelseite: erstellt, zuletzt geändert, zuletzt geprüft und die verantwortliche Rolle, jeweils mit der Person (Avatar und Name), wo eine zugewiesen ist. Das Prüfdatum trägt ein Aktualitäts-Abzeichen mit einem von vier Zuständen:
 
 | Abzeichen | Bedeutung |
 | --- | --- |
@@ -179,7 +179,7 @@ Unter jedem Treffer steht der Satz, in dem die Wörter gefunden wurden, mit den 
 
 ## Lektionen eines Lernpfads (`living-handbook/lessons`)
 
-Die nummerierten Lektionen eines Lernpfads, mit Startknopf und, sobald etwas gelesen ist, dem Zähler und einem Haken neben dem Erledigten. Jeder Link trägt den Pfad als `?lh_path=<id>` mit, und nur daraus weiss die nächste Seite, in welchem Pfad sie gelesen wird.
+Die nummerierten Lektionen eines Lernpfads, mit Startknopf und, sobald etwas gelesen ist, dem Zähler und einem Haken neben dem Erledigten. Jeder Link trägt den Pfad als `?lh_path=<id>` mit, und nur daraus weiß die nächste Seite, in welchem Pfad sie gelesen wird.
 
 Die Liste wird für die lesende Person aufgelöst: eine Lektion, die gelöscht, in den Entwurf zurückgesetzt, in ein anderes Handbuch verschoben oder für diese Person nicht sichtbar ist, fällt aus Liste und Zähler. Zwei Personen können also unterschiedlich viele Lektionen sehen, und jede sieht einen Zähler über das, was sie tatsächlich hat.
 
@@ -202,12 +202,12 @@ Die Lernpfade des Handbuchs, dessen Einstiegsseite das ist, je mit der Anzahl Le
 Drei Ursachen erklären fast jede Meldung „der Block ist leer":
 
 - **Die Seite hat kein Handbuch.** Der Zugriff ist bewusst fail-closed: eine Handbuchseite, die keinem Handbuch zugewiesen ist, ist im Frontend unsichtbar. Weise sie in der Editor-Seitenleiste zu.
-- **Das Handbuch ist für dich nicht sichtbar.** Ein neues Handbuch steht standardmässig auf „Alle Mitglieder (angemeldet)", ausgeloggt siehst du also nichts. Ändere das am Handbuch selbst (Handbuch → Handbücher → bearbeiten).
+- **Das Handbuch ist für dich nicht sichtbar.** Ein neues Handbuch steht standardmäßig auf „Alle Mitglieder (angemeldet)", ausgeloggt siehst du also nichts. Ändere das am Handbuch selbst (Handbuch → Handbücher → bearbeiten).
 - **Der Block steht im falschen Zusammenhang.** Die meisten Blöcke rendern nur auf einer Einzelseite oder einer Einstiegsseite. Siehe „Rendert auf" oben.
 
 ## Woher die Styles und Skripte kommen
 
-Jeder Block benennt seine eigenen Assets in seiner `block.json`: `style` und `viewScript` zeigen auf die gemeinsamen Frontend-Handles, `editorScript` auf das Editor-Bundle. WordPress lädt Stylesheet und Skript des Handbuchs dann genau dort, wo ein Block gerendert wird, und eine Seite ohne Blöcke des Plugins lädt nichts zusätzlich. Das ist wichtig für Blöcke, die ausserhalb einer Handbuchseite stehen, in einem Kopfbereich, einem Fussbereich oder einem anderen Template-Teil: aus der aktuellen Query zu entscheiden, ob eine Seite „wie eine Handbuchansicht aussieht", erfasst diese nicht, und ein solcher Block wurde früher ohne Stile und ohne sein Skript ausgegeben. Die beiden gemeinsamen Handles werden einmal auf `init` registriert, mit ihren REST-Endpunkten und übersetzten Beschriftungen am Handle statt an einer einzelnen Aufrufstelle.
+Jeder Block benennt seine eigenen Assets in seiner `block.json`: `style` und `viewScript` zeigen auf die gemeinsamen Frontend-Handles, `editorScript` auf das Editor-Bundle. WordPress lädt Stylesheet und Skript des Handbuchs dann genau dort, wo ein Block gerendert wird, und eine Seite ohne Blöcke des Plugins lädt nichts zusätzlich. Das ist wichtig für Blöcke, die außerhalb einer Handbuchseite stehen, in einem Kopfbereich, einem Fußbereich oder einem anderen Template-Teil: aus der aktuellen Query zu entscheiden, ob eine Seite „wie eine Handbuchansicht aussieht", erfasst diese nicht, und ein solcher Block wurde früher ohne Stile und ohne sein Skript ausgegeben. Die beiden gemeinsamen Handles werden einmal auf `init` registriert, mit ihren REST-Endpunkten und übersetzten Beschriftungen am Handle statt an einer einzelnen Aufrufstelle.
 
 ## Die Blöcke gestalten
 

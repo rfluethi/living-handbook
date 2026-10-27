@@ -7,7 +7,7 @@ Zwei Sorten, am Namen zu unterscheiden (siehe [architektur.md](architektur.md)):
 - **Redaktionelle** Felder tragen das Präfix `living_handbook_`. Eine Person füllt sie aus, und die registrierten sind über die REST-API lesbar.
 - **Buchhaltungs**-Felder tragen das Präfix `_lh_`. Das Plugin führt sie über eine Seite, nicht für sie. Der führende Unterstrich macht sie geschützt: WordPress blendet sie in der Box „Custom Fields" aus, wo eine falsche Bearbeitung den Abgleich wortlos kaputt machen würde.
 
-„REST" heisst unten, das Feld ist mit `show_in_rest` registriert und erscheint unter `meta` in `/wp/v2/handbook`. Jedes registrierte Feld schreibt nur, wer dieses Objekt bearbeiten darf: der Auth-Callback fragt `edit_post` für die Seite, oder `manage_categories` für ein Handbuch. Ein Feld mit „nicht registriert" ist gewöhnliches Post-Meta, das nur der eigene Code des Plugins anfasst.
+„REST" heißt unten, das Feld ist mit `show_in_rest` registriert und erscheint unter `meta` in `/wp/v2/handbook`. Jedes registrierte Feld schreibt nur, wer dieses Objekt bearbeiten darf: der Auth-Callback fragt `edit_post` für die Seite, oder `manage_categories` für ein Handbuch. Ein Feld mit „nicht registriert" ist gewöhnliches Post-Meta, das nur der eigene Code des Plugins anfasst.
 
 ## Handbuchseiten (`handbook`)
 
@@ -17,7 +17,7 @@ Zwei Sorten, am Namen zu unterscheiden (siehe [architektur.md](architektur.md)):
 | --- | --- | --- | --- | --- |
 | `living_handbook_last_updated` | string, `JJJJ-MM-TT` | ja | `Metadata::set_updated()` bei jedem Speichern, `GitSync` nach jedem erfolgreichen Abgleich | Das Datum, das als „Zuletzt aktualisiert" erscheint. Wird nicht von Hand eingetragen. |
 | `living_handbook_last_reviewed` | string, `JJJJ-MM-TT` | ja | Die Box **Handbuch-Wartung**, QuickEdit, Mehrfachbearbeitung; ein Import aus der Transport-Zeile `Letzte Prüfung`; ein Bündel-Import bei Seiten, die er anlegt | Das letzte Prüfdatum. Was kein Datum ist, wird leer gespeichert. |
-| `living_handbook_review_interval` | integer, Tage | ja | Wie das Prüfdatum; Transport-Zeile `Prüfintervall` | Wie lange eine Prüfung gilt. 0 oder leer heisst kein Intervall, die Seite gilt dann als nicht geprüft. |
+| `living_handbook_review_interval` | integer, Tage | ja | Wie das Prüfdatum; Transport-Zeile `Prüfintervall` | Wie lange eine Prüfung gilt. 0 oder leer heißt kein Intervall, die Seite gilt dann als nicht geprüft. |
 | `living_handbook_reviewer` | integer, Benutzer-ID | ja | Die Wartungs-Box, QuickEdit, Mehrfachbearbeitung; ein Bündel-Import bei Seiten, die er anlegt, aufgelöst aus Login oder E-Mail-Adresse | Wer die Seite zuletzt geprüft hat. |
 | `living_handbook_toc_depth` | integer, 0 bis 6 | ja | Die Wartungs-Box; ein Bündel-Import bei Seiten, die er anlegt | Übersteuert die Tiefe des Inhaltsverzeichnisses dieser Seite. 0 nimmt die Einstellung des Blocks; ein Wert über 6 wird als 0 gespeichert. |
 | `living_handbook_ai_exclude` | boolean | ja, Standard `false` | Die Wartungs-Box; ein Bündel-Import bei Seiten, die er anlegt | Bittet künftige KI-Leser, die Seite auszulassen. Das Plugin selbst speichert und zeigt das Feld nur. |
@@ -54,7 +54,7 @@ Der abgeleitete Zustand einer Seite (geprüft, Prüfung fällig, Prüfung überf
 | `_lh_feedback_no` | integer | nicht registriert | Der Feedback-Endpunkt | Nein-Stimmen. |
 | `_lh_feedback_voters` | Array von Benutzer-IDs | nicht registriert | Der Feedback-Endpunkt, bei angemeldeten Stimmen | Wer abgestimmt hat, damit eine angemeldete Person je Seite einmal zählt. Anonyme Stimmen fügen hier nichts hinzu. |
 
-Alle drei entfernt die Zeilenaktion **Feedback zurücksetzen** in der Seitenliste. Anonyme Stimmen werden ausserdem je Seite und Stunde in einem Transient gezählt, `lh_fb_<Post-ID>_<JJJJMMTTHH>`, für die Obergrenze pro Stunde (`living_handbook_anonymous_feedback_limit` in [hooks.md](hooks.md)); er läuft nach zwei Stunden ab und identifiziert niemanden.
+Alle drei entfernt die Zeilenaktion **Feedback zurücksetzen** in der Seitenliste. Anonyme Stimmen werden außerdem je Seite und Stunde in einem Transient gezählt, `lh_fb_<Post-ID>_<JJJJMMTTHH>`, für die Obergrenze pro Stunde (`living_handbook_anonymous_feedback_limit` in [hooks.md](hooks.md)); er läuft nach zwei Stunden ab und identifiziert niemanden.
 
 ## Lernpfade (`lh_training`)
 

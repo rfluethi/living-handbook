@@ -266,11 +266,11 @@ msgstr "Vergrößern"
 
 #: src/Export/SiteRenderer.php:491 src/Frontend/FrontendRenderer.php:130
 msgid "Close"
-msgstr "Schliessen"
+msgstr "Schließen"
 
 #: src/Export/SiteRenderer.php:492 src/Frontend/FrontendRenderer.php:132
 msgid "Enlarged diagram"
-msgstr "Vergrössertes Diagramm"
+msgstr "Vergrößertes Diagramm"
 
 #: src/Export/SiteRenderer.php:734
 msgid "Nothing found."
@@ -1380,7 +1380,7 @@ msgstr "Das ZIP hat zu viele Einträge (maximal 2000)."
 #: src/Import/MarkdownImportPage.php:303
 #, php-format
 msgid "The ZIP is too large: the uncompressed contents exceed %d MB."
-msgstr "Das ZIP ist zu gross: der entpackte Inhalt überschreitet %d MB."
+msgstr "Das ZIP ist zu groß: der entpackte Inhalt überschreitet %d MB."
 
 #: src/Import/MarkdownImportPage.php:348 assets/js/markdown-import.js:596
 msgid "No ZIP file received."
@@ -1542,7 +1542,7 @@ msgid ""
 "it does not exist yet. Pick an existing handbook to put the pages there "
 "instead; its access configuration stays as it is."
 msgstr ""
-"Standardmässig geht das Bündel in sein eigenes Handbuch, das hier angelegt "
+"Standardmäßig geht das Bündel in sein eigenes Handbuch, das hier angelegt "
 "wird, falls es noch fehlt. Wähle ein vorhandenes Handbuch, um die Seiten "
 "stattdessen dort abzulegen; dessen Zugriffs-Konfiguration bleibt unverändert."
 
@@ -2243,7 +2243,7 @@ msgid ""
 "reloading. On internal pages only logged-in users vote, one vote each, "
 "regardless of this setting."
 msgstr ""
-"Standardmässig aus. Ist es an, kann jede Person auf einer öffentlichen Seite "
+"Standardmäßig aus. Ist es an, kann jede Person auf einer öffentlichen Seite "
 "abstimmen. Zum Schutz der Privatsphäre werden Stimmen keiner Person "
 "zugeordnet: kein Cookie, keine IP und nichts anderes Persönliches wird "
 "gespeichert, dieselbe Person kann nach dem Neuladen also erneut abstimmen. "

@@ -6,9 +6,9 @@ Leg deine Regeln in das plugin-eigene Feld **Eigenes CSS** unter **Handbuch → 
 
 ## Ohne CSS
 
-**Handbuch → Einstellungen → Darstellung** hat die elf Farben, auf die es ankommt, und eine Schriftgrösse, für den Fall, dass ein Theme daneben liegt: eines, dessen Farbwerte nicht zu dem passen, was es tatsächlich anzeigt, oder eines, dessen Kontrast zu schwach ist. Die Farbauswahl bietet die Palette des Themes als Felder an. Die Einstellungsseite ist in fünf Reiter geteilt, und jeder Reiter ist eine eigene Settings-Gruppe. Das ist nicht kosmetisch: `options.php` läuft über die Gruppe des abgeschickten Formulars und ruft für jede Option darin `update_option()` auf, mit `null` für die, die das Formular nicht mitgeschickt hat. Eine gemeinsame Gruppe über fünf Reiter würde also bei jedem Speichern die vier Reiter leeren, die gerade nicht auf dem Bildschirm sind.
+**Handbuch → Einstellungen → Darstellung** hat die elf Farben, auf die es ankommt, und eine Schriftgröße, für den Fall, dass ein Theme daneben liegt: eines, dessen Farbwerte nicht zu dem passen, was es tatsächlich anzeigt, oder eines, dessen Kontrast zu schwach ist. Die Farbauswahl bietet die Palette des Themes als Felder an. Die Einstellungsseite ist in fünf Reiter geteilt, und jeder Reiter ist eine eigene Settings-Gruppe. Das ist nicht kosmetisch: `options.php` läuft über die Gruppe des abgeschickten Formulars und ruft für jede Option darin `update_option()` auf, mit `null` für die, die das Formular nicht mitgeschickt hat. Eine gemeinsame Gruppe über fünf Reiter würde also bei jedem Speichern die vier Reiter leeren, die gerade nicht auf dem Bildschirm sind.
 
-Zwei Farben sind bewusst keine Felder. Die Textfarbe auf einem gefüllten Akzent-Knopf (`--lh-on-accent`) wird aus dem Akzent abgeleitet, Schwarz oder Weiss, je nachdem, was den höheren Kontrast hat. Und das Seitentyp-Abzeichen nimmt den Akzent selbst (`--lh-accent-soft` auf `--lh-accent`). Deshalb färbt sich beim Setzen der Schlagwort-Fläche genau eines der drei Abzeichen unter einer Seite: Sie sind mit Absicht farblich unterscheidbar.
+Zwei Farben sind bewusst keine Felder. Die Textfarbe auf einem gefüllten Akzent-Knopf (`--lh-on-accent`) wird aus dem Akzent abgeleitet, Schwarz oder Weiß, je nachdem, was den höheren Kontrast hat. Und das Seitentyp-Abzeichen nimmt den Akzent selbst (`--lh-accent-soft` auf `--lh-accent`). Deshalb färbt sich beim Setzen der Schlagwort-Fläche genau eines der drei Abzeichen unter einer Seite: Sie sind mit Absicht farblich unterscheidbar.
 
 | Feld | Variable | Wo es landet |
 | --- | --- | --- |
@@ -20,21 +20,21 @@ Zwei Farben sind bewusst keine Felder. Die Textfarbe auf einem gefüllten Akzent
 | Geprüft, fällig, überfällig | `--lh-ok`, `--lh-due`, `--lh-overdue` | die Chips „Geprüft", „Prüfung fällig" und „Prüfung überfällig" und ihre Punkte |
 | Nicht geprüft | `--lh-none` | der Chip „Nicht geprüft" und sein Punkt: eine Seite ohne Prüfdatum, bewusst neutral, weil eine Seite, die noch niemand angeschaut hat, nicht überfällig ist |
 
-Ein leeres Feld heisst: das Theme entscheidet. So wird ausgeliefert, und so ist das Plugin gedacht. Für ein leeres Feld wird nichts ausgegeben. Was gesetzt ist, wird als `--lh-user-*` auf `:root` geschrieben, und das Stylesheet liest jede Variable als `var(--lh-user-x, <Theme-Vorgabe>, <Rückfallwert>)`. Das ergibt drei Ebenen, in dieser Reihenfolge:
+Ein leeres Feld heißt: das Theme entscheidet. So wird ausgeliefert, und so ist das Plugin gedacht. Für ein leeres Feld wird nichts ausgegeben. Was gesetzt ist, wird als `--lh-user-*` auf `:root` geschrieben, und das Stylesheet liest jede Variable als `var(--lh-user-x, <Theme-Vorgabe>, <Rückfallwert>)`. Das ergibt drei Ebenen, in dieser Reihenfolge:
 
 1. die Voreinstellungen des Plugins, die dem Theme folgen,
 2. die Einstellungsfelder, die ohne Spezifitätskampf gegen die Voreinstellungen gewinnen,
 3. selbst geschriebenes CSS, das gegen beides gewinnt, weil es `--lh-x` direkt benennt und zuletzt ausgegeben wird.
 
-**Schriftgrösse** ist ein Prozentwert. Jede Schriftgrösse im Stylesheet ist ein Vielfaches von `--lh-base`, das bewusst nirgends deklariert ist und deshalb auf `1rem` zurückfällt: 100 Prozent ist genau das, womit das Plugin ausgeliefert wird. Die Einstellung schreibt `--lh-base` auf `:root`, 125 Prozent sind `1.25rem`, aus 16px werden also 20px, und alle Grössen verschieben sich mit, in dem Verhältnis, in dem sie aufeinander abgestimmt sind. Das zählt bei einem Theme, dessen eigener Text nicht 16px gross ist: Das Plugin rechnet in `rem` und ignoriert damit die Schriftgrösse des Themes, wodurch es daneben klein wirken kann. Du kannst `--lh-base` auch selbst setzen, in jeder Einheit:
+**Schriftgröße** ist ein Prozentwert. Jede Schriftgröße im Stylesheet ist ein Vielfaches von `--lh-base`, das bewusst nirgends deklariert ist und deshalb auf `1rem` zurückfällt: 100 Prozent ist genau das, womit das Plugin ausgeliefert wird. Die Einstellung schreibt `--lh-base` auf `:root`, 125 Prozent sind `1.25rem`, aus 16px werden also 20px, und alle Größen verschieben sich mit, in dem Verhältnis, in dem sie aufeinander abgestimmt sind. Das zählt bei einem Theme, dessen eigener Text nicht 16px groß ist: Das Plugin rechnet in `rem` und ignoriert damit die Schriftgröße des Themes, wodurch es daneben klein wirken kann. Du kannst `--lh-base` auch selbst setzen, in jeder Einheit:
 
 ```css
 body { --lh-base: 20px; }
 ```
 
-Die Grösse fasst den Text einer Seite bewusst nicht an. Der gehört deinem Theme, und das Plugin hat ihn nicht zu skalieren.
+Die Größe fasst den Text einer Seite bewusst nicht an. Der gehört deinem Theme, und das Plugin hat ihn nicht zu skalieren.
 
-## Farben und ein paar Grössen
+## Farben und ein paar Größen
 
 Die Custom Properties sind auf den Frontend-Wrappern des Plugins deklariert. Am schnellsten gestaltest du alles um, indem du sie überschreibst:
 
@@ -115,7 +115,7 @@ Die vier Prüfstatus-Farben tragen eine Bedeutung. Die Namen der Variablen und K
 
 Halte die vier voneinander unterscheidbar, idealerweise nicht allein über den Farbton, denn der Zustand wird auch über die Form eines kleinen Punkts auf den Karten vermittelt.
 
-`--lh-muted` wird für kleinen sekundären Text verwendet. Der Standardwert erfüllt WCAG AA (4,5:1 auf Weiss), prüf also den Kontrast, wenn du ihn aufhellst.
+`--lh-muted` wird für kleinen sekundären Text verwendet. Der Standardwert erfüllt WCAG AA (4,5:1 auf Weiß), prüf also den Kontrast, wenn du ihn aufhellst.
 
 ## Nur auf das Handbuch beschränken
 
@@ -128,7 +128,7 @@ Jede Handbuch-Ansicht trägt die Body-Klasse `living-handbook-page`. Nutze sie, 
 
 ## Klassen
 
-Jeder Handbuch-Block bietet ausserdem im Editor unter seinem Bereich **Erweitert** eine **zusätzliche CSS-Klasse** und einen **HTML-Anker**. Die Klasse wird dem Wurzelelement des Blocks hinzugefügt, der Anker wird dessen `id`. So sprichst du eine einzelne Instanz an (zum Beispiel genau einen Navigationsblock) oder verlinkst direkt auf einen Block, ohne die gemeinsamen Klassen unten anzufassen.
+Jeder Handbuch-Block bietet außerdem im Editor unter seinem Bereich **Erweitert** eine **zusätzliche CSS-Klasse** und einen **HTML-Anker**. Die Klasse wird dem Wurzelelement des Blocks hinzugefügt, der Anker wird dessen `id`. So sprichst du eine einzelne Instanz an (zum Beispiel genau einen Navigationsblock) oder verlinkst direkt auf einen Block, ohne die gemeinsamen Klassen unten anzufassen.
 
 ### Übersicht und Einstiegsseiten
 
@@ -149,8 +149,8 @@ Jeder Handbuch-Block bietet ausserdem im Editor unter seinem Bereich **Erweitert
 
 - `.living-handbook-cards`, mit `--areas` oder `--books`: das responsive Raster.
 - `.living-handbook-card`, mit `--area` oder `--book`, dazu `.living-handbook-card__link`, `__title`, `__excerpt`, `__meta`.
-- `.living-handbook-card__preview`, `.living-handbook-card__more`, `.living-handbook-card__parent`: die Seitentitel unter einer Handbuch-Karte, der Link auf den Rest, und der Name des Handbuchs, zu dem dieses gehört. Die Vorschau steht ausserhalb des Karten-Links, denn ein Link in einem Link ist kein Markup, mit dem ein Browser etwas anfangen kann.
-- `.living-handbook-cards--children`: die Handbücher unterhalb eines anderen, per Aussenabstand eingerückt.
+- `.living-handbook-card__preview`, `.living-handbook-card__more`, `.living-handbook-card__parent`: die Seitentitel unter einer Handbuch-Karte, der Link auf den Rest, und der Name des Handbuchs, zu dem dieses gehört. Die Vorschau steht außerhalb des Karten-Links, denn ein Link in einem Link ist kein Markup, mit dem ein Browser etwas anfangen kann.
+- `.living-handbook-cards--children`: die Handbücher unterhalb eines anderen, per Außenabstand eingerückt.
 - `.living-handbook-card__dot`, mit `--ok`, `--due`, `--overdue` oder `--none`: der Prüfstatus-Punkt. Seine Form variiert je Zustand (gefüllter Kreis, gerundetes Quadrat, Raute, und ein leerer Kreis für „Nicht geprüft"), damit der Status nicht allein über die Farbe erkennbar ist. Gezeichnet wird er direkt auf die Fläche des Themes, er nimmt deshalb `--lh-ok-on-surface`, `--lh-due-on-surface`, `--lh-overdue-on-surface` beziehungsweise `--lh-none-on-surface`.
 
 In der Anzeige als Liste verlieren die Karten ihren Rahmen und werden zu flachen Zeilen; sprich sie über den Modifikator des Elternelements an, zum Beispiel `.living-handbook-entry--list .living-handbook-card`.
@@ -164,7 +164,7 @@ In der Anzeige als Liste verlieren die Karten ihren Rahmen und werden zu flachen
 
 Die Navigation ist kein natives `<details>`-Element mehr. Ihre Titelzeile hat dieselbe Form wie jede Zeile mit Unterseiten: links ein Umschalt-Knopf, daneben der Handbuchtitel als gewöhnlicher Link auf die Einstiegsseite. Den kleinen Pfeil-Link zur Startseite gibt es nicht mehr. Gestaltet wird alles vom Plugin über die `--lh-*`-Variablen weiter oben; ein weiteres Plugin ist nicht beteiligt.
 
-- `.living-handbook-navwrap`: umschliesst die Navigation und hält sie linksbündig.
+- `.living-handbook-navwrap`: umschließt die Navigation und hält sie linksbündig.
 - `.living-handbook-nav`: die umrandete, klebende Navigation. Sie trägt `.living-handbook-nav--tree` (die Anzeige **Menü**, der ganze Baum offen) oder `.living-handbook-nav--accordion` (die Anzeige **Akkordeon**, die Äste klappen zu). Ist die ganze Navigation zugeklappt, kommt `.living-handbook-nav.is-collapsed` dazu.
 - `.living-handbook-nav__top`: die Titelzeile mit dem Umschalt-Knopf und dem Handbuchtitel als Link auf die Einstiegsseite. Die Schriftstärke des Titels setzt `--lh-nav-top-weight`.
 - `.living-handbook-nav__toggle--all`: der Umschalt-Knopf der Titelzeile, der die ganze Navigation auf- und zuklappt. Blende ihn nicht aus: auf schmalen Bildschirmen ist er die einzige Möglichkeit, die Navigation aus dem Weg zu räumen.
@@ -178,11 +178,11 @@ Die Navigation ist kein natives `<details>`-Element mehr. Ihre Titelzeile hat di
 - `.living-handbook-toc`, mit `--desktop` oder `--mobile`: die aufklappbare Box.
 - `.living-handbook-toc__summary`, `__list`, `__item`. Der Eintrag des Abschnitts, den du gerade liest, trägt `.is-active`.
 
-### Badges, Metadaten-Fusszeile und Feedback
+### Badges, Metadaten-Fußzeile und Feedback
 
 - `.living-handbook-badges`, `.living-handbook-badge`, mit `--type`, `--audience`, `--ok`, `--due`, `--overdue` oder `--none`.
-- `.living-handbook-meta`, `.living-handbook-metagrid`, `.living-handbook-metagrid__item`, `__label`, `__date`. Die Fusszeile ist eine Beschreibungsliste (`dl`), Label und Wert sind `dt` und `dd`.
-- `.living-handbook-person`, `__avatar`, `__name`: die verantwortliche Person in der Fusszeile.
+- `.living-handbook-meta`, `.living-handbook-metagrid`, `.living-handbook-metagrid__item`, `__label`, `__date`. Die Fußzeile ist eine Beschreibungsliste (`dl`), Label und Wert sind `dt` und `dd`.
+- `.living-handbook-person`, `__avatar`, `__name`: die verantwortliche Person in der Fußzeile.
 - `.living-handbook-feedback`: die Zeile „War das hilfreich?" und ihre Knöpfe.
 - `.living-handbook-visually-hidden`: Text, der nur für Screenreader sichtbar ist (zum Beispiel die Prüfstatus-Beschriftung auf einer Karte). Halte ihn visuell verborgen, aber für assistive Technik lesbar.
 
@@ -192,7 +192,7 @@ Die Standardstile enthalten einige Regeln, die es aus Gründen der Barrierefreih
 
 - **Fokusringe.** Jedes interaktive Element erhält bei `:focus-visible` eine sichtbare Umrandung. Themes entfernen den Browser-Standard häufig, das Plugin stellt ihn wieder her. Wenn du ihn umgestaltest, behalte eine Umrandung bei, die sich klar von deinem Hintergrund abhebt.
 - **Reduzierte Bewegung.** Die Hover-Bewegung der Karten und das Einblenden beim Laden werden unter `prefers-reduced-motion: reduce` abgeschaltet, und das Inhaltsverzeichnis springt dann, statt sanft zu scrollen. Wenn du eigene Animationen ergänzt, pack sie in dieselbe Media Query.
-- **Der Vergrössern-Knopf.** Ein Bild oder ein Diagramm, das sich vergrössern lässt, steckt in einem echten `<button class="living-handbook-zoom">`, ist also mit der Tastatur erreichbar und auslösbar und sagt an, was es tut. Der Knopf eines Diagramms nimmt die volle Spaltenbreite ein, weil ein Diagramm auf die Breite gezeichnet wird, die es bekommt, und sonst zusammenfällt. Wenn du den Knopf umgestaltest, mach kein gewöhnliches Element daraus und lass die Breite von `.living-handbook-zoom--diagram` in Ruhe.
+- **Der Vergrößern-Knopf.** Ein Bild oder ein Diagramm, das sich vergrößern lässt, steckt in einem echten `<button class="living-handbook-zoom">`, ist also mit der Tastatur erreichbar und auslösbar und sagt an, was es tut. Der Knopf eines Diagramms nimmt die volle Spaltenbreite ein, weil ein Diagramm auf die Breite gezeichnet wird, die es bekommt, und sonst zusammenfällt. Wenn du den Knopf umgestaltest, mach kein gewöhnliches Element daraus und lass die Breite von `.living-handbook-zoom--diagram` in Ruhe.
 - **Die Klickflächen.** Die kleinen Bedienelemente behalten eine Mindesthöhe von 24 Pixeln (WCAG 2.5.8). Kleiner werden sie schwer zu treffen, auf einem Touchscreen und für alle mit unruhiger Hand.
 
 ```css

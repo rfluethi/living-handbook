@@ -15,7 +15,7 @@ Zwei Empfehlungen für lesbare Seiten:
 
 Überschriften der Ebenen 2 bis 4 bekommen eine eigene Adresse, gebildet aus ihrem Text. Fährst du mit der Maus über eine Überschrift, erscheint rechts daneben ein `#`. Ein Klick darauf springt zum Abschnitt, und in der Adresszeile steht dann die Adresse, die du weitergeben kannst, etwa `.../zugriff-verstehen/#drei-stufen`.
 
-Die Adresse hängt am Text der Überschrift, nicht an ihrer Position. Fügst du weiter oben einen Abschnitt ein, bleiben alle Links darunter gültig. Änderst du dagegen den Text einer Überschrift, ändert sich ihre Adresse, und alte Links laufen ins Leere. Willst du das verhindern, trage im Editor unter **Erweitert** einen festen **HTML-Anker** ein: der gilt dann, egal wie die Überschrift heisst.
+Die Adresse hängt am Text der Überschrift, nicht an ihrer Position. Fügst du weiter oben einen Abschnitt ein, bleiben alle Links darunter gültig. Änderst du dagegen den Text einer Überschrift, ändert sich ihre Adresse, und alte Links laufen ins Leere. Willst du das verhindern, trage im Editor unter **Erweitert** einen festen **HTML-Anker** ein: der gilt dann, egal wie die Überschrift heißt.
 
 ## Diagramme einsetzen
 

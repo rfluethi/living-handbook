@@ -79,7 +79,7 @@ add_filter(
 
 ### `living_handbook_uninstall_remove_content`
 
-Filtert, ob beim Löschen des Plugins auch alle Handbuch-Inhalte entfernt werden. Standardmässig behält die Deinstallation deine Inhalte und entfernt nur die eigenen Optionen und Caches des Plugins; dieselbe Wahl gibt es als Häkchen auf der Einstellungsseite. Dieser Filter wird mit dem Häkchen ODER-verknüpft, `true` erzwingt also die vollständige Entfernung auch bei ausgeschalteter Option: die Handbuch-Seiten, die Handbücher und ihre Metadaten, die vier geseedeten Einordnungs-Taxonomien, die bei der Aktivierung angelegte Übersichtsseite und alle im Site-Editor bearbeiteten Vorlagen.
+Filtert, ob beim Löschen des Plugins auch alle Handbuch-Inhalte entfernt werden. Standardmäßig behält die Deinstallation deine Inhalte und entfernt nur die eigenen Optionen und Caches des Plugins; dieselbe Wahl gibt es als Häkchen auf der Einstellungsseite. Dieser Filter wird mit dem Häkchen ODER-verknüpft, `true` erzwingt also die vollständige Entfernung auch bei ausgeschalteter Option: die Handbuch-Seiten, die Handbücher und ihre Metadaten, die vier geseedeten Einordnungs-Taxonomien, die bei der Aktivierung angelegte Übersichtsseite und alle im Site-Editor bearbeiteten Vorlagen.
 
 Parameter:
 
@@ -93,7 +93,7 @@ add_filter( 'living_handbook_uninstall_remove_content', '__return_true' );
 
 ### `living_handbook_zip_max_bytes`
 
-Filtert die maximale unkomprimierte Gesamtgrösse eines ZIP-Imports in Bytes (Standard 100 MB). Das ist eine Sicherheitsgrenze gegen Speichererschöpfung, keine Grösse, die das Plugin zusichern kann: Die eigentliche Obergrenze für einen grossen Import ist die PHP-Konfiguration des Servers (`upload_max_filesize`, `post_max_size`, `memory_limit` und das Zeitlimit für die Ausführung), an der dieser Filter nichts ändert. Erhöhe ihn nur, wenn der Server den Speicher hat, so viel auf einmal zu lesen, und denk daran, dass die hochgeladene ZIP-Datei selbst weiterhin durch `upload_max_filesize` und `post_max_size` begrenzt ist.
+Filtert die maximale unkomprimierte Gesamtgröße eines ZIP-Imports in Bytes (Standard 100 MB). Das ist eine Sicherheitsgrenze gegen Speichererschöpfung, keine Größe, die das Plugin zusichern kann: Die eigentliche Obergrenze für einen großen Import ist die PHP-Konfiguration des Servers (`upload_max_filesize`, `post_max_size`, `memory_limit` und das Zeitlimit für die Ausführung), an der dieser Filter nichts ändert. Erhöhe ihn nur, wenn der Server den Speicher hat, so viel auf einmal zu lesen, und denk daran, dass die hochgeladene ZIP-Datei selbst weiterhin durch `upload_max_filesize` und `post_max_size` begrenzt ist.
 
 Parameter:
 
@@ -153,7 +153,7 @@ add_filter(
 
 ### `living_handbook_taxonomy_slug`
 
-Filtert die URL-Basis einer Handbuch-Gruppierung (`handbook_set`), standardmässig `/handbook-set/<slug>`. Gleicher Grund und gleicher Vorbehalt wie bei `living_handbook_post_type_slug`.
+Filtert die URL-Basis einer Handbuch-Gruppierung (`handbook_set`), standardmäßig `/handbook-set/<slug>`. Gleicher Grund und gleicher Vorbehalt wie bei `living_handbook_post_type_slug`.
 
 Parameter:
 
@@ -202,7 +202,7 @@ Parameter:
 
 ### `living_handbook_archive_max_bytes`
 
-Filtert die maximale Grösse eines solchen Archiv-Downloads in Bytes. Dieselbe Art Sicherheitsgrenze wie `living_handbook_zip_max_bytes`, nur für den Archiv-Weg.
+Filtert die maximale Größe eines solchen Archiv-Downloads in Bytes. Dieselbe Art Sicherheitsgrenze wie `living_handbook_zip_max_bytes`, nur für den Archiv-Weg.
 
 Parameter:
 
@@ -266,7 +266,7 @@ add_filter( 'living_handbook_training_enabled', '__return_true' );
 
 ### `living_handbook_training_slug`
 
-Bestimmt die URL-Basis eines Lernpfads, standardmässig `/learning-path/<slug>`. Gleicher Grund und gleicher Vorbehalt wie bei `living_handbook_post_type_slug`.
+Bestimmt die URL-Basis eines Lernpfads, standardmäßig `/learning-path/<slug>`. Gleicher Grund und gleicher Vorbehalt wie bei `living_handbook_post_type_slug`.
 
 Parameter:
 
@@ -293,7 +293,7 @@ Gibt einen float zurück.
 
 ### `living_handbook_static_export_page`
 
-Filtert das vollständige HTML-Dokument einer Seite im Website-Export, nachdem Links und Bilder darin auf die Dateien im ZIP zeigen. Hier hängt eine Website einen eigenen Kopf, einen Vertraulichkeitshinweis, ein Druck-Stylesheet oder eine eigene Fusszeile an einen Export, ohne das Plugin anzufassen.
+Filtert das vollständige HTML-Dokument einer Seite im Website-Export, nachdem Links und Bilder darin auf die Dateien im ZIP zeigen. Hier hängt eine Website einen eigenen Kopf, einen Vertraulichkeitshinweis, ein Druck-Stylesheet oder eine eigene Fußzeile an einen Export, ohne das Plugin anzufassen.
 
 Das Dokument wird genau so ins Archiv geschrieben, wie es zurückkommt: Was hier dazukommt, wird danach nicht mehr escaped, bereinigt oder geprüft.
 
@@ -309,7 +309,7 @@ Gibt einen String zurück.
 
 Filtert die Gestaltungen, die der Export-Bildschirm für eine statische Website anbietet. Jeder Eintrag hat einen Schlüssel, ein `label` und einen `css`-Block, der hinter das eigene Stylesheet des Exports gehängt wird. So ergänzt eine Website eine eigene Gestaltung, benennt die mitgelieferten um oder wirft weg, was sie nicht braucht.
 
-Es genügt, die `--lh-user-*`-Eigenschaften zu setzen, um alles umzufärben, was das Plugin zeichnet: Abzeichen, Karten, Prüfstatus-Farben und Metadaten-Fusszeile lesen sie über eine Fallback-Kette. Eine Gestaltung, die stattdessen einzelne Bausteine umstylt, muss bei jeder Änderung an diesen Bausteinen nachgezogen werden.
+Es genügt, die `--lh-user-*`-Eigenschaften zu setzen, um alles umzufärben, was das Plugin zeichnet: Abzeichen, Karten, Prüfstatus-Farben und Metadaten-Fußzeile lesen sie über eine Fallback-Kette. Eine Gestaltung, die stattdessen einzelne Bausteine umstylt, muss bei jeder Änderung an diesen Bausteinen nachgezogen werden.
 
 Der Eintrag `site` lässt sich nicht entfernen. Auf ihn fällt eine unbekannte oder fehlende Wahl zurück, und ein Bildschirm ohne gültige Auswahl wäre schlimmer als eine ungewollte.
 

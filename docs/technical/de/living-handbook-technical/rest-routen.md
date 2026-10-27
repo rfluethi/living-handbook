@@ -30,7 +30,7 @@ Eine angemeldete Stimme zählt einmal je Person und Seite (siehe `_lh_feedback_v
 | POST | `/static-export` | `edit_others_posts` | `handbook` (Term-ID), `area` (Seiten-ID oberster Ebene, optional), `theme` (`site`, `plain`, `dark`, `paper`, oder eine über `living_handbook_static_export_themes` ergänzte); oder `job`, um fortzusetzen | Ein Durchgang eines Website-Exports: `{ job, done: false, total, remaining }`, bis er fertig ist, dann `{ job, done: true, total, url, name, size }`, wobei `url` das ZIP über `admin-post.php` herunterlädt. 403, wenn die aufrufende Person das Handbuch nicht lesen darf; ein Auftrag gehört der Person, die ihn gestartet hat. |
 | GET | `/training-lessons` | `edit_post` auf den Lernpfad, den `training_id` nennt | `training_id` (Pflicht); `q` (Titelsuche) | `{ results: [ { id, title } ] }`, höchstens 10 veröffentlichte Seiten aus dem eigenen Handbuch des Pfads, nur über den Titel gesucht. 400, wenn `training_id` kein Lernpfad ist; 403, wenn die aufrufende Person dieses Handbuch nicht lesen darf. Jeder Treffer läuft durch `can_view_post()`. |
 
-Der Permission-Callback ist das erste Tor, nicht das einzige. `/create` und `/finalize` prüfen `edit_post` für jede Seite, die sie anfassen würden, weil `edit_posts` allein schon eine Mitarbeiterin hat; `/import-github` veröffentlicht nichts ausser dem App-Handbuch, und dieser Weg verlangt mehr.
+Der Permission-Callback ist das erste Tor, nicht das einzige. `/create` und `/finalize` prüfen `edit_post` für jede Seite, die sie anfassen würden, weil `edit_posts` allein schon eine Mitarbeiterin hat; `/import-github` veröffentlicht nichts außer dem App-Handbuch, und dieser Weg verlangt mehr.
 
 ## Was das Plugin an Routen von WordPress ändert
 

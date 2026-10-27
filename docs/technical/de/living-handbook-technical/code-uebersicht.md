@@ -10,13 +10,13 @@ Living Handbook macht aus WordPress ein internes Team-Handbuch. Ein Handbuch ist
 
 Eine Handvoll Begriffe kommt überall vor. Sobald die sitzen, liest sich der Rest leicht.
 
-- **Handbuchseite** (`handbook`): eine Seite eines Handbuchs. Technisch ein „Custom Post Type" von WordPress, was schlicht heisst: eine Inhaltsart, die das Plugin selbst definiert, wie Beiträge oder Seiten, nur eigen.
+- **Handbuchseite** (`handbook`): eine Seite eines Handbuchs. Technisch ein „Custom Post Type" von WordPress, was schlicht heißt: eine Inhaltsart, die das Plugin selbst definiert, wie Beiträge oder Seiten, nur eigen.
 - **Handbuch** (`handbook_set`): die Gruppe, zu der eine Seite gehört. Technisch ein „Taxonomie-Begriff", derselbe Mechanismus wie eine Kategorie. Jede Seite gehört zu genau einem Handbuch, was beim Speichern durchgesetzt wird, und jedes Handbuch hat seine eigene Zugriffsregel und seine eigene Startseite.
-- **Taxonomie**: eine Art, Seiten zu klassifizieren. Neben der Handbuch-Gruppierung gibt es vier klassifizierende Taxonomien: Seitentyp, Thema, verantwortliche Rolle und Zielgruppe. Im Frontend heissen sie zusammen die Einordnung. Sie treiben die Filter und die Abzeichen.
+- **Taxonomie**: eine Art, Seiten zu klassifizieren. Neben der Handbuch-Gruppierung gibt es vier klassifizierende Taxonomien: Seitentyp, Thema, verantwortliche Rolle und Zielgruppe. Im Frontend heißen sie zusammen die Einordnung. Sie treiben die Filter und die Abzeichen.
 - **Zugriff**: ob die aktuell besuchende Person ein Handbuch lesen darf. Drei Stufen: öffentlich, alle angemeldeten Mitglieder, oder beschränkt auf benannte Rollen und Personen. Konten, die fremde Beiträge bearbeiten dürfen (Redaktion, Administration), übergehen die Stufen und lesen jede Seite. Geprüft wird im Frontend und bei jedem REST-Lesezugriff, also auch im Block-Editor: das Bearbeiten folgt den normalen WordPress-Rollen, aber Autorinnen und Mitarbeitende können eine Seite im Block-Editor nur öffnen, wenn sie deren Handbuch lesen dürfen.
 - **Aktualität**: wie aktuell eine Seite ist, ermittelt aus dem letzten Prüfdatum und dem Prüfintervall. Vier Zustände: geprüft, Prüfung fällig, Prüfung überfällig, und nicht geprüft für eine Seite ohne Prüfdatum oder ohne Intervall.
 - **Block**: ein Stück der Seite (Navigation, Inhaltsverzeichnis, Abzeichen und so weiter). Das Plugin bringt eigene Blöcke mit; jeder baut sein HTML auf dem Server.
-- **Die drei Oberflächen**: die drei Arten Seite, die ein Handbuch hat. Die **Übersicht** listet alle Handbücher; die **Einstiegsseite** eines Handbuchs ist dessen Startseite (Suche, Filter, Bereiche, zuletzt geändert); eine **Einzelseite** ist eine Handbuchseite mit Navigation, Inhalt und Fusszeile.
+- **Die drei Oberflächen**: die drei Arten Seite, die ein Handbuch hat. Die **Übersicht** listet alle Handbücher; die **Einstiegsseite** eines Handbuchs ist dessen Startseite (Suche, Filter, Bereiche, zuletzt geändert); eine **Einzelseite** ist eine Handbuchseite mit Navigation, Inhalt und Fußzeile.
 
 ## Wie der Code aufgeteilt ist
 
@@ -30,9 +30,9 @@ Die Module unter `src/`:
 - **`Taxonomy/`** definiert die vier klassifizierenden Taxonomien (Seitentyp, Thema, Rolle, Zielgruppe) in `Taxonomies.php`.
 - **`Export/`** ist der Website-Export: `StaticSite.php` plant einen Auftrag, rendert ihn in Durchgängen mit Zeitbudget und packt das ZIP; `SiteRenderer.php` baut das HTML, den Seitenbaum, das Inhaltsverzeichnis, den Suchindex und das Stylesheet, das im Export das Theme ersetzt; `SiteThemes.php` enthält die Gestaltungen, die dieses Stylesheet bekommen kann, jede aus einer Handvoll `--lh-user-*`-Eigenschaften; `TemplateRender.php` rendert eine Seite über die Block-Vorlage der Website, in einer Abfrage, die die Blöcke glauben.
 - **`Handbook/`** definiert die Handbuch-Gruppierung. `Handbooks.php` registriert die Gruppierung und ihre Zugriffseinstellungen; `HandbookAdmin.php` ist der kleine Bildschirm, auf dem du Sichtbarkeit, Rollen und Personen eines Handbuchs setzt.
-- **`Access/`** ist das Tor. `AccessController.php` beantwortet eine einzige Frage, „darf diese Person diese Seite lesen?", und jeder Lesepfad im ganzen Plugin fragt hier. Es ist bewusst streng: eine Seite, die zu keinem Handbuch gehört, ist nicht lesbar. Seine eine Abkürzung gilt Konten mit `edit_others_posts`, die jede Seite lesen dürfen. Es schliesst auch die Seitentüren, damit Kommentare und REST-Anfragen keine Seite verraten, die die besuchende Person nicht sehen darf.
-- **`Meta/`** registriert die Felder pro Seite in `Metadata.php`: zuletzt geändert, zuletzt geprüft, Prüfintervall, prüfende Person, ein „vor KI verbergen"-Flag und die Tiefe von „Auf dieser Seite". Es stellt ausserdem eine einzige, nur lesbare Zusammenfassung der Aktualität über die REST-Schnittstelle bereit.
-- **`Frontend/`** ist alles, was Besuchende sehen. Vom `AccessController` abgesehen ist das der grösste Ordner:
+- **`Access/`** ist das Tor. `AccessController.php` beantwortet eine einzige Frage, „darf diese Person diese Seite lesen?", und jeder Lesepfad im ganzen Plugin fragt hier. Es ist bewusst streng: eine Seite, die zu keinem Handbuch gehört, ist nicht lesbar. Seine eine Abkürzung gilt Konten mit `edit_others_posts`, die jede Seite lesen dürfen. Es schließt auch die Seitentüren, damit Kommentare und REST-Anfragen keine Seite verraten, die die besuchende Person nicht sehen darf.
+- **`Meta/`** registriert die Felder pro Seite in `Metadata.php`: zuletzt geändert, zuletzt geprüft, Prüfintervall, prüfende Person, ein „vor KI verbergen"-Flag und die Tiefe von „Auf dieser Seite". Es stellt außerdem eine einzige, nur lesbare Zusammenfassung der Aktualität über die REST-Schnittstelle bereit.
+- **`Frontend/`** ist alles, was Besuchende sehen. Vom `AccessController` abgesehen ist das der größte Ordner:
   - `FrontendRenderer.php` lädt Stylesheet und Skript und kann die Handbuchliste in das Menü des Themes einhängen.
   - `Templates.php` liefert die Layouts für die Einstiegsseite und die Einzelseiten.
   - `Cards.php` zeichnet Karten und Kacheln (ein Handbuch, eine Seite, ein Bereich).
@@ -40,7 +40,7 @@ Die Module unter `src/`:
   - `Filters.php` baut Suche und Facettenfilter und den Endpunkt, der die gefilterte Liste zurückgibt.
   - `Navigation.php` baut den Seitenbaum eines Handbuchs, die einklappbare Seitenleiste.
   - `PageTree.php` lädt alle veröffentlichten Seiten eines Handbuchs in einer einzigen Abfrage und gruppiert sie nach Elternseite, sodass Navigation und Bereichskacheln ihre Hierarchie aus derselben Karte aufbauen, statt pro Zweig abzufragen.
-  - `PageMeta.php` baut die Frage „War das hilfreich?" und die Metadaten-Fusszeile.
+  - `PageMeta.php` baut die Frage „War das hilfreich?" und die Metadaten-Fußzeile.
   - `FreshnessStatus.php` ermittelt den Zustand geprüft, fällig, überfällig oder nicht geprüft und dessen Beschriftung.
 - **`Blocks/`** registriert die Blöcke des Plugins. `Blocks.php` registriert die meisten und rendert sie auf dem Server; `MermaidBlock.php` und `SourceNoteBlock.php` sind zwei besondere (ein lebendiges Diagramm, und ein Hinweis, der nur auf Seiten mit GitHub-Abgleich erscheint). Die Blöcke rufen für ihr HTML nach `Frontend/`.
 - **`Feedback/`** behandelt die Stimmen zu „War das hilfreich?" und ihre Zähler (`Feedback.php`).
@@ -59,7 +59,7 @@ Folge einer Person, die eine einzelne Handbuchseite öffnet. Der Aufruf berührt
 1. WordPress erkennt die URL und entscheidet, dass es eine Handbuchseite ist.
 2. Der **Zugriff** kommt zuerst (`AccessController`): darf diese Person das lesen? Wenn nicht, wird ein Gast zur Anmeldung geschickt, und eine angemeldete Person bekommt eine 403-Seite, die sagt, dass sie keinen Zugriff auf dieses Handbuch hat, oder wird auf die in den Einstellungen gewählte Seite bei fehlendem Zugriff umgeleitet. Weiter läuft nichts.
 3. Ist der Zugriff erlaubt, legt das **Template** für eine Einzelseite (`Templates`) drei Spalten an: Navigation links, Inhalt in der Mitte, „Auf dieser Seite" rechts.
-4. Jeder **Block** in diesem Template rendert nun auf dem Server und ruft dafür nach `Frontend/`: `Navigation` baut den Seitenbaum des Handbuchs, `Cards` und `PageMeta` bauen Abzeichen und Fusszeile, der Inhaltsverzeichnis-Block gibt einen leeren Behälter aus.
+4. Jeder **Block** in diesem Template rendert nun auf dem Server und ruft dafür nach `Frontend/`: `Navigation` baut den Seitenbaum des Handbuchs, `Cards` und `PageMeta` bauen Abzeichen und Fußzeile, der Inhaltsverzeichnis-Block gibt einen leeren Behälter aus.
 5. **Stylesheet und Skript** laden (`FrontendRenderer`). Im Browser füllt `frontend.js` das Inhaltsverzeichnis aus den Überschriften der Seite, verdrahtet das Auf- und Zuklappen der Navigation und behandelt die Feedback-Knöpfe.
 6. Stimmt die Person bei „War das hilfreich?" ab, ruft das Skript den **Feedback**-Endpunkt (`Feedback`), der den Zugriff erneut prüft, bevor er die Stimme zählt.
 

@@ -34,7 +34,7 @@ Der Rest dieser Anleitung baut ein Handbuch von Grund auf, und genau das machst 
 
 Ein Handbuch ist der Behälter, in dem deine Seiten leben. Geh auf **Handbuch → Handbücher → Neu**, gib ihm einen Namen (zum Beispiel „Allgemein") und eine kurze Beschreibung, und speichere.
 
-Setz auf demselben Bildschirm die **Sichtbarkeit**. Ein neues Handbuch steht standardmässig auf **Alle Mitglieder (angemeldet)**, eine ausgeloggte Besucherin sieht also nichts, bis du entweder auf **Öffentlich** stellst oder bestimmten Rollen und Personen Zugriff gibst. Das ist Absicht: Das Plugin ist fail-closed, es verbirgt eine Seite lieber, als sie preiszugeben.
+Setz auf demselben Bildschirm die **Sichtbarkeit**. Ein neues Handbuch steht standardmäßig auf **Alle Mitglieder (angemeldet)**, eine ausgeloggte Besucherin sieht also nichts, bis du entweder auf **Öffentlich** stellst oder bestimmten Rollen und Personen Zugriff gibst. Das ist Absicht: Das Plugin ist fail-closed, es verbirgt eine Seite lieber, als sie preiszugeben.
 
 ## 3. Die erste Seite anlegen
 
@@ -65,7 +65,7 @@ Dein Handbuch hat jetzt drei Flächen:
 
 - Die **Übersichtsseite** („Handbuch") listet jedes Handbuch auf, das die Besucherin lesen darf.
 - Die **Einstiegsseite** unter `/handbook-set/<handbook-slug>/` ist die Startseite eines Handbuchs: Suche, Filter, Bereichskacheln und zuletzt aktualisierte Seiten.
-- Jede **Einzelseite** unter `/handbook/<page-slug>/` zeigt die Navigation, den Inhalt, das Inhaltsverzeichnis, die Badges, die Feedback-Frage und die Metadaten-Fusszeile.
+- Jede **Einzelseite** unter `/handbook/<page-slug>/` zeigt die Navigation, den Inhalt, das Inhaltsverzeichnis, die Badges, die Feedback-Frage und die Metadaten-Fußzeile.
 
 Einstiegsseite und Einzelseite bringen Block-Vorlagen mit, die die richtigen Blöcke bereits platzieren, du musst sie also selten von Hand bauen. Was jeder Block tut und wo er erscheint, steht in [bloecke.md](bloecke.md).
 

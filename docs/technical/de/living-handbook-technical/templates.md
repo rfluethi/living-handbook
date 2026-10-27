@@ -1,6 +1,6 @@
 # Vorlagen
 
-Living Handbook registriert Block-Vorlagen (WordPress 6.8 und neuer, nur Block-Themes). Sie fügen sich automatisch in die Vorlagen-Hierarchie ein und nutzen Kopf- und Fussbereich des aktiven Themes, das Handbuch passt sich also in den Rest deiner Website ein. Öffnen und bearbeiten kannst du sie im Site-Editor unter **Design → Editor → Vorlagen**.
+Living Handbook registriert Block-Vorlagen (WordPress 6.8 und neuer, nur Block-Themes). Sie fügen sich automatisch in die Vorlagen-Hierarchie ein und nutzen Kopf- und Fußbereich des aktiven Themes, das Handbuch passt sich also in den Rest deiner Website ein. Öffnen und bearbeiten kannst du sie im Site-Editor unter **Design → Editor → Vorlagen**.
 
 Drei davon machen die Arbeit:
 
@@ -26,10 +26,10 @@ Gilt für die Einstiegsseite jedes Handbuchs. Ihr Aufbau:
 Gilt für eine einzelne Handbuch-Seite. Ein dreispaltiger Aufbau, 22 / 54 / 22 Prozent:
 
 - **Links (schmal):** die Handbuch-Navigation (`living-handbook/navigation`, auf *Akkordeon* gestellt) und darunter die Handbuch-Suche (`living-handbook/search`).
-- **Mitte (breit):** die Lernpfad-Leiste (`living-handbook/path-nav`, die nichts rendert, solange die Seite nicht aus einem Lernpfad geöffnet wurde), der Titel (`core/post-title`), das mobile Inhaltsverzeichnis (`living-handbook/toc` auf *mobil* gestellt, auf kleinen Bildschirmen über dem Inhalt) und der Inhalt (`core/post-content`). Danach alles, was über die Seite Auskunft gibt, am Fuss: die Feedback-Frage (`living-handbook/feedback`), eine Trennlinie, der Herkunftshinweis (`living-handbook/git-source-note`), die Badges (`living-handbook/badges`), eine zweite Trennlinie, die Metadaten-Fusszeile (`living-handbook/pagemeta`) und zuunterst der Kommentarblock des Kerns (`core/comments`), der nichts rendert, solange die Kommentare einer Seite geschlossen sind.
+- **Mitte (breit):** die Lernpfad-Leiste (`living-handbook/path-nav`, die nichts rendert, solange die Seite nicht aus einem Lernpfad geöffnet wurde), der Titel (`core/post-title`), das mobile Inhaltsverzeichnis (`living-handbook/toc` auf *mobil* gestellt, auf kleinen Bildschirmen über dem Inhalt) und der Inhalt (`core/post-content`). Danach alles, was über die Seite Auskunft gibt, am Fuß: die Feedback-Frage (`living-handbook/feedback`), eine Trennlinie, der Herkunftshinweis (`living-handbook/git-source-note`), die Badges (`living-handbook/badges`), eine zweite Trennlinie, die Metadaten-Fußzeile (`living-handbook/pagemeta`) und zuunterst der Kommentarblock des Kerns (`core/comments`), der nichts rendert, solange die Kommentare einer Seite geschlossen sind.
 - **Rechts (schmal):** das Desktop-Inhaltsverzeichnis (`living-handbook/toc`, klebend, auf breiten Bildschirmen sichtbar).
 
-Die beiden Trennlinien sind statische `core/separator`-Blöcke mit der Klasse `living-handbook-divider`. Statisch sind sie mit Absicht: zwei ihrer Nachbarn rendern in manchen Fällen nichts, eine Besucherin ohne öffentliches Feedback bekommt keine Frage und eine in WordPress gepflegte Seite keinen Herkunftshinweis, und der Fuss soll in beiden Fällen gleich aussehen.
+Die beiden Trennlinien sind statische `core/separator`-Blöcke mit der Klasse `living-handbook-divider`. Statisch sind sie mit Absicht: zwei ihrer Nachbarn rendern in manchen Fällen nichts, eine Besucherin ohne öffentliches Feedback bekommt keine Frage und eine in WordPress gepflegte Seite keinen Herkunftshinweis, und der Fuß soll in beiden Fällen gleich aussehen.
 
 Die beiden Inhaltsverzeichnisse sind derselbe Block mit unterschiedlicher Einstellung **Platzierung**; CSS zeigt nur das, welches zur aktuellen Bildschirmbreite passt, du musst dich also nicht entscheiden.
 
