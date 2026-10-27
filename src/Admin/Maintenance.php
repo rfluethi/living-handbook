@@ -1,6 +1,7 @@
 <?php
 /**
- * Maintenance dashboard widget and admin list columns.
+ * Maintenance dashboard widget, and the columns, sorting, filters and feedback
+ * reset of the handbook page list.
  *
  * @package LivingHandbook
  */
@@ -36,7 +37,13 @@ final class Maintenance {
 	private const RESET_ACTION = 'living_handbook_reset_feedback';
 
 	/**
-	 * Hook registration into WordPress.
+	 * How many pages the dashboard widget names; the rest is one link to the
+	 * list sorted by review date.
+	 */
+	private const WIDGET_LINKS = 10;
+
+	/**
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -59,7 +66,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Add a "Reset feedback" row action to a handbook page that carries votes, so
+	 * Adds a "Reset feedback" row action to a handbook page that carries votes, so
 	 * a page reworked after poor feedback can start from zero. Shown only to a
 	 * user who may edit the page, and only when there is something to reset.
 	 *
@@ -89,7 +96,8 @@ final class Maintenance {
 	}
 
 	/**
-	 * Reset a page's feedback counters and voter list, then return to the list.
+	 * Resets a page's feedback counters and voter list, then returns to the
+	 * list.
 	 *
 	 * @return void
 	 */
@@ -114,7 +122,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Confirm a feedback reset on the handbook list.
+	 * Confirms a feedback reset on the handbook list.
 	 *
 	 * @return void
 	 */
@@ -131,7 +139,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Register the dashboard widget for content managers.
+	 * Registers the dashboard widget for content managers.
 	 *
 	 * @return void
 	 */
@@ -147,7 +155,11 @@ final class Maintenance {
 	}
 
 	/**
-	 * Render the dashboard widget.
+	 * Renders the dashboard widget.
+	 *
+	 * Counts pages that are due and pages that are overdue, because both need a
+	 * review now. The lookup runs through AccessController::restrict_query(), so
+	 * the numbers are those of the pages the current user may see.
 	 *
 	 * Loads only post IDs and reads the freshness meta per page; the title and
 	 * edit link are fetched only for the overdue pages, not for all pages. The
@@ -195,8 +207,8 @@ final class Maintenance {
 			'<p><strong>%s</strong></p>',
 			esc_html(
 				sprintf(
-					/* translators: 1: overdue count, 2: total count, 3: percentage. */
-					__( '%1$d of %2$d pages overdue (%3$d%%).', 'living-handbook' ),
+					/* translators: 1: number of pages due or overdue, 2: total number of pages, 3: percentage. */
+					_n( '%1$d of %2$d page due or overdue (%3$d%%).', '%1$d of %2$d pages due or overdue (%3$d%%).', $total, 'living-handbook' ),
 					$count,
 					$total,
 					$pct
@@ -209,9 +221,8 @@ final class Maintenance {
 			return;
 		}
 
-		$limit = 10;
 		echo '<ul>';
-		foreach ( array_slice( $overdue, 0, $limit ) as $item ) {
+		foreach ( array_slice( $overdue, 0, self::WIDGET_LINKS ) as $item ) {
 			printf(
 				'<li><a href="%1$s">%2$s</a> (%3$s)</li>',
 				esc_url( $item['link'] ),
@@ -221,7 +232,7 @@ final class Maintenance {
 		}
 		echo '</ul>';
 
-		if ( $count > $limit ) {
+		if ( $count > self::WIDGET_LINKS ) {
 			printf(
 				'<p><a href="%1$s">%2$s</a></p>',
 				esc_url(
@@ -240,7 +251,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Add the review and feedback columns.
+	 * Adds the handbook, review and feedback columns.
 	 *
 	 * @param array<string, string> $columns Existing columns.
 	 * @return array<string, string>
@@ -268,7 +279,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Render a custom column cell.
+	 * Renders a custom column cell.
 	 *
 	 * @param string $column  Column key.
 	 * @param int    $post_id Post ID.
@@ -330,7 +341,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Mark the review column as sortable.
+	 * Marks the review and feedback columns as sortable.
 	 *
 	 * @param array<string, string> $columns Sortable columns.
 	 * @return array<string, string>
@@ -342,7 +353,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Order the handbook list by the last review date when that column header is
+	 * Orders the handbook list by the last review date when that column header is
 	 * clicked. A single LEFT JOIN reads the review date; pages without one (no meta
 	 * row or an empty value) are grouped together and always trail the dated pages,
 	 * in both directions, so they never split to both ends of the list. The join
@@ -368,7 +379,7 @@ final class Maintenance {
 		$key   = esc_sql( Metadata::REVIEWED );
 		$order = 'DESC' === strtoupper( (string) $query->get( 'order' ) ) ? 'DESC' : 'ASC';
 
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Clause fragments for core's query; the key is an escaped constant and the direction a whitelisted keyword.
 		$clauses['join']   .= " LEFT JOIN {$wpdb->postmeta} lh_rev ON ( lh_rev.post_id = {$wpdb->posts}.ID AND lh_rev.meta_key = '{$key}' )";
 		$clauses['orderby'] = "( CASE WHEN lh_rev.meta_value IS NULL OR lh_rev.meta_value = '' THEN 1 ELSE 0 END ) ASC, lh_rev.meta_value {$order}, {$wpdb->posts}.post_title ASC";
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -377,7 +388,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Order the handbook list by net feedback (yes votes minus no votes) when that
+	 * Orders the handbook list by net feedback (yes votes minus no votes) when that
 	 * column header is clicked. Both counts are post meta, so the difference cannot
 	 * be expressed as a meta_query orderby; this joins both meta rows and orders by
 	 * their difference. Pages without votes count as zero (COALESCE) and are kept,
@@ -404,7 +415,7 @@ final class Maintenance {
 		$no    = esc_sql( Feedback::NO );
 		$order = 'ASC' === strtoupper( (string) $query->get( 'order' ) ) ? 'ASC' : 'DESC';
 
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Clause fragments for core's query; the keys are escaped constants and the direction a whitelisted keyword.
 		$clauses['join']   .= " LEFT JOIN {$wpdb->postmeta} lh_fy ON ( lh_fy.post_id = {$wpdb->posts}.ID AND lh_fy.meta_key = '{$yes}' )";
 		$clauses['join']   .= " LEFT JOIN {$wpdb->postmeta} lh_fn ON ( lh_fn.post_id = {$wpdb->posts}.ID AND lh_fn.meta_key = '{$no}' )";
 		$clauses['orderby'] = "( COALESCE( lh_fy.meta_value + 0, 0 ) - COALESCE( lh_fn.meta_value + 0, 0 ) ) {$order}, {$wpdb->posts}.post_title ASC";
@@ -414,7 +425,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Add a filter dropdown above the handbook list for the handbook and each
+	 * Adds a filter dropdown above the handbook list for the handbook and each
 	 * taxonomy (page type, topic, responsibility, audience). Selecting a term
 	 * narrows the list through that taxonomy's query var, the same mechanism the
 	 * category filter uses for posts. This is filtering, not sorting: the taxonomy
@@ -458,7 +469,7 @@ final class Maintenance {
 			if ( Handbooks::TAXONOMY !== $taxonomy && ! Taxonomies::is_enabled( $taxonomy ) ) {
 				continue;
 			}
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reads the active list filter from the URL, as core's own filters do; nothing is written.
 			$current = isset( $_GET[ $taxonomy ] ) ? sanitize_text_field( wp_unslash( (string) $_GET[ $taxonomy ] ) ) : '';
 			$active  = '' !== $current;
 
@@ -498,7 +509,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Load the small script that keeps the filter bar in step with the column
+	 * Loads the small script that keeps the filter bar in step with the column
 	 * checkboxes, on the handbook list only.
 	 *
 	 * @param string $hook The current admin page.
@@ -523,7 +534,7 @@ final class Maintenance {
 	}
 
 	/**
-	 * Add a "Review status" filter dropdown above the handbook list. The status
+	 * Adds a "Review status" filter dropdown above the handbook list. The status
 	 * (reviewed, due, overdue, never) is derived from the review date and the
 	 * per-page interval, so it is not a stored value the taxonomy filters could
 	 * cover; this filter complements the date sort on the "Last reviewed" column.
@@ -535,7 +546,7 @@ final class Maintenance {
 		if ( Handbook::POST_TYPE !== $post_type ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reads the active list filter from the URL; nothing is written.
 		$current = isset( $_GET['lh_status'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_status'] ) ) : '';
 
 		$options = array(
@@ -564,12 +575,12 @@ final class Maintenance {
 	}
 
 	/**
-	 * Narrow the handbook list to one review status. The status is computed, not
+	 * Narrows the handbook list to one review status. The status is computed, not
 	 * stored, so this resolves the matching pages in PHP through FreshnessStatus
 	 * (the single source of the rule) and constrains the query to those ids. The
 	 * meta cache is primed first, so the per-page status reads do not each hit the
-	 * database. The inner lookup is not the main query, so the other pre_get_posts
-	 * hooks skip it and it does not recurse.
+	 * database. The inner lookup is not the main query, so this method skips it
+	 * and does not recurse.
 	 *
 	 * @param WP_Query $query The current query.
 	 * @return void
@@ -581,16 +592,18 @@ final class Maintenance {
 		if ( Handbook::POST_TYPE !== $query->get( 'post_type' ) ) {
 			return;
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reads the active list filter from the URL; the value is checked against the known statuses.
 		$status = isset( $_GET['lh_status'] ) ? sanitize_key( wp_unslash( (string) $_GET['lh_status'] ) ) : '';
 		$valid  = FreshnessStatus::all();
 		if ( ! in_array( $status, $valid, true ) ) {
 			return;
 		}
 
-		// No suppress_filters here: this inner lookup is not the main query, so the
-		// other pre_get_posts hooks skip it, and the_posts does not run for an
-		// id-only query, so there is nothing to suppress and no recursion.
+		// This inner lookup is not the main query, so this class's own
+		// pre_get_posts hooks skip it and nothing recurses. Access still applies:
+		// AccessController::restrict_query() narrows every query, so the ids are
+		// those the current user may see in the back end. the_posts does not run
+		// for an id-only query.
 		$ids = get_posts(
 			array(
 				'post_type'      => Handbook::POST_TYPE,

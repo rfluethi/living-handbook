@@ -1,6 +1,7 @@
 <?php
 /**
- * The plugin settings page (sync frequency and uninstall behaviour).
+ * The plugin settings page, one tab each for the GitHub sync, classification,
+ * learning paths, appearance, feedback, access and uninstall.
  *
  * @package LivingHandbook
  */
@@ -23,9 +24,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Renders the plugin's single settings page with the Settings API, so the form
  * posts to options.php: a browser reload does not resubmit, the options are
- * validated by their sanitize callbacks, and settings_errors works. The
- * scheduling itself and the option names live in GitSync; this class only owns
- * the page and the fields, and re-applies the cron schedule when the frequency
+ * validated by their sanitize callbacks, and settings_errors works. Most
+ * options belong to the module they configure (GitSync, Taxonomies, Training,
+ * Appearance) and are only registered here. This class owns the page, the
+ * fields and three options of its own (custom CSS, public feedback and the
+ * no-access page), and re-applies the cron schedule when the frequency
  * changes.
  */
 final class Settings {
@@ -35,14 +38,14 @@ final class Settings {
 	 * and that is not cosmetic: options.php walks the group of the submitted
 	 * form and calls update_option() for every option in it, with null for the
 	 * ones the form did not send (wp-admin/options.php, the loop over
-	 * $allowed_options). One group across five tabs would therefore empty the
-	 * four tabs that were not on screen, on every save.
+	 * $allowed_options). One group across all tabs would therefore empty the
+	 * options of every tab that was not on screen, on every save.
 	 */
 	private const OPTION_GROUP = 'living_handbook_settings';
 
 	/**
-	 * The tabs, in the order they are shown: slug => label callback key. The
-	 * first one is the default.
+	 * Returns the tabs in the order they are shown, as slug => translated label.
+	 * The first one is the default.
 	 *
 	 * @return array<string, string>
 	 */
@@ -59,7 +62,7 @@ final class Settings {
 	}
 
 	/**
-	 * The settings group of one tab.
+	 * Returns the settings group of one tab.
 	 *
 	 * @param string $tab Tab slug.
 	 * @return string
@@ -69,7 +72,7 @@ final class Settings {
 	}
 
 	/**
-	 * The section and field page of one tab.
+	 * Returns the section and field page of one tab.
 	 *
 	 * @param string $tab Tab slug.
 	 * @return string
@@ -79,7 +82,7 @@ final class Settings {
 	}
 
 	/**
-	 * The tab currently being shown, defaulting to the first one.
+	 * Returns the tab currently being shown, defaulting to the first one.
 	 *
 	 * @return string
 	 */
@@ -135,7 +138,7 @@ final class Settings {
 	public const COLOR_PICKER_HANDLE = 'living-handbook-settings-colors';
 
 	/**
-	 * Whether anonymous voting on public pages is switched on.
+	 * Determines whether anonymous voting on public pages is switched on.
 	 *
 	 * @return bool
 	 */
@@ -144,7 +147,7 @@ final class Settings {
 	}
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -159,7 +162,7 @@ final class Settings {
 	}
 
 	/**
-	 * Add the settings submenu under the handbook menu.
+	 * Adds the settings submenu under the handbook menu.
 	 *
 	 * @return void
 	 */
@@ -179,7 +182,7 @@ final class Settings {
 	}
 
 	/**
-	 * Load the colour picker WordPress already ships on the settings screen, and
+	 * Loads the colour picker WordPress already ships on the settings screen, and
 	 * the line that turns the colour fields into pickers, with the theme's own
 	 * palette as the swatches underneath.
 	 *
@@ -217,7 +220,7 @@ final class Settings {
 	}
 
 	/**
-	 * Add a contextual Help tab explaining the Custom CSS field, with two
+	 * Adds a contextual Help tab explaining the Custom CSS field, with two
 	 * examples and a link to the customization documentation.
 	 *
 	 * @return void
@@ -246,7 +249,7 @@ final class Settings {
 	}
 
 	/**
-	 * Register the settings, sections and fields.
+	 * Registers the settings, sections and fields.
 	 *
 	 * @return void
 	 */
@@ -426,7 +429,7 @@ final class Settings {
 	}
 
 	/**
-	 * Keep the no-access page a published page of this site, or 0 for the
+	 * Keeps the no-access page a published page of this site, or 0 for the
 	 * built-in message.
 	 *
 	 * A handbook page or a learning path is refused. Their access is decided per
@@ -449,9 +452,9 @@ final class Settings {
 			return $page_id;
 		}
 
-		// Falling back to the built-in message silently left whoever saved the
-		// form wondering why their choice did not stick (decided on 2026-10-27:
-		// say so). The settings API shows this above the form after the save.
+		// Up to 0.75.1 the fallback to the built-in message was silent and left
+		// whoever saved the form wondering why their choice did not stick. The
+		// settings API shows this above the form after the save.
 		add_settings_error(
 			self::OPTION_DENIED_PAGE,
 			'living_handbook_denied_page',
@@ -475,7 +478,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the no-access page selector.
+	 * Renders the no-access page selector.
 	 *
 	 * @return void
 	 */
@@ -524,7 +527,7 @@ final class Settings {
 	}
 
 	/**
-	 * Validate the sync frequency against the known choices.
+	 * Validates the sync frequency against the known choices.
 	 *
 	 * @param mixed $value Submitted value.
 	 * @return string
@@ -536,7 +539,7 @@ final class Settings {
 	}
 
 	/**
-	 * Normalise the uninstall checkbox to 0 or 1. An unchecked box is submitted
+	 * Normalises the uninstall checkbox to 0 or 1. An unchecked box is submitted
 	 * as null, which becomes 0.
 	 *
 	 * @param mixed $value Submitted value.
@@ -547,7 +550,7 @@ final class Settings {
 	}
 
 	/**
-	 * Normalise the public-feedback checkbox to 0 or 1.
+	 * Normalises the public-feedback checkbox to 0 or 1.
 	 *
 	 * @param mixed $value Submitted value.
 	 * @return int
@@ -557,9 +560,12 @@ final class Settings {
 	}
 
 	/**
-	 * Sanitize the custom CSS. CSS never needs a "<", so removing it prevents
-	 * closing the style tag or injecting a script: the value cannot break out of
-	 * the style block it is printed in.
+	 * Sanitizes the custom CSS.
+	 *
+	 * Every "<" is removed, because CSS never needs one: the value cannot close
+	 * the style tag it is printed in or start a script. @import and url()
+	 * references to other hosts are dropped, so the readers of a handbook are
+	 * not announced to a third party; local references stay.
 	 *
 	 * @param mixed $value Submitted value.
 	 * @return string
@@ -567,8 +573,6 @@ final class Settings {
 	public function sanitize_css( $value ): string {
 		$value = is_string( $value ) ? $value : '';
 
-		// CSS never needs a "<", so removing it prevents closing the style tag or
-		// injecting a script.
 		$value = str_replace( '<', '', $value );
 
 		// @import pulls a whole stylesheet from wherever it points, and every
@@ -605,7 +609,7 @@ final class Settings {
 	}
 
 	/**
-	 * Explain what the appearance fields are for before showing them.
+	 * Prints what the appearance fields are for, before the fields.
 	 *
 	 * @return void
 	 */
@@ -616,7 +620,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the text size field.
+	 * Renders the text size field.
 	 *
 	 * A number in percent rather than a slider: it works without JavaScript, it
 	 * says what it does, and the same value can be typed again on the next site.
@@ -638,7 +642,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render one colour field.
+	 * Renders one colour field.
 	 *
 	 * @param array<string, mixed> $args Field arguments, carrying the colour key.
 	 * @return void
@@ -667,7 +671,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the custom CSS field.
+	 * Renders the custom CSS field.
 	 *
 	 * @return void
 	 */
@@ -682,7 +686,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the four classification switches.
+	 * Renders the four classification switches.
 	 *
 	 * @return void
 	 */
@@ -733,7 +737,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the learning paths switch.
+	 * Renders the learning paths switch.
 	 *
 	 * @return void
 	 */
@@ -747,7 +751,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the public-feedback field.
+	 * Renders the public-feedback field.
 	 *
 	 * @return void
 	 */
@@ -758,7 +762,7 @@ final class Settings {
 	}
 
 	/**
-	 * Re-apply the cron schedule after the frequency option changes.
+	 * Re-applies the cron schedule after the frequency option changes.
 	 *
 	 * @return void
 	 */
@@ -767,7 +771,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the sync frequency field.
+	 * Renders the sync frequency field.
 	 *
 	 * @return void
 	 */
@@ -787,14 +791,20 @@ final class Settings {
 
 		$next = GitSync::next_scheduled();
 		if ( $next > 0 ) {
-			echo '<p class="description">' . esc_html__( 'Next scheduled sync:', 'living-handbook' ) . ' ' . esc_html( wp_date( 'Y-m-d H:i', $next ) ) . '</p>';
+			echo '<p class="description">' . esc_html(
+				sprintf(
+					/* translators: %s: date and time of the next background sync, in the site's formats. */
+					__( 'Next scheduled sync: %s', 'living-handbook' ),
+					(string) wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $next )
+				)
+			) . '</p>';
 		} else {
 			echo '<p class="description">' . esc_html__( 'No background sync scheduled.', 'living-handbook' ) . '</p>';
 		}
 	}
 
 	/**
-	 * Render the uninstall behaviour field.
+	 * Renders the uninstall behaviour field.
 	 *
 	 * @return void
 	 */
@@ -806,7 +816,7 @@ final class Settings {
 	}
 
 	/**
-	 * Render the settings page.
+	 * Renders the settings page.
 	 *
 	 * @return void
 	 */
@@ -839,7 +849,7 @@ final class Settings {
 	}
 
 	/**
-	 * The address of one tab.
+	 * Returns the address of one tab.
 	 *
 	 * @param string $tab Tab slug.
 	 * @return string

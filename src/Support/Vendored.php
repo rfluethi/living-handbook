@@ -41,7 +41,7 @@ final class Vendored {
 	public const PREFIX = 'LivingHandbook\\Vendor\\';
 
 	/**
-	 * The name a bundled class or interface goes by here.
+	 * Returns the name a bundled class or interface goes by here.
 	 *
 	 * Prefers the prefixed name, so a scoped build never falls back to a copy
 	 * another plugin loaded under the plain name. Returns the plain name when
@@ -64,7 +64,7 @@ final class Vendored {
 	}
 
 	/**
-	 * Whether a bundled class or interface is available at all.
+	 * Determines whether a bundled class or interface is available at all.
 	 *
 	 * @param string $symbol Fully qualified class or interface name.
 	 * @return bool
@@ -75,7 +75,7 @@ final class Vendored {
 	}
 
 	/**
-	 * Load the bundled autoloader, if it is there.
+	 * Loads the bundled autoloader, if it is there.
 	 *
 	 * The libraries are only needed for the import and the sync, so they are
 	 * loaded on demand rather than on every request.

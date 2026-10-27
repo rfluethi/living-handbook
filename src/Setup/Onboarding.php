@@ -73,7 +73,7 @@ final class Onboarding {
 	private const PAGE_LINKS = 10;
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -86,7 +86,8 @@ final class Onboarding {
 	}
 
 	/**
-	 * Say on the handbook screens when the active theme is a classic theme.
+	 * Points out on the handbook screens that the active theme is a classic
+	 * theme.
 	 *
 	 * The entry and single page of a handbook are block templates, and only a
 	 * block theme uses those. With a classic theme the front end falls back to
@@ -116,7 +117,7 @@ final class Onboarding {
 	}
 
 	/**
-	 * Activation step: create the overview page once and arm the setup notice.
+	 * Creates the overview page once on activation and arms the setup notice.
 	 *
 	 * @return void
 	 */
@@ -161,8 +162,8 @@ final class Onboarding {
 	 * pages. The page itself worked, because the post type has no archive, but
 	 * the post type's rule matches every address below it first, so a subpage
 	 * of the overview at /handbook/team/ was read as a handbook page called
-	 * "team" and answered 404. Decided on 2026-10-27: new installations get a
-	 * slug of their own. An existing overview page keeps its address; changing
+	 * "team" and answered 404. Since 0.76.0 new installations get a slug of
+	 * their own. An existing overview page keeps its address; changing
 	 * a published URL is the site's call, not an update's.
 	 *
 	 * The handbook base can be changed by a filter, so the slug is checked
@@ -172,9 +173,12 @@ final class Onboarding {
 	 */
 	private static function overview_slug(): string {
 		$object = get_post_type_object( Handbook::POST_TYPE );
-		$base   = ( null !== $object && is_array( $object->rewrite ) && isset( $object->rewrite['slug'] ) )
-			? (string) $object->rewrite['slug']
-			: (string) apply_filters( 'living_handbook_post_type_slug', 'handbook' );
+		if ( null !== $object && is_array( $object->rewrite ) && isset( $object->rewrite['slug'] ) ) {
+			$base = (string) $object->rewrite['slug'];
+		} else {
+			/** This filter is documented in src/PostType/Handbook.php */
+			$base = (string) apply_filters( 'living_handbook_post_type_slug', 'handbook' );
+		}
 
 		return 'handbooks' === trim( $base, '/' ) ? 'handbook-overview' : 'handbooks';
 	}
@@ -190,7 +194,7 @@ final class Onboarding {
 	private static function overview_page_exists(): bool {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Runs once on activation; there is nothing to cache.
 		$found = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'page' AND post_status != 'trash' AND post_content LIKE %s LIMIT 1",
@@ -220,7 +224,7 @@ final class Onboarding {
 	}
 
 	/**
-	 * Load the small script that makes the dismiss button stick, on the screens
+	 * Loads the small script that makes the dismiss button stick, on the screens
 	 * where the notice can appear.
 	 *
 	 * @return void
@@ -237,28 +241,28 @@ final class Onboarding {
 			LIVING_HANDBOOK_VERSION,
 			true
 		);
-		wp_localize_script(
+		// Configuration, not translations, so an inline script rather than
+		// wp_localize_script().
+		wp_add_inline_script(
 			'living-handbook-setup-notice',
-			'livingHandbookSetup',
-			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'action'  => self::DISMISS_ACTION,
-				'nonce'   => wp_create_nonce( self::DISMISS_ACTION ),
-			)
+			'var livingHandbookSetup = ' . wp_json_encode(
+				array(
+					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+					'action'  => self::DISMISS_ACTION,
+					'nonce'   => wp_create_nonce( self::DISMISS_ACTION ),
+				)
+			) . ';',
+			'before'
 		);
 	}
 
 	/**
-	 * The one-time notice after activation: the two steps a new install needs,
-	 * in the order it needs them, and where the overview page is.
+	 * Prints the one-time notice after activation: the two steps a new install
+	 * needs, in the order it needs them, and where the overview page is.
 	 *
-	 * It used to be one box with five things in it: a heading, a "start here"
-	 * with a button, the overview page, a paragraph on creating a handbook, and a
-	 * paragraph explaining that a page without a handbook stays invisible. Rico
-	 * called it confusing, and it was: two of those are actions, one is a fact,
-	 * and two were an explanation of a rule nobody has run into yet. The rule now
-	 * appears where it bites, in the warning below this one, and this notice is a
-	 * numbered list of the two steps plus one line for the page.
+	 * Two steps as a numbered list and one line for the page, nothing else. The
+	 * rule that a page without a handbook stays invisible is explained where it
+	 * bites, in unassigned_notice(), not here before anybody has run into it.
 	 *
 	 * Dismissed with the standard notice close button, which the accompanying
 	 * script makes permanent.
@@ -428,7 +432,7 @@ final class Onboarding {
 	}
 
 	/**
-	 * Remember that the setup notice was dismissed.
+	 * Remembers that the setup notice was dismissed.
 	 *
 	 * @return void
 	 */

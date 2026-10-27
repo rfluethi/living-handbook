@@ -28,8 +28,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Why a search field and not a list of all pages: a handbook of two thousand
  * pages rendered as a select box is the same mistake the core page-parent
- * dropdown makes, and it was measured on this project (2441 ms against 20 ms,
- * log of 2026-08-08). The search runs against a REST route that is scoped to
+ * dropdown makes, and it was measured on this project (2441 ms against 20 ms
+ * on a handbook of that size). The search runs against a REST route that is scoped to
  * the handbook of the path and checks access for every hit, so it can never
  * offer a page the editor may not read.
  *
@@ -43,10 +43,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class LessonPicker {
 
 	/**
-	 * Nonce action and field name of the meta box.
+	 * Nonce action of the meta box.
 	 */
 	private const NONCE_ACTION = 'living_handbook_lessons';
-	private const NONCE_FIELD  = 'living_handbook_lessons_nonce';
+
+	/**
+	 * Form field carrying the meta box nonce.
+	 */
+	private const NONCE_FIELD = 'living_handbook_lessons_nonce';
 
 	/**
 	 * The form field carrying the ordered lesson ids, comma separated.
@@ -64,7 +68,7 @@ final class LessonPicker {
 	private const RESULTS = 10;
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -76,7 +80,7 @@ final class LessonPicker {
 	}
 
 	/**
-	 * Register the REST route behind the search field.
+	 * Registers the REST route behind the search field.
 	 *
 	 * The permission callback asks for edit rights on the path being edited,
 	 * which is the only context this route is used from. The route additionally
@@ -111,7 +115,8 @@ final class LessonPicker {
 	}
 
 	/**
-	 * REST handler: pages of the path's handbook whose title matches.
+	 * Answers the lesson search: pages of the path's handbook whose title
+	 * matches.
 	 *
 	 * Searching titles only, not full text: the picker answers "which page did I
 	 * mean", and a full-text search on a large handbook returns pages whose title
@@ -155,7 +160,7 @@ final class LessonPicker {
 			'no_found_rows'          => true,
 			'ignore_sticky_posts'    => true,
 			'update_post_meta_cache' => false,
-			'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- The search is scoped to the path's handbook by design; ten results at most.
 				array(
 					'taxonomy'         => Handbooks::TAXONOMY,
 					'field'            => 'term_id',
@@ -189,7 +194,7 @@ final class LessonPicker {
 	}
 
 	/**
-	 * Narrow a search to post titles.
+	 * Narrows a search to post titles.
 	 *
 	 * Core searches title, excerpt and content at once, and there is no argument
 	 * for title-only, so the WHERE clause is rebuilt. It is added around one
@@ -214,7 +219,7 @@ final class LessonPicker {
 	}
 
 	/**
-	 * Register the meta box.
+	 * Registers the meta box.
 	 *
 	 * @return void
 	 */
@@ -230,7 +235,7 @@ final class LessonPicker {
 	}
 
 	/**
-	 * Render the meta box.
+	 * Renders the meta box.
 	 *
 	 * @param WP_Post $post Current learning path.
 	 * @return void
@@ -322,7 +327,7 @@ final class LessonPicker {
 	}
 
 	/**
-	 * Save the lesson list.
+	 * Saves the lesson list.
 	 *
 	 * The ids arrive as one comma separated field, which is what keeps the order
 	 * a first-class part of the value instead of something reconstructed from the
@@ -350,7 +355,7 @@ final class LessonPicker {
 	}
 
 	/**
-	 * Load the picker script on the learning path editor and nowhere else.
+	 * Loads the picker script on the learning path editor and nowhere else.
 	 *
 	 * @param string $hook Current admin page hook suffix.
 	 * @return void
@@ -372,10 +377,12 @@ final class LessonPicker {
 			true
 		);
 		wp_enqueue_script( 'living-handbook-training-lessons' );
-		wp_localize_script(
+		// Configuration, not translations, so an inline script rather than
+		// wp_localize_script(); the strings come from wp_set_script_translations().
+		wp_add_inline_script(
 			'living-handbook-training-lessons',
-			'lhTraining',
-			array( 'searchPath' => '/living-handbook/v1' . self::REST_ROUTE )
+			'var lhTraining = ' . wp_json_encode( array( 'searchPath' => '/living-handbook/v1' . self::REST_ROUTE ) ) . ';',
+			'before'
 		);
 		wp_set_script_translations( 'living-handbook-training-lessons', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 	}

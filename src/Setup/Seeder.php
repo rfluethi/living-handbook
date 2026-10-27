@@ -1,6 +1,8 @@
 <?php
 /**
- * Seeds the four classifying taxonomies on activation.
+ * Seeds default terms on activation: page types, audiences, responsibilities
+ * and a first handbook. Topics start empty, because they are the site's own
+ * words.
  *
  * @package LivingHandbook
  */
@@ -25,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Seeder {
 
 	/**
-	 * Seed all default terms.
+	 * Seeds all default terms.
 	 *
 	 * @return void
 	 */

@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class TempFiles {
 
 	/**
-	 * Delete files with the given name prefix that are older than the cutoff.
+	 * Deletes files with the given name prefix that are older than the cutoff.
 	 *
 	 * Looks in the system temp folder, where the files are written, and in the
 	 * WordPress temp folder, where wp_tempnam() puts them when the system one is

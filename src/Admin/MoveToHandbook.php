@@ -91,7 +91,7 @@ final class MoveToHandbook {
 	public const OPTION_ANY_MOVED = 'living_handbook_moved_pages';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -105,7 +105,7 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * Whether the current user may move pages into a handbook.
+	 * Determines whether the current user may move pages into a handbook.
 	 *
 	 * Moving content between post types is an editorial act on other people's
 	 * pages as well as one's own, so it takes the capability that means exactly
@@ -139,7 +139,7 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * One bulk action, offered only when there is a handbook to move into.
+	 * Adds the bulk action, offered only when there is a handbook to move into.
 	 *
 	 * @param array<string, string> $actions Existing bulk actions.
 	 * @return array<string, string>
@@ -155,7 +155,7 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * The second control: which handbook.
+	 * Renders the second control: which handbook.
 	 *
 	 * Rendered into the filter row, which is inside the same form as the bulk
 	 * dropdown, and moved next to that dropdown by the script. Rendering it here
@@ -192,8 +192,8 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * The script that puts that control beside the bulk dropdown and shows it
-	 * only while the move action is selected.
+	 * Loads the script that puts that control beside the bulk dropdown and
+	 * shows it only while the move action is selected.
 	 *
 	 * @param string $hook Current admin page.
 	 * @return void
@@ -227,7 +227,7 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * Move the selected pages, and everything below them.
+	 * Moves the selected pages, and everything below them.
 	 *
 	 * @param string     $redirect The redirect URL.
 	 * @param string     $action   The chosen bulk action.
@@ -280,7 +280,8 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * The given pages plus every page below them, parents before children.
+	 * Returns the given pages plus every page below them, parents before
+	 * children.
 	 *
 	 * @param array<int, int> $ids Selected page ids.
 	 * @return array<int, int>
@@ -318,7 +319,7 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * Move one page into a handbook.
+	 * Moves one page into a handbook.
 	 *
 	 * The old path is written before the type changes, because afterwards the
 	 * permalink is the new one and the old one is unrecoverable.
@@ -360,7 +361,8 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * The site-relative path of a post, without the leading and trailing slash.
+	 * Returns the site-relative path of a post, without the leading and trailing
+	 * slash.
 	 *
 	 * @param int $post_id Post id.
 	 * @return string
@@ -381,7 +383,7 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * Answer a request for a moved page's old address with a 301.
+	 * Answers a request for a moved page's old address with a 301.
 	 *
 	 * Only on a 404, so this costs nothing on any request that resolves. A moved
 	 * page keeps its old address working for good: the alternative is that every
@@ -449,7 +451,7 @@ final class MoveToHandbook {
 	}
 
 	/**
-	 * Report what the bulk action did.
+	 * Reports what the bulk action did.
 	 *
 	 * @return void
 	 */

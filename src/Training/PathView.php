@@ -43,7 +43,7 @@ final class PathView {
 	public const QUERY_ARG = 'lh_path';
 
 	/**
-	 * The learning path the current request is being read in, or 0.
+	 * Returns the learning path the current request is being read in, or 0.
 	 *
 	 * Reading a query argument, not acting on one: the value is cast to an int
 	 * and then has to survive an access check before anything is rendered.
@@ -58,7 +58,7 @@ final class PathView {
 	}
 
 	/**
-	 * Add the path argument to a lesson link.
+	 * Adds the path argument to a lesson link.
 	 *
 	 * @param string $url         Lesson permalink.
 	 * @param int    $training_id Learning path id.
@@ -73,7 +73,7 @@ final class PathView {
 	}
 
 	/**
-	 * Render the lesson list of the learning path being viewed.
+	 * Renders the lesson list of the learning path being viewed.
 	 *
 	 * @return string
 	 */
@@ -159,7 +159,7 @@ final class PathView {
 	}
 
 	/**
-	 * Render the learning paths of the handbook whose entry page is being shown.
+	 * Renders the learning paths of the handbook whose entry page is being shown.
 	 *
 	 * Without this a path could only be reached by somebody sending its link
 	 * around, because the type has no archive and appears in no navigation: the
@@ -232,7 +232,7 @@ final class PathView {
 	 * A published path does, for everyone who may read it. A path that is not
 	 * published yet does only for people who may edit it: up to 0.75.1 it never
 	 * did, so whoever built a path could not walk through it before publishing
-	 * it, which is the moment it matters most (decided on 2026-10-27). Readers
+	 * it, which is the moment it matters most. Readers
 	 * cannot reach an unpublished path anyway; the edit right keeps it that way
 	 * even for a URL that names one.
 	 *
@@ -250,12 +250,12 @@ final class PathView {
 	}
 
 	/**
-	 * Render the path bar on a handbook page that is being read as a lesson.
+	 * Renders the path bar on a handbook page that is being read as a lesson.
 	 *
 	 * Renders nothing at all unless every condition holds: the module is on, the
 	 * URL names a path, that path exists and is published (or the reader may
-	 * edit it, see shows_bar_for()), the reader may view
-	 * it, and this page is one of its lessons for this reader. A page that is
+	 * edit it, see shows_bar_for()), the reader may view it, and this page is
+	 * one of its lessons for this reader. A page that is
 	 * not in the path renders nothing rather than an error, because the argument
 	 * can be stale, guessed or simply wrong, and none of that is worth a message.
 	 *
@@ -290,13 +290,7 @@ final class PathView {
 
 		$lessons  = Lessons::visible( $training_id, $user_id );
 		$total    = count( $lessons );
-		$position = 0;
-		foreach ( $lessons as $index => $lesson ) {
-			if ( $lesson->ID === $post->ID ) {
-				$position = $index + 1;
-				break;
-			}
-		}
+		$position = Lessons::position_in( $lessons, $post->ID );
 		if ( 0 === $position ) {
 			return '';
 		}
@@ -335,7 +329,7 @@ final class PathView {
 	}
 
 	/**
-	 * One step link of the path bar.
+	 * Returns one step link of the path bar.
 	 *
 	 * @param WP_Post $lesson      The lesson to link to.
 	 * @param int     $training_id Learning path id.

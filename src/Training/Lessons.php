@@ -42,7 +42,15 @@ final class Lessons {
 	public const MAX = 200;
 
 	/**
-	 * Sanitize a lesson list: positive integers, no duplicates, bounded.
+	 * How many learning paths the entry page of one handbook lists at most.
+	 *
+	 * A sanity bound like MAX: a handbook with more paths than this has a
+	 * structure problem a longer list would not solve.
+	 */
+	public const MAX_PATHS = 50;
+
+	/**
+	 * Sanitizes a lesson list: positive integers, no duplicates, bounded.
 	 *
 	 * Deliberately not checking here whether the ids exist or belong to the
 	 * handbook. That decision depends on the state of other posts, which can
@@ -72,7 +80,7 @@ final class Lessons {
 	}
 
 	/**
-	 * The stored lesson list of a path, in order and unfiltered.
+	 * Returns the stored lesson list of a path, in order and unfiltered.
 	 *
 	 * @param int $training_id Learning path id.
 	 * @return array<int, int>
@@ -86,7 +94,7 @@ final class Lessons {
 	}
 
 	/**
-	 * Store a lesson list.
+	 * Stores a lesson list.
 	 *
 	 * @param int               $training_id Learning path id.
 	 * @param array<int, mixed> $ids        Lesson ids in order.
@@ -104,7 +112,7 @@ final class Lessons {
 	}
 
 	/**
-	 * The lessons of a path that this person actually sees, in order.
+	 * Returns the lessons of a path that this person actually sees, in order.
 	 *
 	 * Four things drop a lesson out: it no longer exists, it is not published,
 	 * it belongs to a different handbook than the path, or this person may not
@@ -148,8 +156,8 @@ final class Lessons {
 	}
 
 	/**
-	 * The ids of the lessons several paths have for this person, each list in
-	 * the path's own order.
+	 * Returns the ids of the lessons several paths have for this person, each
+	 * list in the path's own order.
 	 *
 	 * What visible() answers for one path, for a list of them at the cost of
 	 * one: the lesson lists of all paths are read in one query, and the lessons
@@ -165,6 +173,10 @@ final class Lessons {
 	 * page is AccessController::readable_posts(), can_view_post() with its
 	 * filter, on the few columns PageTree reads, so counting a lesson does not
 	 * load its text.
+	 *
+	 * The query and readable_posts() decide for the current user, so $user_id
+	 * has to be the current user; the explicit check per lesson only repeats
+	 * the decision for that id.
 	 *
 	 * @param array<int, int> $training_ids Learning path ids.
 	 * @param int             $user_id      User id (0 for a guest), for the explicit check per lesson.
@@ -212,7 +224,7 @@ final class Lessons {
 					'fields'              => 'ids',
 					'no_found_rows'       => true,
 					'ignore_sticky_posts' => true,
-					'tax_query'           => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					'tax_query'           => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- A lesson outside the path's handbook is not a lesson; the ids are already narrowed by post__in.
 						array(
 							'taxonomy'         => Handbooks::TAXONOMY,
 							'field'            => 'term_id',
@@ -245,7 +257,7 @@ final class Lessons {
 	}
 
 	/**
-	 * Where a page sits in a path for this person, counted from 1.
+	 * Returns where a page sits in a path for this person, counted from 1.
 	 *
 	 * @param int $training_id Learning path id.
 	 * @param int $post_id     Handbook page id.
@@ -253,19 +265,29 @@ final class Lessons {
 	 * @return int Position from 1, or 0 when the page is not in the path.
 	 */
 	public static function position( int $training_id, int $post_id, int $user_id ): int {
-		$position = 0;
-		foreach ( self::visible( $training_id, $user_id ) as $index => $lesson ) {
-			if ( $lesson->ID === $post_id ) {
-				$position = $index + 1;
-				break;
-			}
-		}
-
-		return $position;
+		return self::position_in( self::visible( $training_id, $user_id ), $post_id );
 	}
 
 	/**
-	 * The learning paths of one handbook that this person may read.
+	 * Returns where a page sits in a list of lessons already resolved, counted
+	 * from 1, or 0 when it is not in the list.
+	 *
+	 * @param array<int, WP_Post> $lessons Lessons in order, as visible() returns them.
+	 * @param int                 $post_id Handbook page id.
+	 * @return int
+	 */
+	public static function position_in( array $lessons, int $post_id ): int {
+		foreach ( array_values( $lessons ) as $index => $lesson ) {
+			if ( $lesson->ID === $post_id ) {
+				return $index + 1;
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Returns the learning paths of one handbook that this person may read.
 	 *
 	 * @param int $handbook_term_id Handbook term id.
 	 * @param int $user_id          User id (0 for a guest).
@@ -280,13 +302,13 @@ final class Lessons {
 			array(
 				'post_type'              => Training::POST_TYPE,
 				'post_status'            => 'publish',
-				'posts_per_page'         => 50,
+				'posts_per_page'         => self::MAX_PATHS,
 				'orderby'                => 'title',
 				'order'                  => 'ASC',
 				'no_found_rows'          => true,
 				'ignore_sticky_posts'    => true,
 				'update_post_meta_cache' => false,
-				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- The paths of one handbook are what the entry page lists.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',

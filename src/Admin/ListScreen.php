@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class ListScreen {
 
 	/**
-	 * Whether the current screen shows a column.
+	 * Determines whether the current screen shows a column.
 	 *
 	 * Answers true when it cannot tell. The question is asked while rendering a
 	 * control, and a missing screen is a reason to show one control too many, not
@@ -57,7 +57,7 @@ final class ListScreen {
 	}
 
 	/**
-	 * Wrap a filter control so it can follow its column, before and after the
+	 * Wraps a filter control so it can follow its column, before and after the
 	 * page is loaded.
 	 *
 	 * The control is always in the document, hidden rather than left out, because
@@ -83,7 +83,7 @@ final class ListScreen {
 	}
 
 	/**
-	 * Whether a taxonomy has any term at all.
+	 * Determines whether a taxonomy has any term at all.
 	 *
 	 * A taxonomy nobody has filled cannot narrow anything: its dropdown offers
 	 * exactly one entry, "All topics", and selecting it changes nothing. Counted

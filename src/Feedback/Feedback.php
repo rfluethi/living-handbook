@@ -28,16 +28,22 @@ if ( ! defined( 'ABSPATH' ) ) {
  * is switched on (Settings), a logged-out visitor may also vote on a page they
  * can view; that vote has no per-person limit and stores nothing personal (no
  * cookie, no IP, no id), so it stays privacy-friendly at the cost of dedup.
+ * What limits it is a ceiling per page and hour (ANONYMOUS_LIMIT).
  */
 final class Feedback {
 
 	/**
-	 * The vote counters, under the plugin's protected prefix like everything it
-	 * writes about a page rather than for it. They were _living_handbook_ before,
-	 * a third spelling next to living_handbook_ and _lh_.
+	 * Meta key of the "yes" counter, under the plugin's protected prefix like
+	 * everything it writes about a page rather than for it. Up to 0.75.1 the
+	 * counters were _living_handbook_, a third spelling next to
+	 * living_handbook_ and _lh_.
 	 */
 	public const YES = '_lh_feedback_yes';
-	public const NO  = '_lh_feedback_no';
+
+	/**
+	 * Meta key of the "no" counter, see YES.
+	 */
+	public const NO = '_lh_feedback_no';
 
 	/**
 	 * Meta key holding the list of user IDs that already voted on a page.
@@ -54,7 +60,7 @@ final class Feedback {
 	public const ANONYMOUS_LIMIT = 200;
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -63,7 +69,7 @@ final class Feedback {
 	}
 
 	/**
-	 * Register the feedback REST route.
+	 * Registers the feedback REST route.
 	 *
 	 * @return void
 	 */
@@ -88,6 +94,7 @@ final class Feedback {
 					'value'   => array(
 						'required' => true,
 						'type'     => 'string',
+						'enum'     => array( 'yes', 'no' ),
 					),
 				),
 			)
@@ -95,7 +102,8 @@ final class Feedback {
 	}
 
 	/**
-	 * Increment the relevant counter, once per user and page.
+	 * Counts a vote: once per signed-in user and page, and for anonymous votes
+	 * within the hourly ceiling of the page.
 	 *
 	 * @param WP_REST_Request $request REST request.
 	 * @return WP_REST_Response

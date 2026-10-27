@@ -67,7 +67,7 @@ final class Training {
 	public const META_LESSONS = '_lh_training_lessons';
 
 	/**
-	 * Whether this site runs learning paths.
+	 * Determines whether this site runs learning paths.
 	 *
 	 * @return bool
 	 */
@@ -83,7 +83,7 @@ final class Training {
 	}
 
 	/**
-	 * Sanitize the module switch coming from the settings form.
+	 * Sanitizes the module switch coming from the settings form.
 	 *
 	 * @param mixed $value Raw value from the form.
 	 * @return int 1 or 0.
@@ -93,7 +93,7 @@ final class Training {
 	}
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -114,7 +114,7 @@ final class Training {
 	}
 
 	/**
-	 * Register the post type.
+	 * Registers the post type.
 	 *
 	 * It is registered whether or not the module is switched on, and the switch
 	 * decides only what is shown: an installation that turns learning paths off
@@ -162,10 +162,12 @@ final class Training {
 				'hierarchical'        => false,
 				'has_archive'         => false,
 				/**
-				 * The URL base of a learning path. English and fixed by default,
-				 * for the same reason as the handbook page slug: permalinks stay
-				 * stable. Changing it on a live site rewrites every path URL and
-				 * needs the permalinks flushed.
+				 * Filters the URL base of a learning path.
+				 *
+				 * English and fixed by default, for the same reason as the
+				 * handbook page slug: permalinks stay stable. Changing it on a
+				 * live site rewrites every path URL and needs the permalinks
+				 * flushed.
 				 *
 				 * @param string $slug The rewrite base. Default 'learning-path'.
 				 */
@@ -176,7 +178,7 @@ final class Training {
 	}
 
 	/**
-	 * Register the lesson list as post meta.
+	 * Registers the lesson list as post meta.
 	 *
 	 * Not exposed in REST: the list is written by the lesson picker through the
 	 * normal post form, and a REST-writable array of post ids would be a second
@@ -203,7 +205,7 @@ final class Training {
 	}
 
 	/**
-	 * Note that the rewrite rules are stale, see OPTION_FLUSH.
+	 * Notes that the rewrite rules are stale, see OPTION_FLUSH.
 	 *
 	 * @return void
 	 */
@@ -212,8 +214,8 @@ final class Training {
 	}
 
 	/**
-	 * Rebuild the rewrite rules once, on the first request after the switch was
-	 * used.
+	 * Rebuilds the rewrite rules once, on the first request after the switch
+	 * was used.
 	 *
 	 * @return void
 	 */
@@ -227,7 +229,7 @@ final class Training {
 	}
 
 	/**
-	 * Keep learning paths out of the core XML sitemap, as handbook pages are.
+	 * Keeps learning paths out of the core XML sitemap, as handbook pages are.
 	 *
 	 * @param array<string, \WP_Post_Type> $post_types Registered sitemap post types.
 	 * @return array<string, \WP_Post_Type> Filtered list.

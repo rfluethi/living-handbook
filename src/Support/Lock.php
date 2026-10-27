@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Lock {
 
 	/**
-	 * Take the lock, or learn that someone else holds it.
+	 * Takes the lock, or learns that someone else holds it.
 	 *
 	 * @param string $name Option name of the lock.
 	 * @param int    $ttl  Age in seconds from which a lock counts as abandoned and is taken over.
@@ -76,7 +76,7 @@ final class Lock {
 	}
 
 	/**
-	 * Release the lock, if it is still the caller's.
+	 * Releases the lock, if it is still the caller's.
 	 *
 	 * A run that took longer than the TTL has had its lock taken over; deleting
 	 * the row then would hand the new holder's lock to whoever comes next.
@@ -97,7 +97,7 @@ final class Lock {
 	}
 
 	/**
-	 * When a lock value was taken.
+	 * Returns when a lock value was taken.
 	 *
 	 * Reads the token of this class and the bare timestamp that the locks up to
 	 * 0.75.x stored, so a lock left by an older version still ages out.
