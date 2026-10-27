@@ -9,16 +9,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-27T12:57:44+00:00\n"
+"POT-Creation-Date: 2026-10-27T15:44:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
 
 #. Plugin Name of the plugin
 #: living-handbook.php
-#: src/Blocks/Blocks.php:102
-#: src/Privacy/Privacy.php:92
-#: src/Privacy/Privacy.php:297
+#: src/Blocks/Blocks.php:126
+#: src/Privacy/Privacy.php:102
+#: src/Privacy/Privacy.php:368
 msgid "Living Handbook"
 msgstr ""
 
@@ -42,114 +42,121 @@ msgstr ""
 msgid "https://rfluethi.com"
 msgstr ""
 
-#: src/Access/AccessController.php:672
+#: src/Access/AccessController.php:732
 msgid "No access to this handbook"
 msgstr ""
 
 #. translators: %s: display name of the signed-in user.
-#: src/Access/AccessController.php:675
+#: src/Access/AccessController.php:735
 #, php-format
 msgid "You are signed in as %s, but your account does not have access to this handbook. Ask an administrator or the team that maintains the handbook to grant you access."
 msgstr ""
 
-#: src/Access/AccessController.php:695
+#: src/Access/AccessController.php:755
 msgid "Back to the site"
 msgstr ""
 
-#: src/Admin/Maintenance.php:86
+#: src/Admin/Maintenance.php:93
 msgid "Reset feedback"
 msgstr ""
 
-#: src/Admin/Maintenance.php:100
+#: src/Admin/Maintenance.php:108
 msgid "You are not allowed to reset feedback for this page."
 msgstr ""
 
-#: src/Admin/Maintenance.php:130
+#: src/Admin/Maintenance.php:138
 msgid "Feedback was reset."
 msgstr ""
 
-#: src/Admin/Maintenance.php:144
+#: src/Admin/Maintenance.php:152
 msgid "Handbook: reviews overdue"
 msgstr ""
 
-#. translators: 1: overdue count, 2: total count, 3: percentage.
-#: src/Admin/Maintenance.php:199
+#. translators: 1: number of pages due or overdue, 2: total number of pages, 3: percentage.
+#: src/Admin/Maintenance.php:211
 #, php-format
-msgid "%1$d of %2$d pages overdue (%3$d%%)."
-msgstr ""
+msgid "%1$d of %2$d page due or overdue (%3$d%%)."
+msgid_plural "%1$d of %2$d pages due or overdue (%3$d%%)."
+msgstr[0] ""
+msgstr[1] ""
 
-#: src/Admin/Maintenance.php:208
+#: src/Admin/Maintenance.php:220
 msgid "All pages are currently reviewed."
 msgstr ""
 
-#: src/Admin/Maintenance.php:237
+#: src/Admin/Maintenance.php:248
 msgid "Show all handbook pages, oldest review first"
 msgstr ""
 
-#: src/Admin/Maintenance.php:257
-#: src/Admin/Maintenance.php:261
-#: src/Export/SiteRenderer.php:267
-#: src/Export/StaticSite.php:1081
-#: src/Import/HandbookExport.php:120
-#: src/PostType/Handbook.php:116
-#: src/PostType/Handbook.php:118
-#: src/Setup/Onboarding.php:131
-#: src/Taxonomy/Taxonomies.php:256
+#: src/Admin/Maintenance.php:268
+#: src/Admin/Maintenance.php:272
+#: src/Export/SiteRenderer.php:288
+#: src/Export/StaticSite.php:1225
+#: src/Import/HandbookExport.php:141
+#: src/PostType/Handbook.php:123
+#: src/PostType/Handbook.php:125
+#: src/Privacy/Privacy.php:208
+#: src/Setup/Onboarding.php:148
+#: src/Taxonomy/Taxonomies.php:271
 msgid "Handbook"
 msgstr ""
 
-#: src/Admin/Maintenance.php:264
-#: src/Frontend/PageMeta.php:93
-#: src/Meta/Metadata.php:247
-#: src/Meta/Metadata.php:385
-#: src/Meta/Metadata.php:435
-#: src/Privacy/Privacy.php:157
+#: src/Admin/Maintenance.php:275
+#: src/Frontend/PageMeta.php:96
+#: src/Meta/Metadata.php:277
+#: src/Meta/Metadata.php:409
+#: src/Meta/Metadata.php:458
+#: src/Privacy/Privacy.php:167
 msgid "Last reviewed"
 msgstr ""
 
-#: src/Admin/Maintenance.php:265
-#: src/Setup/Settings.php:55
+#: src/Admin/Maintenance.php:276
+#: src/Setup/Settings.php:58
 msgid "Feedback"
 msgstr ""
 
-#: src/Admin/Maintenance.php:285
+#: src/Admin/Maintenance.php:296
 msgid "No handbook, so this page stays invisible on the front end."
 msgstr ""
 
 #. translators: 1: number of positive votes, 2: number of negative votes.
-#: src/Admin/Maintenance.php:324
+#: src/Admin/Maintenance.php:335
 #, php-format
 msgid "%1$d yes, %2$d no"
 msgstr ""
 
 #. translators: %s: the plural taxonomy name, for example "Topics".
-#: src/Admin/Maintenance.php:475
+#: src/Admin/Maintenance.php:486
 #, php-format
 msgid "All %s"
 msgstr ""
 
-#: src/Admin/Maintenance.php:542
+#: src/Admin/Maintenance.php:553
 msgid "All review statuses"
 msgstr ""
 
-#: src/Admin/MoveToHandbook.php:136
+#: src/Admin/MoveToHandbook.php:152
 msgid "Move into a handbook…"
 msgstr ""
 
-#: src/Admin/MoveToHandbook.php:166
+#: src/Admin/MoveToHandbook.php:182
 msgid "Handbook to move the pages into"
 msgstr ""
 
-#: src/Admin/MoveToHandbook.php:171
+#: src/Admin/MoveToHandbook.php:187
 msgid "— pick a handbook —"
 msgstr ""
 
-#: src/Admin/MoveToHandbook.php:440
+#: src/Admin/MoveToHandbook.php:459
 msgid "Nothing was moved: no handbook was chosen. Pick one in the dropdown beside the bulk action."
 msgstr ""
 
+#: src/Admin/MoveToHandbook.php:466
+msgid "Nothing was moved: you may not move pages into that handbook, because it is kept from you. Pick one from the dropdown beside the bulk action."
+msgstr ""
+
 #. translators: %d: number of pages moved.
-#: src/Admin/MoveToHandbook.php:457
+#: src/Admin/MoveToHandbook.php:480
 #, php-format
 msgid "%d page moved into the handbook, subpages included. Its old address now redirects to the new one."
 msgid_plural "%d pages moved into the handbook, subpages included. Their old addresses now redirect to the new ones."
@@ -157,133 +164,137 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of pages skipped.
-#: src/Admin/MoveToHandbook.php:463
+#: src/Admin/MoveToHandbook.php:486
 #, php-format
 msgid "%d page was left alone, because it is not a page or you may not edit it."
 msgid_plural "%d pages were left alone, because they are not pages or you may not edit them."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/MoveToHandbook.php:467
+#: src/Admin/MoveToHandbook.php:490
 msgid "The moved pages have no review date yet, so they show as \"Not reviewed\" until you set one."
 msgstr ""
 
-#: src/Blocks/Blocks.php:325
-#: src/Blocks/Blocks.php:326
-#: assets/blocks.js:145
+#: src/Blocks/Blocks.php:347
+#: src/Blocks/Blocks.php:348
+#: assets/blocks.js:270
 msgid "Table of Contents"
 msgstr ""
 
-#: src/Blocks/Blocks.php:370
-#: src/Frontend/Filters.php:419
+#: src/Blocks/Blocks.php:393
+#: src/Frontend/Filters.php:458
 msgid "Search this handbook"
 msgstr ""
 
-#: src/Blocks/Blocks.php:373
-#: src/Frontend/Filters.php:422
+#: src/Blocks/Blocks.php:396
+#: src/Frontend/Filters.php:461
 msgid "Search this handbook …"
 msgstr ""
 
-#: src/Blocks/SourceNoteBlock.php:76
-#: assets/js/git-source-note-block.js:5
+#: src/Blocks/SourceNoteBlock.php:79
+#: assets/js/git-source-note-block.js:16
 msgid "This page is maintained on GitHub and updated automatically."
 msgstr ""
 
-#: src/Blocks/SourceNoteBlock.php:83
+#: src/Blocks/SourceNoteBlock.php:88
 msgid "View the source file"
 msgstr ""
 
+#: src/Blocks/SourceNoteBlock.php:89
+msgid "(opens in a new tab)"
+msgstr ""
+
 #. translators: 1: number of pages, 2: date of the export.
-#: src/Export/SiteRenderer.php:202
+#: src/Export/SiteRenderer.php:222
 #, php-format
 msgid "A copy of %1$d page, exported on %2$s."
 msgid_plural "A copy of %1$d pages, exported on %2$s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Export/SiteRenderer.php:208
+#: src/Export/SiteRenderer.php:228
 msgid "Contents"
 msgstr ""
 
-#: src/Export/SiteRenderer.php:249
+#: src/Export/SiteRenderer.php:271
 msgid "Skip to content"
 msgstr ""
 
-#: src/Export/SiteRenderer.php:253
-#: src/Export/SiteRenderer.php:254
-#: src/Frontend/Filters.php:425
-#: assets/blocks.js:248
+#: src/Export/SiteRenderer.php:275
+#: src/Export/SiteRenderer.php:276
+#: src/Frontend/Filters.php:464
+#: assets/blocks.js:450
 msgid "Search"
 msgstr ""
 
-#: src/Export/SiteRenderer.php:257
+#: src/Export/SiteRenderer.php:279
 msgid "Pages"
 msgstr ""
 
 #. translators: %s: date of the export.
-#: src/Export/SiteRenderer.php:280
+#: src/Export/SiteRenderer.php:301
 #, php-format
 msgid "Exported from a Living Handbook on %s. This copy is not kept up to date."
 msgstr ""
 
-#: src/Export/SiteRenderer.php:373
+#: src/Export/SiteRenderer.php:398
 #: src/Training/PathView.php:155
 msgid "Start"
 msgstr ""
 
-#: src/Export/SiteRenderer.php:479
+#: src/Export/SiteRenderer.php:530
 msgid "On this page"
 msgstr ""
 
-#: src/Export/SiteRenderer.php:504
-#: src/Frontend/FrontendRenderer.php:133
+#: src/Export/SiteRenderer.php:555
+#: src/Frontend/FrontendRenderer.php:139
 msgid "Enlarge"
 msgstr ""
 
-#: src/Export/SiteRenderer.php:505
-#: src/Frontend/FrontendRenderer.php:132
+#: src/Export/SiteRenderer.php:556
+#: src/Frontend/FrontendRenderer.php:138
 msgid "Close"
 msgstr ""
 
-#: src/Export/SiteRenderer.php:506
-#: src/Frontend/FrontendRenderer.php:134
+#: src/Export/SiteRenderer.php:557
+#: src/Frontend/FrontendRenderer.php:140
 msgid "Enlarged diagram"
 msgstr ""
 
 #. translators: %d: number of results.
 #. translators: %d: number of matching pages.
-#: src/Export/SiteRenderer.php:754
-#: src/Frontend/Filters.php:729
+#: src/Export/SiteRenderer.php:816
+#: src/Frontend/Filters.php:771
 #, php-format
 msgid "%d page found"
 msgid_plural "%d pages found"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Export/SiteRenderer.php:759
+#: src/Export/SiteRenderer.php:821
 msgid "Nothing found."
 msgstr ""
 
-#: src/Export/SiteRenderer.php:762
+#: src/Export/SiteRenderer.php:824
 msgid "Clear the search"
 msgstr ""
 
 #. translators: %s: date of the export.
-#: src/Export/SiteRenderer.php:870
+#: src/Export/SiteRenderer.php:847
 #, php-format
 msgid "A copy of a handbook, exported on %s."
 msgstr ""
 
-#: src/Export/SiteRenderer.php:874
+#: src/Export/SiteRenderer.php:851
 msgid "Open index.html in a browser. No server, no installation and no internet connection are needed."
 msgstr ""
 
-#: src/Export/SiteRenderer.php:876
+#: src/Export/SiteRenderer.php:853
 msgid "This copy is not kept up to date, and it carries no access rules: whoever holds this folder can read every page in it. Pass it on accordingly."
 msgstr ""
 
 #. translators: %s: source site URL.
-#: src/Export/SiteRenderer.php:880
+#: src/Export/SiteRenderer.php:857
 #, php-format
 msgid "Source: %s"
 msgstr ""
@@ -304,188 +315,188 @@ msgstr ""
 msgid "Paper, for printing"
 msgstr ""
 
-#: src/Export/StaticSite.php:150
+#: src/Export/StaticSite.php:222
 msgid "This server has no ZIP support (the PHP zip extension), so an export cannot be packed."
 msgstr ""
 
-#: src/Export/StaticSite.php:161
+#: src/Export/StaticSite.php:233
 msgid "This export has expired or belongs to somebody else. Start it again."
 msgstr ""
 
-#: src/Export/StaticSite.php:173
-#: assets/js/static-export.js:106
+#: src/Export/StaticSite.php:245
+#: assets/js/static-export.js:189
 msgid "Choose a handbook to export."
 msgstr ""
 
-#: src/Export/StaticSite.php:180
+#: src/Export/StaticSite.php:252
 msgid "You cannot read this handbook, so you cannot export it either."
 msgstr ""
 
-#: src/Export/StaticSite.php:195
+#: src/Export/StaticSite.php:267
 msgid "There is nothing to export: this handbook has no pages you can read."
 msgstr ""
 
-#: src/Export/StaticSite.php:354
+#: src/Export/StaticSite.php:438
 msgid "The export file could not be written on this server."
 msgstr ""
 
-#: src/Export/StaticSite.php:972
-#: src/Import/HandbookExport.php:268
+#: src/Export/StaticSite.php:1133
+#: src/Import/HandbookExport.php:258
 msgid "You are not allowed to export handbooks."
 msgstr ""
 
-#: src/Export/StaticSite.php:983
+#: src/Export/StaticSite.php:1144
 msgid "This file has already been downloaded, or the export has expired. Build the website again if you need another copy."
 msgstr ""
 
-#: src/Export/StaticSite.php:1073
+#: src/Export/StaticSite.php:1217
 msgid "Export as a website"
 msgstr ""
 
-#: src/Export/StaticSite.php:1074
+#: src/Export/StaticSite.php:1218
 msgid "A ZIP of plain HTML files: the pages, their images, a page list and a search. It opens by double-clicking index.html, with no server and no internet connection. For readers who have no access to this site at all."
 msgstr ""
 
-#: src/Export/StaticSite.php:1076
+#: src/Export/StaticSite.php:1220
 msgid "A static copy has no access rules. It contains every page you can read in the handbook you choose, and whoever holds the file can read all of it. It also stops being current the moment it is made."
 msgstr ""
 
-#: src/Export/StaticSite.php:1084
-#: src/Import/HandbookExport.php:123
-#: src/Import/MarkdownImportPage.php:1140
+#: src/Export/StaticSite.php:1228
+#: src/Import/HandbookExport.php:144
+#: src/Import/MarkdownImportPage.php:1202
 msgid "— select a handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:1094
-#: src/Import/HandbookExport.php:133
+#: src/Export/StaticSite.php:1238
+#: src/Import/HandbookExport.php:154
 msgid "What to export"
 msgstr ""
 
-#: src/Export/StaticSite.php:1096
-#: src/Export/StaticSite.php:1097
-#: src/Import/HandbookExport.php:135
-#: src/Import/HandbookExport.php:136
+#: src/Export/StaticSite.php:1240
+#: src/Export/StaticSite.php:1241
+#: src/Import/HandbookExport.php:156
+#: src/Import/HandbookExport.php:157
 msgid "— the whole handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:1102
+#: src/Export/StaticSite.php:1246
 msgid "Look"
 msgstr ""
 
-#: src/Export/StaticSite.php:1109
-msgid "\"Like this site\" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other three leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team."
+#: src/Export/StaticSite.php:1253
+msgid "\"Like this site\" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other looks leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team."
 msgstr ""
 
-#: src/Export/StaticSite.php:1114
+#: src/Export/StaticSite.php:1258
 msgid "Build the website"
 msgstr ""
 
-#: src/Frontend/Appearance.php:70
+#: src/Frontend/Appearance.php:80
 msgid "Surface"
 msgstr ""
 
-#: src/Frontend/Appearance.php:71
+#: src/Frontend/Appearance.php:81
 msgid "Background of cards, navigation, table of contents, filter bar and search field."
 msgstr ""
 
-#: src/Frontend/Appearance.php:74
+#: src/Frontend/Appearance.php:84
 msgid "Text on the surface"
 msgstr ""
 
-#: src/Frontend/Appearance.php:75
+#: src/Frontend/Appearance.php:85
 msgid "The text on those surfaces. Lines and secondary text are mixed from this colour, so they follow it."
 msgstr ""
 
-#: src/Frontend/Appearance.php:78
+#: src/Frontend/Appearance.php:88
 msgid "Accent"
 msgstr ""
 
-#: src/Frontend/Appearance.php:79
+#: src/Frontend/Appearance.php:89
 msgid "Links, the current page in the navigation, filled controls, and the page-type badge. The text on a filled control is chosen automatically, black or white, whichever reads better."
 msgstr ""
 
-#: src/Frontend/Appearance.php:82
+#: src/Frontend/Appearance.php:92
 msgid "Topic badge background"
 msgstr ""
 
-#: src/Frontend/Appearance.php:83
+#: src/Frontend/Appearance.php:93
 msgid "A page carries up to three of these small labels, told apart by colour on purpose: the page type takes the accent above, the topic this pair, the audience the pair below."
 msgstr ""
 
-#: src/Frontend/Appearance.php:86
+#: src/Frontend/Appearance.php:96
 msgid "Topic badge text"
 msgstr ""
 
-#: src/Frontend/Appearance.php:87
+#: src/Frontend/Appearance.php:97
 msgid "The text of the topic label."
 msgstr ""
 
-#: src/Frontend/Appearance.php:90
+#: src/Frontend/Appearance.php:100
 msgid "Audience badge background"
 msgstr ""
 
-#: src/Frontend/Appearance.php:91
+#: src/Frontend/Appearance.php:101
 msgid "The label that reads \"Audience: …\"."
 msgstr ""
 
-#: src/Frontend/Appearance.php:94
+#: src/Frontend/Appearance.php:104
 msgid "Audience badge text"
 msgstr ""
 
-#: src/Frontend/Appearance.php:95
+#: src/Frontend/Appearance.php:105
 msgid "The text of the audience label."
 msgstr ""
 
-#: src/Frontend/Appearance.php:98
-#: src/Frontend/FreshnessStatus.php:137
+#: src/Frontend/Appearance.php:108
+#: src/Frontend/FreshnessStatus.php:153
 msgid "Reviewed"
 msgstr ""
 
-#: src/Frontend/Appearance.php:99
+#: src/Frontend/Appearance.php:109
 msgid "The first of the four review states."
 msgstr ""
 
-#: src/Frontend/Appearance.php:102
-#: src/Frontend/FreshnessStatus.php:139
+#: src/Frontend/Appearance.php:112
+#: src/Frontend/FreshnessStatus.php:155
 msgid "Review due"
 msgstr ""
 
-#: src/Frontend/Appearance.php:103
+#: src/Frontend/Appearance.php:113
 msgid "The second of the four review states."
 msgstr ""
 
-#: src/Frontend/Appearance.php:106
-#: src/Frontend/FreshnessStatus.php:141
+#: src/Frontend/Appearance.php:116
+#: src/Frontend/FreshnessStatus.php:157
 msgid "Review overdue"
 msgstr ""
 
-#: src/Frontend/Appearance.php:107
+#: src/Frontend/Appearance.php:117
 msgid "The third of the four review states. Keep them clearly different from each other, and not by hue alone."
 msgstr ""
 
-#: src/Frontend/Appearance.php:110
-#: src/Frontend/FreshnessStatus.php:143
+#: src/Frontend/Appearance.php:120
+#: src/Frontend/FreshnessStatus.php:159
 msgid "Not reviewed"
 msgstr ""
 
-#: src/Frontend/Appearance.php:111
+#: src/Frontend/Appearance.php:121
 msgid "A page with no review date yet. Neutral on purpose: a page nobody has looked at is not overdue."
 msgstr ""
 
 #. translators: %s: name of the responsible role.
-#: src/Frontend/Cards.php:69
+#: src/Frontend/Cards.php:82
 #, php-format
 msgid "Role: %s"
 msgstr ""
 
 #. translators: %s: audience name.
-#: src/Frontend/Cards.php:137
+#: src/Frontend/Cards.php:150
 #, php-format
 msgid "Audience: %s"
 msgstr ""
 
 #. translators: %d: number of subpages.
-#: src/Frontend/Cards.php:276
+#: src/Frontend/Cards.php:289
 #, php-format
 msgid "%d subpage"
 msgid_plural "%d subpages"
@@ -494,8 +505,8 @@ msgstr[1] ""
 
 #. translators: %d: number of pages in a handbook.
 #. translators: %d is a number of pages.
-#: src/Frontend/Cards.php:315
-#: assets/js/markdown-import.js:15
+#: src/Frontend/Cards.php:328
+#: assets/js/markdown-import.js:35
 #, php-format,js-format
 msgid "%d page"
 msgid_plural "%d pages"
@@ -503,330 +514,305 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: name of the handbook this one belongs to.
-#: src/Frontend/Cards.php:322
+#: src/Frontend/Cards.php:335
 #, php-format
 msgid "in %s"
 msgstr ""
 
-#: src/Frontend/Cards.php:394
+#: src/Frontend/Cards.php:407
 msgid "All pages"
 msgstr ""
 
-#: src/Frontend/Entry.php:70
+#: src/Frontend/Entry.php:57
 msgid "No handbooks available."
 msgstr ""
 
-#: src/Frontend/Entry.php:154
-#: src/Frontend/Entry.php:156
-#: src/Frontend/Entry.php:272
-#: src/Frontend/FrontendRenderer.php:393
-#: src/Frontend/FrontendRenderer.php:453
-#: src/Taxonomy/Taxonomies.php:255
-#: src/Taxonomy/Taxonomies.php:257
-#: src/Taxonomy/Taxonomies.php:258
+#: src/Frontend/Entry.php:174
+#: src/Frontend/Entry.php:176
+#: src/Frontend/Entry.php:290
+#: src/Frontend/FrontendRenderer.php:377
+#: src/Frontend/FrontendRenderer.php:437
+#: src/Taxonomy/Taxonomies.php:270
+#: src/Taxonomy/Taxonomies.php:272
+#: src/Taxonomy/Taxonomies.php:273
 msgid "Handbooks"
 msgstr ""
 
-#: src/Frontend/Entry.php:253
+#: src/Frontend/Entry.php:271
 msgid "Areas"
 msgstr ""
 
-#: src/Frontend/Entry.php:258
+#: src/Frontend/Entry.php:276
 msgid "Recently updated"
 msgstr ""
 
-#: src/Frontend/Entry.php:276
+#: src/Frontend/Entry.php:294
 msgid "This handbook has no pages yet."
 msgstr ""
 
-#: src/Frontend/Entry.php:281
+#: src/Frontend/Entry.php:299
 msgid "Log in to see more."
 msgstr ""
 
 #. translators: %d: number of matching pages in the page search.
-#: src/Frontend/Filters.php:182
+#: src/Frontend/Filters.php:221
 #, php-format
 msgid "%d matching page"
 msgid_plural "%d matching pages"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Frontend/Filters.php:530
+#: src/Frontend/Filters.php:572
 msgid "Apply filters"
 msgstr ""
 
-#: src/Frontend/Filters.php:531
+#: src/Frontend/Filters.php:573
 msgid "Reset"
 msgstr ""
 
-#: src/Frontend/Filters.php:732
+#: src/Frontend/Filters.php:774
 msgid "No matches. Adjust the filters or the search."
 msgstr ""
 
-#: src/Frontend/Filters.php:747
-#: src/PostType/Handbook.php:119
+#: src/Frontend/Filters.php:789
+#: src/PostType/Handbook.php:126
 msgid "Handbook pages"
 msgstr ""
 
-#: src/Frontend/Filters.php:888
-#: src/Taxonomy/Taxonomies.php:46
-#: src/Taxonomy/Taxonomies.php:274
-msgid "Page type"
-msgstr ""
-
-#: src/Frontend/Filters.php:890
-#: src/Taxonomy/Taxonomies.php:47
-#: src/Taxonomy/Taxonomies.php:291
-#: src/Taxonomy/Taxonomies.php:293
-#: src/Taxonomy/Taxonomies.php:294
-msgid "Topics"
-msgstr ""
-
-#: src/Frontend/Filters.php:892
-#: src/Taxonomy/Taxonomies.php:48
-#: src/Taxonomy/Taxonomies.php:309
-#: src/Taxonomy/Taxonomies.php:310
-#: src/Taxonomy/Taxonomies.php:311
-#: src/Taxonomy/Taxonomies.php:312
-msgid "Responsibility"
-msgstr ""
-
-#: src/Frontend/Filters.php:894
-#: src/Taxonomy/Taxonomies.php:331
-msgid "Audience"
-msgstr ""
-
-#: src/Frontend/FrontendRenderer.php:127
+#: src/Frontend/FrontendRenderer.php:133
 msgid "Thanks for your feedback."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:128
+#: src/Frontend/FrontendRenderer.php:134
 msgid "Your feedback could not be sent. Please try again."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:129
+#: src/Frontend/FrontendRenderer.php:135
 msgid "The list could not be updated. Please reload the page."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:130
+#: src/Frontend/FrontendRenderer.php:136
 msgid "No matches."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:131
+#: src/Frontend/FrontendRenderer.php:137
 msgid "The search failed. Please reload the page."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:139
+#: src/Frontend/FrontendRenderer.php:145
 msgid "Continue"
 msgstr ""
 
 #. translators: %s: the heading's text.
-#: src/Frontend/Headings.php:163
+#: src/Frontend/Headings.php:161
 #, php-format
 msgid "Link to this section: %s"
 msgstr ""
 
 #. translators: %s: handbook name.
 #. translators: %s: page title.
-#: src/Frontend/Navigation.php:124
-#: src/Frontend/Navigation.php:242
+#: src/Frontend/Navigation.php:120
+#: src/Frontend/Navigation.php:244
 #, php-format
 msgid "Toggle %s"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:53
+#: src/Frontend/PageMeta.php:59
 msgid "Was this helpful?"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:54
+#: src/Frontend/PageMeta.php:60
 msgid "Yes"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:55
+#: src/Frontend/PageMeta.php:61
 msgid "No"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:89
+#: src/Frontend/PageMeta.php:92
 msgid "never"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:91
+#: src/Frontend/PageMeta.php:94
 msgid "Created"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:92
+#: src/Frontend/PageMeta.php:95
 msgid "Last updated"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:94
+#: src/Frontend/PageMeta.php:103
 msgid "Responsible role"
 msgstr ""
 
-#: src/Frontend/Templates.php:57
+#: src/Frontend/Templates.php:55
 msgid "Handbook entry"
 msgstr ""
 
-#: src/Frontend/Templates.php:58
+#: src/Frontend/Templates.php:56
 msgid "Entry page of a single handbook: navigation, search bar, results, filter bar."
 msgstr ""
 
-#: src/Frontend/Templates.php:66
-#: src/PostType/Handbook.php:117
+#: src/Frontend/Templates.php:64
+#: src/PostType/Handbook.php:124
 msgid "Handbook page"
 msgstr ""
 
-#: src/Frontend/Templates.php:67
+#: src/Frontend/Templates.php:65
 msgid "Single handbook page: navigation left, content centre, on-this-page right."
 msgstr ""
 
-#: src/Frontend/Templates.php:75
-#: src/Training/PathView.php:322
+#: src/Frontend/Templates.php:73
+#: src/Training/PathView.php:316
 #: src/Training/Training.php:136
 msgid "Learning path"
 msgstr ""
 
-#: src/Frontend/Templates.php:76
+#: src/Frontend/Templates.php:74
 msgid "A single learning path: navigation left, its own text and the ordered lessons in the centre."
 msgstr ""
 
-#: src/Git/ArchiveSource.php:97
-#: src/Git/ArchiveSource.php:129
-#: src/Import/HandbookExport.php:309
-#: src/Import/HandbookImport.php:177
-#: src/Import/MarkdownImportPage.php:265
-#: src/Import/MarkdownImportPage.php:350
+#: src/Git/ArchiveSource.php:106
+#: src/Git/ArchiveSource.php:140
+#: src/Import/HandbookExport.php:306
+#: src/Import/HandbookImport.php:205
+#: src/Import/MarkdownImportPage.php:296
+#: src/Import/MarkdownImportPage.php:390
 msgid "ZipArchive is not available on the server."
 msgstr ""
 
-#: src/Git/ArchiveSource.php:134
+#: src/Git/ArchiveSource.php:145
 msgid "The downloaded repository archive is gone."
 msgstr ""
 
-#: src/Git/ArchiveSource.php:204
+#: src/Git/ArchiveSource.php:215
 msgid "GitHub API rate limit reached (unauthenticated, 60 requests per hour). Try again later."
 msgstr ""
 
 #. translators: %d: HTTP status code returned by the GitHub API.
-#: src/Git/ArchiveSource.php:218
-#: src/Git/GitSync.php:1332
+#: src/Git/ArchiveSource.php:229
+#: src/Git/GitSync.php:1433
 #, php-format
 msgid "GitHub API HTTP %d"
 msgstr ""
 
-#: src/Git/ArchiveSource.php:227
+#: src/Git/ArchiveSource.php:238
 msgid "The archive download was redirected to an unexpected address."
 msgstr ""
 
 #. translators: %d: HTTP status code returned while downloading the archive.
-#: src/Git/ArchiveSource.php:314
+#: src/Git/ArchiveSource.php:326
 #, php-format
 msgid "Archive download failed with HTTP %d"
 msgstr ""
 
-#: src/Git/ArchiveSource.php:322
+#: src/Git/ArchiveSource.php:334
 msgid "The downloaded archive is empty."
 msgstr ""
 
-#: src/Git/ArchiveSource.php:335
+#: src/Git/ArchiveSource.php:346
 msgid "The repository archive is larger than the configured limit."
 msgstr ""
 
-#: src/Git/ArchiveSource.php:357
+#: src/Git/ArchiveSource.php:368
 msgid "Could not open the repository archive."
 msgstr ""
 
-#: src/Git/ArchiveSource.php:366
+#: src/Git/ArchiveSource.php:377
 msgid "The repository archive holds more entries than the import allows."
 msgstr ""
 
-#: src/Git/GitSync.php:278
+#: src/Git/GitSync.php:338
 msgid "Off (only on save and Sync now)"
 msgstr ""
 
-#: src/Git/GitSync.php:279
+#: src/Git/GitSync.php:339
 msgid "Hourly"
 msgstr ""
 
-#: src/Git/GitSync.php:280
+#: src/Git/GitSync.php:340
 msgid "Twice daily"
 msgstr ""
 
-#: src/Git/GitSync.php:281
+#: src/Git/GitSync.php:341
 msgid "Daily"
 msgstr ""
 
-#: src/Git/GitSync.php:282
+#: src/Git/GitSync.php:342
 msgid "Weekly"
 msgstr ""
 
-#: src/Git/GitSync.php:429
+#: src/Git/GitSync.php:490
 msgid "GitHub page"
 msgstr ""
 
-#: src/Git/GitSync.php:523
+#: src/Git/GitSync.php:589
 msgid "This import cannot be continued: it was paused too long ago and its state is gone. Start it again, already imported pages are found and updated rather than duplicated."
 msgstr ""
 
-#: src/Git/GitSync.php:589
-#: src/Git/GitSync.php:599
+#: src/Git/GitSync.php:665
+#: src/Git/GitSync.php:675
 msgid "Not a GitHub folder URL."
 msgstr ""
 
-#: src/Git/GitSync.php:614
+#: src/Git/GitSync.php:690
 msgid "No Markdown files found in that folder."
 msgstr ""
 
-#: src/Git/GitSync.php:619
+#: src/Git/GitSync.php:695
 msgid "The repository is too large for GitHub to return its tree in one piece, so this import may be incomplete."
 msgstr ""
 
 #. translators: %d: maximum number of files imported from one folder.
-#: src/Git/GitSync.php:625
+#: src/Git/GitSync.php:701
 #, php-format
-msgid "Only the first %d files were imported. Import the remaining subfolders separately."
-msgstr ""
+msgid "Only the first %d file was imported. Import the remaining subfolders separately."
+msgid_plural "Only the first %d files were imported. Import the remaining subfolders separately."
+msgstr[0] ""
+msgstr[1] ""
 
 #. translators: 1: page title the link is on, 2: link target file name.
-#: src/Git/GitSync.php:781
-#: src/Git/GitSync.php:1139
+#: src/Git/GitSync.php:885
 #, php-format
 msgid "On \"%1$s\": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link."
 msgstr ""
 
 #. translators: %s: reason the repository archive could not be downloaded.
-#: src/Git/GitSync.php:1004
+#: src/Git/GitSync.php:1098
 #, php-format
 msgid "The repository archive could not be downloaded (%s), so every file is fetched on its own. That is slower and may hit the GitHub rate limit."
 msgstr ""
 
-#: src/Git/GitSync.php:1066
+#: src/Git/GitSync.php:1167
 msgid "The app handbook folder was not found in the plugin."
 msgstr ""
 
-#: src/Git/GitSync.php:1071
+#: src/Git/GitSync.php:1172
 msgid "No Markdown files were found in the app handbook folder."
 msgstr ""
 
 #. translators: %d: maximum number of files imported from one folder.
-#: src/Git/GitSync.php:1079
+#: src/Git/GitSync.php:1180
 #, php-format
-msgid "Only the first %d files were imported."
-msgstr ""
+msgid "Only the first %d file was imported."
+msgid_plural "Only the first %d files were imported."
+msgstr[0] ""
+msgstr[1] ""
 
 #. translators: %s: page title.
-#: src/Git/GitSync.php:1176
+#: src/Git/GitSync.php:1272
 #, php-format
 msgid "\"%s\" was loaded without the connection to the source and may have been edited since, so it was left as it is. To get the current version, move it to the trash and load the handbook again."
 msgstr ""
 
 #. translators: %s: page title.
-#: src/Git/GitSync.php:1213
+#: src/Git/GitSync.php:1309
 #, php-format
 msgid "\"%s\" is no longer part of the shipped handbook. It was left as it is; delete it if you no longer need it."
 msgstr ""
 
 #. translators: %d: number of further pages not listed.
-#: src/Git/GitSync.php:1220
+#: src/Git/GitSync.php:1316
 #, php-format
 msgid "… and %d more page that is no longer part of the shipped handbook."
 msgid_plural "… and %d more pages that are no longer part of the shipped handbook."
@@ -834,136 +820,140 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: pages imported so far, 2: total pages, 3: local time the limit resets.
-#: src/Git/GitSync.php:1281
+#: src/Git/GitSync.php:1377
 #, php-format
-msgid "GitHub's hourly request limit is used up. The import stopped after %1$d of %2$d pages, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated."
-msgstr ""
+msgid "GitHub's hourly request limit is used up. The import stopped after %1$d of %2$d page, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated."
+msgid_plural "GitHub's hourly request limit is used up. The import stopped after %1$d of %2$d pages, nothing is lost. Start it again from %3$s: pages that already exist are updated, not duplicated."
+msgstr[0] ""
+msgstr[1] ""
 
 #. translators: %s: local time the GitHub request limit resets.
-#: src/Git/GitSync.php:1323
+#: src/Git/GitSync.php:1424
 #, php-format
 msgid "GitHub's hourly request limit is used up. It allows 60 requests an hour without a login, and comes back at %s."
 msgstr ""
 
-#: src/Git/GitSync.php:1342
+#: src/Git/GitSync.php:1443
 msgid "Unexpected GitHub API response."
 msgstr ""
 
-#: src/Git/GitSync.php:1709
+#: src/Git/GitSync.php:1837
 msgid "App handbook page"
 msgstr ""
 
-#: src/Git/GitSync.php:2036
-#: src/Git/GitSync.php:2699
+#: src/Git/GitSync.php:2095
+#: src/Git/GitSync.php:2771
 msgid "Source"
 msgstr ""
 
-#: src/Git/GitSync.php:2059
+#: src/Git/GitSync.php:2118
 msgid "Maintained in WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:2060
+#: src/Git/GitSync.php:2119
 msgid "Synced from GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:2062
+#: src/Git/GitSync.php:2121
 msgid "Only someone who may upload files can set GitHub as the source or change it, because a sync stores the page's images in the media library."
 msgstr ""
 
-#: src/Git/GitSync.php:2065
+#: src/Git/GitSync.php:2124
 msgid "Markdown source (raw or blob URL)"
 msgstr ""
 
-#: src/Git/GitSync.php:2070
+#: src/Git/GitSync.php:2129
 msgid "Sync now"
 msgstr ""
 
-#: src/Git/GitSync.php:2074
+#: src/Git/GitSync.php:2133
 msgid "Last sync:"
 msgstr ""
 
-#: src/Git/GitSync.php:2076
+#: src/Git/GitSync.php:2135
 msgid "A GitHub page is pulled when you save it, and its content editor is locked. Change the source here."
 msgstr ""
 
-#: src/Git/GitSync.php:2189
+#: src/Git/GitSync.php:2251
 msgid "This page is part of the app handbook that ships with the plugin. Its content is managed there and a re-load replaces it, so it cannot be edited here."
 msgstr ""
 
-#: src/Git/GitSync.php:2192
+#: src/Git/GitSync.php:2254
 msgid "This page is synced from GitHub. Its content is managed in the repository and cannot be edited here."
 msgstr ""
 
 #. translators: %d: number of GitHub pages that failed to sync.
-#: src/Git/GitSync.php:2231
+#: src/Git/GitSync.php:2298
 #, php-format
 msgid "Living Handbook: %d GitHub page could not be synced. Open it to see the error."
 msgid_plural "Living Handbook: %d GitHub pages could not be synced. Open them to see the error."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Git/GitSync.php:2252
-#: src/Setup/Onboarding.php:388
+#: src/Git/GitSync.php:2317
+#: src/Setup/Onboarding.php:411
 msgid "(no title)"
 msgstr ""
 
 #. translators: %d: number of further failed pages not listed.
 #. translators: %d: number of further affected pages not listed.
-#: src/Git/GitSync.php:2262
-#: src/Setup/Onboarding.php:401
+#: src/Git/GitSync.php:2328
+#: src/Setup/Onboarding.php:425
 #, php-format
 msgid "… and %d more."
-msgstr ""
+msgid_plural "… and %d more."
+msgstr[0] ""
+msgstr[1] ""
 
-#: src/Git/GitSync.php:2290
+#: src/Git/GitSync.php:2356
 msgid "You are not allowed to do this."
 msgstr ""
 
-#: src/Git/GitSync.php:2394
+#: src/Git/GitSync.php:2460
 msgid "Error: CommonMark is not installed."
 msgstr ""
 
-#: src/Git/GitSync.php:2402
+#: src/Git/GitSync.php:2468
 msgid "Error: source host not allowed."
 msgstr ""
 
 #. translators: %s: error message from the HTTP request.
 #. translators: %s is the error message.
-#: src/Git/GitSync.php:2425
-#: assets/js/markdown-import.js:234
-#: assets/js/markdown-import.js:324
+#: src/Git/GitSync.php:2491
+#: assets/js/markdown-import.js:385
+#: assets/js/markdown-import.js:570
 #, php-format,js-format
 msgid "Error: %s"
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: src/Git/GitSync.php:2431
+#: src/Git/GitSync.php:2497
 #, php-format
 msgid "Error: HTTP %d"
 msgstr ""
 
 #. translators: %s: date and time of the successful sync.
-#: src/Git/GitSync.php:2450
+#: src/Git/GitSync.php:2516
 #, php-format
 msgid "OK %s"
 msgstr ""
 
-#: src/Git/GitSync.php:2715
-#: src/Git/GitSync.php:2739
-#: src/Import/MarkdownImportPage.php:1203
+#: src/Git/GitSync.php:2787
+#: src/Git/GitSync.php:2811
+#: src/Import/MarkdownImportPage.php:1265
 msgid "GitHub"
 msgstr ""
 
-#: src/Git/GitSync.php:2715
-#: src/Git/GitSync.php:2740
+#: src/Git/GitSync.php:2787
+#: src/Git/GitSync.php:2812
 msgid "WordPress"
 msgstr ""
 
-#: src/Git/GitSync.php:2719
+#: src/Git/GitSync.php:2791
 msgid "(sync failed)"
 msgstr ""
 
-#: src/Git/GitSync.php:2738
+#: src/Git/GitSync.php:2810
 msgid "All sources"
 msgstr ""
 
@@ -993,7 +983,7 @@ msgid "Comments"
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:153
-#: src/Setup/Settings.php:56
+#: src/Setup/Settings.php:59
 msgid "Access"
 msgstr ""
 
@@ -1002,7 +992,7 @@ msgid "Public"
 msgstr ""
 
 #: src/Handbook/HandbookAdmin.php:178
-#: src/Setup/Seeder.php:49
+#: src/Setup/Seeder.php:51
 msgid "All members"
 msgstr ""
 
@@ -1018,518 +1008,622 @@ msgstr[1] ""
 msgid "Restricted"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:211
+#. translators: %s: the allowed roles and the number of allowed users, comma separated.
+#: src/Handbook/HandbookAdmin.php:205
+#, php-format
+msgid "Restricted: %s"
+msgstr ""
+
+#: src/Handbook/HandbookAdmin.php:219
 msgid "Public (no login)"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:212
+#: src/Handbook/HandbookAdmin.php:220
 msgid "All members (logged in)"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:213
+#: src/Handbook/HandbookAdmin.php:221
 msgid "Restricted (roles and/or users)"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:236
+#: src/Handbook/HandbookAdmin.php:244
 msgid "Each page decides (default)"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:237
+#: src/Handbook/HandbookAdmin.php:245
 msgid "Open on every page of this handbook"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:238
+#: src/Handbook/HandbookAdmin.php:246
 msgid "Closed on every page of this handbook"
 msgstr ""
 
-#: src/Handbook/HandbookAdmin.php:259
+#: src/Handbook/HandbookAdmin.php:267
 msgid "Open and Closed override the setting on each page. Closing hides the comment form; comments already written stay readable and are not deleted."
 msgstr ""
 
-#: src/Import/AppHandbook.php:68
+#: src/Import/AppHandbook.php:67
 msgid "User handbook (German)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:73
+#: src/Import/AppHandbook.php:71
 msgid "User handbook (English)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:78
+#: src/Import/AppHandbook.php:75
 msgid "Technical documentation (German)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:83
+#: src/Import/AppHandbook.php:79
 msgid "Technical documentation (English)"
 msgstr ""
 
-#: src/Import/AppHandbook.php:194
+#: src/Import/AppHandbook.php:192
 msgid "That handbook is not available in this build."
 msgstr ""
 
-#: src/Import/HandbookExport.php:83
+#: src/Import/HandbookExport.php:104
 msgid "Export handbooks"
 msgstr ""
 
-#: src/Import/HandbookExport.php:84
-#: src/Import/HandbookExport.php:109
+#: src/Import/HandbookExport.php:105
+#: src/Import/HandbookExport.php:130
 msgid "Export"
 msgstr ""
 
-#: src/Import/HandbookExport.php:110
+#: src/Import/HandbookExport.php:131
 msgid "Download a handbook, or a single area within it, as a bundle: one ZIP with its pages, learning paths, configuration and media. Import it on another site running the plugin."
 msgstr ""
 
-#: src/Import/HandbookExport.php:113
+#: src/Import/HandbookExport.php:134
 msgid "There are no handbooks yet, so there is nothing to export."
 msgstr ""
 
-#: src/Import/HandbookExport.php:138
+#: src/Import/HandbookExport.php:159
 msgid "Lists the areas of the handbook chosen above. An area is a top-level page; it exports with its subpages."
 msgstr ""
 
-#: src/Import/HandbookExport.php:142
+#: src/Import/HandbookExport.php:163
 msgid "Export bundle"
 msgstr ""
 
-#: src/Import/HandbookExport.php:289
+#: src/Import/HandbookExport.php:279
 msgid "That page is not in a handbook."
 msgstr ""
 
-#: src/Import/HandbookExport.php:301
+#: src/Import/HandbookExport.php:291
 msgid "Choose what to export."
 msgstr ""
 
-#: src/Import/HandbookExport.php:305
+#: src/Import/HandbookExport.php:295
 msgid "You are not allowed to export this handbook."
 msgstr ""
 
-#: src/Import/HandbookExport.php:319
+#: src/Import/HandbookExport.php:302
+msgid "That area cannot be exported."
+msgstr ""
+
+#: src/Import/HandbookExport.php:316
 msgid "The export bundle could not be created."
 msgstr ""
 
-#: src/Import/HandbookImport.php:159
+#: src/Import/HandbookImport.php:187
 msgid "Skip pages that already exist (never overwrite)"
 msgstr ""
 
-#: src/Import/HandbookImport.php:160
+#: src/Import/HandbookImport.php:188
 msgid "Update pages that already exist"
 msgstr ""
 
-#: src/Import/HandbookImport.php:161
+#: src/Import/HandbookImport.php:189
 msgid "Always create new pages"
 msgstr ""
 
-#: src/Import/HandbookImport.php:172
+#: src/Import/HandbookImport.php:200
 msgid "You are not allowed to import bundles."
 msgstr ""
 
-#: src/Import/HandbookImport.php:197
+#: src/Import/HandbookImport.php:225
 msgid "No bundle file received."
 msgstr ""
 
-#: src/Import/HandbookImport.php:202
+#: src/Import/HandbookImport.php:230
 msgid "Could not open the bundle."
 msgstr ""
 
-#: src/Import/HandbookImport.php:214
+#: src/Import/HandbookImport.php:242
 msgid "The bundle has no manifest.json."
 msgstr ""
 
-#: src/Import/HandbookImport.php:220
+#: src/Import/HandbookImport.php:248
 msgid "This file is not a Living Handbook bundle."
 msgstr ""
 
 #. translators: 1: maximum number of entries, 2: name of the filter that changes it.
-#: src/Import/HandbookImport.php:257
+#: src/Import/HandbookImport.php:284
 #, php-format
 msgid "The bundle has too many entries (maximum is %1$d). The limit can be raised with the %2$s filter."
 msgstr ""
 
 #. translators: 1: maximum uncompressed size in whole megabytes, 2: name of the filter that changes it.
-#: src/Import/HandbookImport.php:276
+#: src/Import/HandbookImport.php:303
 #, php-format
 msgid "The bundle is too large: the uncompressed contents exceed %1$d MB. The limit can be raised with the %2$s filter."
 msgstr ""
 
-#: src/Import/HandbookImport.php:415
+#: src/Import/HandbookImport.php:445
 msgid "The bundle was imported as ordinary WordPress pages, as drafts. They carry no handbook, so no access rule, no navigation, no table of contents, no badges and no review data; the text, the images and the diagrams are there."
 msgstr ""
 
-#: src/Import/HandbookImport.php:419
-#: src/Import/MarkdownImportPage.php:226
+#: src/Import/HandbookImport.php:449
+#: src/Import/MarkdownImportPage.php:252
 msgid "You are not allowed to import into this handbook."
 msgstr ""
 
-#: src/Import/HandbookImport.php:422
+#: src/Import/HandbookImport.php:452
 msgid "The bundle names no handbook."
 msgstr ""
 
-#: src/Import/HandbookImport.php:482
+#. translators: %d: number of pages.
+#: src/Import/HandbookImport.php:492
+#, php-format
+msgid "%d page of the bundle already exists on this site, but you may not edit it, so it was left alone."
+msgid_plural "%d pages of the bundle already exist on this site, but you may not edit them, so they were left alone."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of learning paths.
+#: src/Import/HandbookImport.php:505
+#, php-format
+msgid "%d learning path of the bundle already exists on this site, but you may not edit it, so it was left alone."
+msgid_plural "%d learning paths of the bundle already exist on this site, but you may not edit them, so they were left alone."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Import/HandbookImport.php:556
 msgid "The learning paths in the bundle were not imported: they need handbook pages, and this import created ordinary WordPress pages."
 msgstr ""
 
-#: src/Import/HandbookImport.php:497
+#: src/Import/HandbookImport.php:571
 msgid "Learning paths are switched off on this site. The imported paths are kept and appear once learning paths are switched on in the settings."
 msgstr ""
 
 #. translators: 1: number of lessons, 2: learning path title.
-#: src/Import/HandbookImport.php:589
+#: src/Import/HandbookImport.php:667
 #, php-format
 msgid "Learning path \"%2$s\": %1$d lesson is not among the pages of the bundle and was left out."
 msgid_plural "Learning path \"%2$s\": %1$d lessons are not among the pages of the bundle and were left out."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Import/HandbookImport.php:620
+#: src/Import/HandbookImport.php:698
 msgid "The pages went into the handbook you chose; its access configuration was left unchanged."
 msgstr ""
 
-#: src/Import/HandbookImport.php:637
+#: src/Import/HandbookImport.php:715
 msgid "An existing handbook was reused; its access configuration was left unchanged."
 msgstr ""
 
-#: src/Import/HandbookImport.php:648
+#: src/Import/HandbookImport.php:726
 msgid "The handbook was created with visibility \"members\". Raise it by hand if the content really should be public."
 msgstr ""
 
-#: src/Import/HandbookImport.php:666
+#: src/Import/HandbookImport.php:744
 msgid "The bundle carried a list of individually allowed users. It was not applied; set the people by hand if the handbook should be restricted."
 msgstr ""
 
-#. translators: %s: comma-separated file names.
-#: src/Import/HandbookImport.php:722
+#. translators: %s: list of file names.
+#: src/Import/HandbookImport.php:801
 #, php-format
-msgid "These files from the bundle were not imported, because their type is not accepted, their content does not match their name, or they could not be stored: %s. Pages that use them still point at the old site."
-msgstr ""
-
-#. translators: %s: comma-separated file names.
-#: src/Import/HandbookImport.php:729
-#, php-format
-msgid "These files from the bundle were not imported, because they are too large for the import on this website: %s. Pages that use them still point at the old site."
-msgstr ""
-
-#. translators: %s: comma-separated file names.
-#: src/Import/HandbookImport.php:736
-#, php-format
-msgid "These files are listed in the bundle but missing from it: %s. Pages that use them still point at the old site."
-msgstr ""
-
-#. translators: 1: created count, 2: updated count, 3: skipped count, 4: protected count.
-#: src/Import/HandbookImport.php:1048
-#, php-format
-msgid "Bundle imported: %1$d created, %2$d updated, %3$d skipped, %4$d protected."
-msgstr ""
-
-#. translators: 1: number of learning paths in the bundle, 2: created, 3: updated, 4: skipped, 5: protected.
-#: src/Import/HandbookImport.php:1064
-#, php-format
-msgid "%1$d learning path: %2$d created, %3$d updated, %4$d skipped, %5$d protected."
-msgid_plural "%1$d learning paths: %2$d created, %3$d updated, %4$d skipped, %5$d protected."
+msgid "This file from the bundle was not imported, because its type is not accepted, its content does not match its name, or it could not be stored: %s. Pages that use it still point at the old site."
+msgid_plural "These files from the bundle were not imported, because their type is not accepted, their content does not match their name, or they could not be stored: %s. Pages that use them still point at the old site."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Import/MarkdownImportPage.php:99
+#. translators: %s: list of file names.
+#: src/Import/HandbookImport.php:814
+#, php-format
+msgid "This file from the bundle was not imported, because it is too large for the import on this website: %s. Pages that use it still point at the old site."
+msgid_plural "These files from the bundle were not imported, because they are too large for the import on this website: %s. Pages that use them still point at the old site."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: list of file names.
+#: src/Import/HandbookImport.php:827
+#, php-format
+msgid "This file is listed in the bundle but missing from it: %s. Pages that use it still point at the old site."
+msgid_plural "These files are listed in the bundle but missing from it: %s. Pages that use them still point at the old site."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: list of page counts, such as "3 pages created and 1 page updated".
+#: src/Import/HandbookImport.php:1169
+#, php-format
+msgid "Bundle imported: %s."
+msgstr ""
+
+#. translators: %s: list of learning path counts, such as "1 learning path created and 2 learning paths updated".
+#: src/Import/HandbookImport.php:1181
+#, php-format
+msgid "Learning paths: %s."
+msgstr ""
+
+#. translators: %d: number of pages.
+#: src/Import/HandbookImport.php:1217
+#, php-format
+msgid "%d page created"
+msgid_plural "%d pages created"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of pages.
+#: src/Import/HandbookImport.php:1219
+#, php-format
+msgid "%d page updated"
+msgid_plural "%d pages updated"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of pages.
+#: src/Import/HandbookImport.php:1221
+#, php-format
+msgid "%d page skipped"
+msgid_plural "%d pages skipped"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of pages.
+#: src/Import/HandbookImport.php:1223
+#, php-format
+msgid "%d page protected"
+msgid_plural "%d pages protected"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of learning paths.
+#: src/Import/HandbookImport.php:1243
+#, php-format
+msgid "%d learning path created"
+msgid_plural "%d learning paths created"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of learning paths.
+#: src/Import/HandbookImport.php:1245
+#, php-format
+msgid "%d learning path updated"
+msgid_plural "%d learning paths updated"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of learning paths.
+#: src/Import/HandbookImport.php:1247
+#, php-format
+msgid "%d learning path skipped"
+msgid_plural "%d learning paths skipped"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of learning paths.
+#: src/Import/HandbookImport.php:1249
+#, php-format
+msgid "%d learning path protected"
+msgid_plural "%d learning paths protected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Import/MarkdownImportPage.php:125
 msgid "Markdown import"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:100
-#: src/Import/MarkdownImportPage.php:1173
-#: src/Import/MarkdownImportPage.php:1188
+#: src/Import/MarkdownImportPage.php:126
+#: src/Import/MarkdownImportPage.php:1235
+#: src/Import/MarkdownImportPage.php:1250
 msgid "Import"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:124
+#: src/Import/MarkdownImportPage.php:150
 msgid "How the import works"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:125
+#: src/Import/MarkdownImportPage.php:151
 msgid "Import Markdown into handbook pages. Paste a single draft or upload a ZIP of .md files: these become editable pages. If the ZIP contains a mkdocs.yml, its navigation defines the page structure, titles, and order (the ZIP must also hold the referenced files). Or give a GitHub URL: a file URL becomes one locked page, a folder (tree) URL imports every .md file in the folder as locked pages pulled from the repository. Front matter is dropped, transport metadata and the parent and order are applied, Mermaid diagrams and collapsible details become blocks, images in the ZIP are added to the media library, and internal .md links are pointed at the imported pages."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:235
+#: src/Import/MarkdownImportPage.php:261
 msgid "CommonMark is not installed. Run: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:270
+#: src/Import/MarkdownImportPage.php:301
 msgid "Could not open the ZIP file."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:277
-msgid "The ZIP has too many entries (maximum is 2000)."
+#. translators: %d: maximum number of entries in a ZIP.
+#: src/Import/MarkdownImportPage.php:309
+#, php-format
+msgid "The ZIP has too many entries (maximum is %d)."
 msgstr ""
 
 #. translators: %d: maximum uncompressed size in whole megabytes.
-#: src/Import/MarkdownImportPage.php:313
+#: src/Import/MarkdownImportPage.php:353
 #, php-format
 msgid "The ZIP is too large: the uncompressed contents exceed %d MB."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:358
-#: assets/js/markdown-import.js:599
+#: src/Import/MarkdownImportPage.php:398
+#: assets/js/markdown-import.js:1047
 msgid "No ZIP file received."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:370
+#. translators: 1: size limit in whole megabytes, 2: list of file paths in the ZIP.
+#: src/Import/MarkdownImportPage.php:413
+#, php-format
+msgid "This file in the ZIP is larger than %1$d MB and was left out: %2$s."
+msgid_plural "These files in the ZIP are larger than %1$d MB each and were left out: %2$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Import/MarkdownImportPage.php:425
 msgid "No .md files found in the ZIP."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:393
-msgid "The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its structure could not be applied. The files were imported with their file names as page titles."
+#: src/Import/MarkdownImportPage.php:447
+msgid "The ZIP carries a mkdocs.yml, but this server has no YAML reader, so its structure could not be applied. Each page takes its first heading as its title, or its file name when it has none."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:446
+#: src/Import/MarkdownImportPage.php:500
 msgid "You are not allowed to load the app handbook."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:471
-#: assets/js/markdown-import.js:612
+#: src/Import/MarkdownImportPage.php:525
+#: assets/js/markdown-import.js:1061
 msgid "No GitHub URL given."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:482
+#: src/Import/MarkdownImportPage.php:536
 msgid "Could not create the page. Check the URL."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:539
-#: assets/js/markdown-import.js:283
-#: assets/js/markdown-import.js:318
+#: src/Import/MarkdownImportPage.php:593
+#: assets/js/markdown-import.js:480
+#: assets/js/markdown-import.js:558
 msgid "Imported page"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1137
+#: src/Import/MarkdownImportPage.php:1199
 msgid "Target handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1147
+#: src/Import/MarkdownImportPage.php:1209
 msgid "Applied to the imported page(s). A \"Handbuch\" line in the transport block overrides it."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1149
+#: src/Import/MarkdownImportPage.php:1211
 msgid "No handbooks yet. Create one first under Handbook, Handbooks."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1155
+#: src/Import/MarkdownImportPage.php:1217
 msgid "Page title (optional)"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1158
+#: src/Import/MarkdownImportPage.php:1220
 msgid "If empty, the first heading of the document is used."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1174
+#: src/Import/MarkdownImportPage.php:1236
 msgid "The Markdown library is missing. Run in the plugin folder: composer require league/commonmark"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1198
+#: src/Import/MarkdownImportPage.php:1260
 msgid "Pick a source. Everything that source needs sits in its own tab."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1200
+#: src/Import/MarkdownImportPage.php:1262
 msgid "Import source"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1201
+#: src/Import/MarkdownImportPage.php:1263
 msgid "Paste text"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1202
-#: src/Import/MarkdownImportPage.php:1220
+#: src/Import/MarkdownImportPage.php:1264
+#: src/Import/MarkdownImportPage.php:1282
 msgid "ZIP file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1205
+#: src/Import/MarkdownImportPage.php:1267
 msgid "Bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1208
+#: src/Import/MarkdownImportPage.php:1270
 msgid "App handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1213
+#: src/Import/MarkdownImportPage.php:1275
 msgid "Paste Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1214
+#: src/Import/MarkdownImportPage.php:1276
 msgid "Paste a Markdown draft here"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1216
+#: src/Import/MarkdownImportPage.php:1278
 msgid "Import Markdown"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1222
+#: src/Import/MarkdownImportPage.php:1284
 msgid "Flat set of .md files, or a repository export with a mkdocs.yml for a structured import."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1224
+#: src/Import/MarkdownImportPage.php:1286
 msgid "Import ZIP"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1228
+#: src/Import/MarkdownImportPage.php:1290
 msgid "GitHub URL"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1230
+#: src/Import/MarkdownImportPage.php:1292
 msgid "Creates locked pages pulled from a public GitHub repository."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1232
+#: src/Import/MarkdownImportPage.php:1294
 msgid "Import from GitHub"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1240
+#: src/Import/MarkdownImportPage.php:1302
 msgid "Bundle file"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1242
+#: src/Import/MarkdownImportPage.php:1304
 msgid "A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1245
+#: src/Import/MarkdownImportPage.php:1307
 msgid "Import into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1248
+#: src/Import/MarkdownImportPage.php:1310
 msgid "— the handbook named in the bundle —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1255
+#: src/Import/MarkdownImportPage.php:1317
 msgid "By default the bundle goes into its own handbook, which is created here if it does not exist yet. Pick an existing handbook to put the pages there instead; its access configuration stays as it is."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1259
-#: src/Import/MarkdownImportPage.php:1262
+#: src/Import/MarkdownImportPage.php:1321
+#: src/Import/MarkdownImportPage.php:1324
 msgid "If a page already exists"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1275
+#: src/Import/MarkdownImportPage.php:1337
 msgid "What to create"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1279
+#: src/Import/MarkdownImportPage.php:1341
 msgid "Ordinary WordPress pages instead of handbook pages"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1281
+#: src/Import/MarkdownImportPage.php:1343
 msgid "The text, the images, the diagrams and the page structure come along. Everything the handbook adds around a page does not: no handbook, and therefore no access rule, no navigation, no table of contents, no badges and no review data. The pages are created as drafts, whatever the bundle says, so nothing from an internal handbook is published by importing it."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1285
+#: src/Import/MarkdownImportPage.php:1347
 msgid "Import bundle"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1291
+#: src/Import/MarkdownImportPage.php:1353
 msgid "The plugin brings its own handbooks: the documentation of the app, written as a Living Handbook. They ship with the plugin, so this loads them from the installed version, with their pages, structure and images."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1294
+#: src/Import/MarkdownImportPage.php:1356
 msgid "Which handbook"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1301
+#: src/Import/MarkdownImportPage.php:1363
 msgid "The user handbook is for the people who write and read the handbook. The technical documentation is for whoever installs, styles or extends the plugin. Load one, or load several into handbooks of their own."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1305
+#: src/Import/MarkdownImportPage.php:1367
 msgid "Load into"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1308
+#: src/Import/MarkdownImportPage.php:1370
 msgid "— no handbook (assign later) —"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1315
+#: src/Import/MarkdownImportPage.php:1377
 msgid "Pick the handbook the pages should belong to. Create one first (for example \"App handbook\") if you want them in their own, and set who may read it there. The pages are published into it; whether anyone sees them is that handbook's access rule, not this button."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1319
+#: src/Import/MarkdownImportPage.php:1381
 msgid "Connection to the source"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1323
+#: src/Import/MarkdownImportPage.php:1385
 msgid "Keep the pages tied to the shipped copy"
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1325
+#: src/Import/MarkdownImportPage.php:1387
 msgid "Tied, the pages are locked in the editor and a later load refreshes them, so they follow the plugin. Untied, they arrive as ordinary handbook pages you can edit freely, which is what you want when you use them as a template for your own; the price is that they stay as they are, a plugin update does not touch them again."
 msgstr ""
 
-#: src/Import/MarkdownImportPage.php:1329
+#: src/Import/MarkdownImportPage.php:1391
 msgid "Load handbook"
 msgstr ""
 
-#: src/Import/MkDocsImport.php:99
-msgid "The mkdocs.yml has no nav section. The files were imported without structure: their file names became the page titles."
+#: src/Import/MkDocsImport.php:103
+msgid "The mkdocs.yml has no nav section. The files were imported without structure; each page takes its first heading as its title, or its file name when it has none."
 msgstr ""
 
 #. translators: %s: the YAML parser's error message, in English.
-#: src/Import/MkDocsImport.php:129
+#: src/Import/MkDocsImport.php:133
 #, php-format
-msgid "The structure from the mkdocs.yml could not be applied: the file has an error. The files were imported without structure, their file names became the page titles. The reader reports: %s"
+msgid "The structure from the mkdocs.yml could not be applied: the file has an error. The files were imported without structure; each page takes its first heading as its title, or its file name when it has none. The reader reports: %s"
 msgstr ""
 
 #. translators: %s: the navigation entry's title or address.
-#: src/Import/MkDocsImport.php:210
+#: src/Import/MkDocsImport.php:214
 #, php-format
 msgid "The navigation entry \"%s\" points to another address, not to a file in the ZIP, so it was left out."
 msgstr ""
 
-#: src/Meta/Metadata.php:225
+#: src/Meta/Metadata.php:255
 msgid "Handbook maintenance"
 msgstr ""
 
-#: src/Meta/Metadata.php:251
-#: src/Meta/Metadata.php:389
-#: src/Meta/Metadata.php:439
+#: src/Meta/Metadata.php:281
+#: src/Meta/Metadata.php:413
+#: src/Meta/Metadata.php:462
 msgid "Review interval (days)"
 msgstr ""
 
-#: src/Meta/Metadata.php:255
-#: src/Meta/Metadata.php:393
-#: src/Meta/Metadata.php:443
+#: src/Meta/Metadata.php:285
+#: src/Meta/Metadata.php:417
+#: src/Meta/Metadata.php:466
 msgid "Reviewed by"
 msgstr ""
 
-#: src/Meta/Metadata.php:262
-#: src/Meta/Metadata.php:398
+#: src/Meta/Metadata.php:292
+#: src/Meta/Metadata.php:422
 msgid "none"
 msgstr ""
 
-#: src/Meta/Metadata.php:270
+#: src/Meta/Metadata.php:300
 msgid "On this page: heading depth"
 msgstr ""
 
-#: src/Meta/Metadata.php:272
+#: src/Meta/Metadata.php:302
 msgid "Use the block default"
 msgstr ""
 
 #. translators: %d: heading level, e.g. up to H2.
-#: src/Meta/Metadata.php:277
+#: src/Meta/Metadata.php:307
 #, php-format
 msgid "Up to H%d"
 msgstr ""
 
-#: src/Meta/Metadata.php:286
+#: src/Meta/Metadata.php:316
 msgid "Exclude this page from AI use"
 msgstr ""
 
-#: src/Meta/Metadata.php:289
+#: src/Meta/Metadata.php:319
 msgid "A marker only. It does not block anything by itself; it is published in the page REST data (living_handbook_status), so an AI tool or export that reads the handbook can choose to skip this page."
 msgstr ""
 
-#: src/Meta/Metadata.php:290
+#: src/Meta/Metadata.php:320
 msgid "The last updated date is set automatically on save."
 msgstr ""
 
-#: src/Meta/Metadata.php:440
+#: src/Meta/Metadata.php:463
 msgid "unchanged"
 msgstr ""
 
-#: src/Meta/Metadata.php:448
+#: src/Meta/Metadata.php:471
 msgid "— No change —"
 msgstr ""
 
-#: src/Meta/Metadata.php:455
+#: src/Meta/Metadata.php:478
 msgid "Empty fields are left as they are on each page."
 msgstr ""
 
@@ -1541,204 +1635,233 @@ msgstr ""
 msgid "Network activation not supported"
 msgstr ""
 
-#: src/PostType/Handbook.php:120
+#: src/PostType/Handbook.php:127
 msgid "New pages"
 msgstr ""
 
-#: src/PostType/Handbook.php:121
+#: src/PostType/Handbook.php:128
 msgid "Add new handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:122
+#: src/PostType/Handbook.php:129
 msgid "Edit handbook page"
 msgstr ""
 
-#: src/PostType/Handbook.php:123
+#: src/PostType/Handbook.php:130
 msgid "Search handbook pages"
 msgstr ""
 
-#: src/Privacy/Privacy.php:73
+#: src/Privacy/Privacy.php:79
 msgid "Living Handbook feedback"
 msgstr ""
 
-#: src/Privacy/Privacy.php:77
+#: src/Privacy/Privacy.php:83
 msgid "Living Handbook reviews"
 msgstr ""
 
-#: src/Privacy/Privacy.php:123
+#: src/Privacy/Privacy.php:87
+msgid "Living Handbook access"
+msgstr ""
+
+#: src/Privacy/Privacy.php:133
 msgid "Handbook feedback"
 msgstr ""
 
-#: src/Privacy/Privacy.php:124
+#: src/Privacy/Privacy.php:134
 msgid "Handbook pages on which you answered \"Was this helpful?\". Your account is recorded so that your answer counts once; whether you answered yes or no is not stored with it."
 msgstr ""
 
-#: src/Privacy/Privacy.php:162
+#: src/Privacy/Privacy.php:172
 msgid "Handbook reviews"
 msgstr ""
 
-#: src/Privacy/Privacy.php:163
+#: src/Privacy/Privacy.php:173
 msgid "Handbook pages that name you as the person who last reviewed them. Your name and avatar are shown in the footer of these pages."
 msgstr ""
 
+#: src/Privacy/Privacy.php:203
+msgid "Handbook access"
+msgstr ""
+
+#: src/Privacy/Privacy.php:204
+msgid "Handbooks that name you individually as somebody who may read them."
+msgstr ""
+
+#: src/Privacy/Privacy.php:212
+#: src/Privacy/Privacy.php:553
+msgid "Address"
+msgstr ""
+
 #. translators: %d: number of handbook pages.
-#: src/Privacy/Privacy.php:215
+#: src/Privacy/Privacy.php:266
 #, php-format
 msgid "Living Handbook: this person is still named as the reviewer of %d page. Who reviewed a page is part of its editorial record, so it is not erased automatically. Change the reviewer on the page if it should go."
 msgid_plural "Living Handbook: this person is still named as the reviewer of %d pages. Who reviewed a page is part of its editorial record, so it is not erased automatically. Change the reviewer on the pages if it should go."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Privacy/Privacy.php:307
+#. translators: %d: number of handbooks.
+#: src/Privacy/Privacy.php:281
+#, php-format
+msgid "Living Handbook: this person is named in the access list of %d handbook. Taking them off would silently end their access, so it is not erased automatically. Remove them in the handbook's settings if they should no longer read it."
+msgid_plural "Living Handbook: this person is named in the access lists of %d handbooks. Taking them off would silently end their access, so it is not erased automatically. Remove them in the handbooks' settings if they should no longer read them."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Privacy/Privacy.php:378
 msgid "Feedback on handbook pages"
 msgstr ""
 
-#: src/Privacy/Privacy.php:308
+#: src/Privacy/Privacy.php:379
 msgid "When you are signed in and answer \"Was this helpful?\" on a handbook page, we store your user account with that page so that your answer is counted only once. Whether you answered yes or no is not stored with your account, only the total of each answer. Without signing in, an answer is counted without any personal data: no cookie, no IP address and no account."
 msgstr ""
 
-#: src/Privacy/Privacy.php:309
+#: src/Privacy/Privacy.php:380
 msgid "Who edited and reviewed a page"
 msgstr ""
 
-#: src/Privacy/Privacy.php:310
+#: src/Privacy/Privacy.php:381
 msgid "The footer of a handbook page can show who created, last updated and last reviewed it, with their name and profile picture. The reviewer is stored with the page."
 msgstr ""
 
-#: src/Privacy/Privacy.php:311
+#: src/Privacy/Privacy.php:382
 msgid "Profile pictures"
 msgstr ""
 
-#: src/Privacy/Privacy.php:312
+#: src/Privacy/Privacy.php:383
 msgid "Profile pictures in the page footer are provided by Gravatar, a service of Automattic, unless this site uses a different avatar setting. To show one, your browser loads the image from gravatar.com, which receives a hash of the person's email address, your IP address and the usual browser information."
 msgstr ""
 
-#: src/Privacy/Privacy.php:313
+#: src/Privacy/Privacy.php:384
+msgid "Access to handbooks"
+msgstr ""
+
+#: src/Privacy/Privacy.php:385
+msgid "A handbook can be opened to named people only. Their user accounts are stored with the handbook's settings for as long as they are meant to read it, and are removed when an account is deleted."
+msgstr ""
+
+#: src/Privacy/Privacy.php:386
 msgid "Content from GitHub"
 msgstr ""
 
-#: src/Privacy/Privacy.php:314
+#: src/Privacy/Privacy.php:387
 msgid "Handbook pages can be imported and kept up to date from GitHub. These requests are made by this website's server to api.github.com, raw.githubusercontent.com and codeload.github.com. They name the repository and the files, and contain no data about the visitors of this site."
 msgstr ""
 
-#: src/Privacy/Privacy.php:315
+#: src/Privacy/Privacy.php:388
 msgid "Progress through learning paths"
 msgstr ""
 
-#: src/Privacy/Privacy.php:316
+#: src/Privacy/Privacy.php:389
 msgid "Which lessons of a learning path you have opened is kept in your browser's local storage, so the path can mark them as read. It is not sent to this website and is gone when you clear your browser data."
 msgstr ""
 
-#: src/Privacy/Privacy.php:440
+#: src/Privacy/Privacy.php:549
 msgid "Page"
 msgstr ""
 
-#: src/Privacy/Privacy.php:444
-msgid "Address"
-msgstr ""
-
-#: src/Setup/Onboarding.php:97
+#: src/Setup/Onboarding.php:114
 msgid "The active theme is a classic theme. Handbook pages are laid out with block templates, which only a block theme uses, so on this site they appear in the theme's own layout, without the handbook navigation, the table of contents and the search bar."
 msgstr ""
 
-#: src/Setup/Onboarding.php:98
+#: src/Setup/Onboarding.php:115
 msgid "Switch to a block theme such as Twenty Twenty-Five to get the full layout. If the theme has to stay, the shortcode [living_handbook_nav] places the page tree in a classic template."
 msgstr ""
 
-#: src/Setup/Onboarding.php:263
+#: src/Setup/Onboarding.php:283
 msgid "Living Handbook is ready. Two steps, in this order:"
 msgstr ""
 
-#: src/Setup/Onboarding.php:275
+#: src/Setup/Onboarding.php:295
 msgid "Load one of the handbooks that ship with the plugin and read it as an example."
 msgstr ""
 
-#: src/Setup/Onboarding.php:285
+#: src/Setup/Onboarding.php:305
 msgid "Go to the import screen"
 msgstr ""
 
-#: src/Setup/Onboarding.php:291
+#: src/Setup/Onboarding.php:311
 msgid "Create a handbook of your own and set who may read it. Your pages then go into it."
 msgstr ""
 
-#: src/Setup/Onboarding.php:293
+#: src/Setup/Onboarding.php:313
 msgid "Create a handbook"
 msgstr ""
 
-#: src/Setup/Onboarding.php:303
+#: src/Setup/Onboarding.php:323
 msgid "The overview page was created for you, as a normal page:"
 msgstr ""
 
 #. translators: %d: number of handbook pages without a handbook.
-#: src/Setup/Onboarding.php:349
+#: src/Setup/Onboarding.php:373
 #, php-format
 msgid "%d handbook page is not assigned to a handbook, so it stays invisible on the front end. Open it and pick a handbook in the sidebar."
 msgid_plural "%d handbook pages are not assigned to a handbook, so they stay invisible on the front end. Open them and pick a handbook in the sidebar."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Setup/Seeder.php:36
+#: src/Setup/Seeder.php:38
 msgid "Guide"
 msgstr ""
 
-#: src/Setup/Seeder.php:37
+#: src/Setup/Seeder.php:39
 msgid "Process description"
 msgstr ""
 
-#: src/Setup/Seeder.php:38
+#: src/Setup/Seeder.php:40
 msgid "Tool overview"
 msgstr ""
 
-#: src/Setup/Seeder.php:39
+#: src/Setup/Seeder.php:41
 msgid "Role / Organisation"
 msgstr ""
 
-#: src/Setup/Seeder.php:40
+#: src/Setup/Seeder.php:42
 msgid "Background / Concept"
 msgstr ""
 
-#: src/Setup/Seeder.php:41
+#: src/Setup/Seeder.php:43
 msgid "FAQ"
 msgstr ""
 
-#: src/Setup/Seeder.php:42
+#: src/Setup/Seeder.php:44
 msgid "Area overview"
 msgstr ""
 
-#: src/Setup/Seeder.php:50
+#: src/Setup/Seeder.php:52
 msgid "Content creators"
 msgstr ""
 
-#: src/Setup/Seeder.php:51
+#: src/Setup/Seeder.php:53
 msgid "Coordination"
 msgstr ""
 
-#: src/Setup/Seeder.php:52
+#: src/Setup/Seeder.php:54
 msgid "Tech"
 msgstr ""
 
-#: src/Setup/Seeder.php:59
+#: src/Setup/Seeder.php:61
 msgid "Handbook editors"
 msgstr ""
 
-#: src/Setup/Seeder.php:60
+#: src/Setup/Seeder.php:62
 msgid "GitHub specialist"
 msgstr ""
 
-#: src/Setup/Seeder.php:67
+#: src/Setup/Seeder.php:69
 msgid "General"
 msgstr ""
 
-#: src/Setup/Settings.php:51
+#: src/Setup/Settings.php:54
 msgid "GitHub sync"
 msgstr ""
 
-#: src/Setup/Settings.php:52
+#: src/Setup/Settings.php:55
 msgid "Classification"
 msgstr ""
 
-#: src/Setup/Settings.php:53
-#: src/Setup/Settings.php:393
+#: src/Setup/Settings.php:56
+#: src/Setup/Settings.php:396
 #: src/Training/PathView.php:225
 #: src/Training/Training.php:135
 #: src/Training/Training.php:137
@@ -1746,455 +1869,487 @@ msgstr ""
 msgid "Learning paths"
 msgstr ""
 
-#: src/Setup/Settings.php:54
+#: src/Setup/Settings.php:57
 msgid "Appearance"
 msgstr ""
 
-#: src/Setup/Settings.php:57
+#: src/Setup/Settings.php:60
 msgid "Uninstall"
 msgstr ""
 
-#: src/Setup/Settings.php:169
-#: src/Setup/Settings.php:170
-#: src/Setup/Settings.php:820
+#: src/Setup/Settings.php:172
+#: src/Setup/Settings.php:173
+#: src/Setup/Settings.php:830
 msgid "Settings"
 msgstr ""
 
-#: src/Setup/Settings.php:231
+#: src/Setup/Settings.php:234
 msgid "Add CSS that loads on the handbook pages only. It is stored with the plugin and removed when you delete the plugin, unlike CSS kept in the theme."
 msgstr ""
 
-#: src/Setup/Settings.php:232
+#: src/Setup/Settings.php:235
 msgid "Target the plugin classes and the --lh-* custom properties. For example:"
 msgstr ""
 
 #. translators: %s: link to the customization documentation.
-#: src/Setup/Settings.php:236
+#: src/Setup/Settings.php:239
 #, php-format
 msgid "The full reference of variables and class names is in the %s."
 msgstr ""
 
-#: src/Setup/Settings.php:237
+#: src/Setup/Settings.php:240
 msgid "customization documentation"
 msgstr ""
 
-#: src/Setup/Settings.php:242
-#: src/Setup/Settings.php:374
+#: src/Setup/Settings.php:245
+#: src/Setup/Settings.php:377
 msgid "Custom CSS"
 msgstr ""
 
-#: src/Setup/Settings.php:339
+#: src/Setup/Settings.php:342
 msgid "Automatic sync"
 msgstr ""
 
-#: src/Setup/Settings.php:350
+#: src/Setup/Settings.php:353
 msgid "Text size"
 msgstr ""
 
-#: src/Setup/Settings.php:384
+#: src/Setup/Settings.php:387
 msgid "What pages are classified by"
 msgstr ""
 
-#: src/Setup/Settings.php:402
+#: src/Setup/Settings.php:405
 msgid "Public feedback"
 msgstr ""
 
-#: src/Setup/Settings.php:411
+#: src/Setup/Settings.php:414
 msgid "No-access page"
 msgstr ""
 
-#: src/Setup/Settings.php:421
+#: src/Setup/Settings.php:424
 msgid "When the plugin is deleted"
 msgstr ""
 
-#: src/Setup/Settings.php:458
+#: src/Setup/Settings.php:461
 msgid "The page for visitors without access was not saved. It has to be a published ordinary page, not a handbook page or a learning path, so the built-in message is used instead."
 msgstr ""
 
-#: src/Setup/Settings.php:489
+#: src/Setup/Settings.php:492
 msgid "Use the built-in message"
 msgstr ""
 
-#: src/Setup/Settings.php:511
+#: src/Setup/Settings.php:514
 msgid "Where a signed-in visitor lands when they open a handbook they may not read. Leave this on the built-in message unless you want to explain in your own words who grants access."
 msgstr ""
 
-#: src/Setup/Settings.php:521
+#: src/Setup/Settings.php:524
 msgid "The page chosen earlier is no longer a published ordinary page, so visitors see the built-in message. Choose another page and save."
 msgstr ""
 
-#: src/Setup/Settings.php:614
+#: src/Setup/Settings.php:618
 msgid "Leave the colour fields empty and the handbook follows your theme, which is what it is built to do. Fill one in only where the theme gets it wrong. The swatches under each picker are your theme's own palette."
 msgstr ""
 
-#: src/Setup/Settings.php:633
+#: src/Setup/Settings.php:637
 msgid "percent"
 msgstr ""
 
-#: src/Setup/Settings.php:636
+#: src/Setup/Settings.php:640
 msgid "The size of the handbook's own text: navigation, table of contents, badges, cards and the page details. It does not touch the text of a page itself, which belongs to your theme. 100 percent is 16 pixels, the size the plugin was designed at. Raise it if your theme sets larger text than that and the handbook looks small beside it."
 msgstr ""
 
-#: src/Setup/Settings.php:661
+#: src/Setup/Settings.php:665
 msgid "Empty: the theme decides"
 msgstr ""
 
-#: src/Setup/Settings.php:681
+#: src/Setup/Settings.php:685
 msgid "CSS added on the handbook pages only, stored with the plugin. See the Help tab (top right) for examples."
 msgstr ""
 
-#: src/Setup/Settings.php:696
+#: src/Setup/Settings.php:700
 msgid "What kind of page this is, which tells a reader how to read it: guide, process description, background, FAQ, area overview. One per page."
 msgstr ""
 
-#: src/Setup/Settings.php:697
+#: src/Setup/Settings.php:701
 msgid "What the page is about, in your own words: onboarding, invoicing, security. This is the one you fill yourself, and the one people filter by most."
 msgstr ""
 
-#: src/Setup/Settings.php:698
+#: src/Setup/Settings.php:702
 msgid "Which role keeps the page current: handbook editors, GitHub specialist. A function, not a person, so it survives someone leaving."
 msgstr ""
 
-#: src/Setup/Settings.php:699
+#: src/Setup/Settings.php:703
 msgid "Who the page is written for: all members, content creators, coordination, tech. It says who should read it, not who may: that is the handbook's access rule."
 msgstr ""
 
 #. translators: %d: number of terms in this group.
-#: src/Setup/Settings.php:721
+#: src/Setup/Settings.php:725
 #, php-format
 msgid "(%d term)"
 msgid_plural "(%d terms)"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Setup/Settings.php:730
+#: src/Setup/Settings.php:734
 msgid "All four are on by default. Switching one off hides it: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading its line as well."
 msgstr ""
 
-#: src/Setup/Settings.php:731
+#: src/Setup/Settings.php:735
 msgid "Nothing is deleted. The terms stay, the pages keep them, and switching one back on brings every assignment back exactly as it was. A bundle export carries all four either way, so moving a handbook to another site never loses what this site happens to hide."
 msgstr ""
 
-#: src/Setup/Settings.php:732
+#: src/Setup/Settings.php:736
 msgid "The handbook itself is not in this list and cannot be switched off: access hangs on it, and a page that belongs to no handbook is invisible on the front end."
 msgstr ""
 
-#: src/Setup/Settings.php:743
+#: src/Setup/Settings.php:747
 msgid "Use learning paths in this handbook installation"
 msgstr ""
 
-#: src/Setup/Settings.php:744
+#: src/Setup/Settings.php:748
 msgid "Off by default. A learning path is an ordered selection of pages that already exist in a handbook, for onboarding or for a piece of required reading. The pages stay where they are: a path only says which of them to read in which order."
 msgstr ""
 
-#: src/Setup/Settings.php:745
+#: src/Setup/Settings.php:749
 msgid "This first stage keeps no progress on the server. How far somebody has read is remembered in their browser and nowhere else, so nothing personal is stored, and the record is gone when they clear their browser data or change device. It is a guided path, not a record of attendance."
 msgstr ""
 
-#: src/Setup/Settings.php:746
+#: src/Setup/Settings.php:750
 msgid "Switching it off hides the learning paths and their menu entry. Nothing is deleted: the paths, their texts and their lesson lists stay, and switching it back on brings them back unchanged."
 msgstr ""
 
-#: src/Setup/Settings.php:756
+#: src/Setup/Settings.php:760
 msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
 msgstr ""
 
-#: src/Setup/Settings.php:757
+#: src/Setup/Settings.php:761
 msgid "Off by default. When on, anyone can vote on a public page. To keep it privacy-friendly, votes are not tied to a person: no cookie, no IP and nothing else personal is stored, so the same visitor can vote again after reloading. On internal pages only logged-in users vote, one vote each, regardless of this setting."
 msgstr ""
 
-#: src/Setup/Settings.php:786
+#: src/Setup/Settings.php:790
 msgid "How often WordPress pulls GitHub pages in the background, in batches. GitHub pages are always synced when saved and via Sync now, regardless of this setting. The background sync runs on WordPress cron, which fires on site visits."
 msgstr ""
 
-#: src/Setup/Settings.php:790
-msgid "Next scheduled sync:"
+#. translators: %s: date and time of the next background sync, in the site's formats.
+#: src/Setup/Settings.php:797
+#, php-format
+msgid "Next scheduled sync: %s"
 msgstr ""
 
-#: src/Setup/Settings.php:792
+#: src/Setup/Settings.php:802
 msgid "No background sync scheduled."
 msgstr ""
 
-#: src/Setup/Settings.php:803
+#: src/Setup/Settings.php:813
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr ""
 
-#: src/Setup/Settings.php:804
+#: src/Setup/Settings.php:814
 msgid "Off by default: your content is kept when the plugin is deleted, only the plugin settings and caches are removed. Turn this on to remove everything the plugin created."
 msgstr ""
 
-#: src/Setup/Settings.php:805
+#: src/Setup/Settings.php:815
 msgid "This also removes templates you edited in the Site Editor."
 msgstr ""
 
-#: src/Setup/Settings.php:821
+#: src/Setup/Settings.php:831
 msgid "Settings sections"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:49
-#: src/Taxonomy/Taxonomies.php:330
-#: src/Taxonomy/Taxonomies.php:332
-#: src/Taxonomy/Taxonomies.php:333
+#: src/Taxonomy/Taxonomies.php:62
+#: src/Taxonomy/Taxonomies.php:289
+msgid "Page type"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:63
+#: src/Taxonomy/Taxonomies.php:306
+#: src/Taxonomy/Taxonomies.php:308
+#: src/Taxonomy/Taxonomies.php:309
+msgid "Topics"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:64
+#: src/Taxonomy/Taxonomies.php:324
+#: src/Taxonomy/Taxonomies.php:325
+#: src/Taxonomy/Taxonomies.php:326
+#: src/Taxonomy/Taxonomies.php:327
+msgid "Responsibility"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:65
+#: src/Taxonomy/Taxonomies.php:344
+#: src/Taxonomy/Taxonomies.php:346
+#: src/Taxonomy/Taxonomies.php:347
 msgid "Audiences"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:259
+#: src/Taxonomy/Taxonomies.php:274
 msgid "Edit handbook"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:260
+#: src/Taxonomy/Taxonomies.php:275
 msgid "View handbook"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:261
+#: src/Taxonomy/Taxonomies.php:276
 msgid "Update handbook"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:262
+#: src/Taxonomy/Taxonomies.php:277
 msgid "Add new handbook"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:263
+#: src/Taxonomy/Taxonomies.php:278
 msgid "New handbook name"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:264
+#: src/Taxonomy/Taxonomies.php:279
 msgid "Search handbooks"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:265
+#: src/Taxonomy/Taxonomies.php:280
 msgid "No handbooks found."
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:266
+#: src/Taxonomy/Taxonomies.php:281
 msgid "Back to handbooks"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:267
+#: src/Taxonomy/Taxonomies.php:282
 msgid "Parent handbook"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:268
+#: src/Taxonomy/Taxonomies.php:283
 msgid "Parent handbook:"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:273
-#: src/Taxonomy/Taxonomies.php:275
-#: src/Taxonomy/Taxonomies.php:276
+#: src/Taxonomy/Taxonomies.php:288
+#: src/Taxonomy/Taxonomies.php:290
+#: src/Taxonomy/Taxonomies.php:291
 msgid "Page types"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:277
+#: src/Taxonomy/Taxonomies.php:292
 msgid "Edit page type"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:278
+#: src/Taxonomy/Taxonomies.php:293
 msgid "View page type"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:279
+#: src/Taxonomy/Taxonomies.php:294
 msgid "Update page type"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:280
+#: src/Taxonomy/Taxonomies.php:295
 msgid "Add new page type"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:281
+#: src/Taxonomy/Taxonomies.php:296
 msgid "New page type name"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:282
+#: src/Taxonomy/Taxonomies.php:297
 msgid "Search page types"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:283
+#: src/Taxonomy/Taxonomies.php:298
 msgid "No page types found."
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:284
+#: src/Taxonomy/Taxonomies.php:299
 msgid "Back to page types"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:285
+#: src/Taxonomy/Taxonomies.php:300
 msgid "Parent page type"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:286
+#: src/Taxonomy/Taxonomies.php:301
 msgid "Parent page type:"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:292
+#: src/Taxonomy/Taxonomies.php:307
 msgid "Topic"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:295
+#: src/Taxonomy/Taxonomies.php:310
 msgid "Edit topic"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:296
+#: src/Taxonomy/Taxonomies.php:311
 msgid "View topic"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:297
+#: src/Taxonomy/Taxonomies.php:312
 msgid "Update topic"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:298
+#: src/Taxonomy/Taxonomies.php:313
 msgid "Add new topic"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:299
+#: src/Taxonomy/Taxonomies.php:314
 msgid "New topic name"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:300
+#: src/Taxonomy/Taxonomies.php:315
 msgid "Search topics"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:301
+#: src/Taxonomy/Taxonomies.php:316
 msgid "No topics found."
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:302
+#: src/Taxonomy/Taxonomies.php:317
 msgid "Back to topics"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:303
+#: src/Taxonomy/Taxonomies.php:318
 msgid "Parent topic"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:304
+#: src/Taxonomy/Taxonomies.php:319
 msgid "Parent topic:"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:313
+#: src/Taxonomy/Taxonomies.php:328
 msgid "Edit responsibility"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:314
+#: src/Taxonomy/Taxonomies.php:329
 msgid "View responsibility"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:315
+#: src/Taxonomy/Taxonomies.php:330
 msgid "Update responsibility"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:316
+#: src/Taxonomy/Taxonomies.php:331
 msgid "Add new responsibility"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:317
+#: src/Taxonomy/Taxonomies.php:332
 msgid "New responsibility name"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:318
+#: src/Taxonomy/Taxonomies.php:333
 msgid "Search responsibilities"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:319
+#: src/Taxonomy/Taxonomies.php:334
 msgid "No responsibilities found."
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:320
+#: src/Taxonomy/Taxonomies.php:335
 msgid "Back to responsibilities"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:321
+#: src/Taxonomy/Taxonomies.php:336
 msgid "Frequently used responsibilities"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:322
+#: src/Taxonomy/Taxonomies.php:337
 msgid "Separate responsibilities with commas"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:323
+#: src/Taxonomy/Taxonomies.php:338
 msgid "Add or remove responsibilities"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:324
+#: src/Taxonomy/Taxonomies.php:339
 msgid "Choose from the most used responsibilities"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:334
+#: src/Taxonomy/Taxonomies.php:345
+msgid "Audience"
+msgstr ""
+
+#: src/Taxonomy/Taxonomies.php:348
 msgid "Edit audience"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:335
+#: src/Taxonomy/Taxonomies.php:349
 msgid "View audience"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:336
+#: src/Taxonomy/Taxonomies.php:350
 msgid "Update audience"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:337
+#: src/Taxonomy/Taxonomies.php:351
 msgid "Add new audience"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:338
+#: src/Taxonomy/Taxonomies.php:352
 msgid "New audience name"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:339
+#: src/Taxonomy/Taxonomies.php:353
 msgid "Search audiences"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:340
+#: src/Taxonomy/Taxonomies.php:354
 msgid "No audiences found."
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:341
+#: src/Taxonomy/Taxonomies.php:355
 msgid "Back to audiences"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:342
+#: src/Taxonomy/Taxonomies.php:356
 msgid "Parent audience"
 msgstr ""
 
-#: src/Taxonomy/Taxonomies.php:343
+#: src/Taxonomy/Taxonomies.php:357
 msgid "Parent audience:"
 msgstr ""
 
-#: src/Training/LessonPicker.php:224
+#. translators: %s: taxonomy name.
+#: src/Taxonomy/Taxonomies.php:368
+#, php-format
+msgid "%s is not a taxonomy of the Living Handbook plugin."
+msgstr ""
+
+#: src/Training/LessonPicker.php:229
 msgid "Lessons"
 msgstr ""
 
-#: src/Training/LessonPicker.php:258
+#: src/Training/LessonPicker.php:263
 msgid "Choose a handbook for this learning path, save it, and reload the page. The lessons are searched inside that handbook, so there is nothing to search in yet."
 msgstr ""
 
-#: src/Training/LessonPicker.php:262
+#: src/Training/LessonPicker.php:267
 msgid "Add a lesson"
 msgstr ""
 
-#: src/Training/LessonPicker.php:264
+#: src/Training/LessonPicker.php:269
 msgid "Search pages of this handbook"
 msgstr ""
 
-#: src/Training/LessonPicker.php:268
+#: src/Training/LessonPicker.php:273
 msgid "Only published pages of the handbook this learning path belongs to can be added. A page stays an ordinary handbook page; the path only says in which order to read."
 msgstr ""
 
-#: src/Training/LessonPicker.php:270
+#: src/Training/LessonPicker.php:275
 msgid "Search results"
 msgstr ""
 
-#: src/Training/LessonPicker.php:273
+#: src/Training/LessonPicker.php:278
 msgid "Lessons in this learning path"
 msgstr ""
 
 #. translators: %d: id of a stored lesson that no longer exists or that the editor may not read.
-#: src/Training/LessonPicker.php:280
+#: src/Training/LessonPicker.php:285
 #, php-format
 msgid "Page %d is not available"
 msgstr ""
 
-#: src/Training/LessonPicker.php:289
+#: src/Training/LessonPicker.php:294
 msgid "No lessons yet."
 msgstr ""
 
-#: src/Training/LessonPicker.php:292
+#: src/Training/LessonPicker.php:297
 msgid "Choosing lessons needs JavaScript. The list above shows what is stored, and saving the page keeps it unchanged."
 msgstr ""
 
@@ -2227,16 +2382,16 @@ msgstr[1] ""
 msgid "What you have read is remembered in this browser only, so it is gone when you clear the browser data or switch device."
 msgstr ""
 
-#: src/Training/PathView.php:309
+#: src/Training/PathView.php:303
 msgid "Previous"
 msgstr ""
 
-#: src/Training/PathView.php:312
+#: src/Training/PathView.php:306
 msgid "Next"
 msgstr ""
 
 #. translators: 1: position of this lesson, 2: number of lessons.
-#: src/Training/PathView.php:328
+#: src/Training/PathView.php:322
 #, php-format
 msgid "Lesson %1$d of %2$d"
 msgstr ""
@@ -2261,169 +2416,169 @@ msgstr ""
 msgid "No learning paths yet."
 msgstr ""
 
-#: assets/blocks.js:38
-#: assets/blocks.js:91
+#: assets/blocks.js:76
+#: assets/blocks.js:185
 msgid "Display"
 msgstr ""
 
-#: assets/blocks.js:41
+#: assets/blocks.js:79
 msgid "Cards"
 msgstr ""
 
-#: assets/blocks.js:42
+#: assets/blocks.js:80
 msgid "List"
 msgstr ""
 
-#: assets/blocks.js:67
+#: assets/blocks.js:144
 msgid "Page titles under each handbook"
 msgstr ""
 
-#: assets/blocks.js:68
+#: assets/blocks.js:148
 msgid "Zero shows none. The list is the first pages of the handbook, plus a link to the rest."
 msgstr ""
 
-#: assets/blocks.js:79
+#: assets/blocks.js:163
 msgid "Overview"
 msgstr ""
 
-#: assets/blocks.js:94
+#: assets/blocks.js:189
 msgid "Menu"
 msgstr ""
 
-#: assets/blocks.js:95
+#: assets/blocks.js:193
 msgid "Accordion"
 msgstr ""
 
-#: assets/blocks.js:104
+#: assets/blocks.js:205
 msgid "Navigation"
 msgstr ""
 
-#: assets/blocks.js:105
+#: assets/blocks.js:207
 msgid "Handbook navigation: the page tree of the current handbook. Choose Menu or Accordion in the block settings."
 msgstr ""
 
-#: assets/blocks.js:119
+#: assets/blocks.js:226
 msgid "Placement"
 msgstr ""
 
-#: assets/blocks.js:122
+#: assets/blocks.js:230
 msgid "Desktop (side column, open)"
 msgstr ""
 
-#: assets/blocks.js:123
+#: assets/blocks.js:237
 msgid "Mobile (above content, collapsed)"
 msgstr ""
 
-#: assets/blocks.js:133
+#: assets/blocks.js:254
 msgid "Heading depth (up to H…)"
 msgstr ""
 
-#: assets/blocks.js:146
+#: assets/blocks.js:272
 msgid "Table of Contents: a collapsible list built from the headings of the current page, up to the chosen depth. A page can override the depth in its Handbook maintenance box. Empty if the page has no headings."
 msgstr ""
 
-#: assets/blocks.js:157
+#: assets/blocks.js:288
 msgid "Show people (avatar and name)"
 msgstr ""
 
-#: assets/blocks.js:166
+#: assets/blocks.js:301
 msgid "Page meta"
 msgstr ""
 
-#: assets/blocks.js:167
+#: assets/blocks.js:303
 msgid "Handbook page meta: the created, updated, reviewed and responsible-role footer. Turn the people on or off in the block settings."
 msgstr ""
 
-#: assets/blocks.js:213
+#: assets/blocks.js:371
 msgid "Entry"
 msgstr ""
 
-#: assets/blocks.js:214
+#: assets/blocks.js:375
 msgid "Handbook entry (results): the areas and recently updated pages of this handbook, or the matches while a search or filter is active. The search bar and the filter bar are blocks of their own."
 msgstr ""
 
-#: assets/blocks.js:225
-#: assets/blocks.js:311
+#: assets/blocks.js:393
+#: assets/blocks.js:541
 msgid "Show the label"
 msgstr ""
 
-#: assets/blocks.js:226
-#: assets/blocks.js:312
+#: assets/blocks.js:398
+#: assets/blocks.js:546
 msgid "Label"
 msgstr ""
 
-#: assets/blocks.js:226
-#: assets/blocks.js:312
+#: assets/blocks.js:399
+#: assets/blocks.js:547
 msgid "Read out to screen readers even when it is not shown."
 msgstr ""
 
-#: assets/blocks.js:227
-#: assets/blocks.js:313
+#: assets/blocks.js:407
+#: assets/blocks.js:555
 msgid "Placeholder"
 msgstr ""
 
-#: assets/blocks.js:228
+#: assets/blocks.js:412
 msgid "Button text"
 msgstr ""
 
-#: assets/blocks.js:233
+#: assets/blocks.js:419
 msgid "Button position"
 msgstr ""
 
-#: assets/blocks.js:236
+#: assets/blocks.js:423
 msgid "Outside the field"
 msgstr ""
 
-#: assets/blocks.js:237
+#: assets/blocks.js:430
 msgid "Inside the field"
 msgstr ""
 
-#: assets/blocks.js:238
+#: assets/blocks.js:437
 msgid "No button"
 msgstr ""
 
-#: assets/blocks.js:249
+#: assets/blocks.js:452
 msgid "Handbook search: searches the handbook this page belongs to and narrows the result column. Colours, border, typography and spacing are in the block settings; the wording is here."
 msgstr ""
 
-#: assets/blocks.js:259
+#: assets/blocks.js:467
 msgid "Handbook filter bar: page type, topic, responsibility and audience of the pages in this handbook. It only offers terms that are actually used, so it is empty until pages carry them."
 msgstr ""
 
-#: assets/blocks.js:277
+#: assets/blocks.js:489
 msgid "Handbook badges: page type, topic and audience of the current page."
 msgstr ""
 
-#: assets/blocks.js:282
+#: assets/blocks.js:497
 msgid "Handbook feedback: the \"Was this helpful?\" prompt for the current page."
 msgstr ""
 
-#: assets/blocks.js:292
+#: assets/blocks.js:510
 msgid "Learning path lessons: the ordered lessons of the learning path being read, with the start button."
 msgstr ""
 
-#: assets/blocks.js:297
+#: assets/blocks.js:518
 msgid "Learning paths of this handbook: the paths of the handbook whose entry page this is."
 msgstr ""
 
-#: assets/blocks.js:302
+#: assets/blocks.js:526
 msgid "Learning path bar: on a lesson opened from a learning path, which lesson of how many and the way to the previous and next one."
 msgstr ""
 
-#: assets/blocks.js:310
+#: assets/blocks.js:537
 msgid "Quick search"
 msgstr ""
 
-#: assets/blocks.js:315
+#: assets/blocks.js:559
 msgid "Handbook quick search: lists matching pages as you type, each with the sentence it was found in, so a reader jumps straight to a page. Does not narrow the result column; that is the Handbook search block."
 msgstr ""
 
-#: assets/js/git-source-note-block.js:16
+#: assets/js/git-source-note-block.js:41
 msgid "Note text (shown only on GitHub pages)"
 msgstr ""
 
 #. translators: %d is a number of images.
-#: assets/js/markdown-import.js:17
+#: assets/js/markdown-import.js:40
 #, js-format
 msgid "%d image"
 msgid_plural "%d images"
@@ -2431,7 +2586,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d is a number of converted internal links.
-#: assets/js/markdown-import.js:19
+#: assets/js/markdown-import.js:45
 #, js-format
 msgid "%d link converted"
 msgid_plural "%d links converted"
@@ -2439,52 +2594,58 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %1$s pages, %2$s images, %3$s converted links, each already pluralised.
-#: assets/js/markdown-import.js:21
+#: assets/js/markdown-import.js:55
 #, js-format
 msgid "Done: %1$s, %2$s, %3$s."
 msgstr ""
 
-#: assets/js/markdown-import.js:141
+#: assets/js/markdown-import.js:333
 msgid "Worth knowing about this import:"
 msgstr ""
 
-#: assets/js/markdown-import.js:234
-#: assets/js/markdown-import.js:283
+#: assets/js/markdown-import.js:388
+#: assets/js/markdown-import.js:481
 msgid "unknown"
 msgstr ""
 
 #. translators: %d is the new page's numeric ID, used as a fallback title.
-#: assets/js/markdown-import.js:269
+#: assets/js/markdown-import.js:455
 #, js-format
 msgid "Page %d"
 msgstr ""
 
-#: assets/js/markdown-import.js:311
+#. translators: 1: title of the page that failed to import, 2: the reason.
+#: assets/js/markdown-import.js:479
+#, js-format
+msgid "%1$s: %2$s"
+msgstr ""
+
+#: assets/js/markdown-import.js:539
 msgid "Nothing to import: paste Markdown, choose a ZIP, or enter a GitHub URL."
 msgstr ""
 
-#: assets/js/markdown-import.js:314
+#: assets/js/markdown-import.js:546
 msgid "Converting…"
 msgstr ""
 
-#: assets/js/markdown-import.js:319
+#: assets/js/markdown-import.js:559
 msgid "Creating draft…"
 msgstr ""
 
 #. translators: %d is the number of internal links that were converted.
-#: assets/js/markdown-import.js:331
+#: assets/js/markdown-import.js:582
 #, js-format
 msgid "Done: 1 page, %d link converted."
 msgid_plural "Done: 1 page, %d links converted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:341
+#: assets/js/markdown-import.js:608
 msgid "No pages found in the mkdocs.yml."
 msgstr ""
 
 #. translators: %d is the number of pages being created.
-#: assets/js/markdown-import.js:345
+#: assets/js/markdown-import.js:615
 #, js-format
 msgid "Creating %d page…"
 msgid_plural "Creating %d pages…"
@@ -2492,27 +2653,27 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %1$d is the current page number, %2$d the total number of pages.
-#: assets/js/markdown-import.js:373
-#: assets/js/markdown-import.js:423
+#: assets/js/markdown-import.js:656
+#: assets/js/markdown-import.js:754
 #, js-format
 msgid "Importing page %1$d of %2$d …"
 msgstr ""
 
-#: assets/js/markdown-import.js:387
-#: assets/js/markdown-import.js:436
+#: assets/js/markdown-import.js:677
+#: assets/js/markdown-import.js:774
 msgid "Linking…"
 msgstr ""
 
-#: assets/js/markdown-import.js:395
+#: assets/js/markdown-import.js:697
 msgid "Uploading ZIP…"
 msgstr ""
 
-#: assets/js/markdown-import.js:408
+#: assets/js/markdown-import.js:720
 msgid "No pages in the ZIP."
 msgstr ""
 
 #. translators: %d is the number of draft pages being created.
-#: assets/js/markdown-import.js:412
+#: assets/js/markdown-import.js:727
 #, js-format
 msgid "Creating %d draft…"
 msgid_plural "Creating %d drafts…"
@@ -2520,7 +2681,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d is the number of pages created so far.
-#: assets/js/markdown-import.js:475
+#: assets/js/markdown-import.js:836
 #, js-format
 msgid "Stopped after %d page."
 msgid_plural "Stopped after %d pages."
@@ -2528,132 +2689,132 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: pages created so far, 2: pages whose links still have to be checked.
-#: assets/js/markdown-import.js:488
+#: assets/js/markdown-import.js:857
 #, js-format
 msgid "Imported %1$d pages, checking the links on %2$d…"
 msgstr ""
 
 #. translators: 1: pages created so far, 2: pages still to go.
-#: assets/js/markdown-import.js:495
+#: assets/js/markdown-import.js:869
 #, js-format
 msgid "Imported %1$d pages, %2$d to go…"
 msgstr ""
 
-#: assets/js/markdown-import.js:510
+#: assets/js/markdown-import.js:890
 msgid "No Markdown pages found."
 msgstr ""
 
 #. translators: %d is the number of pages created from GitHub.
-#: assets/js/markdown-import.js:514
+#: assets/js/markdown-import.js:900
 #, js-format
 msgid "Done: created %d GitHub page."
 msgid_plural "Done: created %d GitHub pages."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:518
+#: assets/js/markdown-import.js:912
 msgid "Fetching pages from GitHub…"
 msgstr ""
 
-#: assets/js/markdown-import.js:528
+#: assets/js/markdown-import.js:933
 msgid "Loading the handbook…"
 msgstr ""
 
-#: assets/js/markdown-import.js:546
+#: assets/js/markdown-import.js:958
 msgid "No pages were loaded."
 msgstr ""
 
 #. translators: %d is the number of pages loaded.
-#: assets/js/markdown-import.js:553
+#: assets/js/markdown-import.js:966
 #, js-format
 msgid "Done: loaded %d page."
 msgid_plural "Done: loaded %d pages."
 msgstr[0] ""
 msgstr[1] ""
 
-#: assets/js/markdown-import.js:567
+#: assets/js/markdown-import.js:994
 msgid "wp.blocks is not loaded."
 msgstr ""
 
-#: assets/js/markdown-import.js:570
+#: assets/js/markdown-import.js:1004
 msgid "No target handbook is selected. Imported pages stay invisible until you assign them to a handbook. Import anyway?"
 msgstr ""
 
-#: assets/js/mermaid-block.js:84
+#: assets/js/mermaid-block.js:113
 msgid "mermaid.min.js is missing in assets/js/."
 msgstr ""
 
-#: assets/js/mermaid-block.js:115
+#: assets/js/mermaid-block.js:184
 msgid "Mermaid code"
 msgstr ""
 
-#: assets/js/mermaid-block.js:123
+#: assets/js/mermaid-block.js:192
 msgid "Diagram title (caption)"
 msgstr ""
 
-#: assets/js/mermaid-block.js:130
+#: assets/js/mermaid-block.js:199
 msgid "Diagram description (for screen readers)"
 msgstr ""
 
-#. translators: 1: pages already rendered, 2: pages in total.
-#: assets/js/static-export.js:65
-#, js-format
-msgid "Rendering page %1$d of %2$d …"
-msgstr ""
-
 #. translators: %s: file size, for example "4 MB".
-#: assets/js/static-export.js:79
+#: assets/js/static-export.js:120
 #, js-format
 msgid "Download the website (%s)"
 msgstr ""
 
-#: assets/js/static-export.js:90
+#: assets/js/static-export.js:131
 msgid "Downloaded. Check your downloads folder."
 msgstr ""
 
-#: assets/js/static-export.js:100
+#. translators: 1: pages already rendered, 2: pages in total.
+#: assets/js/static-export.js:170
+#, js-format
+msgid "Rendering page %1$d of %2$d …"
+msgstr ""
+
+#: assets/js/static-export.js:182
 msgid "The export failed."
 msgstr ""
 
-#: assets/js/static-export.js:110
+#: assets/js/static-export.js:196
 msgid "Starting …"
 msgstr ""
 
-#: assets/js/training-lessons.js:135
+#: assets/js/training-lessons.js:180
 msgid "Move up"
 msgstr ""
 
-#: assets/js/training-lessons.js:136
+#: assets/js/training-lessons.js:184
 msgid "Move down"
 msgstr ""
 
-#: assets/js/training-lessons.js:137
+#: assets/js/training-lessons.js:188
 msgid "Remove"
 msgstr ""
 
 #. translators: %s is the title of a lesson.
-#: assets/js/training-lessons.js:140
+#: assets/js/training-lessons.js:195
 #, js-format
 msgid "Move %s up"
 msgstr ""
 
 #. translators: %s is the title of a lesson.
-#: assets/js/training-lessons.js:142
+#: assets/js/training-lessons.js:203
 #, js-format
 msgid "Move %s down"
 msgstr ""
 
 #. translators: %s is the title of a lesson.
-#: assets/js/training-lessons.js:144
+#: assets/js/training-lessons.js:211
 #, js-format
 msgid "Remove %s"
 msgstr ""
 
-#: assets/js/training-lessons.js:197
+#: assets/js/training-lessons.js:287
 msgid "No matching pages."
 msgstr ""
 
-#: assets/js/training-lessons.js:249
+#: assets/js/training-lessons.js:348
 msgid "The search failed. Please try again."
 msgstr ""
 
