@@ -1,5 +1,6 @@
-# Dependabot keeps two things current: the Composer packages, three of which
-# ship inside the plugin ZIP, and the GitHub Actions the workflows use.
+# Dependabot keeps three things current: the Composer packages, three of which
+# ship inside the plugin ZIP, the npm lint tooling (development only, nothing
+# from it ships), and the GitHub Actions the workflows use.
 #
 # 0.75.0 shipped svg-sanitize, commonmark and symfony/yaml with advisories that
 # were published in the weeks after the build. Nothing in the project looked
@@ -16,6 +17,18 @@ updates:
       # The tooling moves together and never ships; one pull request for it.
       dev-tools:
         dependency-type: development
+    labels: [ dependencies ]
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # ESLint, Stylelint, Prettier and the WordPress presets depend on each
+      # other's versions; one pull request keeps them installable together.
+      lint-tools:
+        patterns: [ '*' ]
     labels: [ dependencies ]
 
   - package-ecosystem: github-actions

@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 #
-# Run all quality checks and, if they pass, build the plugin zip.
+# Run the release checks and, if they pass, build the plugin zip.
 #
-# Runs PHPCS (coding standards), PHPStan (static analysis) and the unit tests,
-# then bin/build.sh. Stops at the first failure, so a zip is only produced from
-# code that passes every check. This mirrors what the CI runs, so a green run
-# here means a green run on GitHub.
+# In order: the version numbers agree, composer audit finds no advisory in the
+# shipped libraries, PHPCS, PHPStan and the unit tests pass, the JavaScript and
+# CSS pass their lint (when npm is installed), the translations are
+# regenerated, bin/build.sh builds the zip, and Plugin Check looks at it when
+# wp-cli has it. Stops at the first failure, so a zip is only produced from
+# code that passes every check.
+#
+# CI runs most of this on every pull request (see .github/workflows/), and some
+# things this script does not: php -l over every file and the integration
+# tests, which need a WordPress test install. A green run here is therefore not
+# a green run on GitHub; run the integration tests as well before a release.
 #
 # Usage: bash bin/check-and-build.sh
 
@@ -39,6 +46,16 @@ composer analyze
 
 echo "==> Unit tests (phpunit)"
 composer test
+
+echo "==> JavaScript and CSS (eslint, stylelint)"
+# Node is development tooling only. CI enforces this check on every pull
+# request, so a machine without npm skips it here rather than stopping.
+if command -v npm >/dev/null 2>&1; then
+	[ -d node_modules ] || npm ci --no-fund
+	npm run lint
+else
+	echo "npm not found: skipped. CI runs it (npm ci && npm run lint)."
+fi
 
 echo "==> Translations: update .pot, refresh .po, compile .l10n.php and JS JSON"
 
@@ -136,11 +153,18 @@ if wp plugin list >/dev/null 2>&1 && wp plugin check --help >/dev/null 2>&1; the
 	# table, and the table renderer is exactly the file that raises the
 	# deprecation. Its own findings survive the filter, they do not come from
 	# php-cli-tools.
-	wp_quiet plugin check "$zip" || echo "Plugin Check reported findings; see above." >&2
+	if ! wp_quiet plugin check "$zip"; then
+		plugin_check_findings=1
+		echo "Plugin Check reported findings; see above." >&2
+	fi
 else
 	echo "wp plugin check is not available (needs a WordPress install and the"
 	echo "plugin-check plugin). Skipped: run it before submitting to wordpress.org."
 fi
 
 echo ""
-echo "All checks passed. The zip is ready to install in WordPress."
+if [ "${plugin_check_findings:-0}" = "1" ]; then
+	echo "The zip is built, but Plugin Check reported findings above. Review them before a release."
+else
+	echo "All checks passed. The zip is ready to install in WordPress."
+fi

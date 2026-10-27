@@ -48,6 +48,29 @@ jobs:
       - name: PHPStan
         run: composer analyze
 
+  js-css:
+    name: JavaScript and CSS lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Node is development tooling only: the plugin ships the files in
+      # assets/ as they are, with no build step, so this job only checks them
+      # against the WordPress JavaScript and CSS standards.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install the lint tooling
+        run: npm ci --no-fund
+      - name: ESLint and Stylelint
+        run: npm run lint
+      # Prettier also runs inside ESLint for the scripts; this catches a file
+      # that ESLint does not look at.
+      - name: Formatting
+        run: npx prettier --check "assets/**/*.js" "bin/**/*.js"
+
   unit:
     name: Unit tests
     runs-on: ubuntu-latest
