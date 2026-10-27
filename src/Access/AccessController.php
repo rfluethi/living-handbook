@@ -564,7 +564,7 @@ final class AccessController {
 		// post, which a navigation tree over a few thousand pages turns into a few
 		// thousand queries. can_view_post() reads through the same cache, so
 		// priming it here is what makes the decision a cache hit.
-		self::prime_post_terms( $posts );
+		self::prime_post_terms( $posts, false !== $query->get( 'update_post_term_cache', true ) );
 
 		return self::drop_unreadable( $posts, get_current_user_id() );
 	}
@@ -914,16 +914,33 @@ final class AccessController {
 	 * pages turns into a few thousand queries. Both caches are filled here in
 	 * one go; WordPress fills them again a few lines later, and finds them warm.
 	 *
-	 * @param WP_Post[] $posts Posts about to be filtered.
+	 * Which terms are read follows the query. A query that wants the term cache
+	 * (the default) gets every taxonomy here, because WordPress reads them all
+	 * right after anyway, and reading only the handbook first would cost a
+	 * second query for the rest. A query that turned the term cache off
+	 * (update_post_term_cache => false) gets only the handbook membership the
+	 * decision needs: up to 0.75.1 it got every taxonomy regardless, so a
+	 * preview that prints three titles also loaded the type, topic, role and
+	 * audience terms of every page it listed. Whoever turns the term cache off
+	 * and then reads those terms page by page pays a query per page, exactly as
+	 * with any other WP_Query.
+	 *
+	 * @param WP_Post[] $posts     Posts about to be filtered.
+	 * @param bool      $all_terms Whether the query wants the terms of every taxonomy cached.
 	 * @return void
 	 */
-	private static function prime_post_terms( array $posts ): void {
+	private static function prime_post_terms( array $posts, bool $all_terms = true ): void {
 		$objects = array_values( array_filter( $posts, static fn( $post ) => $post instanceof WP_Post ) );
 		if ( count( $objects ) < 2 ) {
 			return;
 		}
 
-		update_post_caches( $objects, Handbook::POST_TYPE, true, false );
+		if ( $all_terms ) {
+			update_post_caches( $objects, Handbook::POST_TYPE, true, false );
+		} else {
+			update_post_cache( $objects );
+			self::prime_handbook_terms( array_map( static fn( WP_Post $post ): int => (int) $post->ID, $objects ) );
+		}
 
 		// An attachment is judged by its parent page, which is not part of this
 		// result set and so was not primed above.

@@ -160,4 +160,86 @@ final class AccessQueryCostTest extends WP_UnitTestCase {
 
 		$this->assertSame( $expected, $found, 'A guest may see the public pages and nothing else.' );
 	}
+	/**
+	 * Create pages in a public handbook that also carry a topic.
+	 *
+	 * @param int $pages How many pages.
+	 * @return array<int, int> Page ids.
+	 */
+	private function pages_with_a_topic( int $pages ): array {
+		$handbook = $this->make_handbook_with_pages( 0 );
+		$topic    = (int) self::factory()->term->create( array( 'taxonomy' => 'handbook_topic' ) );
+
+		$ids = array();
+		for ( $i = 0; $i < $pages; $i++ ) {
+			$id = (int) self::factory()->post->create(
+				array(
+					'post_type'   => 'handbook',
+					'post_status' => 'publish',
+				)
+			);
+			wp_set_object_terms( $id, array( $handbook ), 'handbook_set' );
+			wp_set_object_terms( $id, array( $topic ), 'handbook_topic' );
+			$ids[] = $id;
+		}
+		return $ids;
+	}
+
+	/**
+	 * A query that turns the term cache off gets the handbook membership the
+	 * access decision needs, and not the terms of every other taxonomy.
+	 *
+	 * Up to 0.75.1 the access filter loaded every taxonomy of every page in the
+	 * result, whatever the query asked for, so a list that prints titles paid
+	 * for the type, topic, role and audience terms of each page.
+	 */
+	public function test_a_query_without_the_term_cache_reads_only_the_handbook(): void {
+		$ids = $this->pages_with_a_topic( 4 );
+
+		wp_set_current_user( 0 );
+		wp_cache_flush();
+		$query = new WP_Query(
+			array(
+				'post_type'              => 'handbook',
+				'post__in'               => $ids,
+				'posts_per_page'         => -1,
+				'no_found_rows'          => true,
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false,
+			)
+		);
+
+		$this->assertCount( 4, $query->posts, 'The pages are public and come back.' );
+		foreach ( $ids as $id ) {
+			$this->assertIsArray( wp_cache_get( $id, 'handbook_set_relationships' ), 'The handbook of a page was not read for the decision.' );
+			$this->assertFalse( wp_cache_get( $id, 'handbook_topic_relationships' ), 'The topics were read although the query turned the term cache off.' );
+		}
+	}
+
+	/**
+	 * A query that keeps the term cache still gets every taxonomy in one go, so
+	 * a list of cards that shows type and topic badges does not ask page by page.
+	 */
+	public function test_a_query_with_the_term_cache_reads_every_taxonomy_at_once(): void {
+		$ids = $this->pages_with_a_topic( 4 );
+
+		wp_set_current_user( 0 );
+		wp_cache_flush();
+		$query = new WP_Query(
+			array(
+				'post_type'      => 'handbook',
+				'post__in'       => $ids,
+				'posts_per_page' => -1,
+				'no_found_rows'  => true,
+			)
+		);
+		$this->assertCount( 4, $query->posts );
+
+		global $wpdb;
+		$before = $wpdb->num_queries;
+		foreach ( $ids as $id ) {
+			get_the_terms( $id, 'handbook_topic' );
+		}
+		$this->assertSame( 0, $wpdb->num_queries - $before, 'Reading the topics of the result cost queries.' );
+	}
 }
