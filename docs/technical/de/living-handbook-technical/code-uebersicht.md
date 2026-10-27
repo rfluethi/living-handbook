@@ -100,6 +100,22 @@ Es gibt eine einzige, nicht verhandelbare Regel im Code: **jedes Lesen von Handb
 - Es gibt absichtlich fast keine Einstellungen: Gestalterisches gehört in den Site Editor, das Verhalten hat wenige begründete Optionen, und alles andere ist ein Hook (siehe [hooks.md](hooks.md)) statt einer Checkbox.
 - Englisch ist die Sprache des Repositories. Die deutsche Fassung dieser Entwickler-Dokumentation liegt daneben unter `docs/technical/de/`, das deutsche Benutzerhandbuch unter `docs/user/de/`. Es sind getrennte Texte, keine aus dem Englischen erzeugten Übersetzungen; eine Änderung an der einen Sprache ist eine Änderung an beiden.
 
+## Prüfungen vor einem Commit
+
+Die PHP-Seite wird mit Composer geprüft, JavaScript und CSS mit npm. Beides läuft in der CI bei jedem Pull Request, eine Prüfung, die lokal fehlschlägt, schlägt also auch dort fehl.
+
+| Was | Befehl |
+| --- | --- |
+| PHP Coding Standards (WordPress) | `composer lint` |
+| Statische PHP-Analyse | `composer analyze` |
+| Unit-Tests, samt den Skript-Tests unter `tests/js/` | `composer test` |
+| JavaScript- und CSS-Standards (WordPress) | `npm run lint` (oder `npm run lint:js`, `npm run lint:css`) |
+| Skripte mit Prettier formatieren | `npm run format` |
+
+Node braucht es nur für die Entwicklung. Das Plugin hat keinen Build-Schritt: Die Dateien in `assets/` sind das, was WordPress lädt und was das Plugin-ZIP ausliefert, geschrieben in modernem JavaScript, das jeder von WordPress unterstützte Browser so ausführt, wie es ist. `npm ci` installiert die Prüfwerkzeuge in genau den Versionen aus `package-lock.json`: ESLint mit `@wordpress/eslint-plugin` (Prettier eingeschlossen) und Stylelint mit `@wordpress/stylelint-config`. Nichts davon gelangt ins ZIP. `assets/js/mermaid.min.js` ist ein fremdes Bündel und von allen Prüfungen ausgenommen; es ändert sich nur über `bin/update-mermaid.sh`.
+
+Zwei Abweichungen von den WordPress-Vorgaben stehen in der Konfiguration und sind dort begründet: Klassennamen dürfen die BEM-Trenner `__` und `--` tragen, und Stylelints `no-descending-specificity` ist ausgeschaltet. Skripte dokumentieren jede Funktion mit JSDoc (`@param`, `@return`); ESLint prüft die vorhandenen Doc-Kommentare, aber nicht, ob einer da ist, dieser Teil ist also eine Vereinbarung.
+
 ## Transport-Metadaten
 * Seitentyp: Hintergrund / Konzept
 * Zielgruppe: Technik

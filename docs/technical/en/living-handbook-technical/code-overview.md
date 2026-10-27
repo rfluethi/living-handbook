@@ -100,6 +100,22 @@ There is a single, non-negotiable rule in the code: **every read of handbook con
 - There are almost no settings on purpose: visual choices belong in the Site Editor, behaviour has a few justified options, and everything else is a hook (see [hooks.md](hooks.md)) rather than a checkbox.
 - English is the language of the repository. The German version of these developer docs ships next to them, under `docs/technical/de/`, as does the German user handbook under `docs/user/de/`. They are separate texts, not translations generated from the English ones, so a change to one is a change to both.
 
+## Checks before a commit
+
+The PHP side is checked with Composer, the JavaScript and CSS side with npm. Both run in CI on every pull request, so a check that fails locally fails there too.
+
+| What | Command |
+| --- | --- |
+| PHP coding standards (WordPress) | `composer lint` |
+| PHP static analysis | `composer analyze` |
+| Unit tests, including the script tests under `tests/js/` | `composer test` |
+| JavaScript and CSS standards (WordPress) | `npm run lint` (or `npm run lint:js`, `npm run lint:css`) |
+| Format the scripts with Prettier | `npm run format` |
+
+Node is needed for development only. The plugin has no build step: the files in `assets/` are what WordPress loads and what the plugin ZIP ships, written in modern JavaScript that every browser WordPress supports runs as it is. `npm ci` installs the lint tooling with the exact versions in `package-lock.json`: ESLint with `@wordpress/eslint-plugin` (Prettier included), Stylelint with `@wordpress/stylelint-config`. None of it reaches the ZIP. `assets/js/mermaid.min.js` is a third-party bundle and is left out of every check; it changes only through `bin/update-mermaid.sh`.
+
+Two exceptions to the WordPress presets are made in the configuration and explained there: class names may use the BEM separators `__` and `--`, and Stylelint's `no-descending-specificity` is off. Scripts document every function with JSDoc (`@param`, `@return`); ESLint checks the doc comments that exist, but not that one is there, so that part is a convention.
+
 ## Transport-Metadaten
 * Seitentyp: Background / Concept
 * Zielgruppe: Tech

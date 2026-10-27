@@ -2,15 +2,17 @@
 #
 # Build an installable plugin zip from the current working tree.
 #
-# The runtime files ship: the main file, uninstall.php, src, assets, languages,
-# the readme and LICENSE, plus the production Composer dependencies (vendor/,
-# without dev packages) that the import and GitHub sync need. composer.json
-# ships alongside vendor/, because Plugin Check flags a vendor directory without
-# it. Those dependencies are moved into the plugin's own namespace on the way in,
-# so they cannot collide with the same library in another plugin; that step needs
-# PHP-Scoper and is checked afterwards, see below. Development files (tests, tooling, CI config, docs) are left out. Hidden
-# files are stripped: macOS drops .DS_Store into every folder it displays, and
-# Plugin Check rejects hidden files outright. The archive is prefixed with
+# The runtime files ship: the main file, uninstall.php, src, assets, blocks,
+# languages, the four handbooks under docs, the readmes and LICENSE, plus the
+# production Composer dependencies (vendor/, without dev packages) that the
+# import and GitHub sync need. composer.json ships alongside vendor/, because
+# Plugin Check flags a vendor directory without it. Those dependencies are moved
+# into the plugin's own namespace on the way in, so they cannot collide with the
+# same library in another plugin; that step needs PHP-Scoper and is checked
+# afterwards, see below. Development files (tests, the PHP and Node tooling, CI
+# config) are left out: only the paths named below are copied. Hidden files are
+# stripped: macOS drops .DS_Store into every folder it displays, and Plugin
+# Check rejects hidden files outright. The archive is prefixed with
 # living-handbook/ so it unpacks into the correct plugin folder. Nothing is read
 # from git, so you can build, install in WordPress and test before committing.
 #
