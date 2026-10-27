@@ -433,7 +433,7 @@ final class GitSync {
 		// it instead of creating a duplicate. But never refresh a page the
 		// current user may not edit (the import needs only edit_posts); create a
 		// fresh page for this user instead.
-		$post_id = self::find_by_url( $url, $handbook_id );
+		$post_id = self::find_by_meta( self::META_URL, $url, $handbook_id );
 		if ( $post_id > 0 && ! current_user_can( 'edit_post', $post_id ) ) {
 			$post_id = 0;
 		}
@@ -475,25 +475,30 @@ final class GitSync {
 	}
 
 	/**
-	 * Find an existing GitHub-sourced page that tracks a given source URL, so a
+	 * Finds an existing page by a meta value that ties it to its source, so a
 	 * re-import refreshes it instead of creating a duplicate.
 	 *
-	 * @param string $url         Normalized Markdown source URL.
+	 * Scoped to the target handbook when one is given: the same file loaded
+	 * into two handbooks is two pages.
+	 *
+	 * @param string $meta_key    The key that ties the page to its source: the source URL
+	 *                            of a GitHub page, the source path of a local one.
+	 * @param string $value       The value to look for.
 	 * @param int    $handbook_id Target handbook term id (0 for none).
 	 * @return int Existing post id, or 0.
 	 */
-	private static function find_by_url( string $url, int $handbook_id ): int {
+	private static function find_by_meta( string $meta_key, string $value, int $handbook_id ): int {
 		$args = array(
 			'post_type'      => Handbook::POST_TYPE,
 			'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
-			'meta_key'       => self::META_URL, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			'meta_value'     => $url, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			'meta_key'       => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one lookup per imported page, on a key only imported pages carry.
+			'meta_value'     => $value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
 		);
 		if ( $handbook_id > 0 ) {
-			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- narrows the lookup to one handbook.
 				array(
 					'taxonomy'         => Handbooks::TAXONOMY,
 					'field'            => 'term_id',
@@ -802,12 +807,7 @@ final class GitSync {
 				++$state['final'];
 
 				foreach ( $report['unresolved'] as $link ) {
-					$state['notes'][] = sprintf(
-						/* translators: 1: page title the link is on, 2: link target file name. */
-						__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
-						$link['source'],
-						$link['target']
-					);
+					$state['notes'][] = self::unresolved_note( $link );
 				}
 
 				if ( $state['final'] < $count && microtime( true ) >= $deadline ) {
@@ -819,6 +819,21 @@ final class GitSync {
 		}
 
 		return true;
+	}
+
+	/**
+	 * The report line for an internal link that points at no page.
+	 *
+	 * @param array{source: string, target: string} $link Page title the link is on, and the link target.
+	 * @return string
+	 */
+	private static function unresolved_note( array $link ): string {
+		return sprintf(
+			/* translators: 1: page title the link is on, 2: link target file name. */
+			__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
+			$link['source'],
+			$link['target']
+		);
 	}
 
 	/**
@@ -1155,12 +1170,7 @@ final class GitSync {
 
 		$report = Postprocessor::finalize_report( $ids );
 		foreach ( $report['unresolved'] as $link ) {
-			$notes[] = sprintf(
-				/* translators: 1: page title the link is on, 2: link target file name. */
-				__( 'On "%1$s": the link to %2$s points at no page, so it was shown as plain text. Add that page, or fix the link.', 'living-handbook' ),
-				$link['source'],
-				$link['target']
-			);
+			$notes[] = self::unresolved_note( $link );
 		}
 
 		$notes = array_merge( $notes, $this->reload_notes( $handbook_id, $ids ) );
@@ -1445,15 +1455,26 @@ final class GitSync {
 			$files[] = $path;
 		}
 
+		return self::shallow_first( $files );
+	}
+
+	/**
+	 * Sorts repository paths shallow first, then alphabetically, so a folder's
+	 * page always exists before the pages that hang under it.
+	 *
+	 * @param array<int, string> $paths Paths relative to the import base.
+	 * @return array<int, string>
+	 */
+	private static function shallow_first( array $paths ): array {
 		usort(
-			$files,
+			$paths,
 			static function ( string $a, string $b ): int {
 				$depth = substr_count( $a, '/' ) <=> substr_count( $b, '/' );
 				return 0 !== $depth ? $depth : strcmp( $a, $b );
 			}
 		);
 
-		return $files;
+		return $paths;
 	}
 
 	/**
@@ -1594,11 +1615,8 @@ final class GitSync {
 	}
 
 	/**
-	 * Create, or find again, the page that stands for a folder without its own
-	 * Markdown file.
-	 *
-	 * It is not synced, because there is no file behind it, and it carries the
-	 * area entries block so it lists what is inside it instead of being blank.
+	 * Creates, or finds again, the page that stands for a repository folder
+	 * without its own Markdown file. See folder_page().
 	 *
 	 * @param array{owner:string, repo:string, branch:string, path:string} $parsed      Parsed tree URL.
 	 * @param string                                                       $folder      Folder path.
@@ -1609,6 +1627,25 @@ final class GitSync {
 	private function create_folder_page( array $parsed, string $folder, int $handbook_id = 0, bool $publish = false ): int {
 		$marker = $parsed['owner'] . '/' . $parsed['repo'] . '@' . $parsed['branch'] . ':' . $folder;
 
+		return $this->folder_page( $marker, $folder, $handbook_id, $publish, false );
+	}
+
+	/**
+	 * Finds again, or creates, the page for a folder without its own Markdown
+	 * file, by the marker that names the folder and where it came from.
+	 *
+	 * The page is not synced, because there is no file behind it, and it
+	 * carries the area entries block so it lists what is inside it instead of
+	 * being blank.
+	 *
+	 * @param string $marker      Where the folder came from: repository, branch and path, or "local:" and the path.
+	 * @param string $folder      Folder path.
+	 * @param int    $handbook_id Optional handbook term id.
+	 * @param bool   $publish     Whether a new page is published rather than drafted.
+	 * @param bool   $managed     Whether a new page is marked as part of the shipped app handbook.
+	 * @return int Post ID, or 0.
+	 */
+	private function folder_page( string $marker, string $folder, int $handbook_id, bool $publish, bool $managed ): int {
 		$existing = get_posts(
 			AccessController::internal(
 				array(
@@ -1617,8 +1654,8 @@ final class GitSync {
 					'posts_per_page' => 1,
 					'fields'         => 'ids',
 					'no_found_rows'  => true,
-					'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- one lookup per folder of an import, on a key only folder pages carry.
+					'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
 				)
 			)
 		);
@@ -1646,6 +1683,9 @@ final class GitSync {
 		$post_id = (int) $inserted;
 		update_post_meta( $post_id, self::META_FOLDER, $marker );
 		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
+		if ( $managed ) {
+			update_post_meta( $post_id, self::META_APP, '1' );
+		}
 		if ( 0 < $handbook_id ) {
 			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
 		}
@@ -1675,15 +1715,7 @@ final class GitSync {
 			}
 		}
 
-		usort(
-			$files,
-			static function ( string $a, string $b ): int {
-				$depth = substr_count( $a, '/' ) <=> substr_count( $b, '/' );
-				return 0 !== $depth ? $depth : strcmp( $a, $b );
-			}
-		);
-
-		return $files;
+		return self::shallow_first( $files );
 	}
 
 	/**
@@ -1708,7 +1740,7 @@ final class GitSync {
 			? sanitize_title( $slug_override )
 			: sanitize_title( pathinfo( $rel_path, PATHINFO_FILENAME ) );
 
-		$post_id = self::find_local_by_path( $rel_path, $handbook_id );
+		$post_id = self::find_by_meta( Postprocessor::META_SOURCE_PATH, $rel_path, $handbook_id );
 		if ( $post_id > 0 && ! current_user_can( 'edit_post', $post_id ) ) {
 			$post_id = 0;
 		}
@@ -1758,8 +1790,8 @@ final class GitSync {
 	}
 
 	/**
-	 * Create, or find again, the page that stands for a local folder without its
-	 * own Markdown file. Mirrors create_folder_page for the bundled import.
+	 * Creates, or finds again, the page that stands for a local folder without
+	 * its own Markdown file. See folder_page().
 	 *
 	 * @param string $folder      Folder path relative to the import base.
 	 * @param int    $handbook_id Optional handbook term id.
@@ -1768,85 +1800,7 @@ final class GitSync {
 	 * @return int Post id, or 0.
 	 */
 	private function create_local_folder_page( string $folder, int $handbook_id = 0, bool $publish = false, bool $managed = true ): int {
-		$marker = 'local:' . $folder;
-
-		$existing = get_posts(
-			AccessController::internal(
-				array(
-					'post_type'      => Handbook::POST_TYPE,
-					'post_status'    => 'any',
-					'posts_per_page' => 1,
-					'fields'         => 'ids',
-					'no_found_rows'  => true,
-					'meta_key'       => self::META_FOLDER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'meta_value'     => $marker, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				)
-			)
-		);
-		if ( ! empty( $existing ) ) {
-			return (int) $existing[0];
-		}
-
-		$name  = basename( $folder );
-		$title = ucfirst( trim( (string) preg_replace( '/[-_]+/', ' ', $name ) ) );
-
-		$inserted = wp_insert_post(
-			array(
-				'post_type'    => Handbook::POST_TYPE,
-				'post_status'  => $publish ? 'publish' : 'draft',
-				'post_title'   => '' !== $title ? $title : $name,
-				'post_name'    => sanitize_title( $name ),
-				'post_content' => '<!-- wp:living-handbook/entry {"display":"cards"} /-->',
-			),
-			true
-		);
-		if ( is_wp_error( $inserted ) ) {
-			return 0;
-		}
-
-		$post_id = (int) $inserted;
-		update_post_meta( $post_id, self::META_FOLDER, $marker );
-		update_post_meta( $post_id, self::META_SOURCE, self::SOURCE_WORDPRESS );
-		if ( $managed ) {
-			update_post_meta( $post_id, self::META_APP, '1' );
-		}
-		if ( 0 < $handbook_id ) {
-			wp_set_object_terms( $post_id, array( $handbook_id ), Handbooks::TAXONOMY );
-		}
-		return $post_id;
-	}
-
-	/**
-	 * Find an existing local-import page by its stored source path, so a re-import
-	 * refreshes it instead of creating a duplicate. Scoped to the target handbook
-	 * when one is given.
-	 *
-	 * @param string $rel_path    File path relative to the import base.
-	 * @param int    $handbook_id Target handbook term id (0 for none).
-	 * @return int Post id, or 0.
-	 */
-	private static function find_local_by_path( string $rel_path, int $handbook_id ): int {
-		$args = array(
-			'post_type'      => Handbook::POST_TYPE,
-			'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
-			'meta_key'       => Postprocessor::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			'meta_value'     => $rel_path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-		);
-		if ( $handbook_id > 0 ) {
-			$args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-				array(
-					'taxonomy'         => Handbooks::TAXONOMY,
-					'field'            => 'term_id',
-					'terms'            => $handbook_id,
-					'include_children' => false,
-				),
-			);
-		}
-		$found = get_posts( AccessController::internal( $args ) );
-		return ! empty( $found ) ? (int) $found[0] : 0;
+		return $this->folder_page( 'local:' . $folder, $folder, $handbook_id, $publish, $managed );
 	}
 
 	/**
