@@ -34,11 +34,17 @@ final class SiteRenderer {
 	 * How much of a page's text goes into the search index, in characters.
 	 *
 	 * The index is one JavaScript file that every page loads, so it is a size
-	 * the reader pays for on every click. Four thousand characters is roughly a
-	 * long page's worth of prose and keeps a 500-page handbook's index around
-	 * two megabytes.
+	 * the reader pays for on every click. Up to 0.75.1 the limit was four
+	 * thousand characters, and since the index then held the whole template,
+	 * navigation first, a word near the end of a long page was not found. The
+	 * index now holds the page's own text, and the limit is only a guard
+	 * against an outlier such as a pasted log: the plugin's own documentation
+	 * has a median page of about 5,000 characters and its longest of about
+	 * 36,000, so 50,000 keeps every ordinary page whole. The file then grows
+	 * with the text of the handbook, about 6,500 characters a page on average
+	 * there, some 3 MB for 500 pages, read from the reader's own disk.
 	 */
-	private const INDEX_LENGTH = 4000;
+	private const INDEX_LENGTH = 50000;
 
 	/**
 	 * The path a page gets inside the export, without the extension.

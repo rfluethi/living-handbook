@@ -898,4 +898,64 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( '&amp;', $index );
 		$this->assertStringNotContainsString( '&#', $index );
 	}
+
+	/**
+	 * The search index of an export, keyed by page title.
+	 *
+	 * @param ZipArchive $zip The archive.
+	 * @return array<string, string> Title to indexed text.
+	 */
+	private function index_texts( ZipArchive $zip ): array {
+		$index = (string) $zip->getFromName( 'assets/search-index.js' );
+		$this->assertSame( 1, preg_match( '/^window\.LH_PAGES = (\[.*\]);\s*$/s', $index, $found ) );
+		$texts = array();
+		foreach ( (array) json_decode( $found[1], true ) as $entry ) {
+			$texts[ (string) $entry['t'] ] = (string) $entry['x'];
+		}
+		return $texts;
+	}
+
+	/**
+	 * The search index holds a page's own text, not the template around it.
+	 * Up to 0.75.1 it held the whole rendered template, navigation first: a
+	 * word from the menu found every page, and the four thousand characters
+	 * were used up before a long page's text had properly begun.
+	 *
+	 * @return void
+	 */
+	public function test_the_search_index_holds_the_page_text_only(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'Linux', 'Kernel and shell.' );
+		$long = str_repeat( 'Plain filler words for a long page. ', 300 ) . 'Zebracrossing at the very end.';
+		$this->page( $term, 'Long page', '<!-- wp:paragraph --><p>' . $long . '</p><!-- /wp:paragraph -->' );
+
+		$texts = $this->index_texts( $this->export( $term ) );
+
+		$this->assertSame( 'Kernel and shell.', $texts['Linux'] ?? null, 'The template around the page is not text of the page.' );
+		$this->assertStringNotContainsString( 'Linux', $texts['Long page'] ?? '', 'A title in the navigation does not find the other pages.' );
+		$this->assertGreaterThan( 4000, mb_strlen( $texts['Long page'] ?? '' ) );
+		$this->assertStringContainsString( 'Zebracrossing at the very end.', $texts['Long page'] ?? '', 'A word at the end of a long page is found.' );
+	}
+
+	/**
+	 * The template is the source of the text, but a page whose template has no
+	 * post content block is still indexed with its text.
+	 *
+	 * @return void
+	 */
+	public function test_a_template_without_post_content_still_indexes_the_text(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'Review pages', 'Reviewing keeps a handbook honest.' );
+
+		// pre_render_block answers for the block, so it never renders and the
+		// export never sees it go by.
+		$drop = static function ( $pre, $parsed ) {
+			return 'core/post-content' === ( $parsed['blockName'] ?? '' ) ? '<p>Template without the content.</p>' : $pre;
+		};
+		add_filter( 'pre_render_block', $drop, 10, 2 );
+		$zip = $this->export( $term );
+		remove_filter( 'pre_render_block', $drop, 10 );
+
+		$this->assertSame( 'Reviewing keeps a handbook honest.', $this->index_texts( $zip )['Review pages'] ?? null );
+	}
 }

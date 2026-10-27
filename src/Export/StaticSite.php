@@ -451,10 +451,29 @@ final class StaticSite {
 		// The template first: it puts the blocks where this site put them. The
 		// hand-built page stays as the fallback for an installation whose
 		// templates cannot be read, so an export is never empty for want of one.
-		$content       = TemplateRender::render( $post, (string) $state['template'] );
+		//
+		// The search index wants the page's own text, not the whole template:
+		// up to 0.75.1 it indexed the rendered template, navigation included,
+		// so a word from the menu found every page. The post content block
+		// is caught on its way through the render instead of rendering the
+		// page a second time; the last one wins, because a post content block
+		// nested in the content finishes before the one around it.
+		$body    = '';
+		$capture = static function ( $html ) use ( &$body ) {
+			$body = (string) $html;
+			return $html;
+		};
+		add_filter( 'render_block_core/post-content', $capture );
+		$content = TemplateRender::render( $post, (string) $state['template'] );
+		remove_filter( 'render_block_core/post-content', $capture );
+
 		$from_template = '' !== trim( $content );
 		if ( ! $from_template ) {
 			$content = self::render_content( $post );
+			$body    = $content;
+		} elseif ( '' === trim( $body ) ) {
+			// An edited template without a post content block.
+			$body = self::render_content( $post );
 		}
 
 		$content = self::rewrite( $zip, $content, $path, $links );
@@ -497,7 +516,7 @@ final class StaticSite {
 		// four thousand characters a page, and a handbook of two thousand pages
 		// made the state larger than the database would take: the next pass found
 		// nothing and reported the export as expired.
-		$entry = wp_json_encode( SiteRenderer::index_entry( (string) get_the_title( $post ), $path, $content ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		$entry = wp_json_encode( SiteRenderer::index_entry( (string) get_the_title( $post ), $path, $body ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		if ( is_string( $entry ) ) {
 			file_put_contents( self::entries_file( $state ), $entry . "\n", FILE_APPEND ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a working file beside the export archive, in the temp folder.
 		}
