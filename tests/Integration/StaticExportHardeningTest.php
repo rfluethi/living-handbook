@@ -59,7 +59,7 @@ final class StaticExportHardeningTest extends WP_UnitTestCase {
 	 */
 	public function tear_down(): void {
 		foreach ( $this->files as $file ) {
-			if ( is_file( $file ) ) {
+			if ( is_file( $file ) || is_link( $file ) ) {
 				wp_delete_file( $file );
 			}
 		}
@@ -186,5 +186,81 @@ final class StaticExportHardeningTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'Kept by hand.', $markup );
 		$this->assertStringContainsString( 'wp:post-title {"level":2}', $markup, 'The title after it stays.' );
 		$this->assertStringContainsString( 'wp:post-content', $markup, 'And so does the group around the cut block.' );
+	}
+
+	/**
+	 * Add a look whose stylesheet points at the given addresses.
+	 *
+	 * @param array<int, string> $urls Absolute URLs.
+	 * @return callable The filter, to remove afterwards.
+	 */
+	private function look_pointing_at( array $urls ): callable {
+		$css = '';
+		foreach ( $urls as $url ) {
+			$css .= '.x { background: url(' . $url . '); }' . "\n";
+		}
+		$look = static function ( array $themes ) use ( $css ): array {
+			$themes['pointing'] = array(
+				'label' => 'Pointing',
+				'css'   => $css,
+			);
+			return $themes;
+		};
+		add_filter( 'living_handbook_static_export_themes', $look );
+
+		return $look;
+	}
+
+	/**
+	 * A stylesheet takes fonts and images along, and nothing else.
+	 *
+	 * Up to 0.75.1 any readable file under the WordPress folder that a url() in
+	 * the stylesheet named went into the archive, a text file as much as a
+	 * font, and a symbolic link in wp-content was followed wherever it led.
+	 *
+	 * @return void
+	 */
+	public function test_a_stylesheet_takes_only_fonts_and_images_from_inside_the_site(): void {
+		$uploads = wp_upload_dir();
+		wp_mkdir_p( $uploads['basedir'] . '/lh-test' );
+
+		$font = $uploads['basedir'] . '/lh-test/kept.woff2';
+		file_put_contents( $font, 'not really a font' ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- writing a fixture.
+		$this->files[] = $font;
+
+		$base          = (string) tempnam( sys_get_temp_dir(), 'lh-outside' );
+		$this->files[] = $base;
+		$outside       = $base . '.png';
+		file_put_contents( $outside, 'outside the site' ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- writing a fixture.
+		$this->files[] = $outside;
+		$link          = $uploads['basedir'] . '/lh-test/escape.png';
+		if ( ! @symlink( $outside, $link ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- the test says why below when it fails.
+			$this->markTestSkipped( 'This file system has no symbolic links.' );
+		}
+		$this->files[] = $link;
+
+		$text = home_url( '/license.txt' );
+		$look = $this->look_pointing_at(
+			array(
+				$uploads['baseurl'] . '/lh-test/kept.woff2',
+				$uploads['baseurl'] . '/lh-test/escape.png',
+				$text,
+			)
+		);
+
+		$zip   = $this->export( $this->handbook_with_a_page(), 'pointing' );
+		$style = (string) $zip->getFromName( 'assets/style.css' );
+		remove_filter( 'living_handbook_static_export_themes', $look );
+
+		$names = array();
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- ZipArchive's own property.
+			$names[] = (string) $zip->getNameIndex( $i );
+		}
+		$taken = implode( ' ', $names );
+
+		$this->assertStringContainsString( 'kept.woff2', $taken, 'A font inside the site travels.' );
+		$this->assertStringNotContainsString( 'license.txt', $taken, 'A text file does not, wherever it lies.' );
+		$this->assertStringNotContainsString( 'escape.png', $taken, 'Nor does a file a link leads to outside the site.' );
+		$this->assertStringContainsString( $text, $style, 'What is not taken along keeps its address.' );
 	}
 }

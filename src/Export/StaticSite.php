@@ -70,6 +70,17 @@ final class StaticSite {
 	public const ACTION = 'living_handbook_static_download';
 
 	/**
+	 * File types a stylesheet may take into the export: fonts and images.
+	 *
+	 * A theme's @font-face rules and its background images are what an export
+	 * needs to look like the site. Anything else a url() names stays where it
+	 * is, whatever the stylesheet says.
+	 *
+	 * @var array<int, string>
+	 */
+	private const STYLESHEET_ASSETS = array( 'woff2', 'woff', 'ttf', 'otf', 'eot', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico' );
+
+	/**
 	 * Hook registration.
 	 *
 	 * @return void
@@ -879,13 +890,23 @@ final class StaticSite {
 	}
 
 	/**
-	 * The file on disk an absolute URL of this installation points at.
+	 * Returns the font or image on disk that an absolute URL of this
+	 * installation points at.
+	 *
+	 * Only fonts and images, and only files that really lie inside the folder
+	 * the URL maps to: the path is resolved with realpath(), which also catches
+	 * a symbolic link pointing out of it. Up to 0.75.1 any readable file under
+	 * the WordPress folder that a url() in the stylesheet named went into the
+	 * archive, and ".." was merely deleted from the path.
 	 *
 	 * @param string $url Absolute URL.
-	 * @return string Empty when it is not one of ours, or not readable.
+	 * @return string Empty when it is not one of ours, not a font or an image, or not readable.
 	 */
 	private static function local_path_for( string $url ): string {
 		$bare = (string) strtok( $url, '?#' );
+		if ( ! self::is_stylesheet_asset( (string) wp_parse_url( $bare, PHP_URL_PATH ) ) ) {
+			return '';
+		}
 
 		$roots = array(
 			content_url()   => WP_CONTENT_DIR,
@@ -898,14 +919,34 @@ final class StaticSite {
 			if ( '' === $base_url || ! str_starts_with( $bare, $base_url ) ) {
 				continue;
 			}
-			$path = untrailingslashit( (string) $base_dir ) . substr( $bare, strlen( $base_url ) );
-			$path = str_replace( '..', '', $path );
-			if ( is_readable( $path ) && ! is_dir( $path ) ) {
-				return $path;
+			$relative = rawurldecode( substr( $bare, strlen( $base_url ) ) );
+			if ( str_contains( $relative, "\0" ) ) {
+				continue;
+			}
+
+			$root = realpath( (string) $base_dir );
+			$file = realpath( untrailingslashit( (string) $base_dir ) . '/' . ltrim( $relative, '/' ) );
+			if ( false === $root || false === $file || ! is_file( $file ) || ! is_readable( $file ) ) {
+				continue;
+			}
+			// The resolved file decides, not the name in the URL: a link called
+			// font.woff2 may lead to anything.
+			if ( str_starts_with( $file, rtrim( $root, '/' ) . '/' ) && self::is_stylesheet_asset( $file ) ) {
+				return $file;
 			}
 		}
 
 		return '';
+	}
+
+	/**
+	 * Whether a path names a file a stylesheet may take into the export.
+	 *
+	 * @param string $path File path or URL path.
+	 * @return bool
+	 */
+	private static function is_stylesheet_asset( string $path ): bool {
+		return in_array( strtolower( (string) pathinfo( $path, PATHINFO_EXTENSION ) ), self::STYLESHEET_ASSETS, true );
 	}
 
 	/**
