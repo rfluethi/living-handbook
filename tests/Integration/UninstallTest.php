@@ -442,4 +442,23 @@ final class UninstallTest extends WP_UnitTestCase {
 		$this->assertSame( '', get_post_meta( $image, '_lh_import_hash', true ) );
 		$this->assertSame( 'A diagram', get_post_meta( $image, '_wp_attachment_image_alt', true ), 'Meta that is not the plugin\'s stays.' );
 	}
+
+	/**
+	 * An ordinary page that a bundle import created stays, without the
+	 * plugin's bookkeeping on it.
+	 *
+	 * @return void
+	 */
+	public function test_the_opt_in_takes_the_bundle_keys_off_ordinary_pages(): void {
+		$page = (int) self::factory()->post->create( array( 'post_type' => 'page' ) );
+		update_post_meta( $page, '_lh_origin_id', 'https://example.org#7' );
+		update_post_meta( $page, '_lh_bundle_key', 'intro' );
+		update_option( GitSync::OPTION_UNINSTALL, 1 );
+
+		$this->uninstall();
+
+		$this->assertSame( 'page', get_post_type( $page ), 'The page itself stays.' );
+		$this->assertSame( '', get_post_meta( $page, '_lh_origin_id', true ) );
+		$this->assertSame( '', get_post_meta( $page, '_lh_bundle_key', true ) );
+	}
 }

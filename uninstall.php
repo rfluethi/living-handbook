@@ -195,6 +195,13 @@ function living_handbook_run_uninstall(): void {
 		delete_post_meta_by_key( $attachment_key );
 	}
 
+	// The same for ordinary WordPress pages a bundle import created ("import as
+	// pages"): they stay, because they are not handbook pages, but the origin
+	// and bundle key the importer put on them mean nothing without the plugin.
+	foreach ( array( LivingHandbook\Import\HandbookImport::META_ORIGIN, LivingHandbook\Import\HandbookImport::META_BUNDLE_KEY ) as $page_key ) {
+		delete_post_meta_by_key( $page_key );
+	}
+
 	// The overview page created on activation, if it is still a page.
 	if ( $overview_page_id > 0 && 'page' === get_post_type( $overview_page_id ) ) {
 		wp_delete_post( $overview_page_id, true );
