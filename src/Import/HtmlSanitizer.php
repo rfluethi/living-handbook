@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class HtmlSanitizer {
 
 	/**
-	 * The allowed-HTML map.
+	 * Returns the allowed-HTML map.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -64,7 +64,7 @@ final class HtmlSanitizer {
 	}
 
 	/**
-	 * Strip anything not on the allowlist from a block of HTML.
+	 * Strips anything not on the allowlist from a block of HTML.
 	 *
 	 * @param string $html HTML from an external source.
 	 * @return string
@@ -74,7 +74,7 @@ final class HtmlSanitizer {
 	}
 
 	/**
-	 * Strip anything not on the allowlist from block markup, keeping the blocks.
+	 * Strips anything not on the allowlist from block markup, keeping the blocks.
 	 *
 	 * Running kses over serialized block markup in one go would destroy the block
 	 * delimiters, because those are HTML comments. So the markup is parsed into
@@ -84,9 +84,11 @@ final class HtmlSanitizer {
 	 *
 	 * This is the sanitizer for content that arrives already converted to blocks:
 	 * a bundle from another site, or the content the import screen posts back after
-	 * the browser turned HTML into blocks. Block attributes are not filtered here;
-	 * they are consumed by render callbacks, which escape their output, and static
-	 * blocks carry their visible markup in the inner content this method cleans.
+	 * the browser turned HTML into blocks. Block attributes are not filtered here.
+	 * Static blocks carry their visible markup in the inner content this method
+	 * cleans; a dynamic block renders from its attributes, and the plugin's own
+	 * render callbacks escape them. For a core or third-party block that is
+	 * that block's own escaping, which this method does not add to.
 	 *
 	 * @param string $content Block markup from an external source.
 	 * @return string

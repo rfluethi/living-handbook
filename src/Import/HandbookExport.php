@@ -1,6 +1,6 @@
 <?php
 /**
- * Export one handbook to a self-contained bundle (Etappe 1).
+ * Export of one handbook to a self-contained bundle.
  *
  * @package LivingHandbook
  */
@@ -38,17 +38,38 @@ if ( ! defined( 'ABSPATH' ) ) {
  * paths with their lessons as page keys, and the referenced media.
  * Local operational data (feedback counts, sync status) is deliberately left out.
  *
- * The bundle format is specified in the vault (entscheide-und-ideen, "Bündelformat").
- * This class is the export half (Etappe 1); the import half reads the same format.
+ * The bundle format is described in the technical documentation
+ * (docs/technical/en/living-handbook-technical/import-and-sync.md). This class
+ * writes it; HandbookImport reads it.
  */
 final class HandbookExport {
 
-	private const FORMAT  = 'living-handbook-bundle';
+	/**
+	 * Format name in every manifest, which the import checks first.
+	 */
+	public const FORMAT = 'living-handbook-bundle';
+
+	/**
+	 * Format version. Additions that an older importer can ignore, such as the
+	 * learning paths, keep version 1 (see build_manifest()).
+	 */
 	private const VERSION = 1;
 
+	/**
+	 * The admin-post action and nonce action of the download.
+	 */
 	private const ACTION = 'living_handbook_export';
 
+	/**
+	 * Slug of the export screen.
+	 */
 	private const MENU_SLUG = 'living-handbook-export';
+
+	/**
+	 * Most ancestors a walk up a page tree follows. Far beyond any real
+	 * handbook; it only ends a parent loop that bad data could contain.
+	 */
+	private const MAX_DEPTH = 100;
 
 	/**
 	 * The four classifying taxonomies carried per page.
@@ -61,7 +82,7 @@ final class HandbookExport {
 	);
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the export screen and its download handler.
 	 *
 	 * @return void
 	 */
@@ -71,7 +92,7 @@ final class HandbookExport {
 	}
 
 	/**
-	 * Add the export screen under the handbook menu. Export is the opposite
+	 * Adds the export screen under the handbook menu. Export is the opposite
 	 * direction of import, so it gets its own page, the way WordPress separates
 	 * its own import and export tools.
 	 *
@@ -249,8 +270,11 @@ JS;
 	}
 
 	/**
-	 * Whether the current user may export. Export can reveal restricted content, so
-	 * it needs the content-manager capability, not just edit_posts.
+	 * Returns whether the current user may use the export screen at all.
+	 *
+	 * Export hands out content, so it needs the content-manager capability, not
+	 * just edit_posts. Which handbook may be exported is decided per handbook,
+	 * by AccessController::may_use_handbook().
 	 *
 	 * @return bool
 	 */
@@ -259,7 +283,7 @@ JS;
 	}
 
 	/**
-	 * Handle the export download: validate, build the ZIP, stream it, and exit.
+	 * Handles the export download: validates, builds the ZIP, streams it, and exits.
 	 *
 	 * @return void
 	 */
@@ -341,7 +365,7 @@ JS;
 	}
 
 	/**
-	 * Build the export bundle for a handbook and return the temp ZIP path, or an
+	 * Builds the export bundle for a handbook and returns the temp ZIP path, or an
 	 * empty string on failure.
 	 *
 	 * @param WP_Term $term    Handbook term.
@@ -357,10 +381,12 @@ JS;
 			return '';
 		}
 
-		// Not wp_tempnam(): that writes into the uploads folder, which is served
-		// over HTTP, so the bundle of a restricted handbook would be downloadable
-		// by anyone guessing the name while the export runs. The system temp
-		// directory is not web-reachable; fall back if it is not writable.
+		// The system temp directory first, not wp_tempnam(): that writes into
+		// get_temp_dir(), which falls back to wp-content/ when neither WP_TEMP_DIR
+		// nor the system directory is writable, and wp-content/ is served over
+		// HTTP, so the bundle of a restricted handbook could be fetched by anyone
+		// guessing the name while the export runs. wp_tempnam() is only the
+		// fallback when the system directory cannot be used.
 		$path = tempnam( sys_get_temp_dir(), 'lh-export' );
 		if ( ! is_string( $path ) ) {
 			$path = wp_tempnam( 'lh-export' );
@@ -373,7 +399,7 @@ JS;
 		}
 		$zip->addFromString( 'manifest.json', $json );
 		// addFile(), not addFromString(): the file is read when the archive is
-		// written, one at a time. Up to 0.75.0 every upload of the handbook was
+		// written, one at a time. Up to 0.75.1 every upload of the handbook was
 		// read into memory first and held there until the end, which on a
 		// handbook with a few hundred screenshots was the memory limit.
 		foreach ( $media as $item ) {
@@ -387,10 +413,14 @@ JS;
 	}
 
 	/**
-	 * Build the manifest array for a handbook and collect its media by reference.
+	 * Builds the manifest array for a handbook and collects its media by reference.
+	 *
+	 * A root id that is not among the pages the user may view is ignored, and
+	 * the whole handbook is built; download() refuses such an area before it
+	 * gets here.
 	 *
 	 * @param WP_Term                     $term    Handbook term.
-	 * @param array<string, array<mixed>> $media   Collected media, keyed by attachment ID (out).
+	 * @param array<string, array<mixed>> $media   Collected media, keyed by attachment ID, or "ID:file" for an image size (out).
 	 * @param int                         $root_id Optional area root page ID; 0 exports the whole handbook.
 	 * @return array<string, mixed>
 	 */
@@ -409,7 +439,7 @@ JS;
 				'orderby'        => 'menu_order',
 				'order'          => 'ASC',
 				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One query per export; the handbook is what is exported.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',
@@ -422,9 +452,9 @@ JS;
 
 		// Every page is asked, as the website export and the learning paths of
 		// this bundle are. get_posts() runs without the result filter, and the
-		// query layer lets editors through, so up to 0.75.1 a site that narrowed
-		// access through living_handbook_can_view_post found the page it had just
-		// hidden in the next bundle.
+		// query layer narrows by handbook only, so up to 0.75.1 a site that
+		// narrowed access through living_handbook_can_view_post found the page it
+		// had just hidden in the next bundle.
 		$user_id = get_current_user_id();
 		$all     = array();
 		foreach ( $posts as $post ) {
@@ -517,10 +547,10 @@ JS;
 	 * is still a path somebody started in this handbook.
 	 *
 	 * A path is exported only when the exporting user may view it, the same
-	 * check that decides it everywhere else. Whoever exports holds
-	 * edit_others_posts and so passes it; the check is there so that a site
-	 * narrowing access through the living_handbook_can_view_post filter is
-	 * not bypassed by the export.
+	 * check that decides it everywhere else. The handbook itself was already
+	 * checked with AccessController::may_use_handbook(); this check is there so
+	 * that a site narrowing access through the living_handbook_can_view_post
+	 * filter is not bypassed by the export.
 	 *
 	 * @param WP_Term                     $term      Handbook term.
 	 * @param array<int, string>          $id_to_key Exported page ID to its key in this bundle.
@@ -539,7 +569,7 @@ JS;
 					'ID'    => 'ASC',
 				),
 				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One query per export, for the paths of the handbook.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',
@@ -611,7 +641,7 @@ JS;
 			}
 			$current = $post;
 			$guard   = 0;
-			while ( $current instanceof WP_Post && $guard < 100 ) {
+			while ( $current instanceof WP_Post && $guard < self::MAX_DEPTH ) {
 				if ( $current->ID === $root_id ) {
 					$ids[ $id ] = true;
 					break;
@@ -707,7 +737,7 @@ JS;
 		$parts   = array();
 		$current = $post;
 		$guard   = 0;
-		while ( $current instanceof WP_Post && $guard < 100 ) {
+		while ( $current instanceof WP_Post && $guard < self::MAX_DEPTH ) {
 			array_unshift( $parts, $this->post_slug( $current ) );
 			$parent = $current->post_parent;
 			if ( $parent <= 0 || ! isset( $in_set[ $parent ] ) ) {
@@ -767,7 +797,7 @@ JS;
 	 * image) into the shared media map, and return the bundle file names it uses.
 	 *
 	 * @param WP_Post                     $post  The page.
-	 * @param array<string, array<mixed>> $media Collected media, keyed by attachment ID (out).
+	 * @param array<string, array<mixed>> $media Collected media, keyed by attachment ID, or "ID:file" for an image size (out).
 	 * @return array<int, string> Bundle file names referenced by this page.
 	 */
 	private function collect_page_media( WP_Post $post, array &$media ): array {
@@ -789,7 +819,7 @@ JS;
 				}
 				// An image inserted at a size ("plan-1024x768.png") is not the
 				// attachment's own URL, so the lookup above does not know it, and
-				// up to 0.75.0 the file did not travel: the imported page went on
+				// up to 0.75.1 the file did not travel: the imported page went on
 				// loading it from the old site. The size is a file of its own, so
 				// it is carried as one, under the URL the content uses.
 				$size = $this->size_file( $url );

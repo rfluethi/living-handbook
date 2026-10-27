@@ -4,7 +4,8 @@
  *
  * Runs when the plugin is deleted from the Plugins screen. By default only the
  * plugin's own operational data is removed (its options, the scheduled sync,
- * and the navigation/area caches); user content (handbook pages, handbooks, and
+ * and its transients: the overview caches, running jobs, reports and feedback
+ * counters); user content (handbook pages, handbooks, and
  * their metadata) is kept. To also remove the content, turn on the "Also delete
  * all handbook pages, handbooks and their data" option on the plugin settings
  * page before deleting, or return true from the
@@ -34,7 +35,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 /**
- * Run the uninstall cleanup.
+ * Runs the uninstall cleanup.
  *
  * Kept in a function so its variables stay local; the file body runs in the
  * global scope, where locals would collide with WordPress globals.
@@ -75,20 +76,18 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Admin\MoveToHandbook::OPTION_ANY_MOVED );
 	delete_option( LivingHandbook\Git\GitSync::OPTION_SYNC_LOCK );
 
-	// Always: remove the area cards cache and the handbook previews of the
-	// overview (transients keyed by version and by viewer). There is no lh_nav_ prefix to clean up. The navigation is built
-	// fresh on every request, see Navigation::CACHE_VERSION_OPTION.
-	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-	//
-	// The same for the other transients the plugin writes, which the cleanup did
-	// not know about until 0.76.0: the state of a running GitHub import
-	// (GitSync::JOB_PREFIX) and of a running static export
-	// (StaticSite::JOB_PREFIX), each up to a whole handbook's worth of page data;
-	// the report of a bundle import (HandbookImport::NOTICE_TRANSIENT); and the
-	// hourly counters of anonymous feedback (Feedback, "lh_fb_<post>_<hour>").
-	// The prefixes are written out here because the constants are private to
-	// their classes. Each pattern ends in an underscore, so it cannot widen to a
-	// longer prefix another plugin might use.
+	// Always: remove the transients the plugin writes. The area cards and the
+	// handbook previews of the overview (keyed by version and by viewer; the
+	// navigation itself is not cached, see Navigation::CACHE_VERSION_OPTION),
+	// and, which the cleanup did not know about up to 0.75.1, the state of a
+	// running GitHub import (GitSync::JOB_PREFIX) and of a running static
+	// export (StaticSite::JOB_PREFIX), each up to a whole handbook's worth of
+	// page data; the report of a bundle import (HandbookImport::NOTICE_TRANSIENT);
+	// and the hourly counters of anonymous feedback (Feedback,
+	// "lh_fb_<post>_<hour>"). The prefixes are written out here because the
+	// constants are private to their classes. Each pattern ends in an
+	// underscore, so it cannot widen to a longer prefix another plugin might use.
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- No API deletes transients by prefix; this runs once, at uninstall.
 	$transient_prefixes = array(
 		'lh_areas_',
 		'lh_preview_',
@@ -109,16 +108,15 @@ function living_handbook_run_uninstall(): void {
 	}
 	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
-	// Versioned transient keys cannot be enumerated one by one, and on a
-	// persistent object cache (Redis, Memcached) the transients live in the cache
-	// rather than the options table above. They are deliberately not flushed:
-	// wp_cache_flush() empties the cache of the entire installation, including
-	// every other plugin and, on a shared cache server, other sites. The
-	// leftovers expire within a day on their own, and they are keyed by a version
-	// counter that no longer exists, so nothing reads them again.
+	// On a persistent object cache (Redis, Memcached) the transients live in
+	// the cache rather than the options table above, where they cannot be
+	// listed by prefix. They are deliberately not flushed: wp_cache_flush()
+	// empties the cache of the entire installation, including every other
+	// plugin and, on a shared cache server, other sites. The leftovers expire
+	// on their own, within a day at most, and nothing reads them again.
 
 	/**
-	 * Opt in to remove all handbook content on uninstall.
+	 * Filters whether the uninstall also removes all handbook content.
 	 *
 	 * @param bool $remove Whether to delete handbook pages, handbooks and their meta.
 	 */
@@ -145,7 +143,7 @@ function living_handbook_run_uninstall(): void {
 				// Learning paths are handbook content too: they carry a handbook
 				// term, they are useless without their lessons, and leaving them
 				// behind would leave rows nothing can reach.
-				'post_type'      => array( 'handbook', LivingHandbook\Training\Training::POST_TYPE ),
+				'post_type'      => array( LivingHandbook\PostType\Handbook::POST_TYPE, LivingHandbook\Training\Training::POST_TYPE ),
 				// Every status, listed. 'any' leaves out the statuses registered
 				// with exclude_from_search, which are 'trash' and 'auto-draft':
 				// with "delete everything" switched on, a page in the trash
@@ -187,11 +185,10 @@ function living_handbook_run_uninstall(): void {
 
 	// The plugin's bookkeeping on the images the Markdown import uploaded: the
 	// source file name and its hash, which let a re-import reuse an unchanged
-	// image (MarkdownImportPage::META_IMPORT_FILE and META_IMPORT_HASH, private
-	// there). The images themselves stay on purpose, they belong to the media
+	// image. The images themselves stay on purpose, they belong to the media
 	// library and may be used anywhere on the site; the meta means nothing
 	// without the plugin. Up to 0.75.1 it was left on every one of them.
-	foreach ( array( '_lh_import_file', '_lh_import_hash' ) as $attachment_key ) {
+	foreach ( array( LivingHandbook\Import\MarkdownImportPage::META_IMPORT_FILE, LivingHandbook\Import\MarkdownImportPage::META_IMPORT_HASH ) as $attachment_key ) {
 		delete_post_meta_by_key( $attachment_key );
 	}
 

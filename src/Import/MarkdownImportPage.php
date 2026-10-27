@@ -38,8 +38,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * handbook is matched by slug within that handbook. A one-off pasted draft
  * always creates a new page.
  *
- * The endpoints need edit_posts, which a Contributor has, so every write is
- * additionally checked against the concrete post: a re-import only refreshes a
+ * The endpoints need edit_posts (the ZIP route upload_files instead, the GitHub
+ * route both), which a Contributor has, so every write is additionally checked
+ * against the concrete post: a re-import only refreshes a
  * page the current user may edit, and the finalize pass only touches handbook
  * pages the user may edit. This stops a Contributor from overwriting another
  * author's published page through a re-import match.
@@ -60,25 +61,50 @@ final class MarkdownImportPage {
 	 */
 	private const SVG_SANITIZER = 'enshrined\\svgSanitize\\Sanitizer';
 
+	/**
+	 * Slug of the import screen, which the bundle import's notice looks for too.
+	 */
 	public const MENU_SLUG = 'living-handbook-import';
 
+	/**
+	 * The file extensions an import stores as images (see image_file_name()).
+	 */
 	private const IMAGE_EXTENSIONS = array( 'png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg' );
 
-	// Attachment meta that marks an image the plugin imported, so a re-import
-	// reuses only its own uploads and re-uploads when the source image changed.
-	private const META_IMPORT_FILE = '_lh_import_file';
-	private const META_IMPORT_HASH = '_lh_import_hash';
-
 	/**
-	 * ZIP import limits, checked before the archive is read into memory. The
-	 * bundle import has its own, see HandbookImport::BUNDLE_MAX_ENTRIES.
+	 * Attachment meta holding the source file name of an imported file.
+	 *
+	 * Together with META_IMPORT_HASH it marks a file the plugin imported, so a
+	 * re-import reuses only its own uploads and uploads again when the source
+	 * changed. The uninstall removes both.
 	 */
-	public const ZIP_MAX_ENTRIES     = 2000;
-	public const ZIP_MAX_FILE_BYTES  = 5242880;  // 5 MB uncompressed per file.
-	public const ZIP_MAX_TOTAL_BYTES = 104857600; // 100 MB uncompressed total.
+	public const META_IMPORT_FILE = '_lh_import_file';
 
 	/**
-	 * Hook registration into WordPress.
+	 * Attachment meta holding the MD5 of an imported file's contents.
+	 */
+	public const META_IMPORT_HASH = '_lh_import_hash';
+
+	/**
+	 * Most entries a Markdown ZIP may have. The bundle import has its own
+	 * limits, see HandbookImport::BUNDLE_MAX_ENTRIES.
+	 */
+	public const ZIP_MAX_ENTRIES = 2000;
+
+	/**
+	 * Largest file of a Markdown ZIP that is read, uncompressed. A larger one
+	 * is left out and named (see read_zip()).
+	 */
+	public const ZIP_MAX_FILE_BYTES = 5 * MB_IN_BYTES;
+
+	/**
+	 * Most bytes a Markdown ZIP may unpack to, changeable with the
+	 * living_handbook_zip_max_bytes filter.
+	 */
+	public const ZIP_MAX_TOTAL_BYTES = 100 * MB_IN_BYTES;
+
+	/**
+	 * Registers the import screen, its script and its REST routes.
 	 *
 	 * @return void
 	 */
@@ -89,7 +115,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Add the submenu under the handbook menu.
+	 * Adds the import screen under the handbook menu.
 	 *
 	 * @return void
 	 */
@@ -108,7 +134,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Add the explanation as a contextual Help tab (top right of the screen),
+	 * Adds the explanation as a contextual Help tab (top right of the screen),
 	 * the standard WordPress place for it, instead of an inline block.
 	 *
 	 * @return void
@@ -128,7 +154,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * A shared permission callback: the user may edit posts.
+	 * Returns whether the user may import: the shared permission callback, edit_posts.
 	 *
 	 * @return bool
 	 */
@@ -137,7 +163,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Register the REST routes.
+	 * Registers the REST routes.
 	 *
 	 * @return void
 	 */
@@ -236,7 +262,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * REST callback: convert one pasted Markdown draft.
+	 * Converts one pasted Markdown draft (REST callback).
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return array<string, mixed>|WP_Error
@@ -249,7 +275,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Read the importable entries out of a ZIP, within bounds.
+	 * Reads the importable entries out of a ZIP, within bounds.
 	 *
 	 * Public and static so the bounds can be tested on their own. The callback
 	 * around it starts with is_uploaded_file(), which by design only says yes to
@@ -290,7 +316,7 @@ final class MarkdownImportPage {
 		$total_bytes    = 0;
 
 		/**
-		 * Maximum uncompressed total of an imported ZIP, in bytes. This is a safety
+		 * Filters the most bytes an imported ZIP may unpack to. This is a safety
 		 * limit against memory exhaustion; the real ceiling is the server's PHP
 		 * config (upload_max_filesize, post_max_size, memory_limit). Raise it in
 		 * code only if the server can handle it.
@@ -350,7 +376,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * REST callback: unpack a ZIP. With a mkdocs.yml it returns the nav-ordered
+	 * Unpacks a ZIP (REST callback). With a mkdocs.yml it returns the nav-ordered
 	 * page specs; otherwise it returns each Markdown file as a flat page.
 	 *
 	 * @param WP_REST_Request $request Request.
@@ -447,7 +473,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * REST callback: create locked GitHub pages from a file URL or a folder URL.
+	 * Creates locked GitHub pages from a file URL or a folder URL (REST callback).
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return array<string, mixed>|WP_Error
@@ -528,8 +554,8 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * REST callback: create one handbook draft from converted block content, or
-	 * refresh the matching page on a re-import.
+	 * Creates one handbook draft from converted block content, or refreshes the
+	 * matching page on a re-import (REST callback).
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return array<string, mixed>
@@ -701,7 +727,7 @@ final class MarkdownImportPage {
 			// pages are its own, not those of the handbooks below it; with the
 			// default, an import into a parent handbook found and overwrote the
 			// page of the same path in a child handbook.
-			$base['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			$base['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One lookup per imported page, scoped to its handbook.
 				array(
 					'taxonomy'         => Handbooks::TAXONOMY,
 					'field'            => 'term_id',
@@ -716,8 +742,8 @@ final class MarkdownImportPage {
 				array_merge(
 					$base,
 					array(
-						'meta_key'   => Postprocessor::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-						'meta_value' => $source_path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+						'meta_key'   => Postprocessor::META_SOURCE_PATH, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- The source path lives only in post meta.
+						'meta_value' => $source_path, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- See the meta key.
 					)
 				)
 			);
@@ -783,7 +809,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * REST callback: resolve parents and convert internal .md links.
+	 * Resolves parents and converts internal .md links (REST callback).
 	 *
 	 * The ids are restricted to handbook pages the current user may edit, so a
 	 * caller cannot use this to rewrite arbitrary posts.
@@ -802,7 +828,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Sideload one image into the media library. A re-import reuses only a
+	 * Sideloads one image into the media library. A re-import reuses only a
 	 * previously imported attachment for the same file whose contents are
 	 * unchanged, so a foreign upload that happens to share the file name is never
 	 * picked up, and a changed source image is re-imported rather than reused.
@@ -817,7 +843,7 @@ final class MarkdownImportPage {
 	 */
 	public static function sideload_image( string $file_name, string $data, int $parent_id = 0 ): string {
 		// Decide what the file is before anything else, and decide it on the name
-		// it will be stored under. Up to 0.75.0 this took any name it was handed:
+		// it will be stored under. Up to 0.75.1 this took any name it was handed:
 		// the ZIP import only ever passes images, but the GitHub sync passes
 		// whatever a page in a foreign repository references, so "![x](evil.html)"
 		// went through wp_upload_bits(), which accepts .html for anyone holding
@@ -834,7 +860,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Sideload one file from a bundle: an image, or a document the bundle's pages
+	 * Sideloads one file from a bundle: an image, or a document the bundle's pages
 	 * link to.
 	 *
 	 * A bundle carries every upload its pages reference, a PDF as much as a
@@ -878,7 +904,7 @@ final class MarkdownImportPage {
 				'post_status' => 'inherit',
 				'numberposts' => 1,
 				'fields'      => 'ids',
-				'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'meta_query'  => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- One lookup per imported file; name and hash live only in attachment meta.
 					'relation' => 'AND',
 					array(
 						'key'   => self::META_IMPORT_FILE,
@@ -969,12 +995,12 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * The name an imported image is stored under, or '' when it is no image.
+	 * Returns the name an imported image is stored under, or '' when it is no image.
 	 *
 	 * Two checks, both needed. The name, after sanitize_file_name() and so
 	 * exactly as it will lie on disk, has to end in one of IMAGE_EXTENSIONS; the
 	 * site's general upload rules are not enough, because they allow HTML for
-	 * administrators and editors, and an import runs as one of them. And the
+	 * administrators and editors, and an import can run as one of them. And the
 	 * content has to be what the name says: a raster image is read by
 	 * getimagesizefromstring() and must report the type its extension claims,
 	 * so an HTML file called "x.png" is refused rather than stored and served
@@ -1045,7 +1071,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * The name a bundle document is stored under, or '' when it is refused.
+	 * Returns the name a bundle document is stored under, or '' when it is refused.
 	 *
 	 * The extension has to belong to one of the harmless file kinds WordPress
 	 * knows (wp_get_ext_types(), without "code" and without flash), and the
@@ -1115,7 +1141,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Enqueue the import app on this admin page only, and load its JavaScript
+	 * Enqueues the import app on this admin page only, and loads its JavaScript
 	 * translations with wp_set_script_translations().
 	 *
 	 * @param string $hook Current admin page hook suffix.
@@ -1196,7 +1222,7 @@ final class MarkdownImportPage {
 	}
 
 	/**
-	 * Render the import page.
+	 * Renders the import page.
 	 *
 	 * @return void
 	 */
@@ -1267,8 +1293,8 @@ final class MarkdownImportPage {
 				<?php if ( $bundle ) : ?>
 					<div class="living-handbook-import__panel" id="lh-panel-bundle" role="tabpanel" aria-labelledby="lh-tab-bundle" hidden>
 						<form method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-							<input type="hidden" name="action" value="living_handbook_import_bundle">
-							<?php wp_nonce_field( 'living_handbook_import_bundle' ); ?>
+							<input type="hidden" name="action" value="<?php echo esc_attr( HandbookImport::ACTION ); ?>">
+							<?php wp_nonce_field( HandbookImport::ACTION ); ?>
 							<label class="screen-reader-text" for="lh-bundle-file"><?php esc_html_e( 'Bundle file', 'living-handbook' ); ?></label>
 							<input type="file" id="lh-bundle-file" name="bundle" accept=".zip">
 							<p class="description"><?php esc_html_e( 'A bundle exported from another site running the plugin. Nothing is ever deleted, and a page marked as protected is never overwritten.', 'living-handbook' ); ?></p>

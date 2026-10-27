@@ -70,7 +70,7 @@ final class Plugin {
 	private static ?Plugin $instance = null;
 
 	/**
-	 * Return the shared instance.
+	 * Returns the shared instance.
 	 *
 	 * @return Plugin
 	 */
@@ -87,7 +87,7 @@ final class Plugin {
 	private function __construct() {}
 
 	/**
-	 * Register hooks and modules.
+	 * Registers the hooks of every module.
 	 *
 	 * @return void
 	 */
@@ -136,7 +136,7 @@ final class Plugin {
 	}
 
 	/**
-	 * Run version-keyed migrations after a plugin update.
+	 * Runs the version-keyed migrations after a plugin update.
 	 *
 	 * Updating a plugin replaces its files without running the activation hook,
 	 * so this compares the stored database version against the code version and
@@ -154,7 +154,7 @@ final class Plugin {
 		// the first one is still migrating, and on a busy site that is several
 		// at once. The migrations are idempotent, but a flush and a reschedule
 		// per concurrent request is waste, and two renames racing over the same
-		// rows is worse. Up to 0.76.0 the lock was add_option(), which writes
+		// rows is worse. Up to 0.75.1 the lock was add_option(), which writes
 		// with "ON DUPLICATE KEY UPDATE" and so let a second request in whenever
 		// the object cache listed the row as missing. Support\Lock takes it with
 		// an INSERT IGNORE instead, and a lock left behind by a request that died
@@ -242,13 +242,13 @@ final class Plugin {
 		$touched = array();
 		foreach ( $renames as $old_key => $new_key ) {
 			// Which pages are affected, before the rename makes them unfindable.
-			$ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration; no API renames a meta key.
 				$wpdb->prepare( "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s", $old_key )
 			);
 			if ( ! $ids ) {
 				continue;
 			}
-			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One statement per key instead of one per row; the cache is cleared below.
 				$wpdb->postmeta,
 				array( 'meta_key' => $new_key ),
 				array( 'meta_key' => $old_key )
@@ -265,9 +265,9 @@ final class Plugin {
 	}
 
 	/**
-	 * Activation callback: register the data model, seed the taxonomies, create
-	 * the overview page, schedule the GitHub sync, record the version, and
-	 * flush rewrite rules.
+	 * Activates the plugin: registers the data model, seeds the taxonomies,
+	 * creates the overview page, stores the default switches, schedules the
+	 * GitHub sync, records the version, and flushes the rewrite rules.
 	 *
 	 * A network activation is refused. WordPress runs this callback once, on
 	 * the main site, and then marks the plugin active on every site of the
@@ -311,7 +311,8 @@ final class Plugin {
 	}
 
 	/**
-	 * Deactivation callback.
+	 * Deactivates the plugin: unschedules the sync and drops the stored rewrite
+	 * rules.
 	 *
 	 * The rewrite rules have to lose the plugin's addresses. Flushing them here
 	 * did not do that: deactivation runs inside the request that still has the

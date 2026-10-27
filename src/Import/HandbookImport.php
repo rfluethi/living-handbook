@@ -1,6 +1,6 @@
 <?php
 /**
- * Import a handbook bundle produced by HandbookExport (Etappen 2 to 4).
+ * Import of a handbook bundle written by HandbookExport.
  *
  * @package LivingHandbook
  */
@@ -29,15 +29,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Reads a bundle ZIP back into handbook pages on this site.
  *
  * Matching: a page is recognised by the origin id it was exported with, then by
- * its bundle key, then by slug within the target handbook. What happens on a
+ * its bundle key, then by slug within the target handbook (an import as
+ * ordinary pages matches by origin id and bundle key only). What happens on a
  * match is the run rule the importer picks: skip (the safe default, never
  * overwrite), update, or always create. A page carrying the protected flag is
- * never overwritten regardless of the rule, and nothing is ever deleted.
+ * never overwritten regardless of the rule, nor is a page the importing user
+ * may not edit, and nothing is ever deleted.
  *
  * On update the local operational data stays: the feedback counts and the review
- * date, interval and reviewer belong to this site, so only title, content,
- * structure and terms are refreshed. On a first import those review fields do
- * come from the bundle.
+ * date, interval and reviewer belong to this site. What the bundle refreshes is
+ * the page itself: title, content, parent and order, terms and password, and
+ * the source with its sync URL, so a page that syncs from GitHub on the source
+ * site syncs here too. On a first import the review fields come from the bundle
+ * as well.
  *
  * Trust model: a bundle is a file from another site, so its content is treated as
  * external and sanitised, exactly like the Markdown import and the GitHub sync.
@@ -50,8 +54,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class HandbookImport {
 
-	private const ACTION = 'living_handbook_import_bundle';
+	/**
+	 * The admin-post action and nonce action of the upload form.
+	 */
+	public const ACTION = 'living_handbook_import_bundle';
 
+	/**
+	 * Transient prefix of the report shown after the redirect, per user.
+	 */
 	private const NOTICE_TRANSIENT = 'living_handbook_bundle_report_';
 
 	/**
@@ -94,8 +104,19 @@ final class HandbookImport {
 	 */
 	public const META_PROTECTED = '_lh_import_protected';
 
-	public const RULE_SKIP   = 'skip';
+	/**
+	 * Run rule: a page that already exists is left as it is.
+	 */
+	public const RULE_SKIP = 'skip';
+
+	/**
+	 * Run rule: a page that already exists is refreshed from the bundle.
+	 */
 	public const RULE_UPDATE = 'update';
+
+	/**
+	 * Run rule: every page of the bundle becomes a new page.
+	 */
 	public const RULE_CREATE = 'create';
 
 	/**
@@ -117,15 +138,14 @@ final class HandbookImport {
 	 *
 	 * The Markdown ZIP import's 100 MB was meant for text; a bundle carries the
 	 * PDFs and videos its pages link to, and a handbook with a few training
-	 * videos is past 100 MB, so bundles that 0.75.x exported and imported
-	 * without a limit were refused. A gigabyte holds that, and as those files
+	 * videos is past 100 MB. A gigabyte holds that, and as those files
 	 * are already compressed, the unpacked size of an honest bundle is close to
 	 * the uploaded one, which upload_max_filesize already bounds. What the limit
 	 * still stops is the archive that is small on upload and huge on reading.
 	 * Each file is read on its own, so the memory a bundle needs is its largest
 	 * file, not this total; that one is held to max_file_bytes().
 	 */
-	public const BUNDLE_MAX_TOTAL_BYTES = 1073741824;
+	public const BUNDLE_MAX_TOTAL_BYTES = GB_IN_BYTES;
 
 	/**
 	 * Post statuses a bundle may set, and the ones the export carries.
@@ -136,7 +156,7 @@ final class HandbookImport {
 	public const STATUSES = array( 'publish', 'future', 'draft', 'pending', 'private' );
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the upload handler and the report notice.
 	 *
 	 * @return void
 	 */
@@ -146,8 +166,10 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Whether the current user may import a bundle. Importing writes content and
-	 * can touch pages of other authors, so it needs the content-manager capability.
+	 * Returns whether the current user may import a bundle. Importing writes
+	 * content and can touch pages of other authors, so it needs the
+	 * content-manager capability; the target handbook and every page it would
+	 * change are checked on top of that.
 	 *
 	 * @return bool
 	 */
@@ -156,7 +178,7 @@ final class HandbookImport {
 	}
 
 	/**
-	 * The run rules, as value to label, for the form and for validation.
+	 * Returns the run rules, as value to label, for the form and for validation.
 	 *
 	 * @return array<string, string>
 	 */
@@ -169,7 +191,7 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Handle the upload: validate, import, store the report, and go back.
+	 * Handles the upload: validates, imports, stores the report, and goes back.
 	 *
 	 * @return void
 	 */
@@ -221,7 +243,7 @@ final class HandbookImport {
 		}
 
 		$manifest = json_decode( (string) $raw, true );
-		if ( ! is_array( $manifest ) || ! isset( $manifest['format'] ) || 'living-handbook-bundle' !== $manifest['format'] ) {
+		if ( ! is_array( $manifest ) || ! isset( $manifest['format'] ) || HandbookExport::FORMAT !== $manifest['format'] ) {
 			$zip->close();
 			$this->finish( array( 'error' => __( 'This file is not a Living Handbook bundle.', 'living-handbook' ) ) );
 		}
@@ -232,16 +254,15 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Check a bundle against the bundle limits before anything is read.
+	 * Checks a bundle against the bundle limits before anything is read.
 	 *
-	 * Up to 0.75.0 a bundle was read without any: the manifest and every media
+	 * Up to 0.75.1 a bundle was read without any: the manifest and every media
 	 * file were unpacked into memory as the archive named them, so a few
 	 * kilobytes of prepared ZIP could unpack to gigabytes. The limits are the
-	 * bundle's own, entry count and uncompressed total, each with its filter;
-	 * not the Markdown ZIP import's, which are sized for text files and refused
-	 * bundles with videos that the export had written without complaint. A
-	 * file too large to read does not refuse the bundle: it is left out when
-	 * it is reached, and the report names it (see read_bundle_file()).
+	 * bundle's own, entry count and uncompressed total, each with its filter,
+	 * and larger than the Markdown ZIP import's, which are sized for text
+	 * files. A file too large to read does not refuse the bundle: it is left
+	 * out when it is reached, and the report names it (see read_bundle_file()).
 	 *
 	 * Public and static so the bounds can be tested without an HTTP upload.
 	 *
@@ -356,7 +377,7 @@ final class HandbookImport {
 	}
 
 	/**
-	 * The largest bundle file this request reads, in bytes.
+	 * Returns the largest bundle file this request reads, in bytes.
 	 *
 	 * The smaller of 128 MB and a quarter of the memory still free. A quarter,
 	 * because a file is in memory several times on its way into the media
@@ -384,17 +405,18 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Import a decoded manifest. The media reader hands back the bytes of a file
+	 * Imports a decoded manifest. The media reader hands back the bytes of a file
 	 * inside the bundle, false when it is missing, or a WP_Error "too_large" when
 	 * it is not read. Keeping that a callable means the import logic does not
 	 * depend on ZipArchive and can be exercised directly in tests.
 	 *
-	 * @param array<string, mixed> $manifest     Decoded manifest.
-	 * @param callable             $media_reader Returns the bytes of a bundle file, false, or a "too_large" WP_Error.
-	 * @param string               $rule         Run rule.
-	 * @param int                  $chosen       Chosen target handbook term ID, or 0 for the bundle's own.
-	 * @param bool                 $as_pages     Create ordinary WordPress pages instead of handbook pages.
-	 * @return array<string, mixed>
+	 * @param array<string, mixed>                      $manifest     Decoded manifest.
+	 * @param callable(string): (string|false|WP_Error) $media_reader Returns the bytes of a bundle file, false, or a "too_large" WP_Error.
+	 * @param string                                    $rule         Run rule.
+	 * @param int                                       $chosen       Chosen target handbook term ID, or 0 for the bundle's own.
+	 * @param bool                                      $as_pages     Create ordinary WordPress pages instead of handbook pages.
+	 * @return array<string, mixed> The counts (created, updated, skipped, protected, refused, and the same
+	 *                              under "paths") and the notes, or an "error" alone.
 	 */
 	public function import_manifest( array $manifest, callable $media_reader, string $rule, int $chosen = 0, bool $as_pages = false ): array {
 		$this->as_pages = $as_pages;
@@ -729,13 +751,13 @@ final class HandbookImport {
 	 * Sideload the bundle's media and return a map of the original URL to the new
 	 * one, so page content can be pointed at this site's copies.
 	 *
-	 * A file that does not arrive is named in the report. Until 0.76.0 it was
+	 * A file that does not arrive is named in the report. Up to 0.75.1 it was
 	 * dropped without a word, and the page kept pointing at the old site, which
 	 * nobody notices until that site is gone.
 	 *
-	 * @param array<string, mixed> $manifest     Decoded manifest.
-	 * @param callable             $media_reader Returns the bytes of a bundle file, false, or a "too_large" WP_Error.
-	 * @param array<string, mixed> $report       Report (out).
+	 * @param array<string, mixed>                      $manifest     Decoded manifest.
+	 * @param callable(string): (string|false|WP_Error) $media_reader Returns the bytes of a bundle file, false, or a "too_large" WP_Error.
+	 * @param array<string, mixed>                      $report       Report (out).
 	 * @return array<string, string>
 	 */
 	private function import_media( array $manifest, callable $media_reader, array &$report ): array {
@@ -1118,7 +1140,7 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Show the report of the last import once, on the import screen.
+	 * Shows the report of the last import once, on the import screen.
 	 *
 	 * @return void
 	 */
@@ -1169,7 +1191,7 @@ final class HandbookImport {
 		printf(
 			'<div class="notice notice-success"><p>%1$s</p>%2$s</div>',
 			esc_html( $summary ),
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html above.
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built from esc_html() above.
 			'' !== $notes ? '<ul style="list-style:disc;margin-left:1.5em;">' . $notes . '</ul>' : ''
 		);
 	}

@@ -35,8 +35,10 @@ define( 'LIVING_HANDBOOK_URL', plugin_dir_url( __FILE__ ) );
  * additionally require three Composer libraries (league/commonmark, symfony/yaml,
  * enshrined/svg-sanitize), which ship in vendor/ together with their own
  * dependencies, all under GPL-compatible licenses (BSD-3-Clause, MIT,
- * GPL-2.0-or-later); MarkdownConverter loads vendor/autoload.php on demand. If
- * vendor/ is absent, only import and sync are disabled.
+ * GPL-2.0-or-later). Support\Vendored loads vendor/autoload.php on demand, and
+ * the release build moves the libraries into LivingHandbook\Vendor\ with
+ * PHP-Scoper, so another plugin's copy cannot stand in for them. If vendor/ is
+ * absent, only import and sync are disabled.
  */
 spl_autoload_register(
 	static function ( string $class_name ): void {

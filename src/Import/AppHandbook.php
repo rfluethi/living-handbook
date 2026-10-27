@@ -48,7 +48,7 @@ final class AppHandbook {
 	private const PATH_DOCS_EN = 'docs/technical/en';
 
 	/**
-	 * What can be loaded, in the order it is offered.
+	 * Returns what can be loaded, in the order it is offered.
 	 *
 	 * Four entries rather than one, because the plugin ships four handbooks and
 	 * the import used to pick one of them for you, from the admin language. That
@@ -57,32 +57,27 @@ final class AppHandbook {
 	 * documentation could not be loaded at all.
 	 *
 	 * A folder that is not in this build is left out rather than offered and then
-	 * failing. A source checkout without a `composer install` of the docs, or a
-	 * ZIP built before 0.67.0, simply shows fewer entries.
+	 * failing: a build without the docs/ folder simply shows fewer entries.
 	 *
-	 * @return array<string, array{label: string, dir: string, german: bool}>
+	 * @return array<string, array{label: string, dir: string}>
 	 */
 	public static function entries(): array {
 		$all = array(
 			'user-de' => array(
-				'label'  => __( 'User handbook (German)', 'living-handbook' ),
-				'dir'    => self::PATH_DE,
-				'german' => true,
+				'label' => __( 'User handbook (German)', 'living-handbook' ),
+				'dir'   => self::PATH_DE,
 			),
 			'user-en' => array(
-				'label'  => __( 'User handbook (English)', 'living-handbook' ),
-				'dir'    => self::PATH_EN,
-				'german' => false,
+				'label' => __( 'User handbook (English)', 'living-handbook' ),
+				'dir'   => self::PATH_EN,
 			),
 			'docs-de' => array(
-				'label'  => __( 'Technical documentation (German)', 'living-handbook' ),
-				'dir'    => self::PATH_DOCS_DE,
-				'german' => true,
+				'label' => __( 'Technical documentation (German)', 'living-handbook' ),
+				'dir'   => self::PATH_DOCS_DE,
 			),
 			'docs-en' => array(
-				'label'  => __( 'Technical documentation (English)', 'living-handbook' ),
-				'dir'    => self::PATH_DOCS_EN,
-				'german' => false,
+				'label' => __( 'Technical documentation (English)', 'living-handbook' ),
+				'dir'   => self::PATH_DOCS_EN,
 			),
 		);
 
@@ -99,8 +94,8 @@ final class AppHandbook {
 	}
 
 	/**
-	 * The entry preselected in the form: the user handbook in the admin language,
-	 * or the first one there is.
+	 * Returns the entry preselected in the form: the user handbook in the admin
+	 * language, or the first one there is.
 	 *
 	 * @return string The key, or '' when nothing is bundled.
 	 */
@@ -119,8 +114,8 @@ final class AppHandbook {
 	}
 
 	/**
-	 * Whether the app handbook can be offered: the user may import, and there is
-	 * either something bundled or a GitHub override to load from.
+	 * Returns whether the app handbook can be offered: the user may import, and
+	 * there is either something bundled or a GitHub override to load from.
 	 *
 	 * @return bool
 	 */
@@ -129,7 +124,7 @@ final class AppHandbook {
 	}
 
 	/**
-	 * The bundled folder of one entry, or of the default entry.
+	 * Returns the bundled folder of one entry, or of the default entry.
 	 *
 	 * @param string $key Entry key; empty for the default.
 	 * @return string Absolute path, or ''.
@@ -144,8 +139,8 @@ final class AppHandbook {
 	}
 
 	/**
-	 * A GitHub tree URL to load from instead of the bundled folder, or '' to use
-	 * the bundle. Empty by default: the app handbook ships with the plugin.
+	 * Returns a GitHub tree URL to load from instead of the bundled folder, or ''
+	 * to use the bundle. Empty by default: the app handbook ships with the plugin.
 	 *
 	 * @return string The override URL, or ''.
 	 */
@@ -153,7 +148,7 @@ final class AppHandbook {
 		$locale = determine_locale();
 
 		/**
-		 * Filter the source the app handbook is loaded from. Return a
+		 * Filters the source the app handbook is loaded from. Return a
 		 * github.com/.../tree/<branch>/<path> URL to pull from GitHub instead of
 		 * the bundled folder, or '' (the default) to use the bundled copy.
 		 *
@@ -166,7 +161,7 @@ final class AppHandbook {
 	}
 
 	/**
-	 * Load the app handbook into a handbook, published straight away. It is
+	 * Loads the app handbook into a handbook, published straight away. It is
 	 * curated content, so its front-end visibility is governed by the handbook it
 	 * lands in, not by a draft status. A GitHub override is imported as a folder;
 	 * otherwise the bundled folder is imported from disk.
@@ -176,6 +171,9 @@ final class AppHandbook {
 	 * @param bool   $managed     Whether the pages stay tied to the shipped copy: locked in the
 	 *                            editor and refreshed by a later load. False loads them as
 	 *                            ordinary pages, free to edit, and they age from then on.
+	 *                            Ignored for a GitHub source from the
+	 *                            living_handbook_app_handbook_url filter: those pages are
+	 *                            always tied to their repository.
 	 * @return array<string, mixed>|WP_Error The pages on success, a WP_Error on failure.
 	 */
 	public static function load( int $handbook_id, string $key = '', bool $managed = true ) {
