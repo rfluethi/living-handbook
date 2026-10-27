@@ -2152,8 +2152,11 @@ final class GitSync {
 			// The finalize pass writes the post again; guard against re-entering
 			// this save handler (the nonce is still present in this request).
 			self::$is_syncing = true;
-			Postprocessor::finalize( array( $post_id ) );
-			self::$is_syncing = false;
+			try {
+				Postprocessor::finalize( array( $post_id ) );
+			} finally {
+				self::$is_syncing = false;
+			}
 		}
 	}
 
@@ -2518,16 +2521,22 @@ final class GitSync {
 			$update['post_title'] = $title;
 		}
 
+		// The guard comes down however the write ends. Up to 0.75.1 a write that
+		// threw left it up, and every later save and sync in the request
+		// returned without doing anything.
 		self::$is_syncing = true;
-		wp_update_post( $update );
-		Postprocessor::apply_transport( $post_id, (array) $result['transport'] );
-		// Re-rendering brings the internal .md links back raw, so resolve them to
-		// their pages again. While an import is still creating pages, a link with
-		// no target is left alone rather than turned into text: its page may be
-		// two entries further down the work list, and the closing pass is what
-		// decides. See Postprocessor::convert_md_links().
-		Postprocessor::convert_md_links( $post_id, ! self::$defer_links );
-		self::$is_syncing = false;
+		try {
+			wp_update_post( $update );
+			Postprocessor::apply_transport( $post_id, (array) $result['transport'] );
+			// Re-rendering brings the internal .md links back raw, so resolve them
+			// to their pages again. While an import is still creating pages, a link
+			// with no target is left alone rather than turned into text: its page
+			// may be two entries further down the work list, and the closing pass
+			// is what decides. See Postprocessor::convert_md_links().
+			Postprocessor::convert_md_links( $post_id, ! self::$defer_links );
+		} finally {
+			self::$is_syncing = false;
+		}
 	}
 
 	/**

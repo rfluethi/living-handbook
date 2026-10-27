@@ -130,6 +130,43 @@ final class StaticExportHardeningTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A render that throws leaves no export filter and no swapped query behind.
+	 *
+	 * Up to 0.75.1 the filters an export page adds for its render, and the
+	 * query the template render puts in place of the main one, were taken down
+	 * only when the render returned. A block that threw left every later
+	 * permission check in the request answering for the export.
+	 *
+	 * @return void
+	 */
+	public function test_a_render_that_throws_cleans_up_after_itself(): void {
+		$term  = $this->handbook_with_a_page();
+		$query = $GLOBALS['wp_query'];
+
+		$throw = static function (): string {
+			throw new RuntimeException( 'block failed' );
+		};
+		add_filter( 'render_block_core/post-content', $throw, 5 );
+
+		// The pass dies before it can say where its archive is: whatever new
+		// file appears in the temp folder is this test's to remove.
+		$before = (array) glob( sys_get_temp_dir() . '/lh-site*' );
+		$thrown = false;
+		try {
+			$this->pass( array( 'handbook' => $term ) );
+		} catch ( RuntimeException $e ) {
+			$thrown = true;
+		}
+		remove_filter( 'render_block_core/post-content', $throw, 5 );
+		$this->files = array_merge( $this->files, array_diff( (array) glob( sys_get_temp_dir() . '/lh-site*' ), $before ) );
+
+		$this->assertTrue( $thrown, 'The test needs a render that throws.' );
+		$this->assertFalse( has_filter( 'living_handbook_can_view_post' ), 'The export-only access rule is gone.' );
+		$this->assertFalse( has_filter( 'render_block_core/post-content' ), 'So is the hook that catches the page text.' );
+		$this->assertSame( $query, $GLOBALS['wp_query'], 'And the main query is the one that was there before.' );
+	}
+
+	/**
 	 * Run an export to the end and open the archive.
 	 *
 	 * @param int    $term  Handbook.

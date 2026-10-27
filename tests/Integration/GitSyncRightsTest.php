@@ -17,6 +17,8 @@ namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
+use ReflectionMethod;
+use ReflectionProperty;
 use RuntimeException;
 use WPDieException;
 use WP_REST_Request;
@@ -205,6 +207,39 @@ final class GitSyncRightsTest extends WP_UnitTestCase {
 		$this->assertSame( '', get_post_meta( $post_id, GitSync::META_URL, true ), 'So does the address.' );
 		$this->assertFalse( current_user_can( 'edit_post_meta', $post_id, GitSync::META_SOURCE ), 'No other write path lets it through either.' );
 		$this->assertSame( array(), $this->requested, 'Nothing is pulled.' );
+	}
+
+	/**
+	 * A write that throws does not leave the sync believing it is still busy.
+	 *
+	 * Up to 0.75.1 the guard against re-entering the save handler was set
+	 * around the write and cleared only when the write returned. Once a write
+	 * threw, every later save and sync in the request returned at once.
+	 *
+	 * @return void
+	 */
+	public function test_a_write_that_throws_clears_the_sync_guard(): void {
+		$post_id = $this->own_draft( 'administrator' );
+		$throw   = static function () {
+			throw new RuntimeException( 'write failed' );
+		};
+		add_filter( 'wp_insert_post_data', $throw );
+
+		$render = new ReflectionMethod( GitSync::class, 'render_markdown_into_post' );
+		$render->setAccessible( true );
+		$thrown = false;
+		try {
+			$render->invoke( new GitSync(), $post_id, "# Title\n\nBody.\n" );
+		} catch ( RuntimeException $e ) {
+			$thrown = true;
+		}
+		remove_filter( 'wp_insert_post_data', $throw );
+
+		$guard = new ReflectionProperty( GitSync::class, 'is_syncing' );
+		$guard->setAccessible( true );
+
+		$this->assertTrue( $thrown, 'The test needs a write that throws.' );
+		$this->assertFalse( $guard->getValue(), 'The guard is down again.' );
 	}
 
 	/**

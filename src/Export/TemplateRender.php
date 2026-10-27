@@ -210,16 +210,20 @@ final class TemplateRender {
 		$GLOBALS['wp_query']     = $query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restored below.
 		$GLOBALS['wp_the_query'] = $query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restored below.
 
+		// Restored however the render ends: a block that throws must not leave
+		// the rest of the request running against this one-page query.
 		$html = '';
-		if ( $query->have_posts() ) {
-			$query->the_post();
-			$html = do_blocks( $markup );
-			wp_reset_postdata();
+		try {
+			if ( $query->have_posts() ) {
+				$query->the_post();
+				$html = do_blocks( $markup );
+				wp_reset_postdata();
+			}
+		} finally {
+			$GLOBALS['wp_query']     = $previous_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
+			$GLOBALS['wp_the_query'] = $previous_the; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
+			$GLOBALS['post']         = $previous_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
 		}
-
-		$GLOBALS['wp_query']     = $previous_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
-		$GLOBALS['wp_the_query'] = $previous_the; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
-		$GLOBALS['post']         = $previous_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
 
 		return $html;
 	}

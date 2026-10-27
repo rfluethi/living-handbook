@@ -468,46 +468,10 @@ final class StaticSite {
 		$index = (array) $state['index'];
 		$path  = SiteRenderer::path_for( (int) $post->ID, $index );
 
-		// The template first: it puts the blocks where this site put them. The
-		// hand-built page stays as the fallback for an installation whose
-		// templates cannot be read, so an export is never empty for want of one.
-		//
-		// The search index wants the page's own text, not the whole template:
-		// up to 0.75.1 it indexed the rendered template, navigation included,
-		// so a word from the menu found every page. The post content block
-		// is caught on its way through the render instead of rendering the
-		// page a second time; the last one wins, because a post content block
-		// nested in the content finishes before the one around it.
-		$body    = '';
-		$capture = static function ( $html ) use ( &$body ) {
-			$body = (string) $html;
-			return $html;
-		};
-		// Whatever the render lists, the navigation above all, lists only the
-		// pages that are in the export. plan() leaves out pages the reader may
-		// see on the site but that do not work without it, a password-protected
-		// one for instance; up to this fix the navigation of every exported page
-		// still named such a page and linked it to the live site.
-		$only_exported = static function ( $allowed, $post_id ) use ( $index ) {
-			if ( $allowed && ! isset( $index[ (int) $post_id ] ) && Handbook::POST_TYPE === get_post_type( (int) $post_id ) ) {
-				return false;
-			}
-			return $allowed;
-		};
-		add_filter( 'living_handbook_can_view_post', $only_exported, PHP_INT_MAX, 2 );
-		add_filter( 'render_block_core/post-content', $capture );
-		$content = TemplateRender::render( $post, (string) $state['template'] );
-		remove_filter( 'render_block_core/post-content', $capture );
-
-		$from_template = '' !== trim( $content );
-		if ( ! $from_template ) {
-			$content = self::render_content( $post );
-			$body    = $content;
-		} elseif ( '' === trim( $body ) ) {
-			// An edited template without a post content block.
-			$body = self::render_content( $post );
-		}
-		remove_filter( 'living_handbook_can_view_post', $only_exported, PHP_INT_MAX );
+		$rendered      = self::render_page( $post, $index, (string) $state['template'] );
+		$content       = $rendered['content'];
+		$body          = $rendered['body'];
+		$from_template = $rendered['from_template'];
 
 		$content = self::rewrite( $zip, $content, $path, $links );
 
@@ -553,6 +517,77 @@ final class StaticSite {
 		if ( is_string( $entry ) ) {
 			file_put_contents( self::entries_file( $state ), $entry . "\n", FILE_APPEND ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a working file beside the export archive, in the temp folder.
 		}
+	}
+
+	/**
+	 * Renders one page, through the template where there is one.
+	 *
+	 * The template first: it puts the blocks where this site put them. The
+	 * hand-built page stays as the fallback for an installation whose templates
+	 * cannot be read, so an export is never empty for want of one.
+	 *
+	 * The search index wants the page's own text, not the whole template: up to
+	 * 0.75.1 it indexed the rendered template, navigation included, so a word
+	 * from the menu found every page. The post content block is caught on its
+	 * way through the render instead of rendering the page a second time; the
+	 * last one wins, because a post content block nested in the content
+	 * finishes before the one around it.
+	 *
+	 * Whatever the render lists, the navigation above all, lists only the pages
+	 * that are in the export. plan() leaves out pages the reader may see on the
+	 * site but that do not work without it, a password-protected one for
+	 * instance; up to 0.75.1 the navigation of every exported page still named
+	 * such a page and linked it to the live site.
+	 *
+	 * Both filters come off again however the render ends. Up to 0.75.1 a
+	 * block that threw left them on, and every later permission check in the
+	 * request answered for the export.
+	 *
+	 * @param WP_Post                          $post     The page.
+	 * @param array<int, array<string, mixed>> $index    The export index.
+	 * @param string                           $template The prepared template markup.
+	 * @return array{content: string, body: string, from_template: bool}
+	 */
+	private static function render_page( WP_Post $post, array $index, string $template ): array {
+		$body    = '';
+		$capture = static function ( $html ) use ( &$body ) {
+			$body = (string) $html;
+			return $html;
+		};
+
+		$only_exported = static function ( $allowed, $post_id ) use ( $index ) {
+			if ( $allowed && ! isset( $index[ (int) $post_id ] ) && Handbook::POST_TYPE === get_post_type( (int) $post_id ) ) {
+				return false;
+			}
+			return $allowed;
+		};
+
+		add_filter( 'living_handbook_can_view_post', $only_exported, PHP_INT_MAX, 2 );
+		try {
+			add_filter( 'render_block_core/post-content', $capture );
+			try {
+				$content = TemplateRender::render( $post, $template );
+			} finally {
+				remove_filter( 'render_block_core/post-content', $capture );
+			}
+
+			$from_template = '' !== trim( $content );
+			if ( ! $from_template ) {
+				$content = self::render_content( $post );
+				$body    = $content;
+			} elseif ( '' === trim( $body ) ) {
+				// An edited template without a post content block.
+				$body = self::render_content( $post );
+			}
+		} finally {
+			remove_filter( 'living_handbook_can_view_post', $only_exported, PHP_INT_MAX );
+		}
+
+		return array(
+			'content'       => $content,
+			'body'          => $body,
+			'from_template' => $from_template,
+		);
 	}
 
 	/**
@@ -615,11 +650,11 @@ final class StaticSite {
 	}
 
 	/**
-	 * The rendered content of a page, as the front end would show it.
+	 * Returns the rendered content of a page, as the front end would show it.
 	 *
-	 * The_content is applied with the page set up as the current post, so the
-	 * filters that build the reading experience see what they expect: the heading
-	 * anchors this export's table of contents is built from are added there.
+	 * The content filters (the_content) run with the page set up as the current
+	 * post, so the filters that build the reading experience see what they
+	 * expect.
 	 *
 	 * @param WP_Post $post The page.
 	 * @return string
@@ -633,18 +668,19 @@ final class StaticSite {
 		$GLOBALS['post'] = $post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restored below; the content filters read it.
 		setup_postdata( $post );
 
-		$content = (string) apply_filters( 'the_content', $post->post_content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core hook, applied on purpose.
+		try {
+			$content = (string) apply_filters( 'the_content', $post->post_content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core hook, applied on purpose.
 
-		// The anchors are added explicitly, because the filter that normally does
-		// it asks whether it is inside the loop of a handbook page, and this is a
-		// back-end request. Without them the table of contents would list headings
-		// it cannot point at.
-
-		$content = Headings::anchor( $content );
-
-		wp_reset_postdata();
-		$wp_query        = $previous_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
-		$GLOBALS['post'] = $previous_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
+			// The anchors are added explicitly, because the filter that normally
+			// does it asks whether it is inside the loop of a handbook page, and
+			// this is a back-end request. Without them the table of contents would
+			// list headings it cannot point at.
+			$content = Headings::anchor( $content );
+		} finally {
+			wp_reset_postdata();
+			$wp_query        = $previous_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
+			$GLOBALS['post'] = $previous_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
+		}
 
 		return $content;
 	}
