@@ -21,6 +21,7 @@ use LivingHandbook\Admin\ListScreen;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Settings;
 use LivingHandbook\Support\Lock;
+use LivingHandbook\Support\TimeBudget;
 use WP_Error;
 use WP_Post;
 use WP_Query;
@@ -917,8 +918,8 @@ final class GitSync {
 	 * @return array<string, mixed>|null
 	 */
 	private static function load_job( string $job ) {
-		$job = preg_replace( '/[^A-Za-z0-9]/', '', $job );
-		if ( ! is_string( $job ) || '' === $job ) {
+		$job = TimeBudget::job_id( $job );
+		if ( '' === $job ) {
 			return null;
 		}
 
@@ -957,17 +958,12 @@ final class GitSync {
 	 * @return float
 	 */
 	private static function time_budget(): float {
-		$budget = (float) self::IMPORT_BUDGET;
-
-		$limit = (float) ini_get( 'max_execution_time' );
-		if ( $limit > 0.0 ) {
-			$budget = min( $budget, max( 5.0, $limit * 0.6 ) );
-		}
+		$budget = TimeBudget::seconds( (float) self::IMPORT_BUDGET );
 
 		/**
-		 * Filter how long one pass of a folder import may take, in seconds.
+		 * Filters how long one pass of a folder import may take, in seconds.
 		 *
-		 * @param float $budget Seconds.
+		 * @param float $budget Seconds. Default 20, less where PHP's own limit is tight.
 		 */
 		return (float) apply_filters( 'living_handbook_import_time_budget', $budget );
 	}
