@@ -99,6 +99,21 @@ final class GitSync {
 	private const META_APP = '_lh_app_handbook';
 
 	/**
+	 * How many left-over pages a load names one by one before it counts the
+	 * rest. A result screen with a hundred lines is not read.
+	 */
+	private const MAX_NOTED_PAGES = 20;
+
+	/**
+	 * Local pages a load found by their source path but left alone, because
+	 * they were loaded without the connection to the shipped copy. Collected
+	 * by create_local_page() for the run of import_local_folder() in progress.
+	 *
+	 * @var array<int, int>
+	 */
+	private array $kept_local = array();
+
+	/**
 	 * How many files one folder import may create. A guard against pointing the
 	 * import at a repository root and waiting for a thousand pages.
 	 */
@@ -1055,11 +1070,12 @@ final class GitSync {
 			);
 		}
 
-		$plan      = self::plan_folder_import( $files, '' );
-		$pages     = array();
-		$ids       = array();
-		$folder_id = array( '' => 0 );
-		$auto      = 0;
+		$plan             = self::plan_folder_import( $files, '' );
+		$pages            = array();
+		$ids              = array();
+		$folder_id        = array( '' => 0 );
+		$auto             = 0;
+		$this->kept_local = array();
 
 		// Pages are created here and their links resolved below, once every page
 		// of the handbook exists. See self::$defer_links.
@@ -1076,6 +1092,10 @@ final class GitSync {
 			}
 			$folder_id[ $folder['path'] ] = $post_id;
 			$auto                        += 10;
+			if ( in_array( $post_id, $this->kept_local, true ) ) {
+				// Left where its owner put it, see create_local_page().
+				continue;
+			}
 			$this->place( $post_id, self::parent_id_for( $folder_id, self::dirname_of( $folder['path'] ) ), $auto );
 			if ( '' !== $folder['index'] ) {
 				update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $folder['index'] );
@@ -1090,6 +1110,9 @@ final class GitSync {
 				continue;
 			}
 			$auto += 10;
+			if ( in_array( $post_id, $this->kept_local, true ) ) {
+				continue;
+			}
 			$this->place( $post_id, self::parent_id_for( $folder_id, $file['folder'] ), $auto );
 			update_post_meta( $post_id, Postprocessor::META_SOURCE_PATH, $file['path'] );
 			$ids[]   = $post_id;
@@ -1108,11 +1131,87 @@ final class GitSync {
 			);
 		}
 
+		$notes = array_merge( $notes, $this->reload_notes( $handbook_id, $ids ) );
+
 		$result = array( 'pages' => $pages );
 		if ( array() !== $notes ) {
 			$result['notes'] = $notes;
 		}
 		return $result;
+	}
+
+	/**
+	 * What a load of the shipped handbook left alone, in words.
+	 *
+	 * Two kinds of page. Those loaded without the connection to the source,
+	 * which create_local_page() no longer overwrites. And those still tied to
+	 * the shipped copy that this load did not touch: their file was removed or
+	 * renamed in this version. Up to 0.75.1 they stayed published, locked and in
+	 * the navigation without anybody being told (decided on 2026-10-27: name
+	 * them, delete nothing). They are found in the target handbook only; one
+	 * handbook holds one shipped entry, because the source paths of two entries
+	 * would collide in it anyway.
+	 *
+	 * @param int        $handbook_id Target handbook, 0 for none.
+	 * @param array<int> $touched     Pages written by this load.
+	 * @return array<int, string>
+	 */
+	private function reload_notes( int $handbook_id, array $touched ): array {
+		$notes = array();
+
+		foreach ( array_unique( $this->kept_local ) as $post_id ) {
+			$notes[] = sprintf(
+				/* translators: %s: page title. */
+				__( '"%s" was loaded without the connection to the source and may have been edited since, so it was left as it is. To get the current version, move it to the trash and load the handbook again.', 'living-handbook' ),
+				get_the_title( $post_id )
+			);
+		}
+		$this->kept_local = array();
+
+		if ( $handbook_id <= 0 ) {
+			return $notes;
+		}
+
+		$tied  = get_posts(
+			AccessController::internal(
+				array(
+					'post_type'      => Handbook::POST_TYPE,
+					'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_key'       => self::META_APP, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+						array(
+							'taxonomy'         => Handbooks::TAXONOMY,
+							'field'            => 'term_id',
+							'terms'            => $handbook_id,
+							'include_children' => false,
+						),
+					),
+				)
+			)
+		);
+		$stale = array_values( array_diff( array_map( 'intval', $tied ), array_map( 'intval', $touched ) ) );
+
+		$shown = array_slice( $stale, 0, self::MAX_NOTED_PAGES );
+		foreach ( $shown as $post_id ) {
+			$notes[] = sprintf(
+				/* translators: %s: page title. */
+				__( '"%s" is no longer part of the shipped handbook. It was left as it is; delete it if you no longer need it.', 'living-handbook' ),
+				get_the_title( $post_id )
+			);
+		}
+		if ( count( $stale ) > count( $shown ) ) {
+			$notes[] = sprintf(
+				/* translators: %d: number of further pages not listed. */
+				_n( '… and %d more page that is no longer part of the shipped handbook.', '… and %d more pages that are no longer part of the shipped handbook.', count( $stale ) - count( $shown ), 'living-handbook' ),
+				count( $stale ) - count( $shown )
+			);
+		}
+
+		return $notes;
 	}
 
 	/**
@@ -1580,6 +1679,16 @@ final class GitSync {
 		$post_id = self::find_local_by_path( $rel_path, $handbook_id );
 		if ( $post_id > 0 && ! current_user_can( 'edit_post', $post_id ) ) {
 			$post_id = 0;
+		}
+		// A page loaded without the connection to the source carries no marker:
+		// it was handed over as an ordinary page, and somebody may have edited it
+		// since. Up to 0.75.1 a later load found it by its path all the same and
+		// wrote the shipped text over those edits. Decided on 2026-10-27: such a
+		// page is left alone, and the load says so. It is still returned, so the
+		// pages below it keep their parent and links to it still resolve.
+		if ( $post_id > 0 && '1' !== (string) get_post_meta( $post_id, self::META_APP, true ) ) {
+			$this->kept_local[] = $post_id;
+			return $post_id;
 		}
 		if ( 0 === $post_id ) {
 			$inserted = wp_insert_post(
