@@ -351,6 +351,51 @@ final class MigrationTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A second run as ordinary pages finds the pages of the first one, so the
+	 * run rules hold here too: skip leaves the page alone, update refreshes it,
+	 * and neither makes a second draft.
+	 *
+	 * @return void
+	 */
+	public function test_a_second_import_as_pages_finds_the_first_ones_pages(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$run = function ( array $manifest, string $rule ): array {
+			return ( new HandbookImport() )->import_manifest(
+				$manifest,
+				static function ( string $file ) {
+					unset( $file );
+					return false;
+				},
+				$rule,
+				0,
+				true
+			);
+		};
+
+		$this->assertSame( 1, $run( $this->manifest(), HandbookImport::RULE_SKIP )['created'] );
+
+		$again = $run( $this->manifest(), HandbookImport::RULE_SKIP );
+		$this->assertSame( 0, $again['created'], 'Skip does not create a second draft.' );
+		$this->assertSame( 1, $again['skipped'] );
+
+		$changed                         = $this->manifest();
+		$changed['pages'][0]['content'] = '<!-- wp:paragraph --><p>Changed.</p><!-- /wp:paragraph -->';
+		$updated                         = $run( $changed, HandbookImport::RULE_UPDATE );
+		$this->assertSame( 1, $updated['updated'] );
+		$this->assertSame( 0, $updated['created'] );
+
+		$pages = get_posts(
+			array(
+				'post_type'   => 'page',
+				'post_status' => 'any',
+				'numberposts' => -1,
+			)
+		);
+		$this->assertCount( 1, $pages, 'One page, however often it is imported.' );
+		$this->assertStringContainsString( 'Changed.', $pages[0]->post_content );
+	}
+
+	/**
 	 * And without that switch nothing changes: the same bundle still becomes
 	 * handbook pages with their handbook, their terms and their review data.
 	 *

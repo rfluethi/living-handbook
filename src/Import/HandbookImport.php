@@ -82,6 +82,9 @@ final class HandbookImport {
 	 * importing it, which is the one mistake in this direction that cannot be
 	 * taken back.
 	 *
+	 * The run rules apply as for handbook pages: a later run finds the pages it
+	 * created by their origin id and bundle key (see find_existing()).
+	 *
 	 * @var bool
 	 */
 	private bool $as_pages = false;
@@ -401,11 +404,13 @@ final class HandbookImport {
 			'updated'   => 0,
 			'skipped'   => 0,
 			'protected' => 0,
+			'refused'   => 0,
 			'paths'     => array(
 				'created'   => 0,
 				'updated'   => 0,
 				'skipped'   => 0,
 				'protected' => 0,
+				'refused'   => 0,
 			),
 			'notes'     => array(),
 		);
@@ -455,7 +460,51 @@ final class HandbookImport {
 			$this->import_paths( $paths, $term_id, $rule, $media_map, $key_to_id, $report );
 		}
 
+		$refused = (int) $report['refused'];
+		if ( $refused > 0 ) {
+			$report['notes'][] = sprintf(
+				/* translators: %d: number of pages. */
+				_n(
+					'%d page of the bundle already exists on this site, but you may not edit it, so it was left alone.',
+					'%d pages of the bundle already exist on this site, but you may not edit them, so they were left alone.',
+					$refused,
+					'living-handbook'
+				),
+				$refused
+			);
+		}
+		$refused_paths = (int) $report['paths']['refused'];
+		if ( $refused_paths > 0 ) {
+			$report['notes'][] = sprintf(
+				/* translators: %d: number of learning paths. */
+				_n(
+					'%d learning path of the bundle already exists on this site, but you may not edit it, so it was left alone.',
+					'%d learning paths of the bundle already exist on this site, but you may not edit them, so they were left alone.',
+					$refused_paths,
+					'living-handbook'
+				),
+				$refused_paths
+			);
+		}
+
 		return $report;
+	}
+
+	/**
+	 * Whether the current user may write to a post the import matched.
+	 *
+	 * The match is made over every post of the target handbook, which the user
+	 * may use, but that does not make every post in it theirs to change: a site
+	 * can keep single posts from a user through map_meta_cap or a role plugin.
+	 * Such a post is neither updated nor used as a parent or a lesson; the
+	 * import leaves it alone and says so. Without a logged-in user (WP-CLI) the
+	 * site itself is importing.
+	 *
+	 * @param int $post_id Matched post ID.
+	 * @return bool
+	 */
+	private static function may_write( int $post_id ): bool {
+		return 0 === get_current_user_id() || current_user_can( 'edit_post', $post_id );
 	}
 
 	/**
@@ -521,6 +570,10 @@ final class HandbookImport {
 
 		$existing = ( self::RULE_CREATE === $rule ) ? 0 : $this->find_existing( $origin, $key, $slug, $term_id, Training::POST_TYPE );
 
+		if ( $existing > 0 && ! self::may_write( $existing ) ) {
+			++$report['paths']['refused'];
+			return;
+		}
 		if ( $existing > 0 && '' !== (string) get_post_meta( $existing, self::META_PROTECTED, true ) ) {
 			++$report['paths']['protected'];
 			return;
@@ -760,8 +813,15 @@ final class HandbookImport {
 		$origin = isset( $page['origin_id'] ) ? (string) $page['origin_id'] : '';
 		$slug   = isset( $page['slug'] ) ? sanitize_title( (string) $page['slug'] ) : '';
 
-		$existing = ( self::RULE_CREATE === $rule ) ? 0 : $this->find_existing( $origin, $key, $slug, $term_id );
+		$post_type = $this->as_pages ? 'page' : Handbook::POST_TYPE;
+		$existing  = ( self::RULE_CREATE === $rule ) ? 0 : $this->find_existing( $origin, $key, $slug, $term_id, $post_type );
 
+		// Not mapped either: a page the user may not edit does not become the
+		// parent of a page they import.
+		if ( $existing > 0 && ! self::may_write( $existing ) ) {
+			++$report['refused'];
+			return;
+		}
 		if ( $existing > 0 && '' !== (string) get_post_meta( $existing, self::META_PROTECTED, true ) ) {
 			++$report['protected'];
 			$key_to_id[ $key ] = $existing;
@@ -785,7 +845,7 @@ final class HandbookImport {
 		$parent_id  = ( '' !== $parent_key && isset( $key_to_id[ $parent_key ] ) ) ? $key_to_id[ $parent_key ] : 0;
 
 		$data = array(
-			'post_type'    => $this->as_pages ? 'page' : Handbook::POST_TYPE,
+			'post_type'    => $post_type,
 			'post_title'   => isset( $page['title'] ) ? sanitize_text_field( (string) $page['title'] ) : $slug,
 			'post_content' => (string) wp_slash( $content ),
 			'post_parent'  => $parent_id,
@@ -873,36 +933,54 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Find an existing page for a bundle entry within the target handbook: by
-	 * origin id, then bundle key, then slug.
+	 * Find an existing post for a bundle entry: by origin id, then bundle key,
+	 * then slug, within the target handbook.
+	 *
+	 * The lookup is marked internal, so it sees every post of the handbook
+	 * whatever the reader filters would show the importing user; whether the
+	 * user may write to what it finds is decided afterwards, on the post itself
+	 * (may_write()), not left to the back-end list filter, which would hide
+	 * such a post and so make the import create a second one.
+	 *
+	 * An import as ordinary pages has no handbook to look in. Its pages are
+	 * found by origin id and bundle key only, among the site's pages: a slug
+	 * alone would match any page of the site. Up to 0.75.1 they were looked for
+	 * among handbook pages and never found, so every run created new drafts
+	 * whatever the run rule said.
 	 *
 	 * @param string $origin    Origin id from the bundle.
 	 * @param string $key       Bundle key.
 	 * @param string $slug      Page slug.
-	 * @param int    $term_id   Target handbook term ID.
-	 * @param string $post_type Post type to look in: handbook pages, or learning paths.
+	 * @param int    $term_id   Target handbook term ID, 0 for an import as ordinary pages.
+	 * @param string $post_type Post type to look in: handbook pages, ordinary pages, or learning paths.
 	 * @return int Post ID, or 0.
 	 */
 	private function find_existing( string $origin, string $key, string $slug, int $term_id, string $post_type = Handbook::POST_TYPE ): int {
-		$base = array(
-			'post_type'      => $post_type,
-			'post_status'    => self::STATUSES,
-			'posts_per_page' => 1,
-			'fields'         => 'ids',
-			'no_found_rows'  => true,
+		$base = AccessController::internal(
+			array(
+				'post_type'      => $post_type,
+				'post_status'    => self::STATUSES,
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			)
+		);
+		if ( $term_id > 0 ) {
 			// Only the target handbook itself, not its child handbooks. With the
 			// default include_children an "update" run into a parent handbook
 			// matched a child handbook's page or path by origin, key or slug,
 			// overwrote it and moved it into the parent.
-			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			$base['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One lookup per imported entry, scoped to the target handbook.
 				array(
 					'taxonomy'         => Handbooks::TAXONOMY,
 					'field'            => 'term_id',
 					'terms'            => $term_id,
 					'include_children' => false,
 				),
-			),
-		);
+			);
+		} else {
+			$slug = '';
+		}
 
 		foreach ( array(
 			self::META_ORIGIN     => $origin,
@@ -915,8 +993,8 @@ final class HandbookImport {
 				array_merge(
 					$base,
 					array(
-						'meta_key'   => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-						'meta_value' => $value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+						'meta_key'   => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- The origin and the bundle key live only in post meta.
+						'meta_value' => $value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- See the meta key.
 					)
 				)
 			);

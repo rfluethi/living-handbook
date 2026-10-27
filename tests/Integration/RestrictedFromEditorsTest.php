@@ -458,6 +458,87 @@ final class RestrictedFromEditorsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A bundle of one page that claims to be an existing page by its origin.
+	 *
+	 * @param int    $existing The page the bundle claims to be.
+	 * @param string $text     Its new text.
+	 * @return array<string, mixed>
+	 */
+	private function bundle_for( int $existing, string $text ): array {
+		update_post_meta( $existing, HandbookImport::META_ORIGIN, 'https://elsewhere.example#' . $existing );
+		return array(
+			'format'   => 'living-handbook-bundle',
+			'version'  => 1,
+			'handbook' => array(
+				'slug' => 'team',
+				'name' => 'Team',
+			),
+			'pages'    => array(
+				array(
+					'key'       => 'shared',
+					'origin_id' => 'https://elsewhere.example#' . $existing,
+					'title'     => 'Shared',
+					'slug'      => 'shared',
+					'status'    => 'publish',
+					'content'   => '<!-- wp:paragraph --><p>' . $text . '</p><!-- /wp:paragraph -->',
+				),
+			),
+		);
+	}
+
+	/**
+	 * Run a bundle import into the team handbook with the update rule.
+	 *
+	 * @param array<string, mixed> $manifest Manifest.
+	 * @return array<string, mixed>
+	 */
+	private function update_team_from( array $manifest ): array {
+		return ( new HandbookImport() )->import_manifest(
+			$manifest,
+			static function ( string $file ) {
+				unset( $file );
+				return false;
+			},
+			HandbookImport::RULE_UPDATE,
+			$this->team
+		);
+	}
+
+	/**
+	 * A bundle update asks the page it found whether the editor may edit it,
+	 * so a page a site keeps from them is neither overwritten nor doubled:
+	 * the import leaves it alone and says so.
+	 *
+	 * @return void
+	 */
+	public function test_a_bundle_update_asks_the_page_itself(): void {
+		$page = $this->page( $this->admin, $this->team, 'Shared' );
+		wp_set_current_user( $this->editor );
+		$this->assertTrue( current_user_can( 'edit_post', $page ), 'precondition: an editor may edit a team page' );
+
+		add_filter(
+			'map_meta_cap',
+			static function ( $caps, $cap, $user_id, $args ) use ( $page ) {
+				unset( $user_id );
+				if ( 'edit_post' === $cap && isset( $args[0] ) && $page === (int) $args[0] ) {
+					return array( 'do_not_allow' );
+				}
+				return $caps;
+			},
+			10,
+			4
+		);
+
+		$report = $this->update_team_from( $this->bundle_for( $page, 'Overwritten' ) );
+
+		$this->assertSame( 0, $report['updated'], 'A page the site keeps from the editor is not overwritten.' );
+		$this->assertSame( 1, $report['refused'] );
+		$this->assertSame( 0, $report['created'], 'No second page either.' );
+		$this->assertStringNotContainsString( 'Overwritten', (string) get_post_field( 'post_content', $page ) );
+		$this->assertNotEmpty( $report['notes'] );
+	}
+
+	/**
 	 * Nor does a parent named in the transport block hang the page under a
 	 * page the editor may not edit. The same line still works for a page they
 	 * may edit.
