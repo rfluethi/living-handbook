@@ -14,6 +14,7 @@ namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Import\HandbookExport;
 use LivingHandbook\Import\HandbookImport;
+use LivingHandbook\Import\MarkdownImportPage;
 use WP_Term;
 use WP_UnitTestCase;
 
@@ -400,33 +401,50 @@ final class BundleTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A bundle is checked against the ZIP import's limits before it is read.
-	 * Up to 0.75.0 it had none, so a small prepared archive could unpack to
-	 * whatever its entries claimed.
+	 * A bundle is checked against its own limits before it is read. Up to
+	 * 0.75.0 it had none, so a small prepared archive could unpack to whatever
+	 * its entries claimed; the first limits were the Markdown ZIP import's,
+	 * sized for text, which refused bundles with videos that the export had
+	 * written without complaint. The refusal names the filter that changes it.
 	 *
 	 * @return void
 	 */
-	public function test_a_bundle_beyond_the_zip_limits_is_refused(): void {
+	public function test_a_bundle_beyond_the_bundle_limits_is_refused(): void {
 		$path = (string) tempnam( sys_get_temp_dir(), 'lh-test-bundle' );
 		$zip  = new \ZipArchive();
 		$zip->open( $path, \ZipArchive::CREATE | \ZipArchive::OVERWRITE );
 		$zip->addFromString( 'manifest.json', '{"format":"living-handbook-bundle"}' );
 		$zip->addFromString( 'media/1-big.pdf', str_repeat( 'x', 8192 ) );
 		$zip->close();
+		$zip->open( $path );
 
-		$limit = static function (): int {
+		$small = static function (): int {
 			return 4096;
 		};
-		add_filter( 'living_handbook_zip_max_bytes', $limit );
+		add_filter( 'living_handbook_zip_max_bytes', $small );
+		$past_zip_limit = HandbookImport::check_bounds( $zip );
+		remove_filter( 'living_handbook_zip_max_bytes', $small );
 
-		$zip->open( $path );
-		$reason = HandbookImport::check_bounds( $zip );
-		remove_filter( 'living_handbook_zip_max_bytes', $limit );
+		add_filter( 'living_handbook_bundle_max_bytes', $small );
+		$too_large = HandbookImport::check_bounds( $zip );
+		remove_filter( 'living_handbook_bundle_max_bytes', $small );
+
+		$one = static function (): int {
+			return 1;
+		};
+		add_filter( 'living_handbook_bundle_max_entries', $one );
+		$too_many = HandbookImport::check_bounds( $zip );
+		remove_filter( 'living_handbook_bundle_max_entries', $one );
+
 		$within = HandbookImport::check_bounds( $zip );
 		$zip->close();
 		wp_delete_file( $path );
 
-		$this->assertNotSame( '', $reason, 'Past the uncompressed total the bundle is refused.' );
-		$this->assertSame( '', $within, 'Under the default limit the same bundle passes.' );
+		$this->assertSame( '', $past_zip_limit, 'The Markdown ZIP limit does not apply to a bundle.' );
+		$this->assertStringContainsString( 'living_handbook_bundle_max_bytes', $too_large, 'Past the uncompressed total the bundle is refused, naming the filter.' );
+		$this->assertStringContainsString( 'living_handbook_bundle_max_entries', $too_many, 'Past the entry count the bundle is refused, naming the filter.' );
+		$this->assertSame( '', $within, 'Under the default limits the same bundle passes.' );
+		$this->assertGreaterThan( MarkdownImportPage::ZIP_MAX_TOTAL_BYTES, HandbookImport::BUNDLE_MAX_TOTAL_BYTES );
+		$this->assertGreaterThan( MarkdownImportPage::ZIP_MAX_ENTRIES, HandbookImport::BUNDLE_MAX_ENTRIES );
 	}
 }

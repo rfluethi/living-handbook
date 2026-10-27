@@ -70,8 +70,8 @@ final class MarkdownImportPage {
 	private const META_IMPORT_HASH = '_lh_import_hash';
 
 	/**
-	 * ZIP import limits, checked before the archive is read into memory. Public
-	 * so the bundle import applies the same ones.
+	 * ZIP import limits, checked before the archive is read into memory. The
+	 * bundle import has its own, see HandbookImport::BUNDLE_MAX_ENTRIES.
 	 */
 	public const ZIP_MAX_ENTRIES     = 2000;
 	public const ZIP_MAX_FILE_BYTES  = 5242880;  // 5 MB uncompressed per file.

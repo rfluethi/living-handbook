@@ -110,6 +110,35 @@ add_filter(
 );
 ```
 
+### `living_handbook_bundle_max_bytes`
+
+Filtert, auf wie viele Bytes ein Handbuch-Bündel (**Handbuch → Import**, Reiter **Bündel**) höchstens entpacken darf (Standard 1 GB). Das Bündel hat eigene Grenzen, nicht die des ZIP-Imports: Es trägt die PDFs und Videos mit, auf die seine Seiten verweisen, und der Export setzt keine Grenze. Wie `living_handbook_zip_max_bytes` ist das ein Schutz gegen ein Archiv, das beim Hochladen klein und beim Lesen riesig ist, keine Zusage über das, was der Server trägt. Jede Datei des Bündels wird einzeln gelesen; den Speicher bestimmt also die größte Datei, nicht diese Summe. Die hochgeladene Datei selbst bleibt durch `upload_max_filesize` und `post_max_size` begrenzt.
+
+Parameter:
+
+- `int $bytes` Die Standardgrenze in Bytes.
+
+Gib eine Ganzzahl zurück. Beispiel: die Grenze auf 4 GB anheben.
+
+```php
+add_filter(
+	'living_handbook_bundle_max_bytes',
+	function ( int $bytes ): int {
+		return 4 * GB_IN_BYTES;
+	}
+);
+```
+
+### `living_handbook_bundle_max_entries`
+
+Filtert, wie viele Einträge ein Handbuch-Bündel höchstens haben darf (Standard 20000). Ein Bündel ist das Manifest und ein Eintrag je Mediendatei, die seine Seiten verwenden.
+
+Parameter:
+
+- `int $entries` Die Standardgrenze.
+
+Gib eine Ganzzahl zurück.
+
 ### `living_handbook_app_handbook_url`
 
 Filtert, woher der Reiter **App-Handbuch** lädt. Der Standard ist ein leerer String und bedeutet „die mit dem Plugin ausgelieferte Kopie verwenden". Gib eine GitHub-tree-URL zurück, um stattdessen aus einem Repository zu laden: Ein Fork mit eigener Dokumentation richtet den Reiter so auf sein Repository, ohne das Plugin zu ändern, und jede Installation, die lieber den neuesten Stand direkt von GitHub zieht als die mitgelieferte Kopie, kann das ebenfalls.

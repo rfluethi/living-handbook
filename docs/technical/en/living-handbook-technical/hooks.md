@@ -110,6 +110,35 @@ add_filter(
 );
 ```
 
+### `living_handbook_bundle_max_bytes`
+
+Filters how many bytes a handbook bundle (**Handbook → Import**, tab **Bundle**) may unpack to (default 1 GB). A bundle has its own limits, not the ZIP import's: it carries the PDFs and videos its pages link to, and the export sets no limit. Like `living_handbook_zip_max_bytes`, this guards against an archive that is small on upload and huge on reading; it is not a promise about what the server can carry. Each file of the bundle is read on its own, so the memory it needs is set by its largest file, not by this total. The uploaded file itself stays bounded by `upload_max_filesize` and `post_max_size`.
+
+Parameters:
+
+- `int $bytes` The default limit in bytes.
+
+Return an integer. Example, raise the limit to 4 GB:
+
+```php
+add_filter(
+	'living_handbook_bundle_max_bytes',
+	function ( int $bytes ): int {
+		return 4 * GB_IN_BYTES;
+	}
+);
+```
+
+### `living_handbook_bundle_max_entries`
+
+Filters how many entries a handbook bundle may have (default 20000). A bundle is the manifest plus one entry per media file its pages use.
+
+Parameters:
+
+- `int $entries` The default limit.
+
+Return an integer.
+
 ### `living_handbook_app_handbook_url`
 
 Filters where the **App handbook** tab loads from. The default is an empty string, which means "use the copy bundled with the plugin". Return a GitHub tree URL to load from a repository instead: a fork with its own documentation points the tab at its repository this way, without editing the plugin, and any install that would rather pull the latest state from GitHub than the bundled copy can too.

@@ -203,6 +203,7 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 
 - A folder import covers subfolders, but at most 200 files in one go. If the limit is hit, import the remaining subfolders separately.
 - A ZIP is read within limits (at most 2000 entries, 5 MB per file, 100 MB uncompressed in total), so a prepared archive cannot exhaust the server's memory. The uncompressed total is adjustable in code through the `living_handbook_zip_max_bytes` filter (see [hooks.md](hooks.md)); the real ceiling stays the server's PHP upload and memory limits.
+- A handbook bundle has its own, higher limits (at most 20000 entries, 1 GB uncompressed), because it carries the PDFs and videos of its pages. Both are adjustable through `living_handbook_bundle_max_entries` and `living_handbook_bundle_max_bytes`.
 - The transport marker and its field labels are German.
 - Synced content is stored as rendered HTML, not editable blocks, because a cron job has no browser to convert HTML into blocks.
 - MkDocs admonitions (`!!! note`, `??? tip`) are converted to a blockquote led by the title, so the note stays set apart instead of collapsing into stray text. Other MkDocs-specific syntax still degrades to plain text: pymdownx tabs, for one, are not part of GitHub Flavored Markdown, so the converter does not understand them.

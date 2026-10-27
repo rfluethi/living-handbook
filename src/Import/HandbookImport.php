@@ -94,6 +94,35 @@ final class HandbookImport {
 	public const RULE_CREATE = 'create';
 
 	/**
+	 * Most entries a bundle may have, changeable with the
+	 * living_handbook_bundle_max_entries filter.
+	 *
+	 * A bundle is the manifest plus one entry per media file its pages use, and
+	 * the export sets no limit. The Markdown ZIP import's 2000 is sized for
+	 * text files; a handbook of a few hundred pages with several images each,
+	 * every image at the sizes its pages use, passes that on its own. 20000 is
+	 * ten times as many, few enough that going through the entry list stays
+	 * quick, and it still keeps out an archive of a million empty entries.
+	 */
+	public const BUNDLE_MAX_ENTRIES = 20000;
+
+	/**
+	 * Most bytes a bundle may unpack to, changeable with the
+	 * living_handbook_bundle_max_bytes filter.
+	 *
+	 * The Markdown ZIP import's 100 MB was meant for text; a bundle carries the
+	 * PDFs and videos its pages link to, and a handbook with a few training
+	 * videos is past 100 MB, so bundles that 0.75.x exported and imported
+	 * without a limit were refused. A gigabyte holds that, and as those files
+	 * are already compressed, the unpacked size of an honest bundle is close to
+	 * the uploaded one, which upload_max_filesize already bounds. What the limit
+	 * still stops is the archive that is small on upload and huge on reading.
+	 * Each file is read on its own, so the memory a bundle needs is its largest
+	 * file, not this total.
+	 */
+	public const BUNDLE_MAX_TOTAL_BYTES = 1073741824;
+
+	/**
 	 * Post statuses a bundle may set.
 	 */
 	private const STATUSES = array( 'publish', 'future', 'draft', 'pending', 'private' );
@@ -195,15 +224,16 @@ final class HandbookImport {
 	}
 
 	/**
-	 * Check a bundle against the ZIP import's limits before anything is read.
+	 * Check a bundle against the bundle limits before anything is read.
 	 *
 	 * Up to 0.75.0 a bundle was read without any: the manifest and every media
 	 * file were unpacked into memory as the archive named them, so a few
 	 * kilobytes of prepared ZIP could unpack to gigabytes. The limits are the
-	 * Markdown ZIP import's, entry count and uncompressed total, including the
-	 * living_handbook_zip_max_bytes filter. A per-file limit is not applied: a
-	 * bundle carries the PDFs and videos its pages link to, and those are
-	 * larger than any Markdown file.
+	 * bundle's own, entry count and uncompressed total, each with its filter;
+	 * not the Markdown ZIP import's, which are sized for text files and refused
+	 * bundles with videos that the export had written without complaint. A
+	 * per-file limit is not applied: a bundle carries the PDFs and videos its
+	 * pages link to, and those are larger than any Markdown file.
 	 *
 	 * Public and static so the bounds can be tested without an HTTP upload.
 	 *
@@ -211,27 +241,39 @@ final class HandbookImport {
 	 * @return string The reason it is refused, or '' when it is within bounds.
 	 */
 	public static function check_bounds( ZipArchive $zip ): string {
+		/**
+		 * Filters the most entries a handbook bundle may have.
+		 *
+		 * @param int $entries The default limit, BUNDLE_MAX_ENTRIES.
+		 */
+		$max_entries = (int) apply_filters( 'living_handbook_bundle_max_entries', self::BUNDLE_MAX_ENTRIES );
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- ZipArchive::$numFiles is a PHP core property.
 		$count = (int) $zip->numFiles;
-		if ( $count > MarkdownImportPage::ZIP_MAX_ENTRIES ) {
+		if ( $count > $max_entries ) {
 			return sprintf(
-				/* translators: %d: maximum number of entries. */
-				__( 'The bundle has too many entries (maximum is %d).', 'living-handbook' ),
-				MarkdownImportPage::ZIP_MAX_ENTRIES
+				/* translators: 1: maximum number of entries, 2: name of the filter that changes it. */
+				__( 'The bundle has too many entries (maximum is %1$d). The limit can be raised with the %2$s filter.', 'living-handbook' ),
+				$max_entries,
+				'living_handbook_bundle_max_entries'
 			);
 		}
 
-		/** This filter is documented in src/Import/MarkdownImportPage.php */
-		$max_total = (int) apply_filters( 'living_handbook_zip_max_bytes', MarkdownImportPage::ZIP_MAX_TOTAL_BYTES );
+		/**
+		 * Filters the most bytes a handbook bundle may unpack to.
+		 *
+		 * @param int $bytes The default limit, BUNDLE_MAX_TOTAL_BYTES.
+		 */
+		$max_total = (int) apply_filters( 'living_handbook_bundle_max_bytes', self::BUNDLE_MAX_TOTAL_BYTES );
 		$total     = 0;
 		for ( $i = 0; $i < $count; $i++ ) {
 			$stat   = $zip->statIndex( $i );
 			$total += is_array( $stat ) ? (int) $stat['size'] : 0;
 			if ( $total > $max_total ) {
 				return sprintf(
-					/* translators: %d: maximum uncompressed size in whole megabytes. */
-					__( 'The bundle is too large: the uncompressed contents exceed %d MB.', 'living-handbook' ),
-					(int) round( $max_total / MB_IN_BYTES )
+					/* translators: 1: maximum uncompressed size in whole megabytes, 2: name of the filter that changes it. */
+					__( 'The bundle is too large: the uncompressed contents exceed %1$d MB. The limit can be raised with the %2$s filter.', 'living-handbook' ),
+					(int) round( $max_total / MB_IN_BYTES ),
+					'living_handbook_bundle_max_bytes'
 				);
 			}
 		}
