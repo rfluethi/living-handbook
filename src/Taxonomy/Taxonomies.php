@@ -247,7 +247,8 @@ final class Taxonomies {
 	 * @internal Not part of the plugin's public API.
 	 *
 	 * @param string $taxonomy One of the plugin's taxonomies, the handbook grouping included.
-	 * @return array<string, string>
+	 * @return array<string, string> The labels, or an empty array (and a
+	 *                               _doing_it_wrong() notice) for any other name.
 	 */
 	public static function taxonomy_labels( string $taxonomy ): array {
 		switch ( $taxonomy ) {
@@ -326,7 +327,6 @@ final class Taxonomies {
 				);
 
 			case self::AUDIENCE:
-			default:
 				return array(
 					'name'              => __( 'Audiences', 'living-handbook' ),
 					'singular_name'     => __( 'Audience', 'living-handbook' ),
@@ -343,6 +343,21 @@ final class Taxonomies {
 					'parent_item'       => __( 'Parent audience', 'living-handbook' ),
 					'parent_item_colon' => __( 'Parent audience:', 'living-handbook' ),
 				);
+
+			default:
+				// Up to 0.75.1 any other name got the audience labels, so a typo
+				// labelled a taxonomy as audiences without a word. Core's generic
+				// labels are the honest fallback, and the notice says why.
+				_doing_it_wrong(
+					__METHOD__,
+					sprintf(
+						/* translators: %s: taxonomy name. */
+						esc_html__( '%s is not a taxonomy of the Living Handbook plugin.', 'living-handbook' ),
+						esc_html( $taxonomy )
+					),
+					'0.76.0'
+				);
+				return array();
 		}
 	}
 }

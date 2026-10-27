@@ -95,4 +95,16 @@ final class TaxonomyLabelsTest extends WP_UnitTestCase {
 		$this->assertFalse( method_exists( Taxonomies::class, 'labels' ), 'labels() took a plural and a singular up to 0.75.x.' );
 		$this->assertSame( 'Add new topic', Taxonomies::taxonomy_labels( Taxonomies::TOPIC )['add_new_item'] );
 	}
+
+	/**
+	 * A name that is not one of the plugin's taxonomies gets no labels and a
+	 * notice. Up to 0.75.1 it got the audience labels without a word.
+	 *
+	 * @return void
+	 */
+	public function test_an_unknown_taxonomy_gets_no_borrowed_labels(): void {
+		$this->setExpectedIncorrectUsage( Taxonomies::class . '::taxonomy_labels' );
+
+		$this->assertSame( array(), Taxonomies::taxonomy_labels( 'handbook_topcs' ) );
+	}
 }
