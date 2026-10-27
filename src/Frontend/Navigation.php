@@ -158,15 +158,20 @@ final class Navigation {
 	}
 
 	/**
-	 * Invalidate only when the changed post is a handbook page, so the generic
-	 * trashed_post and untrashed_post hooks (which fire for every post type) do
-	 * not bump the cache on unrelated content.
+	 * Bumps the cache version only when the changed post is a handbook page.
 	 *
-	 * @param int $post_id The changed post ID.
+	 * The generic trashed_post, untrashed_post and deleted_post hooks fire for
+	 * every post type, and an unrelated post must not retire the cache.
+	 *
+	 * @param int          $post_id The changed post ID.
+	 * @param WP_Post|null $post    The post, when the hook passes it. deleted_post
+	 *                              runs after the row is gone, so the type can
+	 *                              only be read from this object there.
 	 * @return void
 	 */
-	public static function invalidate_for_post( int $post_id ): void {
-		if ( Handbook::POST_TYPE === get_post_type( $post_id ) ) {
+	public static function invalidate_for_post( int $post_id, $post = null ): void {
+		$type = $post instanceof WP_Post ? $post->post_type : get_post_type( $post_id );
+		if ( Handbook::POST_TYPE === $type ) {
 			self::invalidate();
 		}
 	}
