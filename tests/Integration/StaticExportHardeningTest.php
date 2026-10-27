@@ -167,6 +167,61 @@ final class StaticExportHardeningTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The route says which parameter is wrong before it does anything.
+	 *
+	 * Up to 0.75.1 it declared no parameters: a handbook id of the wrong kind
+	 * was quietly turned into 0 and reported as "choose a handbook", and a job
+	 * id with characters no job has was stripped until it named some job.
+	 *
+	 * @return void
+	 */
+	public function test_parameters_of_the_wrong_kind_are_refused(): void {
+		$wrong_handbook = $this->pass( array( 'handbook' => 'company' ) );
+		$this->assertSame( 400, $wrong_handbook->get_status() );
+		$this->assertSame( 'rest_invalid_param', $wrong_handbook->as_error()->get_error_code() );
+
+		$wrong_job = $this->pass( array( 'job' => '../abc' ) );
+		$this->assertSame( 400, $wrong_job->get_status() );
+		$this->assertSame( 'rest_invalid_param', $wrong_job->as_error()->get_error_code() );
+	}
+
+	/**
+	 * A pass that cannot write its archive fails as a server error, not as a
+	 * successful answer with an error inside it, as it did up to 0.75.1.
+	 *
+	 * @return void
+	 */
+	public function test_an_archive_that_cannot_be_written_is_a_server_error(): void {
+		$term = $this->handbook_with_a_page();
+		$second = (int) self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'publish',
+				'post_title'  => 'Two',
+			)
+		);
+		wp_set_object_terms( $second, array( $term ), Handbooks::TAXONOMY );
+
+		add_filter( 'living_handbook_static_export_time_budget', '__return_zero' );
+		$first = (array) $this->pass( array( 'handbook' => $term ) )->get_data();
+		$this->assertArrayHasKey( 'job', $first, 'The test needs an export that pauses.' );
+
+		$key           = 'living_handbook_static_' . (string) $first['job'];
+		$state         = get_transient( $key );
+		$this->files[] = (string) $state['zip'];
+		$this->files[] = (string) $state['zip'] . '-index';
+		// A folder where the archive should be: ZipArchive cannot open it.
+		$state['zip'] = sys_get_temp_dir();
+		set_transient( $key, $state, HOUR_IN_SECONDS );
+
+		$next = $this->pass( array( 'job' => $first['job'] ) );
+		remove_filter( 'living_handbook_static_export_time_budget', '__return_zero' );
+
+		$this->assertSame( 500, $next->get_status() );
+		$this->assertSame( 'living_handbook_export_unwritable', $next->as_error()->get_error_code() );
+	}
+
+	/**
 	 * Run an export to the end and open the archive.
 	 *
 	 * @param int    $term  Handbook.

@@ -103,7 +103,10 @@ final class StaticSite {
 	}
 
 	/**
-	 * The REST route the screen drives the export with.
+	 * Registers the REST route the screen drives the export with.
+	 *
+	 * A new export names the handbook, optionally a top-level page as the area,
+	 * and the look; every later pass names only the job.
 	 *
 	 * @return void
 	 */
@@ -115,6 +118,30 @@ final class StaticSite {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'run_callback' ),
 				'permission_callback' => array( __CLASS__, 'can_export' ),
+				'args'                => array(
+					// Handbook term ID and top-level page of a new export, 0 for
+					// the whole handbook; an unknown look falls back to the default.
+					'handbook' => array(
+						'type'    => 'integer',
+						'minimum' => 0,
+						'default' => 0,
+					),
+					'area'     => array(
+						'type'    => 'integer',
+						'minimum' => 0,
+						'default' => 0,
+					),
+					'theme'    => array(
+						'type'    => 'string',
+						'default' => '',
+					),
+					// The export to continue, as the previous pass returned it.
+					'job'      => array(
+						'type'    => 'string',
+						'pattern' => '^[A-Za-z0-9]*$',
+						'default' => '',
+					),
+				),
 			)
 		);
 	}
@@ -209,7 +236,12 @@ final class StaticSite {
 			}
 		}
 
-		return new WP_REST_Response( self::run( $state ) );
+		$result = self::run( $state );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		return new WP_REST_Response( $result );
 	}
 
 	/**
@@ -352,17 +384,23 @@ final class StaticSite {
 	 * Render pages until the budget is up, then either finish or pause.
 	 *
 	 * @param array<string, mixed> $state Job state.
-	 * @return array<string, mixed> The answer for the browser.
+	 * @return array<string, mixed>|WP_Error The answer for the browser, or the
+	 *                                       reason the archive cannot be written.
 	 */
-	private static function run( array $state ): array {
+	private static function run( array $state ) {
 		$deadline = microtime( true ) + self::time_budget();
 		$queue    = (array) $state['queue'];
 		$total    = count( $queue );
 
 		$zip = self::open_zip( $state );
 		if ( ! $zip instanceof ZipArchive ) {
-			return array(
-				'error' => __( 'The export file could not be written on this server.', 'living-handbook' ),
+			// A server error rather than an answer with an error inside it, as up
+			// to 0.75.1: the request did fail, and a client that only looks at
+			// the status has to see that.
+			return new WP_Error(
+				'living_handbook_export_unwritable',
+				__( 'The export file could not be written on this server.', 'living-handbook' ),
+				array( 'status' => 500 )
 			);
 		}
 
