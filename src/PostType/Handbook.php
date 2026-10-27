@@ -149,11 +149,12 @@ final class Handbook {
 				'hierarchical'        => true,
 				'has_archive'         => false,
 				/**
-				 * The URL base of a handbook page. English and fixed by default, so
-				 * permalinks stay stable and do not collide. A site that needs a
-				 * different base (a localized one, say) can filter it, but changing
-				 * it on a live site rewrites every page URL and needs the permalinks
-				 * flushed and old links redirected.
+				 * Filters the URL base of a handbook page.
+				 *
+				 * English and fixed by default, so permalinks stay stable and do not
+				 * collide. A site that needs a different base (a localized one, say)
+				 * can filter it, but changing it on a live site rewrites every page
+				 * URL and needs the permalinks flushed and old links redirected.
 				 *
 				 * @param string $slug The rewrite base. Default 'handbook'.
 				 */

@@ -91,7 +91,7 @@ final class Headings {
 		}
 
 		/**
-		 * Whether headings get an id and an anchor link.
+		 * Filters whether headings get an id and an anchor link.
 		 *
 		 * @param bool $enabled Whether to add them. Default true.
 		 */

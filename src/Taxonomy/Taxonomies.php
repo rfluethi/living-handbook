@@ -107,7 +107,7 @@ final class Taxonomies {
 		}
 
 		/**
-		 * Filter which classifying taxonomies this site uses.
+		 * Filters which classifying taxonomies this site uses.
 		 *
 		 * The handbook grouping itself is not among them and cannot be switched
 		 * off: access hangs on it, and a page without a handbook is invisible.

@@ -370,7 +370,7 @@ final class FrontendRenderer {
 		}
 
 		/**
-		 * Filter the label of the injected top-level handbook submenu.
+		 * Filters the label of the injected top-level handbook submenu.
 		 *
 		 * @param string $label Menu label.
 		 */
