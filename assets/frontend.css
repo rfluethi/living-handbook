@@ -1,21 +1,36 @@
-/*
- * Living Handbook: default frontend styles, following the prototype design.
- * Colours are set through custom properties so you can adapt them to your
- * theme in theme.json or Additional CSS. See docs/customization.md.
+/**
+ * Living Handbook: default front-end styles.
  *
- * Every font size in this file is a multiple of --lh-base, which is deliberately
- * not declared here: undeclared it falls back to 1rem, exactly the sizes this
- * file had before. Handbook, Settings, Appearance prints it on :root, and CSS
- * written by hand can set it anywhere, for example on body to follow a theme
- * whose own text is not 16px. One value moves all of them together and keeps
- * their proportions, which is the point: they were tuned against each other.
+ * Colours are custom properties (--lh-*), declared on the root of every
+ * component below. A site changes them under Handbook > Settings > Appearance,
+ * in the plugin's Custom CSS field or in its theme; see
+ * docs/technical/en/living-handbook-technical/customization.md.
+ *
+ * Every font size given in rem is written as a multiple of --lh-base, which is
+ * deliberately not declared here: undeclared it falls back to 1rem, exactly
+ * the sizes this file had before. Handbook > Settings > Appearance prints it on
+ * :root, and CSS written by hand can set it anywhere, for example on body to
+ * follow a theme whose own text is not 16px. One value moves all of them
+ * together and keeps their proportions, which is the point: they were tuned
+ * against each other. Sizes given in em follow the component they sit in.
+ *
+ * Breakpoints, kept few and deliberate:
+ *   781px  the WordPress mobile breakpoint (also used in frontend.js): the
+ *          navigation stops being sticky and starts collapsed, the handbook
+ *          menu folds behind its toggle, child handbook cards move closer to
+ *          the edge.
+ *   1000px the on-this-page table of contents switches between the desktop
+ *          side column (>= 1000px) and the mobile box above the content
+ *          (<= 999px).
  */
+
+/* ---------- Custom properties ---------- */
 
 .living-handbook-overview,
 .living-handbook-entry,
+.living-handbook-start__search,
 .living-handbook-cards,
 .living-handbook-card,
-.living-handbook-sidebar,
 .living-handbook-filterform,
 .living-handbook-nav,
 .living-handbook-toc,
@@ -25,8 +40,21 @@
 .living-handbook-badge,
 .living-handbook-count,
 .living-handbook-empty,
-.living-handbook-page-search {
-	/* Surfaces follow the active theme: the surface and its text default to the
+.living-handbook-page-search,
+.living-handbook-anchor,
+.living-handbook-path,
+.living-handbook-pathbar,
+.living-handbook-paths,
+.lh-source-note {
+
+	/* Every component that can stand on its own as a block declares the
+	   variables itself: a block placed anywhere on a page has no handbook
+	   container around it to inherit them from, and a var() that resolves to
+	   nothing drops the whole declaration (no border, no background). Up to
+	   0.75.1 the search bar, the learning path blocks, the source note and the
+	   heading anchors were missing here and lost their borders and colours.
+
+	   Surfaces follow the active theme: the surface and its text default to the
 	   theme's own background and text presets, so a dark theme, or a dark style
 	   variation the visitor picks, turns the cards, navigation and TOC dark on
 	   their own. The hex values are fallbacks for themes that expose no such
@@ -34,11 +62,12 @@
 	--lh-surface: var(--lh-user-surface, var(--wp--preset--color--base, #fff));
 	--lh-surface-text: var(--lh-user-surface-text, var(--wp--preset--color--contrast, #1d2327));
 	--lh-accent: var(--lh-user-accent, var(--wp--preset--color--accent, var(--wp--preset--color--primary, #2c5f8a)));
-	--lh-on-accent: var(--lh-user-on-accent, #fff);      /* text on an accent-filled control */
+	--lh-on-accent: var(--lh-user-on-accent, #fff); /* text on an accent-filled control */
 
 	/* Lines and secondary text are mixed from the surface and its text, so they
-	   track the surface on both light and dark themes (color-mix: modern
-	   browsers; older ones fall back to the surface colour). */
+	   track the surface on both light and dark themes. color-mix() is required:
+	   a browser without it treats these values as invalid, and the lines and
+	   texts that use them lose their colour. */
 	--lh-border: color-mix(in srgb, var(--lh-surface-text) 14%, transparent);
 	--lh-border-strong: color-mix(in srgb, var(--lh-surface-text) 48%, transparent);
 	--lh-muted: color-mix(in srgb, var(--lh-surface-text) 62%, var(--lh-surface));
@@ -49,9 +78,9 @@
 	   Measured on the shipped values: the darkest pair is 4.76:1, all three clear
 	   4.5:1, and they do so on a dark theme as well because the chip brings its
 	   own background. That is why these three stay fixed. */
-	--lh-ok: var(--lh-user-ok, #176e3c);          /* "Reviewed" */
-	--lh-due: var(--lh-user-due, #8a5200);         /* "Review due" */
-	--lh-overdue: var(--lh-user-overdue, #c0392b);     /* "Review overdue" (escalation) */
+	--lh-ok: var(--lh-user-ok, #176e3c); /* "Reviewed" */
+	--lh-due: var(--lh-user-due, #8a5200); /* "Review due" */
+	--lh-overdue: var(--lh-user-overdue, #c0392b); /* "Review overdue" (escalation) */
 
 	/* The same three, for the places that draw them straight onto the theme's
 	   surface with no chip behind them: the freshness dot on a card, and the two
@@ -64,12 +93,12 @@
 	   theme and light on a dark one: the mix darkens the hue on light (8.4 to
 	   9.0:1) and lightens it on dark (5.3 to 5.6:1). It keeps the hue, so red
 	   still reads as red, and it costs no second set of values to maintain.
-	   Where color-mix is missing, the fallback is the fixed colour, which is
-	   today's behaviour. */
+	   The var() fallbacks where these are used apply only where the variable
+	   is not declared at all, outside the components above. */
 	--lh-ok-on-surface: color-mix(in srgb, var(--lh-ok) 65%, var(--lh-surface-text));
 	--lh-due-on-surface: color-mix(in srgb, var(--lh-due) 65%, var(--lh-surface-text));
 	--lh-overdue-on-surface: color-mix(in srgb, var(--lh-overdue) 65%, var(--lh-surface-text));
-	--lh-badge-text: var(--lh-user-badge-text, #5f6b75);  /* neutral chip label; fixed, not the surface muted */
+	--lh-badge-text: var(--lh-user-badge-text, #5f6b75); /* neutral chip label; fixed, not the surface muted */
 	--lh-badge-bg: var(--lh-user-badge-bg, #eef1f4);
 	--lh-badge-audience-bg: var(--lh-user-badge-audience-bg, #f3eafc);
 	--lh-badge-audience-text: var(--lh-user-badge-audience-text, #6b3fa0);
@@ -88,23 +117,77 @@
 	--lh-sticky-top: 2rem;
 }
 
-/*
- * Breakpoints used below, kept few and deliberate:
- *   781px  the entry two-column layout and the nav collapse to one column
- *          (matches the WordPress mobile breakpoint).
- *   1000px the on-this-page table of contents switches between the desktop
- *          side column (>= 1000px) and the mobile box above the content
- *          (<= 999px).
- */
+/* ---------- Utilities ---------- */
+
+/* Visually hidden text for assistive technology (own rule, so it does not
+ * depend on the theme shipping a screen-reader-text class). */
+.living-handbook-visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ---------- Headings of a handbook page ---------- */
 
 /* Give headings room below a sticky header when jumped to from the TOC. */
-
 .wp-block-post-content :is(h1, h2, h3, h4, h5, h6),
 .entry-content :is(h1, h2, h3, h4, h5, h6) {
 	scroll-margin-top: var(--lh-sticky-top, 2rem);
 }
 
-/* Entry page: search, layout, headings */
+/* A heading focused programmatically from the table of contents is not part of
+ * the tab order, so it needs no persistent focus ring. */
+.wp-block-post-content :is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:focus,
+.entry-content :is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:focus {
+	outline: none;
+}
+
+/* The link to one section. Out of the way until the heading is hovered or the
+ * link itself is focused, so it does not compete with the heading; never
+ * display:none, because a keyboard has to be able to reach it. A touch screen
+ * has no hover, so it stays visible there. */
+.living-handbook-anchor {
+	margin-inline-start: 0.35em;
+	font-weight: 400;
+	color: var(--lh-muted);
+	text-decoration: none;
+	opacity: 0;
+	transition: opacity 0.1s ease;
+}
+
+h2:hover > .living-handbook-anchor,
+h3:hover > .living-handbook-anchor,
+h4:hover > .living-handbook-anchor,
+.living-handbook-anchor:focus,
+.living-handbook-anchor:focus-visible {
+	opacity: 1;
+}
+
+.living-handbook-anchor:hover {
+	color: var(--lh-accent);
+}
+
+@media (hover: none) {
+
+	.living-handbook-anchor {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.living-handbook-anchor {
+		transition: none;
+	}
+}
+
+/* ---------- Entry page: search bar ---------- */
 
 /* The three block roots that take block settings (colour, border, typography,
  * spacing) carry their defaults inside :where(), which has no specificity. A
@@ -112,10 +195,11 @@
  * anything, or as a class like .has-accent-background-color, which is a single
  * class and would otherwise merely tie with a plain rule here and be decided by
  * the order the stylesheets happen to load. Inside :where() there is nothing to
- * tie with. 0.66.1 had it the other way round and quietly overrode what the
- * editor set. */
+ * tie with. Up to 0.66.1 the defaults were plain rules and quietly overrode
+ * what the editor set. */
 :where(.living-handbook-start__search) {
 	margin: 0 0 1.5rem;
+
 	/* The size lives on the bar, and the label and the field are sized in em
 	 * against it. A font size set in the block settings lands on the bar, so
 	 * sizing the parts from it is what makes that setting arrive at all: a child
@@ -188,6 +272,15 @@
 	border-radius: 8px;
 }
 
+/* Placeholder text follows the surface's muted tone, so it stays legible on a
+ * dark surface too. Covers the quick search field as well. */
+.living-handbook-search__input::placeholder,
+.living-handbook-page-search__input::placeholder {
+	color: var(--lh-muted);
+}
+
+/* ---------- Entry page: result column ---------- */
+
 .living-handbook-entry__h {
 	font-size: calc(var(--lh-base, 1rem) * 1.1);
 	margin: 1.5rem 0 0.75rem;
@@ -203,49 +296,59 @@
 	margin: 0 0 0.75rem;
 }
 
-/* The page titles under a handbook card, and the handbook a card belongs to.
- * Outside the card's own link, because a link inside a link is not markup a
- * browser can make sense of. */
-.living-handbook-card__preview {
-	list-style: none;
-	margin: 0;
-	padding: 0 1rem 1rem;
-	font-size: calc(var(--lh-base, 1rem) * 0.9);
-}
-
-.living-handbook-card__preview li {
-	margin: 0.2rem 0;
-}
-
-.living-handbook-card__preview a {
-	color: inherit;
-}
-
-.living-handbook-card__more a {
-	color: var(--lh-accent);
-}
-
-.living-handbook-card__parent {
+.living-handbook-empty {
+	padding: 1.5rem;
+	text-align: center;
 	color: var(--lh-muted);
+	border: 1px dashed var(--lh-border);
+	border-radius: 8px;
 }
 
-/* Handbooks that belong to another one: set in, and on a narrow screen only
- * slightly, because half the width is worse than a small step. */
-.living-handbook-cards--children {
-	display: grid;
-	gap: 1rem;
-	margin: 0 0 1rem 2rem;
+/* AJAX filtering: dim the result column while the new list is loading. */
+.living-handbook-main[aria-busy="true"] {
+	opacity: 0.5;
+	transition: opacity 0.15s ease;
 }
 
-@media (max-width: 781px) {
-	.living-handbook-cards--children {
-		margin-left: 0.75rem;
+/* Respect a reduced-motion preference (WCAG 2.3.3): no loading fade. */
+@media (prefers-reduced-motion: reduce) {
+
+	.living-handbook-main {
+		transition: none;
 	}
 }
 
-/* Filter bar. Since 0.66.0 it is a block of its own and may sit anywhere, so
- * the box it used to get from the entry page's sidebar is on the form itself. */
+/* Pagination for the filtered result list. */
+.living-handbook-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	margin: 1.25rem 0 0;
+}
 
+.living-handbook-pagination .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2rem;
+	min-height: 2rem;
+	padding: 0 0.5rem;
+	border: 1px solid var(--lh-border-strong, #6b7784);
+	border-radius: 6px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.living-handbook-pagination .page-numbers.current {
+	background: var(--lh-accent, #2c5f8a);
+	border-color: var(--lh-accent, #2c5f8a);
+	color: var(--lh-on-accent, #fff);
+}
+
+/* ---------- Filter bar ---------- */
+
+/* Since 0.66.0 the filter bar is a block of its own and may sit anywhere, so
+ * the box it used to get from the entry page's sidebar is on the form itself. */
 :where(.living-handbook-filterform) {
 	font-size: calc(var(--lh-base, 1rem) * 0.9);
 	border: 1px solid var(--lh-border);
@@ -272,7 +375,7 @@
 /* Float the legend into normal flow so it sits below the divider line
  * instead of being anchored on top of the fieldset border. */
 .living-handbook-facet legend {
-	float: left;
+	float: inline-start;
 	width: 100%;
 	font-weight: 600;
 	padding: 0;
@@ -307,9 +410,16 @@
 	flex: none;
 }
 
+.living-handbook-filterform__actions {
+	margin: 0.75rem 0 0;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
 .living-handbook-reset {
 	background: none;
-	border: 1px solid var(--lh-border);
+	border: 1px solid var(--lh-border-strong, #6b7784);
 	border-radius: 6px;
 	padding: 0.4rem 0.7rem;
 	cursor: pointer;
@@ -323,7 +433,13 @@
 	border: 0;
 }
 
-/* Card grids */
+/* A visible error when the request fails, instead of a silent stale list. */
+.living-handbook-filter-error {
+	margin: 0 0 0.75rem;
+	color: var(--lh-overdue-on-surface, var(--lh-overdue, #c0392b));
+}
+
+/* ---------- Cards ---------- */
 
 .living-handbook-cards {
 	display: grid;
@@ -334,6 +450,22 @@
 .living-handbook-cards--areas,
 .living-handbook-cards--books {
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Handbooks that belong to another one: set in, and on a narrow screen only
+ * slightly, because half the width is worse than a small step. */
+.living-handbook-cards--children {
+	display: grid;
+	gap: 1rem;
+	margin-block: 0 1rem;
+	margin-inline: 2rem 0;
+}
+
+@media (max-width: 781px) {
+
+	.living-handbook-cards--children {
+		margin-inline-start: 0.75rem;
+	}
 }
 
 .living-handbook-card {
@@ -348,6 +480,18 @@
 .living-handbook-card:hover {
 	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 	transform: translateY(-2px);
+}
+
+/* Respect a reduced-motion preference (WCAG 2.3.3): no hover motion. */
+@media (prefers-reduced-motion: reduce) {
+
+	.living-handbook-card {
+		transition: none;
+	}
+
+	.living-handbook-card:hover {
+		transform: none;
+	}
 }
 
 .living-handbook-card__link {
@@ -375,6 +519,32 @@
 	margin: 0 0 0.6rem;
 }
 
+/* The page titles under a handbook card, and the handbook a card belongs to.
+ * Outside the card's own link, because a link inside a link is not markup a
+ * browser can make sense of. */
+.living-handbook-card__preview {
+	list-style: none;
+	margin: 0;
+	padding: 0 1rem 1rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.9);
+}
+
+.living-handbook-card__preview li {
+	margin: 0.2rem 0;
+}
+
+.living-handbook-card__preview a {
+	color: inherit;
+}
+
+.living-handbook-card__more a {
+	color: var(--lh-accent);
+}
+
+.living-handbook-card__parent {
+	color: var(--lh-muted);
+}
+
 .living-handbook-card__meta {
 	font-size: calc(var(--lh-base, 1rem) * 0.78);
 	color: var(--lh-muted);
@@ -385,6 +555,10 @@
 	margin: 0;
 }
 
+/* The freshness dot. Its status must not rely on colour alone (WCAG 1.4.1), so
+ * the shape changes too: reviewed is a circle, review due a rounded square,
+ * overdue a diamond, and not reviewed an outlined circle, an empty shape for
+ * the state where nothing has been filled in. */
 .living-handbook-card__dot {
 	width: 10px;
 	height: 10px;
@@ -399,41 +573,74 @@
 
 .living-handbook-card__dot--due {
 	background: var(--lh-due-on-surface, var(--lh-due));
+	border-radius: 2px;
 }
 
 .living-handbook-card__dot--overdue {
 	background: var(--lh-overdue-on-surface, var(--lh-overdue));
+	border-radius: 1px;
+	transform: rotate(45deg);
 }
 
 .living-handbook-card__dot--none {
-	background: var(--lh-none-on-surface, var(--lh-none));
+	background: transparent;
+	box-shadow: inset 0 0 0 2px var(--lh-none-on-surface, var(--lh-none));
 }
 
-.living-handbook-empty {
-	padding: 1.5rem;
-	text-align: center;
-	color: var(--lh-muted);
-	border: 1px dashed var(--lh-border);
-	border-radius: 8px;
+/* List display: overview and entry render their cards as a single column of
+ * flat, compact rows instead of a card grid (block setting "Display: List"),
+ * so "List" is clearly different from "Cards" even when the grid already
+ * collapses to a single column on a narrow container. */
+.living-handbook-overview--list .living-handbook-cards,
+.living-handbook-entry--list .living-handbook-cards {
+	display: block;
 }
 
-/* Single page: badges */
-
-.living-handbook-badges {
-	display: flex;
-	gap: 0.4rem;
-	flex-wrap: wrap;
-	margin: 0 0 0.5rem;
+.living-handbook-overview--list .living-handbook-card,
+.living-handbook-entry--list .living-handbook-card {
+	border: 0;
+	border-bottom: 1px solid var(--lh-border, #e2e6ea);
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	transform: none;
+	margin: 0;
 }
 
-/* Handbook navigation: a self-contained, collapsible page tree, styled by the
- * plugin, with no dependency on any other plugin. The title row has the same
- * shape as any row with children, a toggle on the left and a link beside it:
- * the toggle opens and closes the whole navigation, the link goes to the
- * handbook's start page. Two variants: --tree shows the whole tree at once,
- * --accordion collapses branches with a toggle on the left so only the current
- * path is open. */
+.living-handbook-overview--list .living-handbook-card:hover,
+.living-handbook-entry--list .living-handbook-card:hover {
+	box-shadow: none;
+	transform: none;
+	background: var(--lh-accent-soft, #eaf1f8);
+}
 
+.living-handbook-overview--list .living-handbook-card__link,
+.living-handbook-entry--list .living-handbook-card__link {
+	padding: 0.55rem 0.4rem;
+}
+
+.living-handbook-overview--list .living-handbook-card__title,
+.living-handbook-entry--list .living-handbook-card__title {
+	font-size: calc(var(--lh-base, 1rem) * 1);
+	margin: 0 0 0.1rem;
+}
+
+/* Show the handbook description in the list too, like the cards. */
+.living-handbook-overview--list .living-handbook-card__excerpt,
+.living-handbook-entry--list .living-handbook-card__excerpt {
+	display: block;
+	margin: 0.1rem 0 0.15rem;
+}
+
+/* ---------- Handbook navigation ---------- */
+
+/* A self-contained, collapsible page tree, styled by the plugin, with no
+ * dependency on any other plugin. The title row has the same shape as any row
+ * with children, a toggle on the left and a link beside it: the toggle opens
+ * and closes the whole navigation, the link goes to the handbook's start page.
+ * Two variants: --tree (the block setting "Menu") shows the whole tree at
+ * once, --accordion collapses branches with a toggle on the left so only the
+ * current path is open. */
 .living-handbook-nav {
 	font-size: calc(var(--lh-base, 1rem) * 0.9);
 	border: 1px solid var(--lh-border);
@@ -483,21 +690,15 @@
 	transform: none;
 }
 
+/* Every level is indented the same way, the first one included: the title row
+   is the root of the tree, so the pages below it are its children and are set
+   in by one step like any other level. */
 .living-handbook-nav__list,
 .living-handbook-nav__sublist {
 	list-style: none;
-	margin: 0;
+	margin-block: 0.1rem 0.2rem;
+	margin-inline: 0.15rem 0;
 	padding: 0;
-}
-
-/* Every level is indented the same way, the first one included: the title row
-   is the root of the tree, so the pages below it are its children and are set
-   in by one step like any other level. Before this the first level sat flush
-   with the title, which made the handbook name look like a label above a list
-   rather than the top of it. */
-.living-handbook-nav__list,
-.living-handbook-nav__sublist {
-	margin: 0.1rem 0 0.2rem 0.15rem;
 	padding-inline-start: 0.7rem;
 	border-inline-start: 2px solid var(--lh-border);
 }
@@ -557,7 +758,7 @@
 	height: 0;
 	border-top: 5px solid transparent;
 	border-bottom: 5px solid transparent;
-	border-inline-start: 6px solid currentColor;
+	border-inline-start: 6px solid currentcolor;
 	transition: transform 0.15s ease;
 }
 
@@ -600,18 +801,73 @@ html:not(.living-handbook-js) .living-handbook-nav:not(.living-handbook-nav--js)
 
 /* On narrow screens the navigation drops its sticky position and stacks. */
 @media (max-width: 781px) {
+
 	.living-handbook-nav {
 		position: static;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.living-handbook-nav__toggle > span {
 		transition: none;
 	}
 }
 
-/* On-this-page table of contents (collapsible box) */
+/* ---------- Handbook menu ---------- */
+
+/* The accessible handbooks as a compact inline list, meant for a site header
+ * or navigation area. On wide screens the list shows inline and the toggle is
+ * hidden; on narrow screens the list collapses behind the toggle. */
+.living-handbook-menu__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem 1.25rem;
+}
+
+.living-handbook-menu__link {
+	text-decoration: none;
+	color: inherit;
+}
+
+.living-handbook-menu__link:hover {
+	color: var(--lh-accent, #2c5f8a);
+}
+
+.living-handbook-menu__toggle {
+	display: none;
+	background: none;
+	border: 1px solid var(--lh-border-strong, #6b7784);
+	border-radius: 6px;
+	padding: 0.35rem 0.7rem;
+	cursor: pointer;
+	color: inherit;
+	font: inherit;
+}
+
+@media (max-width: 781px) {
+
+	.living-handbook-menu__toggle {
+		display: inline-flex;
+	}
+
+	.living-handbook-menu__list {
+		display: none;
+	}
+
+	.living-handbook-menu.is-open .living-handbook-menu__list {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		margin-top: 0.5rem;
+		gap: 0.4rem;
+	}
+}
+
+/* ---------- On-this-page table of contents (collapsible box) ---------- */
 
 .living-handbook-toc {
 	font-size: calc(var(--lh-base, 1rem) * 0.84);
@@ -631,6 +887,20 @@ html:not(.living-handbook-js) .living-handbook-nav:not(.living-handbook-nav--js)
 	margin: 0 0 1rem;
 }
 
+@media (min-width: 1000px) {
+
+	.living-handbook-toc--mobile {
+		display: none;
+	}
+}
+
+@media (max-width: 999px) {
+
+	.living-handbook-toc--desktop {
+		display: none;
+	}
+}
+
 .living-handbook-toc__summary {
 	cursor: pointer;
 	font-size: calc(var(--lh-base, 1rem) * 0.72);
@@ -638,43 +908,6 @@ html:not(.living-handbook-js) .living-handbook-nav:not(.living-handbook-nav--js)
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	color: var(--lh-muted);
-}
-
-/* The link to one section. Out of the way until the heading is hovered or the
- * link itself is focused, so it does not compete with the heading; never
- * display:none, because a keyboard has to be able to reach it. A touch screen
- * has no hover, so it stays visible there. */
-.living-handbook-anchor {
-	margin-inline-start: 0.35em;
-	font-weight: 400;
-	color: var(--lh-muted);
-	text-decoration: none;
-	opacity: 0;
-	transition: opacity 0.1s ease;
-}
-
-h2:hover > .living-handbook-anchor,
-h3:hover > .living-handbook-anchor,
-h4:hover > .living-handbook-anchor,
-.living-handbook-anchor:focus,
-.living-handbook-anchor:focus-visible {
-	opacity: 1;
-}
-
-.living-handbook-anchor:hover {
-	color: var(--lh-accent);
-}
-
-@media (hover: none) {
-	.living-handbook-anchor {
-		opacity: 1;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.living-handbook-anchor {
-		transition: none;
-	}
 }
 
 .living-handbook-toc__list {
@@ -687,8 +920,12 @@ h4:hover > .living-handbook-anchor,
 	margin: 0.3rem 0;
 }
 
+/* At least 24px high (WCAG 2.5.8, target size), without changing the visual
+ * weight of the entry. */
 .living-handbook-toc__list a {
-	display: block;
+	display: flex;
+	align-items: center;
+	min-height: 24px;
 	padding: 0.1rem 0;
 	text-decoration: none;
 	color: inherit;
@@ -700,19 +937,56 @@ h4:hover > .living-handbook-anchor,
 	font-weight: 600;
 }
 
-@media (min-width: 1000px) {
-	.living-handbook-toc--mobile {
-		display: none;
-	}
+/* ---------- Single page: badges ---------- */
+
+.living-handbook-badges {
+	display: flex;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+	margin: 0 0 0.5rem;
 }
 
-@media (max-width: 999px) {
-	.living-handbook-toc--desktop {
-		display: none;
-	}
+.living-handbook-badge {
+	display: inline-block;
+	border-radius: 999px;
+	padding: 0.15rem 0.5rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.72);
+	font-weight: 600;
+	background: var(--lh-badge-bg);
+	color: var(--lh-badge-text);
 }
 
-/* Metadata footer */
+.living-handbook-badge--type {
+	background: var(--lh-accent-soft);
+	color: var(--lh-accent);
+}
+
+.living-handbook-badge--audience {
+	background: var(--lh-badge-audience-bg);
+	color: var(--lh-badge-audience-text);
+}
+
+.living-handbook-badge--ok {
+	background: var(--lh-badge-ok-bg);
+	color: var(--lh-ok);
+}
+
+.living-handbook-badge--due {
+	background: var(--lh-badge-due-bg);
+	color: var(--lh-due);
+}
+
+.living-handbook-badge--overdue {
+	background: var(--lh-badge-overdue-bg);
+	color: var(--lh-overdue);
+}
+
+.living-handbook-badge--none {
+	background: var(--lh-badge-none-bg);
+	color: var(--lh-none);
+}
+
+/* ---------- Single page: metadata footer ---------- */
 
 .living-handbook-meta {
 	margin-block-start: 1.5rem;
@@ -772,49 +1046,7 @@ h4:hover > .living-handbook-anchor,
 	color: var(--lh-muted);
 }
 
-/* Badges */
-
-.living-handbook-badge {
-	display: inline-block;
-	border-radius: 999px;
-	padding: 0.15rem 0.5rem;
-	font-size: calc(var(--lh-base, 1rem) * 0.72);
-	font-weight: 600;
-	background: var(--lh-badge-bg);
-	color: var(--lh-badge-text);
-}
-
-.living-handbook-badge--type {
-	background: var(--lh-accent-soft);
-	color: var(--lh-accent);
-}
-
-.living-handbook-badge--audience {
-	background: var(--lh-badge-audience-bg);
-	color: var(--lh-badge-audience-text);
-}
-
-.living-handbook-badge--ok {
-	background: var(--lh-badge-ok-bg);
-	color: var(--lh-ok);
-}
-
-.living-handbook-badge--due {
-	background: var(--lh-badge-due-bg);
-	color: var(--lh-due);
-}
-
-.living-handbook-badge--overdue {
-	background: var(--lh-badge-overdue-bg);
-	color: var(--lh-overdue);
-}
-
-.living-handbook-badge--none {
-	background: var(--lh-badge-none-bg);
-	color: var(--lh-none);
-}
-
-/* Feedback */
+/* ---------- Single page: feedback ---------- */
 
 .living-handbook-feedback {
 	margin-block-start: 1.25rem;
@@ -826,8 +1058,11 @@ h4:hover > .living-handbook-anchor,
 	color: var(--lh-muted);
 }
 
+/* At least 24px high (WCAG 2.5.8, target size), without changing the visual
+ * weight of the buttons. */
 .living-handbook-feedback button {
-	border: 1px solid var(--lh-border);
+	min-height: 24px;
+	border: 1px solid var(--lh-border-strong, #6b7784);
 	background: transparent;
 	color: inherit;
 	border-radius: 5px;
@@ -841,234 +1076,16 @@ h4:hover > .living-handbook-anchor,
 	color: var(--lh-accent);
 }
 
-/* List display: overview and entry render their cards as a single column of
- * flat rows instead of a card grid (block setting "Display: List"). The row
- * look itself is defined once, further down. */
-
-.living-handbook-overview--list .living-handbook-cards,
-.living-handbook-entry--list .living-handbook-cards {
-	display: block;
-}
-
-/* AJAX filtering: dim the result column while the new list is loading. */
-
-.living-handbook-main[aria-busy="true"] {
-	opacity: 0.5;
-	transition: opacity 0.15s ease;
-}
-
-/* Handbook menu: the accessible handbooks as a compact inline list, meant for
- * a site header or navigation area. */
-
-.living-handbook-menu__list {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem 1.25rem;
-}
-
-.living-handbook-menu__link {
-	text-decoration: none;
-	color: inherit;
-}
-
-.living-handbook-menu__link:hover {
-	color: var(--lh-accent, #2c5f8a);
-}
-
-/* List display, distinct look: flat, compact rows instead of card boxes, so
- * "List" is clearly different from "Cards" even when the grid already collapses
- * to a single column on a narrow container. */
-
-.living-handbook-overview--list .living-handbook-card,
-.living-handbook-entry--list .living-handbook-card {
-	border: 0;
-	border-bottom: 1px solid var(--lh-border, #e2e6ea);
-	border-radius: 0;
-	background: none;
-	box-shadow: none;
-	transform: none;
-	margin: 0;
-}
-
-.living-handbook-overview--list .living-handbook-card:hover,
-.living-handbook-entry--list .living-handbook-card:hover {
-	box-shadow: none;
-	transform: none;
-	background: var(--lh-accent-soft, #eaf1f8);
-}
-
-.living-handbook-overview--list .living-handbook-card__link,
-.living-handbook-entry--list .living-handbook-card__link {
-	padding: 0.55rem 0.4rem;
-}
-
-.living-handbook-overview--list .living-handbook-card__title,
-.living-handbook-entry--list .living-handbook-card__title {
-	font-size: calc(var(--lh-base, 1rem) * 1);
-	margin: 0 0 0.1rem;
-}
-
-/* Handbook menu: mobile toggle. On wide screens the list shows inline and the
- * toggle is hidden; on narrow screens the list collapses behind the toggle. */
-
-.living-handbook-menu__toggle {
-	display: none;
-	background: none;
-	border: 1px solid var(--lh-border, #e2e6ea);
-	border-radius: 6px;
-	padding: 0.35rem 0.7rem;
-	cursor: pointer;
-	color: inherit;
-	font: inherit;
-}
-
-@media (max-width: 781px) {
-	.living-handbook-menu__toggle {
-		display: inline-flex;
-	}
-
-	.living-handbook-menu__list {
-		display: none;
-	}
-
-	.living-handbook-menu.is-open .living-handbook-menu__list {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		margin-top: 0.5rem;
-		gap: 0.4rem;
-	}
-}
-
-/* List display: show the handbook description in the list too, like the cards. */
-
-.living-handbook-overview--list .living-handbook-card__excerpt,
-.living-handbook-entry--list .living-handbook-card__excerpt {
-	display: block;
-	margin: 0.1rem 0 0.15rem;
-}
-
-/* ---------- Accessibility pass (WCAG) ---------- */
-
-/* Visible keyboard focus for every interactive handbook control (WCAG 2.4.7).
- * Themes frequently strip the browser default; restore an explicit outline. */
-.living-handbook-card__link:focus-visible,
-.living-handbook-nav__top:focus-visible,
-.living-handbook-nav__row > a:focus-visible,
-.living-handbook-nav__toggle:focus-visible,
-.living-handbook-toc__list a:focus-visible,
-.living-handbook-toc__summary:focus-visible,
-.living-handbook-menu__link:focus-visible,
-.living-handbook-menu__toggle:focus-visible,
-.living-handbook-start__search .living-handbook-search__input:focus-visible,
-.living-handbook-start__search button:focus-visible,
-.living-handbook-reset:focus-visible,
-.living-handbook-facet__cb:focus-visible,
-.living-handbook-feedback button:focus-visible {
-	outline: 2px solid var(--lh-accent, #2c5f8a);
-	outline-offset: 2px;
-	border-radius: 4px;
-}
-
-/* A heading focused programmatically from the table of contents is not part of
- * the tab order, so it needs no persistent focus ring. */
-.wp-block-post-content :is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:focus,
-.entry-content :is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:focus {
-	outline: none;
-}
-
-/* Respect a reduced-motion preference (WCAG 2.3.3): drop the card hover motion
- * and the loading fade. The table-of-contents scroll is handled in JavaScript. */
-@media (prefers-reduced-motion: reduce) {
-	.living-handbook-card,
-	.living-handbook-main {
-		transition: none;
-	}
-
-	.living-handbook-card:hover {
-		transform: none;
-	}
-}
-
-/* ---------- Review follow-up: accessibility and contrast ---------- */
-
-/* Visually hidden text for assistive technology (own rule, so it does not
- * depend on the theme shipping a screen-reader-text class). */
-.living-handbook-visually-hidden {
-	position: absolute !important;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border: 0;
-}
-
-/* Freshness status must not rely on colour alone (WCAG 1.4.1): vary the dot
- * shape per status. Reviewed stays a circle, review due becomes a rounded
- * square, overdue a diamond, and not reviewed an outlined circle: an empty
- * shape for the state where nothing has been filled in. */
-.living-handbook-card__dot--due {
-	border-radius: 2px;
-}
-
-.living-handbook-card__dot--overdue {
-	border-radius: 1px;
-	transform: rotate(45deg);
-}
-
-.living-handbook-card__dot--none {
-	background: transparent;
-	box-shadow: inset 0 0 0 2px var(--lh-none-on-surface, var(--lh-none));
-}
-
-/* Feedback error message shown when the request fails, instead of a false
- * thank-you. */
+/* Shown when the request fails, instead of a false thank-you. */
 .living-handbook-feedback__error {
 	color: var(--lh-overdue-on-surface, var(--lh-overdue, #c0392b));
 }
 
-.living-handbook-reset,
-.living-handbook-feedback button,
-.living-handbook-menu__toggle {
-	border-color: var(--lh-border-strong, #6b7784);
-}
+/* ---------- Single page: quick search (typeahead) ---------- */
 
-/* Mermaid diagram figure: reset the browser's default figure margin and style
- * the caption. The diagram itself keeps its own (SVG) sizing. */
-.living-handbook-figure {
-	margin: 1.5rem 0;
-}
-
-.living-handbook-figure__caption {
-	margin-top: 0.4rem;
-	font-size: calc(var(--lh-base, 1rem) * 0.85);
-	color: var(--lh-muted, #5f6b75);
-	text-align: center;
-}
-
-/* AJAX facet filtering: a visible error when the request fails, instead of a
- * silent stale list. */
-.living-handbook-filter-error {
-	margin: 0 0 0.75rem;
-	color: var(--lh-overdue-on-surface, var(--lh-overdue, #c0392b));
-}
-
-.living-handbook-filterform__actions {
-	margin: 0.75rem 0 0;
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-}
-
-/* On-page handbook search (typeahead): a full-width field with a dropdown of
- * matching pages, so the visitor jumps straight to a page without leaving this
- * one. The field carries the same thin border as the entry search. */
+/* A full-width field with a dropdown of matching pages, so the visitor jumps
+ * straight to a page without leaving this one. The field carries the same thin
+ * border as the entry search. */
 :where(.living-handbook-page-search) {
 	position: relative;
 	margin: 0 0 1.25rem;
@@ -1083,13 +1100,6 @@ h4:hover > .living-handbook-anchor,
 	color: var(--lh-surface-text, #1d2327);
 	border: 1px solid var(--lh-border, #e2e6ea);
 	border-radius: 10px;
-}
-
-/* Placeholder text follows the surface's muted tone, so it stays legible on a
- * dark surface too. */
-.living-handbook-search__input::placeholder,
-.living-handbook-page-search__input::placeholder {
-	color: var(--lh-muted);
 }
 
 .living-handbook-page-search .living-handbook-page-search__input:focus-visible {
@@ -1158,58 +1168,47 @@ h4:hover > .living-handbook-anchor,
 	padding: 0 0.1em;
 }
 
-/* Pagination for the filtered result list. */
-.living-handbook-pagination {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.25rem;
-	margin: 1.25rem 0 0;
+/* ---------- Keyboard focus, shared by every control ---------- */
+
+/* Visible keyboard focus for every interactive handbook control (WCAG 2.4.7).
+ * Themes frequently strip the browser default; one rule restores the same
+ * outline everywhere. It stays after the component rules on purpose: it has
+ * to win over the corner radius of the search button set into its field,
+ * which has the same specificity. */
+.living-handbook-card__link:focus-visible,
+.living-handbook-nav__row > a:focus-visible,
+.living-handbook-nav__toggle:focus-visible,
+.living-handbook-toc__list a:focus-visible,
+.living-handbook-toc__summary:focus-visible,
+.living-handbook-menu__link:focus-visible,
+.living-handbook-menu__toggle:focus-visible,
+.living-handbook-start__search .living-handbook-search__input:focus-visible,
+.living-handbook-start__search button:focus-visible,
+.living-handbook-reset:focus-visible,
+.living-handbook-facet__cb:focus-visible,
+.living-handbook-feedback button:focus-visible {
+	outline: 2px solid var(--lh-accent, #2c5f8a);
+	outline-offset: 2px;
+	border-radius: 4px;
 }
 
-.living-handbook-pagination .page-numbers {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 2rem;
-	min-height: 2rem;
-	padding: 0 0.5rem;
-	border: 1px solid var(--lh-border-strong, #6b7784);
-	border-radius: 6px;
-	text-decoration: none;
-	color: inherit;
-}
+/* ---------- GitHub source note ---------- */
 
-.living-handbook-pagination .page-numbers.current {
-	background: var(--lh-accent, #2c5f8a);
-	border-color: var(--lh-accent, #2c5f8a);
-	color: var(--lh-on-accent, #fff);
-}
-
-/* Touch targets (WCAG 2.5.8): keep the small controls at least 24px high, with
- * enough hit area, without changing their visual weight much. */
-.living-handbook-feedback button {
-	min-height: 24px;
-}
-
-.living-handbook-toc__list a {
-	min-height: 24px;
-	display: flex;
-	align-items: center;
-}
-
-/* GitHub source note: a quiet hint, not body text. Smaller and muted, with a
- * subtle accent bar, so a reader takes it as a note about the page rather than
- * part of the content. */
+/* A quiet hint, not body text. Smaller and muted, with a subtle accent bar, so
+ * a reader takes it as a note about the page rather than part of the content. */
 .lh-source-note {
 	font-size: calc(var(--lh-base, 1rem) * 0.82);
 	color: var(--lh-muted);
 	padding: 0.4rem 0.75rem;
 	border-inline-start: 3px solid var(--lh-border-strong);
 	background: color-mix(in srgb, var(--lh-surface-text) 4%, transparent);
-	border-radius: 0 6px 6px 0;
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
+	border-start-end-radius: 6px;
+	border-end-end-radius: 6px;
 }
 
-/* ---------- Handbook content: tables and code blocks ---------- */
+/* ---------- Handbook content: tables, code, images, diagrams ---------- */
 
 /* Imported Markdown tables should read as tables: full width, visible lines
  * between rows and columns, and cell content aligned to the top. Scoped to the
@@ -1255,9 +1254,23 @@ h4:hover > .living-handbook-anchor,
 	height: auto;
 }
 
+/* Mermaid diagram figure: reset the browser's default figure margin and style
+ * the caption. The diagram itself keeps its own (SVG) sizing. */
+.living-handbook-figure {
+	margin: 1.5rem 0;
+}
+
+.living-handbook-figure__caption {
+	margin-top: 0.4rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.85);
+	color: var(--lh-muted, #5f6b75);
+	text-align: center;
+}
+
 /* Click to enlarge, like the core Image block's lightbox. Only an image shown
- * smaller than its real size gets the zoom cursor (the script adds the class),
- * so small icons stay as they are. A rendered Mermaid diagram is clickable too. */
+ * smaller than its real size, or an SVG image, gets the zoom cursor (the script
+ * adds the class), so small icons stay as they are. A rendered Mermaid diagram
+ * is clickable too. */
 .living-handbook-page :is(.wp-block-post-content, .entry-content) img.living-handbook-zoomable,
 .living-handbook-page :is(.wp-block-post-content, .entry-content) .mermaid.living-handbook-zoomable {
 	cursor: zoom-in;
@@ -1292,6 +1305,8 @@ h4:hover > .living-handbook-anchor,
 .living-handbook-zoom--diagram > .mermaid {
 	width: 100%;
 }
+
+/* ---------- Lightbox ---------- */
 
 .living-handbook-lightbox {
 	position: fixed;
@@ -1328,7 +1343,7 @@ h4:hover > .living-handbook-anchor,
 .living-handbook-lightbox__close {
 	position: absolute;
 	top: 1rem;
-	right: 1rem;
+	inset-inline-end: 1rem;
 	width: 2.5rem;
 	height: 2.5rem;
 	padding: 0;
@@ -1349,11 +1364,13 @@ h4:hover > .living-handbook-anchor,
 }
 
 @media (prefers-reduced-motion: no-preference) {
+
 	.living-handbook-lightbox {
 		animation: living-handbook-lightbox-in 0.15s ease;
 	}
 
 	@keyframes living-handbook-lightbox-in {
+
 		from {
 			opacity: 0;
 		}
@@ -1363,6 +1380,7 @@ h4:hover > .living-handbook-anchor,
 		}
 	}
 }
+
 /* ---------- Learning paths ---------- */
 
 /*
@@ -1395,7 +1413,7 @@ h4:hover > .living-handbook-anchor,
 	color: var(--lh-muted);
 	font-variant-numeric: tabular-nums;
 	min-width: 1.6em;
-	text-align: right;
+	text-align: end;
 }
 
 .living-handbook-path__link {
@@ -1409,13 +1427,13 @@ h4:hover > .living-handbook-anchor,
 
 .living-handbook-path__item.is-read .living-handbook-path__number::after {
 	content: "\2713";
-	margin-left: 0.3em;
+	margin-inline-start: 0.3em;
 }
 
 .living-handbook-path__button {
 	display: inline-block;
 	padding: 0.5em 1.2em;
-	border: 1px solid currentColor;
+	border: 1px solid currentcolor;
 	border-radius: 4px;
 	text-decoration: none;
 }
@@ -1454,8 +1472,8 @@ h4:hover > .living-handbook-anchor,
 }
 
 .living-handbook-pathbar__step--next {
-	margin-left: auto;
-	text-align: right;
+	margin-inline-start: auto;
+	text-align: end;
 }
 
 .living-handbook-pathbar__direction {
