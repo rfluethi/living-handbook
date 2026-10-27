@@ -37,11 +37,16 @@ final class MkDocsImport {
 	private const YAML = 'Symfony\\Component\\Yaml\\Yaml';
 
 	/**
-	 * Whether a YAML parser is available.
+	 * Returns whether a YAML parser is available.
+	 *
+	 * Loads the bundled libraries itself, like MarkdownConverter::available():
+	 * Vendored::exists() only looks, and up to 0.75.1 this answered yes only
+	 * when another class had happened to load them first.
 	 *
 	 * @return bool
 	 */
 	public static function available(): bool {
+		Vendored::load();
 		return Vendored::exists( self::YAML );
 	}
 
