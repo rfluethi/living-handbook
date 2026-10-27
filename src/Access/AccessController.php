@@ -268,18 +268,23 @@ final class AccessController {
 
 		global $wpdb;
 
-		$terms = implode( ',', array_map( 'absint', $hidden ) );
-		$types = "'" . implode( "','", array_map( static fn( string $type ): string => (string) esc_sql( $type ), self::guarded_post_types() ) ) . "'";
-		$tax   = esc_sql( Handbooks::TAXONOMY );
+		$hidden = array_map( 'absint', $hidden );
+		$types  = self::guarded_post_types();
 
-		$sql = "SELECT DISTINCT p.ID FROM {$wpdb->posts} p"
-			. " INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID"
-			. " INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id"
-			. " WHERE tt.taxonomy = '{$tax}' AND tt.term_id IN ({$terms})"
-			. " AND p.post_type IN ({$types}) AND p.post_author <> %d";
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- term ids are integers, types and taxonomy fixed and escaped, the user id a placeholder; the answer depends on the user and on every page's membership, which no cache group tracks.
-		$ids = $wpdb->get_col( $wpdb->prepare( $sql, $user_id ) );
+		// Every value is a placeholder, so the query is prepared as a whole.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the answer depends on the user and on every page's membership, which no cache group tracks.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT p.ID FROM {$wpdb->posts} p
+				INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
+				INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+				WHERE tt.taxonomy = %s
+				AND tt.term_id IN (" . implode( ', ', array_fill( 0, count( $hidden ), '%d' ) ) . ')
+				AND p.post_type IN (' . implode( ', ', array_fill( 0, count( $types ), '%s' ) ) . ')
+				AND p.post_author <> %d',
+				array_merge( array( Handbooks::TAXONOMY ), $hidden, $types, array( $user_id ) )
+			)
+		);
 
 		return array_map( 'intval', (array) $ids );
 	}
