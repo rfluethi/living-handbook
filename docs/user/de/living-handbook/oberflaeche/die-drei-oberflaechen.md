@@ -37,7 +37,7 @@ Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Be
 
 Es gibt zwei Suchen, beide auf das jeweilige Handbuch begrenzt. Die Suche auf der **Einstiegsseite** filtert die Seitenliste; durchsucht werden Titel und Text der Seiten, auch der Inhalt zugeklappter Abschnitte. Das Suchfeld auf einer **Einzelseite** schlägt schon beim Tippen passende Seiten vor, als direkte Links. Beide Suchen zeigen nur Seiten, die die suchende Person lesen darf.
 
-Zwei Grenzen sind gewollt: Die normale WordPress-Suche der Website findet Handbuch-Seiten nicht, dafür gibt es die Handbuch-Suche. Und die Adressen der Handbuch-Seiten (`/handbook/...`, `/handbook-set/...`) sind fest vorgegeben und englisch; ändern lassen sie sich zurzeit nicht.
+Zwei Grenzen sind gewollt: Die normale WordPress-Suche der Website findet Handbuch-Seiten nicht, dafür gibt es die Handbuch-Suche. Und die Adressen der Handbuch-Seiten (`/handbook/...`, `/handbook-set/...`) sind englisch vorgegeben. Ändern lassen sie sich nur mit einem Filter im Code, siehe die Hooks in der technischen Dokumentation.
 
 ## Woher die Layouts kommen
 

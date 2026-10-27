@@ -37,7 +37,7 @@ The table of contents on the right builds itself from the page's headings. While
 
 There are two searches, both limited to the current handbook. The search on the **entry page** filters the page list; it covers the title and the text of the pages, including the content of collapsed sections. The search field on a **single page** suggests matching pages as you type, as direct links. Both searches only show pages the searching person may read.
 
-Two limits are intentional: the normal WordPress site search does not find handbook pages; the handbook search exists for that. And the addresses of the handbook pages (`/handbook/...`, `/handbook-set/...`) are fixed and in English, whatever language the handbook is written in; they cannot currently be changed.
+Two limits are intentional: the normal WordPress site search does not find handbook pages; the handbook search exists for that. And the addresses of the handbook pages (`/handbook/...`, `/handbook-set/...`) are in English by default, whatever language the handbook is written in. They can only be changed with a filter in code, see the hooks in the technical documentation.
 
 ## Where the layouts come from
 
