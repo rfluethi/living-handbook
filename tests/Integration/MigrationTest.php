@@ -148,6 +148,33 @@ final class MigrationTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A moved page and its subpage resolve at their new addresses without the
+	 * rewrite rules being rebuilt. The handbook rules match any path below the
+	 * handbook base, so nothing about a single page lives in them; this pins
+	 * that, so the bulk move does not need to flush.
+	 *
+	 * @return void
+	 */
+	public function test_moved_pages_resolve_without_rebuilding_the_rules(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$handbook = $this->handbook();
+		$top      = $this->page( 'Team' );
+		$child    = $this->page( 'Onboarding', $top );
+		$rules    = get_option( 'rewrite_rules' );
+
+		foreach ( MoveToHandbook::with_descendants( array( $top ) ) as $id ) {
+			$this->assertTrue( MoveToHandbook::move( $id, $handbook ) );
+		}
+		$this->assertSame( $rules, get_option( 'rewrite_rules' ), 'precondition: the rules were not rebuilt' );
+
+		foreach ( array( $top, $child ) as $id ) {
+			$this->go_to( (string) get_permalink( $id ) );
+			$this->assertTrue( is_singular( Handbook::POST_TYPE ), 'Not a handbook page: ' . get_permalink( $id ) );
+			$this->assertSame( $id, get_queried_object_id() );
+		}
+	}
+
+	/**
 	 * A handbook the user may not use moves nothing, and the notice says that
 	 * rather than "no handbook was chosen". Up to 0.75.1 both cases got the
 	 * same answer.

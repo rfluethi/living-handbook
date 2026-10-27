@@ -266,10 +266,6 @@ final class MoveToHandbook {
 			}
 		}
 
-		if ( $moved > 0 ) {
-			flush_rewrite_rules( false );
-		}
-
 		return add_query_arg(
 			array(
 				self::RESULT_ARG  => $moved,
