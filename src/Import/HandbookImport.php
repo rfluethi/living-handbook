@@ -128,9 +128,12 @@ final class HandbookImport {
 	public const BUNDLE_MAX_TOTAL_BYTES = 1073741824;
 
 	/**
-	 * Post statuses a bundle may set.
+	 * Post statuses a bundle may set, and the ones the export carries.
+	 *
+	 * Everything a person may still be working on or reading; not the trash,
+	 * not an auto-draft, and no status a bundle could invent.
 	 */
-	private const STATUSES = array( 'publish', 'future', 'draft', 'pending', 'private' );
+	public const STATUSES = array( 'publish', 'future', 'draft', 'pending', 'private' );
 
 	/**
 	 * Hook registration into WordPress.

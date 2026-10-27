@@ -304,6 +304,13 @@ JS;
 		if ( ! AccessController::may_use_handbook( (int) $term->term_id ) ) {
 			wp_die( esc_html__( 'You are not allowed to export this handbook.', 'living-handbook' ), '', array( 'response' => 403 ) );
 		}
+		// Nor is an area page the user may not view, or one the export leaves out
+		// (a page in the trash). build_manifest() would fall back to the whole
+		// handbook, and up to 0.75.1 that went out under a file name that names
+		// the area.
+		if ( $root_id > 0 && ( ! in_array( get_post_status( $root_id ), HandbookImport::STATUSES, true ) || ! AccessController::can_view_post( $root_id, get_current_user_id() ) ) ) {
+			wp_die( esc_html__( 'That area cannot be exported.', 'living-handbook' ), '', array( 'response' => 403 ) );
+		}
 
 		if ( ! class_exists( 'ZipArchive' ) ) {
 			wp_die( esc_html__( 'ZipArchive is not available on the server.', 'living-handbook' ), '', array( 'response' => 501 ) );
@@ -397,7 +404,7 @@ JS;
 		$posts = get_posts(
 			array(
 				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+				'post_status'    => HandbookImport::STATUSES,
 				'posts_per_page' => -1,
 				'orderby'        => 'menu_order',
 				'order'          => 'ASC',
@@ -525,7 +532,7 @@ JS;
 		$posts = get_posts(
 			array(
 				'post_type'      => Training::POST_TYPE,
-				'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+				'post_status'    => HandbookImport::STATUSES,
 				'posts_per_page' => -1,
 				'orderby'        => array(
 					'title' => 'ASC',

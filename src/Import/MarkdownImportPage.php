@@ -687,7 +687,7 @@ final class MarkdownImportPage {
 	private static function find_existing_page( string $slug, string $source_path, int $handbook_id, bool $allow_slug_match ): int {
 		$base = array(
 			'post_type'      => Handbook::POST_TYPE,
-			'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+			'post_status'    => HandbookImport::STATUSES,
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
 			'no_found_rows'  => true,

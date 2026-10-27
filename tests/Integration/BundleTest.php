@@ -481,6 +481,48 @@ final class BundleTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * An area the exporting user may not view is refused, rather than the
+	 * whole handbook going out under a file name that names the area.
+	 *
+	 * @return void
+	 */
+	public function test_an_area_the_user_may_not_view_is_not_exported(): void {
+		$handbook = $this->make_handbook( 'Source' );
+		$area     = $this->make_page( $handbook, 'Hidden area' );
+		$this->make_page( $handbook, 'Elsewhere' );
+
+		add_filter(
+			'living_handbook_can_view_post',
+			static function ( $allowed, $post_id ) use ( $area ) {
+				return $area === (int) $post_id ? false : $allowed;
+			},
+			10,
+			2
+		);
+		// Reaching the page query means the export went ahead.
+		add_action(
+			'pre_get_posts',
+			static function (): void {
+				throw new \RuntimeException( 'The export went ahead.' );
+			}
+		);
+
+		$_POST['handbook']     = (string) $handbook;
+		$_POST['area']         = (string) $area;
+		$_REQUEST['_wpnonce']  = wp_create_nonce( 'living_handbook_export' );
+		$_POST['_wpnonce']     = $_REQUEST['_wpnonce'];
+
+		try {
+			( new HandbookExport() )->download();
+			$this->fail( 'The download did not stop.' );
+		} catch ( \WPDieException $e ) {
+			$this->assertStringContainsString( 'cannot be exported', $e->getMessage() );
+		} finally {
+			unset( $_POST['handbook'], $_POST['area'], $_POST['_wpnonce'], $_REQUEST['_wpnonce'] );
+		}
+	}
+
+	/**
 	 * A bundle is checked against its own limits before it is read. Up to
 	 * 0.75.0 it had none, so a small prepared archive could unpack to whatever
 	 * its entries claimed; the first limits were the Markdown ZIP import's,
