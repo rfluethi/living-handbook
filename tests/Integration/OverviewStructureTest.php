@@ -159,6 +159,25 @@ final class OverviewStructureTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A handbook below a child handbook is on the overview too, set in under its
+	 * own parent. Up to 0.75.1 the overview stopped after the second level, while
+	 * the menu listed every level.
+	 *
+	 * @return void
+	 */
+	public function test_a_grandchild_handbook_is_shown_under_its_parent(): void {
+		$top    = $this->handbook( 'Company' );
+		$middle = $this->handbook( 'Engineering', $top );
+		$this->handbook( 'Platform team', $middle );
+
+		$out = Entry::render_chooser();
+
+		$this->assertStringContainsString( 'Platform team', $out );
+		$this->assertStringContainsString( 'in Engineering', $out );
+		$this->assertSame( 2, substr_count( $out, 'living-handbook-cards--children' ) );
+	}
+
+	/**
 	 * Access is not inherited: a child of a handbook nobody may read is readable
 	 * on its own terms, and appears, rather than disappearing with its parent.
 	 *

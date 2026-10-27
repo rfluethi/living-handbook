@@ -26,11 +26,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Entry {
 
 	/**
-	 * Render the overview: a card per handbook the current user may read.
+	 * Renders the overview: a card per handbook the current user may read.
 	 *
-	 * A handbook that has handbooks of its own shows them set in below it. The
-	 * grouping taxonomy was hierarchical from the start and nothing read it, so a
-	 * structure someone built was invisible until now.
+	 * A handbook that has handbooks of its own shows them set in below it, at
+	 * any depth, the same way the handbook menu nests them.
 	 *
 	 * @param string $display 'cards' (grid) or 'list' (single column).
 	 * @param int    $preview How many page titles to list under each card; 0 for none.
@@ -47,30 +46,46 @@ final class Entry {
 		// The cached previews of all cards in one read, not one per card.
 		Cards::prime_previews( $readable, $preview );
 
-		$cards = '';
-		foreach ( $by_parent[0] ?? array() as $term ) {
-			$cards .= Cards::handbook_card( $term, $preview );
-
-			$children = $by_parent[ (int) $term->term_id ] ?? array();
-			if ( array() === $children ) {
-				continue;
-			}
-
-			// The children of a handbook are set in, so the overview says which
-			// handbook they belong to by where they stand rather than by repeating
-			// the name on every card.
-			$cards .= '<div class="living-handbook-cards living-handbook-cards--children">';
-			foreach ( $children as $child ) {
-				$cards .= Cards::handbook_card( $child, $preview, $names[ (int) $child->parent ] ?? '' );
-			}
-			$cards .= '</div>';
-		}
+		$cards = self::chooser_level( $by_parent, 0, $names, $preview );
 
 		if ( '' === $cards ) {
 			return '<p class="living-handbook-empty">' . esc_html__( 'No handbooks available.', 'living-handbook' ) . '</p>';
 		}
 		$modifier = 'list' === $display ? ' living-handbook-overview--list' : '';
 		return '<div class="living-handbook-overview' . $modifier . '"><div class="living-handbook-cards living-handbook-cards--books">' . $cards . '</div></div>';
+	}
+
+	/**
+	 * One level of the overview and the levels below it.
+	 *
+	 * Up to 0.75.1 the overview stopped after the second level, so a handbook
+	 * below a child handbook was readable and listed in the menu, but missing
+	 * from the overview.
+	 *
+	 * @param array<int, array<int, WP_Term>> $by_parent Handbooks grouped by parent.
+	 * @param int                             $above     Id of the handbook whose children to render, 0 for the top level.
+	 * @param array<int, string>              $names     Names of the readable handbooks, by id.
+	 * @param int                             $preview   How many page titles to list under each card.
+	 * @return string
+	 */
+	private static function chooser_level( array $by_parent, int $above, array $names, int $preview ): string {
+		$cards = '';
+		foreach ( $by_parent[ $above ] ?? array() as $term ) {
+			// Only a child names its parent; on the top level there is none to name.
+			$cards .= Cards::handbook_card( $term, $preview, $above > 0 ? ( $names[ $above ] ?? '' ) : '' );
+
+			$children = self::chooser_level( $by_parent, (int) $term->term_id, $names, $preview );
+			if ( '' === $children ) {
+				continue;
+			}
+
+			// The children of a handbook are set in, so the overview says which
+			// handbook they belong to by where they stand rather than by repeating
+			// the name on every card.
+			$cards .= '<div class="living-handbook-cards living-handbook-cards--children">' . $children . '</div>';
+		}
+
+		return $cards;
 	}
 
 	/**
