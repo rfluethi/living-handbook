@@ -996,4 +996,27 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '/assets/fonts/font.woff2', $found[1], 'The folder inside the path stays.' );
 		$this->assertNotFalse( $zip->locateName( 'assets/' . $found[1] ), 'The file the stylesheet names is in the archive.' );
 	}
+
+	/**
+	 * The search says "1 page found", not "1 pages found": the script gets
+	 * the heading for every count it can show, each in its plural form.
+	 *
+	 * @return void
+	 */
+	public function test_the_search_heading_has_the_right_plural(): void {
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$script = (string) $this->export( $term )->getFromName( 'assets/site.js' );
+
+		$this->assertSame( 1, preg_match( '/^var LH_STRINGS = (\{.*?\});$/m', $script, $found ) );
+		$strings = (array) json_decode( $found[1], true );
+		$this->assertIsArray( $strings['results'] ?? null );
+		$this->assertSame( '0 pages found', $strings['results'][0] );
+		$this->assertSame( '1 page found', $strings['results'][1] );
+		$this->assertSame( '2 pages found', $strings['results'][2] );
+		$this->assertCount( (int) $strings['max'] + 1, $strings['results'], 'A heading for every count the search lists.' );
+		$this->assertStringContainsString( 'LH_STRINGS.results[ hits.length ]', $script );
+		$this->assertStringContainsString( '.slice( 0, LH_STRINGS.max )', $script );
+	}
 }

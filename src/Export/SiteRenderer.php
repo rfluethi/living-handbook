@@ -47,6 +47,11 @@ final class SiteRenderer {
 	private const INDEX_LENGTH = 50000;
 
 	/**
+	 * The most results the export's search lists.
+	 */
+	private const MAX_RESULTS = 50;
+
+	/**
 	 * The path a page gets inside the export, without the extension.
 	 *
 	 * The slugs of a page's ancestors, joined with slashes, which is the same key
@@ -738,11 +743,22 @@ CSS;
 	 * @return string
 	 */
 	public static function script(): string {
+		// The heading over the results, ready for every count the search can
+		// show, so each one has the plural form its language gives it. Up to
+		// 0.75.1 the script knew only the plural and said "1 pages found"; two
+		// forms would still be wrong for a language with three. The search
+		// lists at most MAX_RESULTS, so the list is short.
+		$counts = array();
+		for ( $count = 0; $count <= self::MAX_RESULTS; $count++ ) {
+			/* translators: %d: number of results. */
+			$counts[] = sprintf( _n( '%d page found', '%d pages found', $count, 'living-handbook' ), $count );
+		}
+
 		$strings = wp_json_encode(
 			array(
 				'noResults' => __( 'Nothing found.', 'living-handbook' ),
-				/* translators: %d: number of results. */
-				'results'   => __( '%d pages found', 'living-handbook' ),
+				'results'   => $counts,
+				'max'       => self::MAX_RESULTS,
 				'clear'     => __( 'Clear the search', 'living-handbook' ),
 			),
 			JSON_UNESCAPED_UNICODE
@@ -799,9 +815,9 @@ CSS;
 
 		var hits = pages.filter( function ( page ) {
 			return page.t.toLowerCase().indexOf( needle ) >= 0 || page.x.toLowerCase().indexOf( needle ) >= 0;
-		} ).slice( 0, 50 );
+		} ).slice( 0, LH_STRINGS.max );
 
-		var html = '<h2>' + LH_STRINGS.results.replace( '%d', hits.length ) + '</h2>';
+		var html = '<h2>' + escapeHtml( LH_STRINGS.results[ hits.length ] || String( hits.length ) ) + '</h2>';
 		if ( ! hits.length ) {
 			html += '<p>' + escapeHtml( LH_STRINGS.noResults ) + '</p>';
 		} else {
