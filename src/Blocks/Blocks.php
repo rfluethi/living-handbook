@@ -22,6 +22,7 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Training\PathView;
+use LivingHandbook\Training\Training;
 use WP_Block_Supports;
 use WP_HTML_Tag_Processor;
 use WP_Term;
@@ -460,12 +461,19 @@ final class Blocks {
 
 	/**
 	 * The handbook term ID for the current view: the page's handbook on a
-	 * single page, or the queried handbook on an entry (term archive).
+	 * single page, the path's handbook on a learning path, or the queried
+	 * handbook on an entry (term archive).
+	 *
+	 * A learning path is in the list because its template puts the navigation
+	 * in the left column, "the same tree the lessons stand in", as the template
+	 * documentation says. Up to 0.75.1 this asked only for handbook pages and
+	 * entry pages, so the column stayed empty on every path. The navigation
+	 * marks no page as current there: the path is not one of the pages.
 	 *
 	 * @return int
 	 */
 	private static function current_term_id(): int {
-		if ( is_singular( Handbook::POST_TYPE ) ) {
+		if ( is_singular( array( Handbook::POST_TYPE, Training::POST_TYPE ) ) ) {
 			$post_id = get_the_ID();
 			if ( false === $post_id ) {
 				return 0;

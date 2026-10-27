@@ -58,7 +58,7 @@ Die Suchleiste eines Handbuchs. Sie sucht im Handbuch und grenzt die Ergebnisspa
 
 Farben, Rahmen, Schrift und Abstände sind keine Einstellungen dieses Blocks, sondern seine `supports` in der Seitenleiste, dieselben, die die Kern-Blöcke nutzen. Was der Kern-Suchblock hat und dieser nicht, ist die ausklappbare Variante; sie bleibt weg, bis jemand sie verlangt.
 
-**Rendert auf:** einer Handbuch-Einstiegsseite und einer Einzelseite (dort sucht sie im Handbuch dieser Seite).
+**Rendert auf:** einer Handbuch-Einstiegsseite, einer Einzelseite und einem Lernpfad (dort sucht sie im Handbuch dieser Seite oder dieses Pfads).
 
 ## Handbuch-Filterleiste (`living-handbook/filters`)
 
@@ -104,7 +104,7 @@ Der Seitenbaum des aktuellen Handbuchs, als in sich geschlossene, einklappbare L
 
 **Einstellungen:** *Darstellung* wählt zwischen **Menü** (der ganze Baum ist zu sehen, nichts klappt ein) und **Akkordeon** (jeder Zweig mit Kindern klappt ein; der Zweig zur aktuellen Seite startet offen, der Rest geschlossen, und ein Schalter links am Zweig öffnet oder schließt ihn).
 
-**Rendert auf:** Einzelseiten und Einstiegsseiten.
+**Rendert auf:** Einzelseiten, Einstiegsseiten und Lernpfaden. Auf einem Lernpfad zeigt sie den Baum seines Handbuchs, in dem die Lektionen stehen, und markiert keine Seite als aktuell, weil der Pfad keine der Seiten ist.
 
 ## Handbuch-Abzeichen (`living-handbook/badges`)
 
@@ -169,13 +169,13 @@ Ein kurzer Hinweis, der eine Seite als auf GitHub gepflegt und automatisch aktua
 
 Ein Suchfeld mit Vorschlägen beim Tippen für das aktuelle Handbuch. Während du tippst, listet es die passenden Seiten des Handbuchs als Links in einer Auswahl, du springst also direkt zu einer Seite, ohne die aktuelle zu verlassen. Die Ergebnisse sind auf das aktuelle Handbuch begrenzt und zugriffsgeprüft, sie zeigen also nie eine Seite, die du nicht lesen darfst.
 
-Das ist nicht die Suchleiste: die grenzt die Ergebnisspalte ein, diese hier führt weg von der aktuellen Seite. Sie rendert überall dort, wo die Seite ihr Handbuch kennt, auf Einzelseiten wie auf Einstiegsseiten.
+Das ist nicht die Suchleiste: die grenzt die Ergebnisspalte ein, diese hier führt weg von der aktuellen Seite. Sie rendert überall dort, wo die Seite ihr Handbuch kennt, auf Einzelseiten, Einstiegsseiten und Lernpfaden.
 
 Unter jedem Treffer steht der Satz, in dem die Wörter gefunden wurden, mit den Wörtern hervorgehoben. Das ist der Text der Seite rund um die Fundstelle, nicht ihr Textauszug: der wäre bei jeder Suche derselbe und sagte nichts darüber, warum diese Seite passt. Eine Seite, die nur über den Titel getroffen wurde, zeigt keinen Satz, weil es keinen gibt. Die Teile reisen als Text, nicht als Markup, und der Browser baut die `<mark>`-Elemente daraus; so wird der Inhalt einer Seite unterwegs nie als HTML gelesen.
 
 **Einstellungen:** *Beschriftung anzeigen* samt Wortlaut und der Platzhaltertext. Farben, Rahmen, Schrift und Abstände kommen aus den Block-`supports`.
 
-**Rendert auf:** Einzelseiten und Handbuch-Einstiegsseiten.
+**Rendert auf:** Einzelseiten, Handbuch-Einstiegsseiten und Lernpfaden.
 
 ## Lektionen eines Lernpfads (`living-handbook/lessons`)
 

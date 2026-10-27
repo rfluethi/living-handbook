@@ -508,4 +508,33 @@ final class TrainingTest extends WP_UnitTestCase {
 		$this->go_to( $url );
 		$this->assertSame( '', PathView::render_path_nav(), 'A reader gets nothing from a draft.' );
 	}
+	/**
+	 * A learning path shows the navigation of its handbook in the left column,
+	 * as its template and the template documentation say, and marks no page as
+	 * the current one: the path is not one of the pages. Up to 0.75.1 the column
+	 * stayed empty, because the block only knew handbook pages and entry pages.
+	 *
+	 * @return void
+	 */
+	public function test_a_path_shows_the_navigation_of_its_handbook(): void {
+		$lesson = $this->page( 'First lesson' );
+		$this->page( 'A page that is no lesson' );
+		$elsewhere = (int) self::factory()->term->create( array( 'taxonomy' => Handbooks::TAXONOMY ) );
+		update_term_meta( $elsewhere, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_PUBLIC );
+		$this->page( 'Page of another handbook', $elsewhere );
+
+		$path = $this->path( array( $lesson ) );
+		wp_set_current_user( 0 );
+		$this->go_to( (string) get_permalink( $path ) );
+		$this->assertTrue( is_singular( Training::POST_TYPE ), 'Precondition: the path is the page being viewed.' );
+
+		$html = do_blocks( '<!-- wp:living-handbook/navigation {"variant":"accordion"} /-->' );
+
+		$this->assertStringContainsString( 'living-handbook-nav', $html, 'The path page has no navigation.' );
+		$this->assertStringContainsString( 'First lesson', $html );
+		$this->assertStringContainsString( 'A page that is no lesson', $html, 'It is the whole tree of the handbook, not the lesson list.' );
+		$this->assertStringNotContainsString( 'Page of another handbook', $html );
+		$this->assertStringNotContainsString( 'is-current', $html, 'No page is the current one on a path.' );
+		$this->assertStringNotContainsString( 'aria-current', $html );
+	}
 }

@@ -58,7 +58,7 @@ The search bar of a handbook. It submits to the handbook and narrows the result 
 
 Colour, border, typography and spacing are not settings here, they are the block's own supports in the sidebar, the same ones the core blocks use. The one thing the core search block has and this does not is the collapsible variant, left out until someone asks for it.
 
-**Renders on:** a handbook entry page, and a single handbook page (where it searches the handbook that page belongs to).
+**Renders on:** a handbook entry page, a single handbook page and a learning path (where it searches the handbook that page or path belongs to).
 
 ## Handbook filter bar (`living-handbook/filters`)
 
@@ -104,7 +104,7 @@ The page tree of the current handbook, rendered as a self-contained, collapsible
 
 **Settings:** *Display* chooses between **Menu** (the whole tree is shown at once, nothing collapses) and **Accordion** (each branch with children collapses; the branch leading to the current page starts open, the rest closed, and a toggle on the left of a branch opens or closes it).
 
-**Renders on:** single handbook pages and handbook entry pages.
+**Renders on:** single handbook pages, handbook entry pages and learning paths. On a learning path it shows the tree of the path's handbook, the one its lessons stand in, and marks no page as current, because the path is none of the pages.
 
 ## Handbook badges (`living-handbook/badges`)
 
@@ -167,13 +167,13 @@ A short note marking a page as maintained on GitHub and updated automatically, w
 
 ## Handbook quick search (`living-handbook/search`)
 
-A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It is not the search bar: it jumps to a page rather than narrowing the result column. It renders wherever the page knows its handbook, on single pages and entry pages alike.
+A search-as-you-type box for the current handbook, meant for a single page. As you type, it lists the matching pages of the handbook as links in a dropdown, so you jump straight to a page without leaving the current one. The results are scoped to the current handbook and access-checked, so they never surface a page you may not read. It is not the search bar: it jumps to a page rather than narrowing the result column. It renders wherever the page knows its handbook, on single pages, entry pages and learning paths alike.
 
 Under each result stands the sentence the words were found in, with the words marked. That is the page's own text around the hit, not its excerpt: an excerpt is the same text for every search and would not say why this page matched. A page that matched by its title alone shows no sentence, because there is none to show. The pieces travel as text, not as markup, and the browser builds the `<mark>` elements from them, so nothing from a page's content is ever parsed as HTML on the way.
 
 **Settings:** *Show the label* and its wording, and the placeholder. Colour, border, typography and spacing come from the block supports.
 
-**Renders on:** single handbook pages and handbook entry pages.
+**Renders on:** single handbook pages, handbook entry pages and learning paths.
 
 ## Learning path lessons (`living-handbook/lessons`)
 
