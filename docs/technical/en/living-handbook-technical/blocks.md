@@ -68,7 +68,7 @@ With JavaScript it filters the result column in place; without it, its submit bu
 
 **Settings:** none of its own. Colour, border, typography and spacing come from the block supports.
 
-**Renders on:** a handbook entry page.
+**Renders on:** a handbook entry page, a single page and a learning path (there with the facets of the handbook of that page or path). Without a results column on the same page, its submit button sends the selection to the entry page.
 
 ## Handbook menu (`living-handbook/menu`)
 

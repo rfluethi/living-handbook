@@ -68,7 +68,7 @@ Mit JavaScript filtert er die Ergebnisliste an Ort und Stelle, ohne lädt sein A
 
 **Einstellungen:** keine eigenen. Farben, Rahmen, Schrift und Abstände kommen aus den Block-`supports`.
 
-**Rendert auf:** einer Handbuch-Einstiegsseite.
+**Rendert auf:** einer Handbuch-Einstiegsseite, einer Einzelseite und einem Lernpfad (dort mit den Facetten des Handbuchs dieser Seite oder dieses Pfads). Ohne Ergebnisspalte auf derselben Seite schickt sein Absende-Knopf die Auswahl an die Einstiegsseite.
 
 ## Handbuch-Menü (`living-handbook/menu`)
 
