@@ -1052,4 +1052,35 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'href="' . $link . '"', $open, 'The link keeps its address.' );
 		$this->assertStringNotContainsString( 'wp-login.php?action=postpass', $open );
 	}
+
+	/**
+	 * The navigation of an exported page lists only exported pages. Up to this
+	 * fix the page tree in the rendered template still named the
+	 * password-protected page plan() had left out, with an absolute link to the
+	 * live site, on every page of the export.
+	 *
+	 * @return void
+	 */
+	public function test_the_navigation_leaves_out_what_the_export_left_out(): void {
+		$term   = $this->handbook( 'Company' );
+		$locked = (int) self::factory()->post->create(
+			array(
+				'post_type'     => Handbook::POST_TYPE,
+				'post_status'   => 'publish',
+				'post_title'    => 'Locked page',
+				'post_password' => 'secret',
+			)
+		);
+		wp_set_object_terms( $locked, array( $term ), Handbooks::TAXONOMY );
+		$this->page( $term, 'Open page', 'Text.' );
+		$this->page( $term, 'Second page', 'Text.' );
+
+		$zip  = $this->export( $term );
+		$open = (string) $zip->getFromName( 'open-page.html' );
+
+		$this->assertStringContainsString( 'living-handbook-nav', $open, 'The template renders the navigation.' );
+		$this->assertStringContainsString( 'second-page.html', $open, 'The other exported page is in it.' );
+		$this->assertStringNotContainsString( 'Locked page', $open, 'The page the export left out is not.' );
+		$this->assertStringNotContainsString( (string) get_permalink( $locked ), $open );
+	}
 }

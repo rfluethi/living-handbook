@@ -472,6 +472,18 @@ final class StaticSite {
 			$body = (string) $html;
 			return $html;
 		};
+		// Whatever the render lists, the navigation above all, lists only the
+		// pages that are in the export. plan() leaves out pages the reader may
+		// see on the site but that do not work without it, a password-protected
+		// one for instance; up to this fix the navigation of every exported page
+		// still named such a page and linked it to the live site.
+		$only_exported = static function ( $allowed, $post_id ) use ( $index ) {
+			if ( $allowed && ! isset( $index[ (int) $post_id ] ) && Handbook::POST_TYPE === get_post_type( (int) $post_id ) ) {
+				return false;
+			}
+			return $allowed;
+		};
+		add_filter( 'living_handbook_can_view_post', $only_exported, PHP_INT_MAX, 2 );
 		add_filter( 'render_block_core/post-content', $capture );
 		$content = TemplateRender::render( $post, (string) $state['template'] );
 		remove_filter( 'render_block_core/post-content', $capture );
@@ -484,6 +496,7 @@ final class StaticSite {
 			// An edited template without a post content block.
 			$body = self::render_content( $post );
 		}
+		remove_filter( 'living_handbook_can_view_post', $only_exported, PHP_INT_MAX );
 
 		$content = self::rewrite( $zip, $content, $path, $links );
 
