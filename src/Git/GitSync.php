@@ -117,6 +117,11 @@ final class GitSync {
 	private const MAX_NOTED_PAGES = 20;
 
 	/**
+	 * How many failed pages the sync notice names before it counts the rest.
+	 */
+	private const MAX_NOTICE_PAGES = 10;
+
+	/**
 	 * Local pages a load found by their source path but left alone, because
 	 * they were loaded without the connection to the shipped copy. Collected
 	 * by create_local_page() for the run of import_local_folder() in progress.
@@ -2220,7 +2225,7 @@ final class GitSync {
 	}
 
 	/**
-	 * Show an admin notice listing GitHub pages whose last sync failed.
+	 * Shows an admin notice listing GitHub pages whose last sync failed.
 	 *
 	 * @return void
 	 */
@@ -2237,18 +2242,23 @@ final class GitSync {
 			return;
 		}
 
-		$ids   = get_posts(
+		// Only the pages that are named are loaded; the count comes from the
+		// database. Up to 0.75.1 the query stopped at fifty and the notice
+		// reported fifty however many had failed.
+		$query = new WP_Query(
 			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'any',
-				'posts_per_page' => 50,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'meta_key'       => self::META_ERROR, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+				'post_type'        => Handbook::POST_TYPE,
+				'post_status'      => 'any',
+				'posts_per_page'   => self::MAX_NOTICE_PAGES,
+				'fields'           => 'ids',
+				// Like get_posts(), which this query was until 0.75.1.
+				'suppress_filters' => true,
+				'meta_key'         => self::META_ERROR, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- a flag set on few pages, read on the handbook screens only.
+				'meta_value'       => '1', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- see meta_key.
 			)
 		);
-		$count = count( $ids );
+		$ids   = array_map( 'intval', (array) $query->posts );
+		$count = (int) $query->found_posts;
 		if ( 0 === $count ) {
 			return;
 		}
@@ -2264,10 +2274,8 @@ final class GitSync {
 			$count
 		);
 
-		$limit = 10;
 		$items = '';
-		foreach ( array_slice( $ids, 0, $limit ) as $id ) {
-			$id   = (int) $id;
+		foreach ( $ids as $id ) {
 			$edit = (string) get_edit_post_link( $id );
 			if ( '' === $edit ) {
 				continue;
@@ -2280,14 +2288,15 @@ final class GitSync {
 			);
 		}
 		$more = '';
-		if ( $count > $limit ) {
+		$rest = $count - count( $ids );
+		if ( $rest > 0 ) {
 			$more = sprintf(
 				'<p>%s</p>',
 				esc_html(
 					sprintf(
 						/* translators: %d: number of further failed pages not listed. */
-						__( '… and %d more.', 'living-handbook' ),
-						$count - $limit
+						_n( '… and %d more.', '… and %d more.', $rest, 'living-handbook' ),
+						$rest
 					)
 				)
 			);
