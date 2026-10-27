@@ -178,4 +178,34 @@ final class CronSyncScopeTest extends WP_UnitTestCase {
 		$this->assertContains( $url, $this->requested );
 		$this->assertFalse( get_option( GitSync::OPTION_SYNC_LOCK ), 'The next run must find the way free.' );
 	}
+
+	/**
+	 * A run that outlived its lock does not release the lock of the run that
+	 * took it over. Up to 0.76.0 the slow run's finally deleted the row
+	 * whoever's it was, and a third run came in beside the second.
+	 *
+	 * @return void
+	 */
+	public function test_a_run_whose_lock_was_taken_over_leaves_the_new_holders_lock(): void {
+		global $wpdb;
+
+		$this->make_github_page( Handbooks::VISIBILITY_PUBLIC, 'slow-one' );
+		$second = time() . ':second-run';
+		$takeover = static function ( $preempt ) use ( $wpdb, $second ) {
+			// While the first run waits on GitHub, its lock ages out and a second
+			// run takes it over, writing its own value.
+			$wpdb->update( $wpdb->options, array( 'option_value' => $second ), array( 'option_name' => GitSync::OPTION_SYNC_LOCK ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- stands in for another process.
+			wp_cache_delete( GitSync::OPTION_SYNC_LOCK, 'options' );
+			return $preempt;
+		};
+		add_filter( 'pre_http_request', $takeover, 5 );
+		( new GitSync() )->run_sync();
+		remove_filter( 'pre_http_request', $takeover, 5 );
+
+		$this->assertSame( $second, get_option( GitSync::OPTION_SYNC_LOCK ), 'The second run still holds its lock.' );
+
+		$third = $this->make_github_page( Handbooks::VISIBILITY_PUBLIC, 'third-one' );
+		( new GitSync() )->run_sync();
+		$this->assertNotContains( $third, $this->requested, 'A third run must not start beside the second.' );
+	}
 }

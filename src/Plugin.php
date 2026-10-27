@@ -33,6 +33,7 @@ use LivingHandbook\Privacy\Privacy;
 use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Setup\Settings;
+use LivingHandbook\Support\Lock;
 use LivingHandbook\Taxonomy\Taxonomies;
 use LivingHandbook\Training\LessonPicker;
 use LivingHandbook\Training\Training;
@@ -153,17 +154,15 @@ final class Plugin {
 		// the first one is still migrating, and on a busy site that is several
 		// at once. The migrations are idempotent, but a flush and a reschedule
 		// per concurrent request is waste, and two renames racing over the same
-		// rows is worse. add_option() is a single INSERT that fails when the row
-		// exists, which makes it a lock without any extra machinery. The lock
-		// carries its time, so one left behind by a request that died half-way
-		// is taken over after ten minutes instead of blocking the upgrade for
-		// good.
-		if ( ! add_option( self::UPGRADE_LOCK, time(), '', false ) ) {
-			$since = (int) get_option( self::UPGRADE_LOCK, 0 );
-			if ( $since > time() - 10 * MINUTE_IN_SECONDS ) {
-				return;
-			}
-			update_option( self::UPGRADE_LOCK, time(), false );
+		// rows is worse. Up to 0.76.0 the lock was add_option(), which writes
+		// with "ON DUPLICATE KEY UPDATE" and so let a second request in whenever
+		// the object cache listed the row as missing. Support\Lock takes it with
+		// an INSERT IGNORE instead, and a lock left behind by a request that died
+		// half-way is taken over after ten minutes instead of blocking the
+		// upgrade for good.
+		$lock = Lock::acquire( self::UPGRADE_LOCK, 10 * MINUTE_IN_SECONDS );
+		if ( '' === $lock ) {
+			return;
 		}
 
 		self::rename_meta_keys();
@@ -179,7 +178,7 @@ final class Plugin {
 		flush_rewrite_rules( false );
 
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
-		delete_option( self::UPGRADE_LOCK );
+		Lock::release( self::UPGRADE_LOCK, $lock );
 	}
 
 	/**

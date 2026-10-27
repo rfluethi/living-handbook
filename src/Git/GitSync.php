@@ -20,6 +20,7 @@ use LivingHandbook\Meta\Metadata;
 use LivingHandbook\Admin\ListScreen;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Setup\Settings;
+use LivingHandbook\Support\Lock;
 use WP_Error;
 use WP_Post;
 use WP_Query;
@@ -197,16 +198,26 @@ final class GitSync {
 	public const OPTION_CRON_OFFSET = 'living_handbook_sync_offset';
 
 	/**
-	 * Option that holds the scheduled sync's lock, with the time it was taken.
+	 * Option that holds the scheduled sync's lock: the holder's token, with the
+	 * time it was taken (see Support\Lock).
 	 */
 	public const OPTION_SYNC_LOCK = 'living_handbook_sync_lock';
 
 	/**
-	 * After how many seconds a lock counts as abandoned. A run that died
-	 * without releasing it must not stop the sync for good; a batch of twenty
-	 * pages with their images is minutes at worst.
+	 * After how many seconds a lock counts as abandoned.
+	 *
+	 * A run that died without releasing it must not stop the sync for good,
+	 * but a run that is only slow must not be joined by a second one. A batch
+	 * is CRON_BATCH pages, each one request for the Markdown and one per image,
+	 * every request with a 15-second timeout that counts wall time, not PHP's
+	 * execution time. Twenty pages with up to eleven images each, every request
+	 * running into its timeout, is 20 x 12 x 15 s = 3600 s. An hour also costs
+	 * little when a run did die: the shortest recurring schedule is hourly, so
+	 * the sync loses at most one turn. A slower run than that is joined by the
+	 * next one but keeps working, and it no longer releases the newcomer's lock
+	 * (see Support\Lock).
 	 */
-	private const SYNC_LOCK_TTL = 15 * MINUTE_IN_SECONDS;
+	private const SYNC_LOCK_TTL = HOUR_IN_SECONDS;
 
 	private const SCHEDULES = array( 'off', 'hourly', 'twicedaily', 'daily', 'weekly' );
 
@@ -2272,61 +2283,16 @@ final class GitSync {
 		// request that triggers WP-Cron while another is still busy can all land
 		// here together; up to 0.75.0 they ran side by side, read the same
 		// offset, synced the same batch twice and sideloaded its images twice.
-		if ( ! self::acquire_sync_lock() ) {
+		$token = Lock::acquire( self::OPTION_SYNC_LOCK, self::SYNC_LOCK_TTL );
+		if ( '' === $token ) {
 			return;
 		}
 
 		try {
 			$this->run_sync_locked();
 		} finally {
-			self::release_sync_lock();
+			Lock::release( self::OPTION_SYNC_LOCK, $token );
 		}
-	}
-
-	/**
-	 * Take the sync lock, or say that another run holds it.
-	 *
-	 * INSERT IGNORE rather than add_option(): add_option() writes with "ON
-	 * DUPLICATE KEY UPDATE" and so succeeds for the second run as well. The
-	 * insert either creates the row or does nothing, which is the one atomic
-	 * step the options table offers, and the way core's upgrader locks too. A
-	 * lock older than SYNC_LOCK_TTL belongs to a run that died, and is taken
-	 * over.
-	 *
-	 * @return bool
-	 */
-	private static function acquire_sync_lock(): bool {
-		global $wpdb;
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- an atomic insert is the point; the cache is cleared below.
-		$taken = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$wpdb->options}` ( `option_name`, `option_value`, `autoload` ) VALUES ( %s, %s, 'off' )", self::OPTION_SYNC_LOCK, (string) time() ) );
-		wp_cache_delete( self::OPTION_SYNC_LOCK, 'options' );
-		wp_cache_delete( 'notoptions', 'options' );
-		if ( 1 === (int) $taken ) {
-			return true;
-		}
-
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the value another process just wrote, not a cached one.
-		$since = (int) $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM `{$wpdb->options}` WHERE option_name = %s", self::OPTION_SYNC_LOCK ) );
-		if ( $since > time() - self::SYNC_LOCK_TTL ) {
-			return false;
-		}
-
-		// Abandoned. Take it over only if nobody else did in the meantime: the
-		// update names the old value, so of two runs doing this, one wins.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- the same atomic step, for a stale lock.
-		$taken = $wpdb->query( $wpdb->prepare( "UPDATE `{$wpdb->options}` SET option_value = %s WHERE option_name = %s AND option_value = %s", (string) time(), self::OPTION_SYNC_LOCK, (string) $since ) );
-		wp_cache_delete( self::OPTION_SYNC_LOCK, 'options' );
-		return 1 === (int) $taken;
-	}
-
-	/**
-	 * Release the sync lock.
-	 *
-	 * @return void
-	 */
-	private static function release_sync_lock(): void {
-		delete_option( self::OPTION_SYNC_LOCK );
 	}
 
 	/**

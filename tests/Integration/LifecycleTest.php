@@ -141,6 +141,33 @@ final class LifecycleTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A running upgrade keeps its lock also when the object cache lists the
+	 * lock row as missing. add_option(), the lock up to 0.76.0, trusted that
+	 * entry and wrote over the row with "ON DUPLICATE KEY UPDATE".
+	 *
+	 * @return void
+	 */
+	public function test_a_lock_the_cache_misses_still_holds(): void {
+		global $wpdb;
+
+		update_option( Plugin::DB_VERSION_OPTION, '0.1.0' );
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- the row another request wrote, past this request's cache.
+			$wpdb->options,
+			array(
+				'option_name'  => Plugin::UPGRADE_LOCK,
+				'option_value' => time() . ':first-request',
+				'autoload'     => 'off',
+			)
+		);
+		wp_cache_delete( Plugin::UPGRADE_LOCK, 'options' );
+		wp_cache_set( 'notoptions', array( Plugin::UPGRADE_LOCK => true ), 'options' );
+
+		Plugin::instance()->maybe_upgrade();
+
+		$this->assertSame( '0.1.0', get_option( Plugin::DB_VERSION_OPTION ), 'The migration ran past a held lock.' );
+	}
+
+	/**
 	 * A lock left behind by a request that died does not block the upgrade
 	 * for good, and a finished upgrade releases its lock.
 	 *
