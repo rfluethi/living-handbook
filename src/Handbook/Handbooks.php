@@ -324,7 +324,7 @@ final class Handbooks {
 			// stay a page count.
 			array( Handbook::POST_TYPE, Training::POST_TYPE ),
 			array(
-				'labels'                => Taxonomies::labels( self::TAXONOMY ),
+				'labels'                => Taxonomies::taxonomy_labels( self::TAXONOMY ),
 				'hierarchical'          => true,
 				'public'                => false,
 				'publicly_queryable'    => true,

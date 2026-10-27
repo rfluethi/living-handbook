@@ -195,7 +195,7 @@ final class Taxonomies {
 	 */
 	private function args( string $taxonomy, bool $hierarchical, bool $enabled = true ): array {
 		return array(
-			'labels'            => self::labels( $taxonomy ),
+			'labels'            => self::taxonomy_labels( $taxonomy ),
 			'hierarchical'      => $hierarchical,
 			'public'            => false,
 			// A taxonomy this site does not use stays registered, and only
@@ -238,10 +238,17 @@ final class Taxonomies {
 	 * (responsibility) the labels of the tag-style box, so neither shows core's
 	 * "Parent Category" or "Popular Tags".
 	 *
+	 * Named taxonomy_labels() and not labels(): up to 0.75.x labels() took a
+	 * plural and a singular name, and a caller of that signature would have
+	 * received the labels of no taxonomy without an error. Under a new name it
+	 * fails loudly instead.
+	 *
+	 * @internal Not part of the plugin's public API.
+	 *
 	 * @param string $taxonomy One of the plugin's taxonomies, the handbook grouping included.
 	 * @return array<string, string>
 	 */
-	public static function labels( string $taxonomy ): array {
+	public static function taxonomy_labels( string $taxonomy ): array {
 		switch ( $taxonomy ) {
 			case Handbooks::TAXONOMY:
 				return array(

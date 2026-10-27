@@ -82,4 +82,17 @@ final class TaxonomyLabelsTest extends WP_UnitTestCase {
 		$this->assertSame( 'Add new topic', get_taxonomy( Taxonomies::TOPIC )->labels->add_new_item );
 		$this->assertSame( 'Parent topic', get_taxonomy( Taxonomies::TOPIC )->labels->parent_item );
 	}
+
+	/**
+	 * The label method changed its parameters in 0.76.0, from a plural and a
+	 * singular name to a taxonomy. It changed its name with them, so a caller
+	 * of the old signature fails loudly instead of getting the labels of no
+	 * taxonomy.
+	 *
+	 * @return void
+	 */
+	public function test_the_label_set_does_not_reuse_the_old_name(): void {
+		$this->assertFalse( method_exists( Taxonomies::class, 'labels' ), 'labels() took a plural and a singular up to 0.75.x.' );
+		$this->assertSame( 'Add new topic', Taxonomies::taxonomy_labels( Taxonomies::TOPIC )['add_new_item'] );
+	}
 }
