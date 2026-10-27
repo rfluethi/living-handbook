@@ -65,7 +65,38 @@ final class Onboarding {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_dismiss_script' ) );
 		add_action( 'admin_notices', array( $this, 'setup_notice' ) );
 		add_action( 'admin_notices', array( $this, 'unassigned_notice' ) );
+		add_action( 'admin_notices', array( $this, 'classic_theme_notice' ) );
 		add_action( 'wp_ajax_' . self::DISMISS_ACTION, array( $this, 'ajax_dismiss' ) );
+	}
+
+	/**
+	 * Say on the handbook screens when the active theme is a classic theme.
+	 *
+	 * The entry and single page of a handbook are block templates, and only a
+	 * block theme uses those. With a classic theme the front end falls back to
+	 * the theme's own templates: no handbook navigation beside the page, no
+	 * table of contents, no search bar, and nothing in the admin said why. A
+	 * site trying the plugin on its existing classic theme concluded that the
+	 * plugin was broken. Shown on the plugin's own screens only, to people who
+	 * may change the theme, and not dismissible, because it stays true until
+	 * the theme changes.
+	 *
+	 * @return void
+	 */
+	public function classic_theme_notice(): void {
+		if ( wp_is_block_theme() || ! current_user_can( 'switch_themes' ) ) {
+			return;
+		}
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( null === $screen || Handbook::POST_TYPE !== $screen->post_type ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-warning"><p>%1$s</p><p>%2$s</p></div>',
+			esc_html__( 'The active theme is a classic theme. Handbook pages are laid out with block templates, which only a block theme uses, so on this site they appear in the theme\'s own layout, without the handbook navigation, the table of contents and the search bar.', 'living-handbook' ),
+			esc_html__( 'Switch to a block theme such as Twenty Twenty-Five to get the full layout. If the theme has to stay, the shortcode [living_handbook_nav] places the page tree in a classic template.', 'living-handbook' )
+		);
 	}
 
 	/**
