@@ -101,8 +101,10 @@ final class RestrictedFromEditorsTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function tear_down(): void {
-		global $wp_rest_server;
+		global $wp_rest_server, $pagenow;
 		$wp_rest_server = null;
+		$pagenow        = 'index.php'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restores the screen a test switched to.
+		unset( $_GET['tag_ID'] );
 		set_current_screen( 'front' );
 
 		parent::tear_down();
@@ -251,6 +253,60 @@ final class RestrictedFromEditorsTest extends WP_UnitTestCase {
 		$this->assertNotContains( $this->board, $listed );
 		$this->assertContains( $this->team, $listed );
 		$this->assertSame( 403, rest_do_request( new WP_REST_Request( 'GET', '/wp/v2/' . Handbooks::TAXONOMY . '/' . $this->board ) )->get_status() );
+	}
+
+	/**
+	 * Returns the handbooks get_terms() lists on an admin file.
+	 *
+	 * @param string $screen The admin file, edit-tags.php or term.php.
+	 * @return array<int, int> Ids get_terms() lists there.
+	 */
+	private function listed_on( string $screen ): array {
+		global $pagenow;
+		$pagenow = $screen; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Simulates the admin file the filter looks at.
+		wp_cache_flush();
+
+		return array_map(
+			'intval',
+			(array) get_terms(
+				array(
+					'taxonomy'   => Handbooks::TAXONOMY,
+					'hide_empty' => false,
+					'fields'     => 'ids',
+				)
+			)
+		);
+	}
+
+	/**
+	 * The edit screen of a handbook leaves the closed handbook out of its
+	 * parent selector, as the add form does. Up to 0.75.1 term.php listed it.
+	 * A closed handbook that already is the parent stays, or saving the form
+	 * would move the edited handbook to the top level.
+	 *
+	 * @return void
+	 */
+	public function test_the_edit_screen_of_a_handbook_leaves_the_closed_one_out(): void {
+		wp_set_current_user( $this->editor );
+		set_current_screen( 'edit-' . Handbooks::TAXONOMY );
+
+		$this->assertNotContains( $this->board, $this->listed_on( 'edit-tags.php' ) );
+
+		$_GET['tag_ID'] = (string) $this->team;
+		$listed         = $this->listed_on( 'term.php' );
+		$this->assertNotContains( $this->board, $listed );
+		$this->assertContains( $this->team, $listed );
+
+		$below = (int) self::factory()->term->create(
+			array(
+				'taxonomy' => Handbooks::TAXONOMY,
+				'name'     => 'Below the board',
+				'parent'   => $this->board,
+			)
+		);
+		update_term_meta( $below, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_MEMBERS );
+		$_GET['tag_ID'] = (string) $below;
+		$this->assertContains( $this->board, $this->listed_on( 'term.php' ), 'The current parent stays selectable.' );
 	}
 
 	/**

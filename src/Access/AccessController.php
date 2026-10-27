@@ -354,10 +354,13 @@ final class AccessController {
 	}
 
 	/**
-	 * Leave the handbooks a user may not read out of the handbook list screen.
+	 * Leaves the handbooks a user may not read out of the handbook screens.
 	 *
 	 * Their settings are closed already (guard_meta_caps()); this keeps their
-	 * names and page counts out of view, and out of the parent selector.
+	 * names and page counts out of the list, and out of the parent selector on
+	 * the add form (edit-tags.php) and on the edit screen of a handbook the user
+	 * may edit (term.php). Up to 0.75.1 the edit screen was not covered and
+	 * listed every handbook as a possible parent.
 	 *
 	 * @param array<string, mixed>|mixed $args       get_terms() arguments.
 	 * @param string[]|mixed             $taxonomies Taxonomies asked for.
@@ -365,7 +368,7 @@ final class AccessController {
 	 */
 	public function hide_handbooks_on_term_screen( $args, $taxonomies ) {
 		global $pagenow;
-		if ( self::$listing_terms || ! is_array( $args ) || ! is_admin() || wp_doing_ajax() || 'edit-tags.php' !== $pagenow ) {
+		if ( self::$listing_terms || ! is_array( $args ) || ! is_admin() || wp_doing_ajax() || ! in_array( $pagenow, array( 'edit-tags.php', 'term.php' ), true ) ) {
 			return $args;
 		}
 		if ( ! in_array( Handbooks::TAXONOMY, (array) $taxonomies, true ) ) {
@@ -380,10 +383,30 @@ final class AccessController {
 		$hidden              = self::hidden_term_ids( $user_id );
 		self::$listing_terms = false;
 
+		// The edit screen preselects the handbook's current parent. Were that
+		// parent left out, saving the form would quietly move the handbook to
+		// the top level, so its name stays: the lesser harm of the two.
+		if ( 'term.php' === $pagenow ) {
+			$hidden = array_values( array_diff( $hidden, array( self::edited_term_parent() ) ) );
+		}
+
 		if ( array() !== $hidden ) {
 			$args['exclude'] = array_merge( wp_parse_id_list( $args['exclude'] ?? array() ), $hidden );
 		}
 		return $args;
+	}
+
+	/**
+	 * The parent of the handbook open on the edit screen, or 0.
+	 *
+	 * @return int
+	 */
+	private static function edited_term_parent(): int {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Reads which handbook the edit screen shows, as core does; nothing is written.
+		$term_id = isset( $_GET['tag_ID'] ) ? absint( wp_unslash( $_GET['tag_ID'] ) ) : 0;
+		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
+
+		return $term instanceof WP_Term ? (int) $term->parent : 0;
 	}
 
 	/**
