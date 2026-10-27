@@ -23,7 +23,7 @@ graph TD;
 
 ![Layout sketch of the entry page: title, navigation on the left, search field, area tiles, recently updated pages and the filter column on the right](../assets/einstiegsseite-aufbau.webp)
 
-The search and the filters narrow the page list down without reloading the page. Filtering works by page type, topic, role and audience. Without JavaScript, both keep working as an ordinary form. The area tiles are the top-level pages, see [Organise pages](../getting-started/organise-pages.md).
+The search and the filters narrow the page list down without reloading the page. Filtering works by page type, topics, responsibility and audiences, with the same labels as in the settings. Without JavaScript, both keep working as an ordinary form. The area tiles are the top-level pages, see [Organise pages](../getting-started/organise-pages.md).
 
 ## The single page
 

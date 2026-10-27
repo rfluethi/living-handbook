@@ -6,7 +6,7 @@ Living Handbook exposes extension points so you can adjust behaviour without pat
 
 ### `living_handbook_can_view_post`
 
-Filters the final decision on whether a user may view a handbook page. This is the single access decision used by every front-end read path (single pages, handbook entry pages, result sets, the facet filter endpoint, the feedback endpoint, single REST reads, and the comment channels), and by the website export and the bundle export, which leave out what it hides from the exporting person, so a filter here takes effect everywhere.
+Filters the final decision on whether a user may view a handbook page. This is the single access decision used by every front-end read path (single pages, handbook entry pages, result sets, the facet filter endpoint, the feedback endpoint, single REST reads, the comment form and single comments over REST), and by the website export and the bundle export, which leave out what it hides from the exporting person, so a filter here takes effect everywhere.
 
 Parameters:
 
@@ -18,7 +18,7 @@ The built-in rules start with the capabilities, not with the handbook. Whoever r
 
 The filter runs once for every page the navigation shows, so it has to be cheap. The navigation reads only the titles and addresses of a handbook's pages, not their content, and does not put them in the post cache: a callback that calls `get_post()` there costs one database query per page, a few thousand on a large handbook. Decide from the ID, the user and data you can cache, such as term meta.
 
-The handbook-level check, `AccessController::can_view_term()`, which decides the entry page, the overview, the menu, the learning paths and the search and filter endpoints, does not run this filter, and neither does the protection in the back end that builds on it (page list, media library, editor, comments, handbook settings, the choice of handbook for import and export). Without a grant from the handbook it lets through only whoever reads every handbook. The right to edit a single page means nothing to it: that right opens the one page, not the handbook, and lists, search and navigation still follow the handbook's rules for an author.
+The handbook-level check, `AccessController::can_view_term()`, which decides the entry page, the overview, the menu, the learning paths and the search and filter endpoints, does not run this filter, and neither does the protection in the back end that builds on it (page list, media library, editor, comments, handbook settings, the choice of handbook for import and export). Without a grant from the handbook it lets through only whoever reads every handbook. The right to edit a single page means nothing to it: that right opens the one page, not the handbook, and lists, search and navigation still follow the handbook's rules for an author. Nor do the comment lists and the comment feeds run it: they are narrowed in SQL, which cannot call a filter, so a callback that widens access does not reach them and they keep the stricter built-in answer.
 
 Return a boolean. Example, grant a service account read access to every page. This does not open entry pages, the overview or the back end; for an account that should really read everything, use `living_handbook_read_all_capability`.
 
@@ -332,7 +332,7 @@ Return a bool.
 
 Filters which of the four classifying taxonomies this site uses: page type, topic, responsibility, audience. The default is whatever the checkboxes under **Handbook → Settings → Classification** say, and all four when nothing has been saved.
 
-A taxonomy that is not in the list disappears from the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, the field in the editor sidebar, and the line an import reads from a transport block. It is still registered, and nothing is deleted: the terms stay, the pages keep them, and putting it back brings every assignment back as it was.
+A taxonomy that is not in the list disappears from the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, the "Responsible role" line in the page footer (for the responsibility taxonomy), the field in the editor sidebar, and the line an import reads from a transport block. It is still registered, and nothing is deleted: the terms stay, the pages keep them, and putting it back brings every assignment back as it was.
 
 The handbook grouping (`handbook_set`) is deliberately not among them and cannot be switched off. Access hangs on it, and a page that belongs to no handbook is invisible on the front end.
 

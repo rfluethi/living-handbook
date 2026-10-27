@@ -28,8 +28,8 @@ The derived status of a page (reviewed, review due, review overdue, not reviewed
 
 | Key | Type | REST | Written by | What it holds |
 | --- | --- | --- | --- | --- |
-| `_lh_source` | string, `wordpress` or `github` | yes, default `wordpress` | The **Source** box, the GitHub import, the app handbook load | Where the page is maintained. Any other value is stored as `wordpress`. |
-| `_lh_source_url` | string, URL | yes, default empty | The Source box, the GitHub import | The Markdown file a GitHub page is pulled from. The host allowlist is checked again before every fetch. |
+| `_lh_source` | string, `wordpress` or `github` | no; writing takes `edit_post` and `upload_files` | The **Source** box, the GitHub import, the app handbook load | Where the page is maintained, `wordpress` by default. Any other value is stored as `wordpress`. |
+| `_lh_source_url` | string, URL | no; writing takes `edit_post` and `upload_files` | The Source box, the GitHub import | The Markdown file a GitHub page is pulled from. The host allowlist is checked again before every fetch. |
 | `_lh_sync_status` | string | not registered | `GitSync` after every pull | The last result as text, shown as "Last sync" in the Source box. |
 | `_lh_sync_error` | `'1'` or absent | not registered | `GitSync` on a failed pull, removed on the next good one | Flags the page for the "could not be synced" admin notice. |
 | `_lh_github_folder` | string | not registered | GitHub folder import and app handbook load | Marks the page that stands for a folder without a Markdown file of its own, so a second import finds it again. `owner/repo@branch:path` for GitHub, `local:path` for the bundled handbooks. |
@@ -40,9 +40,9 @@ The derived status of a page (reviewed, review due, review overdue, not reviewed
 | Key | Type | REST | Written by | What it holds |
 | --- | --- | --- | --- | --- |
 | `_lh_source_path` | string, relative path | not registered | ZIP, MkDocs and folder imports, the app handbook load | The file a page came from, relative to the import root. A re-import finds the page again by it, and internal `.md` links are resolved through it. |
-| `_lh_import_parent_title` | string | not registered | `Postprocessor::apply_transport()` from the line `Eltern-Seite` | The title of the intended parent, kept until every page of the import exists. Deleted once the parent is resolved. |
-| `_lh_origin_id` | string, `<site URL>#<post ID>` | not registered | Bundle import | Where the page was exported from. The first key a later bundle import matches on. |
-| `_lh_bundle_key` | string | not registered | Bundle import | The page's hierarchy key inside the bundle it came from. The second key a bundle import matches on. |
+| `_lh_import_parent_title` | string | not registered | `Postprocessor::apply_transport()` from the line `Eltern-Seite` | The title of the intended parent, kept until every page of the import exists. Deleted once the parent is resolved. The page found becomes the parent only when the importing person may edit it. |
+| `_lh_origin_id` | string, `<site URL>#<post ID>` | not registered | Bundle import | Where the page was exported from. The first key a later bundle import matches on, on ordinary pages from an import as pages too. |
+| `_lh_bundle_key` | string | not registered | Bundle import | The page's hierarchy key inside the bundle it came from. The second key a bundle import matches on, and the last for an import as ordinary pages, which never matches by slug. |
 | `_lh_import_protected` | any non-empty value | not registered | Nobody in the plugin: set it yourself, with code or WP-CLI | Read by the bundle import: a matching page carrying it is never overwritten, whatever run rule was chosen. |
 | `_lh_moved_from` | string, path | not registered | The bulk action **Move into a handbook…** | The address a page had before it became a handbook page, for example `about/team`. A request to the old address is answered with a permanent redirect. |
 
@@ -75,7 +75,7 @@ All three are removed by the row action **Reset feedback** in the page list. Ano
 | --- | --- | --- | --- | --- |
 | `living_handbook_visibility` | string: `public`, `members`, `restricted` | no | The handbook edit screen (`manage_categories` and `edit_term`, so only whoever may read the handbook); a bundle import creating a handbook always writes `members` | The access level. Empty is read as `members`. |
 | `living_handbook_roles` | array of role slugs | no | The handbook edit screen; a bundle import | The roles a restricted handbook admits. |
-| `living_handbook_users` | array of user IDs | no | The handbook edit screen only | The people a restricted handbook admits on top of the roles. Never exported and never imported. |
+| `living_handbook_users` | array of user IDs | no | The handbook edit screen; `Privacy::forget_deleted_user()` takes a deleted account out | The people a restricted handbook admits on top of the roles. Never exported in a bundle and never imported. The personal data export names the handbooks whose list holds the person; the eraser keeps the entry and reports it. |
 | `living_handbook_comments` | string: `inherit`, `open`, `closed` | no | The handbook edit screen | Comments for the whole handbook: leave them to each page, or force them on or off. |
 
 None of the four is readable over the REST API: who may read a handbook is not something to hand out to whoever asks.

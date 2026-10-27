@@ -15,7 +15,7 @@ Every option of the plugin at a glance. You find them under **Handbook → Setti
 * **Responsibility:** Which role currently holds the page: handbook editors, GitHub specialist. A function, not a person, so the entry survives someone leaving.
 * **Audiences:** Who the page is written for: all members, content team, coordination, tech. Who should read it, not who may; that is the handbook's access rule.
 
-All four are on by default. If your team only ever uses topics, switch the other three off and they disappear everywhere: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, and the field in the editor sidebar. An import stops reading the matching line as well.
+All four are on by default. If your team only ever uses topics, switch the other three off and they disappear everywhere: the column and the filter in the page list, the facet on a handbook's entry page, the badge on a page and on a card, the field in the editor sidebar and, for responsibility, the "Responsible role" line in the page footer. An import stops reading the matching line as well.
 
 **Nothing is deleted.** The terms stay, the pages keep their assignments, and the moment you switch a group back on, everything is there unchanged. A bundle export carries all four either way, so moving a handbook to another site never loses what this one only hides.
 

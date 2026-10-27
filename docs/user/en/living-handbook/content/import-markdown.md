@@ -59,7 +59,7 @@ The line labels are German too, and fixed. The values behind them are yours: ter
 
 Three lines deserve an explanation:
 
-* **Eltern-Seite** (parent page) places the page under another page, named by its title. The parent may come later in the same import; the matching happens at the end.
+* **Eltern-Seite** (parent page) places the page under another page, named by its title. The parent may come later in the same import; the matching happens at the end. The line only places the page under a page you may edit.
 * **Reihenfolge** (order) sets the position in the menu. Small numbers sit at the top. Pages without a number follow behind, alphabetically. So only number what needs a fixed position.
 * **Handbuch** (handbook) may be added as well. With it the file picks its own target handbook and overrides the choice on the import screen.
 
@@ -73,7 +73,7 @@ A second import of the same source creates no copies. It updates the existing pa
 * **At most 200 files per folder import.** If the limit is reached, the result list says so. Import the remaining subfolders separately afterwards.
 * **GitHub throttles after about 60 requests per hour.** A very large import can hit that limit. It then stops on a whole page and reports how many pages it managed and from when it can continue. Nothing is lost: simply start the import again afterwards, pages that already exist are updated, not duplicated. From about twenty files on, the import downloads the project once as an archive instead of fetching every file separately, so the limit is usually not reached at all.
 * **Private GitHub projects** cannot be fetched directly. Download the files there as a ZIP and import the ZIP file.
-* **ZIP limits:** at most 2000 files, 5 MB per file, 100 MB uncompressed.
+* **ZIP limits:** at most 2000 files, 5 MB per file, 100 MB uncompressed. A Markdown file, an image or an `mkdocs.yml` over 5 MB is left out and named in the notes.
 
 </details>
 

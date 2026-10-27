@@ -22,6 +22,8 @@ The rule takes effect immediately and everywhere: on the handbook overview, on t
 
 The same rule holds in the WordPress admin. Other people's pages in a handbook someone may not read are missing there from the page list, their files from the media library and their comments from the comment list; they cannot be opened, edited or deleted. The handbook itself is missing from the list under **Handbook → Handbooks**, from the editor's handbook picker and from the pickers of the import, the export and the page list. Only someone who may read it can change its settings. Your own pages always stay visible and editable.
 
+**Comments follow their page.** Whoever may read a page sees its comments and, while they are open, can write one. Whoever may not read it sees them neither on the website nor over the API. The right to edit your own page does not count here: if the handbook keeps you out, its comments are missing for you on the website. In the WordPress admin your own pages always count as well. The comment list there therefore shows the comments on exactly the pages your page list shows.
+
 <details>
 <summary>Pitfalls: Typical surprises</summary>
 
@@ -32,6 +34,7 @@ The same rule holds in the WordPress admin. Other people's pages in a handbook s
 * **Your own pages stay yours.** Anyone who may edit a page under the WordPress rules can open it in the block editor, save it, preview it and read it on the website. For your own pages that always holds, even when the handbook otherwise excludes you, and also for a new page that belongs to no handbook yet. Other people's pages in a handbook you may not read, on the other hand, you do not open, not even as an editor. Under the WordPress rules, authors edit only their own pages anyway, contributors only their own drafts. Lists, search and navigation follow the handbook's visibility. Someone who may not read a handbook therefore does not find even their own page in it through the navigation.
 * **The counts above the page list count everything.** "All (12)" and the other counts include the pages the list below hides from you. The plugin does not adjust these numbers.
 * **When moving to another website, individually allowed people do not travel along.** See [Move a handbook](../content/move-a-handbook.md).
+* **Individually allowed people are personal data.** Under **Tools → Export Personal Data**, such a person appears with the handbooks that name them one by one. **Erase Personal Data** keeps the entry and reports it, since removing it would silently end an active account's access. If the person should no longer read a handbook, take them off in the handbook itself. A deleted account leaves every access list.
 
 </details>
 

@@ -32,7 +32,7 @@ graph TD;
 
 * **Eine Regel pro Handbuch statt pro Seite.** Sichtbarkeit pro Seite klingt flexibel. Sie wird aber schnell unübersichtlich, denn niemand behält hundert Einzelregeln im Kopf. Eine Regel pro Handbuch kannst du in einem Satz aussprechen: „Das Team-Handbuch sehen alle Angemeldeten.“
 * **Eine Seite ohne Handbuch ist unsichtbar.** Sie hat keine Regel, die Zugriff erlauben könnte. Also gilt die sichere Antwort: kein Zugriff. Nur Redaktion und Administration sehen sie, damit jemand sie einem Handbuch zuweisen kann. Das ist die häufigste Ursache für „meine Seite erscheint nicht“, siehe [Häufige Fragen](../haeufige-fragen.md).
-* **Es gibt einen zentralen Prüfpunkt.** Jede Stelle, die Handbuch-Inhalte anzeigt, stellt vorher dieselbe Frage: Darf diese Person das lesen? Das gilt für Seiten, Suche, Filter, Menü und Feedback. Es gibt keine Hintertür, die vergessen gehen könnte.
+* **Es gibt einen zentralen Prüfpunkt.** Jede Stelle, die Handbuch-Inhalte anzeigt, stellt vorher dieselbe Frage: Darf diese Person das lesen? Das gilt für Seiten, Suche, Filter, Menü, Feedback und Kommentare: Wer eine Seite lesen darf, sieht ihre Kommentare. Es gibt keine Hintertür, die vergessen gehen könnte.
 * **Auch die Nebenwege sind geschlossen.** Handbuch-Seiten tauchen nicht in den technischen Listen auf, die Suchmaschinen und andere Websites auslesen. Ein internes Handbuch hinterlässt keine öffentlichen Spuren.
 
 Eine Folge davon musst du kennen: Diese Zurückhaltung gilt auch für öffentliche Handbücher. Deren Seiten sind zwar für alle aufrufbar, werden von Suchmaschinen aber schlechter gefunden als normale Seiten. Das Plugin ist für interne Handbücher gebaut; eine öffentliche Produkt-Dokumentation mit Suchmaschinen-Anspruch ist nicht sein Kerneinsatz.

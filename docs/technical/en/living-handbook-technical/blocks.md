@@ -26,7 +26,7 @@ Lists every handbook the current visitor may read: name, description and page co
 
 Under each one it lists the first few page titles, which is what tells two handbooks apart: a name and a page count say what a handbook is called and how big it is, not what is in it. A "All pages" link appears exactly when there is more than is shown.
 
-A handbook that belongs to another one is set in below it and says which one ("in Company"). The grouping taxonomy is hierarchical, and this block shows the structure. Three rules go with it, and they are deliberate: **access is not inherited**, every handbook decides for itself who may read it; a child whose parent the visitor may not see moves up to the top level rather than disappearing with it, because the alternative is a readable handbook nobody can reach; and the order inside a level is the name.
+A handbook that belongs to another one is set in below it and says which one ("in Company"), at every level: the overview shows handbooks at any depth, each set in under the handbook it belongs to, the same way the handbook menu nests them. The grouping taxonomy is hierarchical, and this block shows the structure. Three rules go with it, and they are deliberate: **access is not inherited**, every handbook decides for itself who may read it; a child whose parent the visitor may not see moves up to the top level rather than disappearing with it, because the alternative is a readable handbook nobody can reach; and the order inside a level is the name.
 
 **Settings:** *Display* switches between **List** (default) and **Cards**. A list reads better for the handful of handbooks most sites have; cards suit a page where the overview is the main visual element. *Page titles under each handbook* is the length of the preview, 0 to 10, three by default; 0 turns it off.
 
@@ -62,7 +62,7 @@ Colour, border, typography and spacing are not settings here, they are the block
 
 ## Handbook filter bar (`living-handbook/filters`)
 
-The facet filter of a handbook: page type, topic, responsible role and audience. It only offers terms that pages in this handbook actually use, so it is empty until pages carry them.
+The facet filter of a handbook: page type, topic, responsible role and audience. Each facet is headed by the label its taxonomy carries in the settings (Page type, Topics, Responsibility, Audiences), so the filter bar and the settings name a taxonomy the same way. It only offers terms that pages in this handbook actually use, so it is empty until pages carry them.
 
 With JavaScript it filters the result column in place; without it, its submit button reloads the page with the selection in the URL. It drives the result column wherever that sits on the same page.
 
@@ -138,7 +138,7 @@ The "Was this helpful?" prompt with Yes and No buttons. By default a vote counts
 
 ![](_attachments/handbook-page-meta-en.png)
 
-The metadata footer of a single page: created, last updated, last reviewed and the responsible role, each with the person (avatar and name) where one is assigned. The review date carries a freshness badge with one of four states:
+The metadata footer of a single page: created, last updated, last reviewed and the responsible role, each with the person (avatar and name) where one is assigned. The role line is left out while the responsibility taxonomy is switched off (`living_handbook_enabled_taxonomies`); the terms stay on the page. The review date carries a freshness badge with one of four states:
 
 | Badge | Meaning |
 | --- | --- |

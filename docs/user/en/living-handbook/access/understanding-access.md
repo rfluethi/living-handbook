@@ -32,7 +32,7 @@ graph TD;
 
 * **One rule per handbook instead of per page.** Visibility per page sounds flexible. But it quickly turns unmanageable, because nobody keeps a hundred individual rules in their head. A rule per handbook fits in one sentence: "All logged-in people see the team handbook."
 * **A page without a handbook is invisible.** It has no rule that could allow access. So the safe answer applies: no access. Only editors and administrators see it, so that someone can assign it to a handbook. This is the most common cause of "my page does not show up", see [Frequently asked questions](../faq.md).
-* **There is one central checkpoint.** Every place that shows handbook content first asks the same question: may this person read this? That holds for pages, search, filters, menu and feedback. There is no back door that could be forgotten.
+* **There is one central checkpoint.** Every place that shows handbook content first asks the same question: may this person read this? That holds for pages, search, filters, menu, feedback and comments: whoever may read a page sees its comments. There is no back door that could be forgotten.
 * **The side paths are closed too.** Handbook pages do not appear in the technical lists that search engines and other websites read out. An internal handbook leaves no public traces.
 
 One consequence you need to know: this restraint also applies to public handbooks. Their pages can be opened by anyone, but search engines find them less well than normal pages. The plugin is built for internal handbooks; a public product documentation with search-engine ambitions is not its core use.

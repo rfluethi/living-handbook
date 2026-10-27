@@ -22,6 +22,8 @@ Die Regel wirkt sofort und überall: auf der Handbuch-Übersicht, auf den Seiten
 
 Dieselbe Regel gilt in der WordPress-Verwaltung. Seiten anderer Personen in einem Handbuch, das jemand nicht lesen darf, fehlen dort in der Seitenliste, ihre Dateien in der Mediathek und ihre Kommentare in der Kommentarliste; öffnen, bearbeiten oder löschen lassen sie sich nicht. Das Handbuch selbst fehlt in der Liste unter **Handbuch → Handbücher**, in der Handbuch-Auswahl des Editors und in den Auswahllisten von Import, Export und Seitenliste. Seine Einstellungen kann nur ändern, wer es lesen darf. Eigene Seiten bleiben immer sichtbar und bearbeitbar.
 
+**Kommentare folgen ihrer Seite.** Wer eine Seite lesen darf, sieht ihre Kommentare und kann, solange sie offen sind, einen schreiben. Wer sie nicht lesen darf, sieht sie weder auf der Website noch über die Schnittstelle. Das Recht, eine eigene Seite zu bearbeiten, zählt dabei nicht: Schließt dich das Handbuch aus, fehlen dir ihre Kommentare auf der Website. In der Verwaltung zählen dazu die eigenen Seiten immer. Die Kommentarliste zeigt dort also die Kommentare zu genau den Seiten, die auch deine Seitenliste zeigt.
+
 <details>
 <summary>Stolpersteine: Typische Überraschungen</summary>
 
@@ -32,6 +34,7 @@ Dieselbe Regel gilt in der WordPress-Verwaltung. Seiten anderer Personen in eine
 * **Eigene Seiten bleiben deine.** Wer eine Seite nach den Regeln von WordPress bearbeiten darf, kann sie im Block-Editor öffnen, speichern, in der Vorschau ansehen und auf der Website lesen. Für die eigenen Seiten gilt das immer, auch wenn das Handbuch dich sonst ausschließt, und auch für eine neue Seite, die noch keinem Handbuch gehört. Fremde Seiten in einem Handbuch, das du nicht lesen darfst, öffnest du dagegen nicht, auch nicht als Redakteurin. Autorinnen und Autoren bearbeiten nach den WordPress-Regeln ohnehin nur ihre eigenen Seiten, Mitarbeitende nur ihre eigenen Entwürfe. Listen, Suche und Navigation folgen der Sichtbarkeit des Handbuchs. Wer ein Handbuch nicht lesen darf, findet darin also auch die eigene Seite nicht über die Navigation.
 * **Die Zahlen über der Seitenliste zählen alles.** „Alle (12)“ und die anderen Zähler nennen auch die Seiten, die die Liste darunter für dich ausblendet. Das Plugin passt diese Zahlen nicht an.
 * **Beim Umzug auf eine andere Website reisen einzeln freigegebene Personen nicht mit.** Siehe [Handbuch umziehen](../inhalte/handbuch-umziehen.md).
+* **Einzeln freigegebene Personen sind Personendaten.** Unter **Werkzeuge → Personenbezogene Daten exportieren** erscheint eine solche Person mit den Handbüchern, die sie einzeln nennen. **Personenbezogene Daten löschen** lässt den Eintrag stehen und meldet ihn, denn sonst verlöre ein aktives Konto still seinen Zugang. Soll die Person ein Handbuch nicht mehr lesen, nimm sie am Handbuch selbst heraus. Wird ein Konto gelöscht, verschwindet es aus allen Zugriffslisten.
 
 </details>
 

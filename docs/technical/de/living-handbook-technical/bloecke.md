@@ -26,7 +26,7 @@ Listet jedes Handbuch, das die aktuell besuchende Person lesen darf: Name, Besch
 
 Darunter stehen die ersten Seitentitel, und die sind es, die zwei Handbücher unterscheidbar machen: Name und Seitenzahl sagen, wie ein Handbuch heißt und wie groß es ist, nicht was darin steht. Ein Link „Alle Seiten" erscheint genau dann, wenn es mehr gibt als gezeigt wird.
 
-Ein Handbuch, das zu einem anderen gehört, steht eingerückt darunter und nennt es („in Firma"). Die Gruppierungs-Taxonomie ist hierarchisch, und dieser Block zeigt die Struktur. Drei Regeln gehören dazu, alle bewusst: **Zugriff wird nicht vererbt**, jedes Handbuch entscheidet für sich, wer es lesen darf; ein Kind, dessen Elternteil die Besucherin nicht sehen darf, rückt auf die oberste Ebene statt mit ihm zu verschwinden, denn sonst gäbe es ein lesbares Handbuch, das niemand erreicht; und die Reihenfolge innerhalb einer Ebene ist der Name.
+Ein Handbuch, das zu einem anderen gehört, steht eingerückt darunter und nennt es („in Firma"), auf jeder Ebene: Die Übersicht zeigt Handbücher jeder Tiefe, jedes eingerückt unter seinem übergeordneten Handbuch, so wie das Handbuch-Menü sie verschachtelt. Die Gruppierungs-Taxonomie ist hierarchisch, und dieser Block zeigt die Struktur. Drei Regeln gehören dazu, alle bewusst: **Zugriff wird nicht vererbt**, jedes Handbuch entscheidet für sich, wer es lesen darf; ein Kind, dessen Elternteil die Besucherin nicht sehen darf, rückt auf die oberste Ebene statt mit ihm zu verschwinden, denn sonst gäbe es ein lesbares Handbuch, das niemand erreicht; und die Reihenfolge innerhalb einer Ebene ist der Name.
 
 **Einstellungen:** *Darstellung* wechselt zwischen **Liste** (Standard) und **Karten**. Eine Liste liest sich besser für die Handvoll Handbücher, die die meisten Websites haben; Karten passen auf eine Seite, auf der die Übersicht das tragende visuelle Element ist. *Seitentitel pro Handbuch* ist die Länge der Vorschau, 0 bis 10, standardmäßig drei; 0 schaltet sie ab.
 
@@ -62,7 +62,7 @@ Farben, Rahmen, Schrift und Abstände sind keine Einstellungen dieses Blocks, so
 
 ## Handbuch-Filterleiste (`living-handbook/filters`)
 
-Der Facettenfilter eines Handbuchs als eigener Block: Seitentyp, Thema, verantwortliche Rolle, Zielgruppe. Angeboten wird nur, was die Seiten dieses Handbuchs wirklich tragen; solange nichts gesetzt ist, bleibt der Block leer.
+Der Facettenfilter eines Handbuchs als eigener Block: Seitentyp, Thema, verantwortliche Rolle, Zielgruppe. Jede Facette trägt als Überschrift die Bezeichnung ihrer Taxonomie aus den Einstellungen (Seitentyp, Themen, Verantwortung, Zielgruppen), Filterleiste und Einstellungen nennen eine Taxonomie also gleich. Angeboten wird nur, was die Seiten dieses Handbuchs wirklich tragen; solange nichts gesetzt ist, bleibt der Block leer.
 
 Mit JavaScript filtert er die Ergebnisliste an Ort und Stelle, ohne lädt sein Absende-Knopf die Seite mit der Auswahl in der URL neu. Er steuert die Ergebnisspalte des Einstiegs-Blocks, auch wenn dieser an einer anderen Stelle derselben Seite sitzt.
 
@@ -138,7 +138,7 @@ Die Frage „War das hilfreich?" mit den Knöpfen Ja und Nein. Standardmäßig z
 
 ![](_attachments/handbook-page-meta-en.png)
 
-Die Metadaten-Fußzeile einer Einzelseite: erstellt, zuletzt geändert, zuletzt geprüft und die verantwortliche Rolle, jeweils mit der Person (Avatar und Name), wo eine zugewiesen ist. Das Prüfdatum trägt ein Aktualitäts-Abzeichen mit einem von vier Zuständen:
+Die Metadaten-Fußzeile einer Einzelseite: erstellt, zuletzt geändert, zuletzt geprüft und die verantwortliche Rolle, jeweils mit der Person (Avatar und Name), wo eine zugewiesen ist. Die Zeile der Rolle fehlt, solange die Taxonomie Verantwortung ausgeschaltet ist (`living_handbook_enabled_taxonomies`); die Begriffe bleiben an der Seite. Das Prüfdatum trägt ein Aktualitäts-Abzeichen mit einem von vier Zuständen:
 
 | Abzeichen | Bedeutung |
 | --- | --- |

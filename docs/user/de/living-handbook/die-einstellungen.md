@@ -15,7 +15,7 @@ Alle Optionen des Plugins auf einen Blick. Du findest sie unter **Handbuch → E
 * **Verantwortung:** Welche Rolle die Seite aktuell hält: Handbuch-Redaktion, GitHub-Fachperson. Eine Funktion, keine Person, damit die Angabe einen Weggang übersteht.
 * **Zielgruppen:** Für wen die Seite geschrieben ist: Alle Mitglieder, Content-Team, Koordination, Technik. Wer sie lesen sollte, nicht wer sie lesen darf; das regelt der Zugriff am Handbuch.
 
-Ab Werk sind alle vier eingeschaltet. Nutzt dein Team nur Themen, schalte die anderen drei ab, dann verschwinden sie überall: die Spalte und der Filter in der Seitenliste, die Facette auf der Einstiegsseite, das Abzeichen auf Seite und Karte, und das Feld in der Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr.
+Ab Werk sind alle vier eingeschaltet. Nutzt dein Team nur Themen, schalte die anderen drei ab, dann verschwinden sie überall: die Spalte und der Filter in der Seitenliste, die Facette auf der Einstiegsseite, das Abzeichen auf Seite und Karte, das Feld in der Editor-Seitenleiste und, bei der Verantwortung, die Zeile „Verantwortliche Rolle“ in der Fußzeile mit den Seitenangaben. Auch ein Import liest die zugehörige Zeile nicht mehr.
 
 **Gelöscht wird dabei nichts.** Die Begriffe bleiben bestehen, die Seiten behalten ihre Zuordnung, und sobald du eine Gruppe wieder einschaltest, ist alles unverändert da. Auch ein Bündel-Export nimmt weiterhin alle vier mit, damit beim Umzug auf eine andere Website nichts verloren geht, was diese hier nur ausblendet.
 

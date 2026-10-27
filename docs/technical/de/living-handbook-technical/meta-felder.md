@@ -28,8 +28,8 @@ Der abgeleitete Zustand einer Seite (geprüft, Prüfung fällig, Prüfung überf
 
 | Schlüssel | Typ | REST | Geschrieben von | Inhalt |
 | --- | --- | --- | --- | --- |
-| `_lh_source` | string, `wordpress` oder `github` | ja, Standard `wordpress` | Die Box **Quelle**, der GitHub-Import, das Laden des App-Handbuchs | Wo die Seite gepflegt wird. Jeder andere Wert wird als `wordpress` gespeichert. |
-| `_lh_source_url` | string, URL | ja, Standard leer | Die Box Quelle, der GitHub-Import | Die Markdown-Datei, aus der eine GitHub-Seite geholt wird. Die Positivliste der Hosts wird vor jedem Abruf erneut geprüft. |
+| `_lh_source` | string, `wordpress` oder `github` | nein; Schreiben verlangt `edit_post` und `upload_files` | Die Box **Quelle**, der GitHub-Import, das Laden des App-Handbuchs | Wo die Seite gepflegt wird, standardmäßig `wordpress`. Jeder andere Wert wird als `wordpress` gespeichert. |
+| `_lh_source_url` | string, URL | nein; Schreiben verlangt `edit_post` und `upload_files` | Die Box Quelle, der GitHub-Import | Die Markdown-Datei, aus der eine GitHub-Seite geholt wird. Die Positivliste der Hosts wird vor jedem Abruf erneut geprüft. |
 | `_lh_sync_status` | string | nicht registriert | `GitSync` nach jedem Abruf | Das letzte Ergebnis als Text, in der Box Quelle als „Letzter Sync" gezeigt. |
 | `_lh_sync_error` | `'1'` oder fehlend | nicht registriert | `GitSync` bei einem gescheiterten Abruf, beim nächsten guten entfernt | Markiert die Seite für den Admin-Hinweis „konnte nicht abgeglichen werden". |
 | `_lh_github_folder` | string | nicht registriert | GitHub-Ordner-Import und Laden des App-Handbuchs | Markiert die Seite, die für einen Ordner ohne eigene Markdown-Datei steht, damit ein zweiter Import sie wiederfindet. `owner/repo@branch:pfad` für GitHub, `local:pfad` für die mitgelieferten Handbücher. |
@@ -40,9 +40,9 @@ Der abgeleitete Zustand einer Seite (geprüft, Prüfung fällig, Prüfung überf
 | Schlüssel | Typ | REST | Geschrieben von | Inhalt |
 | --- | --- | --- | --- | --- |
 | `_lh_source_path` | string, relativer Pfad | nicht registriert | ZIP-, MkDocs- und Ordner-Import, Laden des App-Handbuchs | Die Datei, aus der eine Seite kam, relativ zur Import-Wurzel. Ein erneuter Import findet die Seite darüber wieder, und interne `.md`-Links werden darüber aufgelöst. |
-| `_lh_import_parent_title` | string | nicht registriert | `Postprocessor::apply_transport()` aus der Zeile `Eltern-Seite` | Der Titel der gewünschten Elternseite, aufbewahrt, bis jede Seite des Imports existiert. Gelöscht, sobald die Elternseite aufgelöst ist. |
-| `_lh_origin_id` | string, `<Website-URL>#<Post-ID>` | nicht registriert | Bündel-Import | Woher die Seite exportiert wurde. Der erste Schlüssel, über den ein späterer Bündel-Import zuordnet. |
-| `_lh_bundle_key` | string | nicht registriert | Bündel-Import | Der Hierarchie-Schlüssel der Seite in dem Bündel, aus dem sie kam. Der zweite Schlüssel, über den ein Bündel-Import zuordnet. |
+| `_lh_import_parent_title` | string | nicht registriert | `Postprocessor::apply_transport()` aus der Zeile `Eltern-Seite` | Der Titel der gewünschten Elternseite, aufbewahrt, bis jede Seite des Imports existiert. Gelöscht, sobald die Elternseite aufgelöst ist. Die gefundene Seite wird nur Elternseite, wenn die importierende Person sie bearbeiten darf. |
+| `_lh_origin_id` | string, `<Website-URL>#<Post-ID>` | nicht registriert | Bündel-Import | Woher die Seite exportiert wurde. Der erste Schlüssel, über den ein späterer Bündel-Import zuordnet, auch bei gewöhnlichen Seiten aus einem Import als Seiten. |
+| `_lh_bundle_key` | string | nicht registriert | Bündel-Import | Der Hierarchie-Schlüssel der Seite in dem Bündel, aus dem sie kam. Der zweite Schlüssel, über den ein Bündel-Import zuordnet, und der letzte bei einem Import als gewöhnliche Seiten, der nie über den Slug zuordnet. |
 | `_lh_import_protected` | ein beliebiger nicht leerer Wert | nicht registriert | Niemand im Plugin: setze ihn selbst, per Code oder WP-CLI | Vom Bündel-Import gelesen: eine passende Seite mit diesem Feld wird nie überschrieben, egal welche Regel gewählt ist. |
 | `_lh_moved_from` | string, Pfad | nicht registriert | Die Mehrfachaktion **In ein Handbuch verschieben…** | Die Adresse, die eine Seite hatte, bevor sie Handbuchseite wurde, etwa `about/team`. Eine Anfrage an die alte Adresse wird dauerhaft umgeleitet. |
 
@@ -75,7 +75,7 @@ Alle drei entfernt die Zeilenaktion **Feedback zurücksetzen** in der Seitenlist
 | --- | --- | --- | --- | --- |
 | `living_handbook_visibility` | string: `public`, `members`, `restricted` | nein | Die Bearbeitungsseite des Handbuchs (`manage_categories` und `edit_term`, also nur wer das Handbuch lesen darf); ein Bündel-Import, der ein Handbuch anlegt, schreibt immer `members` | Die Zugriffsstufe. Leer wird als `members` gelesen. |
 | `living_handbook_roles` | Array von Rollen-Slugs | nein | Die Bearbeitungsseite des Handbuchs; ein Bündel-Import | Die Rollen, die ein eingeschränktes Handbuch zulässt. |
-| `living_handbook_users` | Array von Benutzer-IDs | nein | Nur die Bearbeitungsseite des Handbuchs | Die Personen, die ein eingeschränktes Handbuch zusätzlich zu den Rollen zulässt. Nie exportiert und nie importiert. |
+| `living_handbook_users` | Array von Benutzer-IDs | nein | Die Bearbeitungsseite des Handbuchs; `Privacy::forget_deleted_user()` nimmt ein gelöschtes Konto heraus | Die Personen, die ein eingeschränktes Handbuch zusätzlich zu den Rollen zulässt. Nie in einem Bündel exportiert und nie importiert. Der Export personenbezogener Daten nennt die Handbücher, deren Liste die Person enthält; die Löschung lässt den Eintrag stehen und meldet ihn. |
 | `living_handbook_comments` | string: `inherit`, `open`, `closed` | nein | Die Bearbeitungsseite des Handbuchs | Kommentare für das ganze Handbuch: jeder Seite überlassen, oder für alle ein- oder ausgeschaltet. |
 
 Keines der vier ist über die REST-API lesbar: wer ein Handbuch lesen darf, gibt man nicht jedem heraus, der fragt.

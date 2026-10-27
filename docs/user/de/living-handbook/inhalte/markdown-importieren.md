@@ -59,7 +59,7 @@ Auch die Bezeichnungen der Zeilen sind deutsch und fest vorgegeben. Was dahinter
 
 Drei Zeilen brauchen eine Erklärung:
 
-* **Eltern-Seite** ordnet die Seite einer übergeordneten Seite zu. Genannt wird deren Titel. Die Eltern-Seite darf im selben Import erst später drankommen, das Zuordnen passiert am Schluss.
+* **Eltern-Seite** ordnet die Seite einer übergeordneten Seite zu. Genannt wird deren Titel. Die Eltern-Seite darf im selben Import erst später drankommen, das Zuordnen passiert am Schluss. Die Zeile ordnet die Seite nur unter einer Seite ein, die du bearbeiten darfst.
 * **Reihenfolge** bestimmt die Position im Menü. Kleine Zahlen stehen oben. Seiten ohne Zahl folgen dahinter, alphabetisch. Nummeriere also nur, was eine feste Position braucht.
 * **Handbuch** darf zusätzlich ergänzt werden. Damit bestimmt die Datei ihr Ziel-Handbuch selbst und übersteuert die Auswahl auf der Import-Seite.
 
@@ -73,7 +73,7 @@ Ein zweiter Import derselben Quelle legt keine Kopien an. Er aktualisiert die be
 * **Höchstens 200 Dateien pro Ordner-Import.** Wird die Grenze erreicht, sagt es die Ergebnisliste. Importiere die restlichen Unterordner danach einzeln.
 * **GitHub bremst nach etwa 60 Abrufen pro Stunde.** Ein sehr großer Import kann diese Grenze erreichen. Er hält dann auf einer ganzen Seite an und meldet, wie viele Seiten er geschafft hat und ab wann es weitergeht. Verloren geht nichts: Starte den Import danach einfach noch einmal, vorhandene Seiten werden aktualisiert und nicht verdoppelt. Ab etwa zwanzig Dateien lädt der Import das Projekt ohnehin einmal als Archiv, statt jede Datei einzeln abzurufen; dann wird die Grenze meist gar nicht erreicht.
 * **Nicht öffentliche GitHub-Projekte** lassen sich nicht direkt abrufen. Lade die Dateien dort als ZIP herunter und importiere die ZIP-Datei.
-* **ZIP-Grenzen:** höchstens 2000 Dateien, 5 MB pro Datei, 100 MB entpackt.
+* **ZIP-Grenzen:** höchstens 2000 Dateien, 5 MB pro Datei, 100 MB entpackt. Eine Markdown-Datei, ein Bild oder eine `mkdocs.yml` über 5 MB wird weggelassen und im Hinweis genannt.
 
 </details>
 

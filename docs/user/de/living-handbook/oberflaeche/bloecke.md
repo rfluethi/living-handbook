@@ -36,7 +36,7 @@ Listet alle Handbücher, die die aktuelle Besucherin lesen darf, mit Name, Besch
 
 Unter jedem Handbuch stehen die ersten Seitentitel, damit man sieht, was drinsteht und nicht nur, wie es heißt. Gibt es mehr, als gezeigt wird, erscheint ein Link „Alle Seiten". Einstellungen: Anzeige als **Liste** oder als **Karten**, und **Seitentitel pro Handbuch** von 0 bis 10; 0 schaltet die Vorschau ab.
 
-Hat ein Handbuch ein übergeordnetes, steht es eingerückt darunter und nennt es. Wichtig dabei: der Zugriff wird nicht vererbt. Jedes Handbuch entscheidet für sich, wer es lesen darf, ein untergeordnetes ist also nicht automatisch so geschützt wie das darüber. Darf jemand das übergeordnete nicht sehen, erscheint das untergeordnete trotzdem, dann einfach auf der obersten Ebene.
+Die Übersicht zeigt Handbücher jeder Ebene, jedes eingerückt unter seinem übergeordneten Handbuch, das es auch nennt. Wichtig dabei: der Zugriff wird nicht vererbt. Jedes Handbuch entscheidet für sich, wer es lesen darf, ein untergeordnetes ist also nicht automatisch so geschützt wie das darüber. Darf jemand das übergeordnete nicht sehen, erscheint das untergeordnete trotzdem, dann einfach auf der obersten Ebene.
 
 ### Handbuch-Menü
 
@@ -72,7 +72,7 @@ Die Beschriftung steht immer im Dokument, auch wenn du sie ausblendest. Ein Such
 
 ### Handbuch-Filterleiste
 
-Die Facetten-Filter eines Handbuchs als eigener Block: Seitentyp, Thema, Verantwortung, Zielgruppe. Angeboten wird nur, was die Seiten dieses Handbuchs wirklich tragen; solange nichts gesetzt ist, bleibt der Block leer. Er steuert die Ergebnisliste des Blocks „Handbuch-Eintrag“, auch wenn er an einer ganz anderen Stelle der Seite sitzt.
+Die Facetten-Filter eines Handbuchs als eigener Block: Seitentyp, Themen, Verantwortung, Zielgruppen. Die Filterleiste trägt dieselben Bezeichnungen wie die Einstellungen. Angeboten wird nur, was die Seiten dieses Handbuchs wirklich tragen; solange nichts gesetzt ist, bleibt der Block leer. Er steuert die Ergebnisliste des Blocks „Handbuch-Eintrag“, auch wenn er an einer ganz anderen Stelle der Seite sitzt.
 
 ### Handbuch-Navigation
 
@@ -112,7 +112,7 @@ Stellt die Frage „War das hilfreich?“ mit Ja und Nein. Wirkt nur auf Einzels
 
 ![Icon des Blocks „Handbuch-Seiten-Meta“](../assets/bloecke-seiten-meta.webp)
 
-Zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle, samt Prüfstatus-Abzeichen. Wirkt nur auf Einzelseiten.
+Zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle, samt Prüfstatus-Abzeichen. Die Zeile „Verantwortliche Rolle“ fehlt, solange die Gruppe **Verantwortung** in den [Einstellungen](../die-einstellungen.md) ausgeschaltet ist. Wirkt nur auf Einzelseiten.
 
 ### Die drei Lernpfad-Blöcke
 
@@ -143,6 +143,6 @@ Jeder Block bietet in der Seitenleiste unter **Erweitert** zwei Felder: eine **z
 * Eltern-Seite: Oberfläche
 * Reihenfolge: 2
 * Textauszug: Welche Blöcke des Plugins du selbst einsetzt, allen voran das Mermaid-Diagramm, und welche das Plugin von allein platziert.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

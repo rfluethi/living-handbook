@@ -6,7 +6,7 @@ Living Handbook bietet Erweiterungspunkte, damit du das Verhalten anpassen kanns
 
 ### `living_handbook_can_view_post`
 
-Filtert die endgültige Entscheidung darüber, ob eine Person eine Handbuch-Seite sehen darf. Dies ist die eine Zugriffsentscheidung, die jeder Lesepfad im Frontend nutzt (Einzelseiten, Einstiegsseiten der Handbücher, Ergebnislisten, der Endpunkt für die Facettenfilter, der Feedback-Endpunkt, einzelne REST-Zugriffe und die Kommentar-Kanäle), dazu der Website-Export und der Bündel-Export, die weglassen, was er vor der exportierenden Person verbirgt. Ein Filter an dieser Stelle wirkt sich deshalb überall aus.
+Filtert die endgültige Entscheidung darüber, ob eine Person eine Handbuch-Seite sehen darf. Dies ist die eine Zugriffsentscheidung, die jeder Lesepfad im Frontend nutzt (Einzelseiten, Einstiegsseiten der Handbücher, Ergebnislisten, der Endpunkt für die Facettenfilter, der Feedback-Endpunkt, einzelne REST-Zugriffe, das Kommentarformular und einzelne Kommentare über REST), dazu der Website-Export und der Bündel-Export, die weglassen, was er vor der exportierenden Person verbirgt. Ein Filter an dieser Stelle wirkt sich deshalb überall aus.
 
 Parameter:
 
@@ -18,7 +18,7 @@ Die eingebauten Regeln beginnen bei den Rechten, nicht beim Handbuch. Wer jedes 
 
 Der Filter läuft für jede Seite, die die Navigation zeigt, einmal; er muss also billig sein. Die Navigation liest von den Seiten eines Handbuchs nur Titel und Adressen, nicht den Inhalt, und legt sie nicht in den Post-Cache: Ein Callback, der dort `get_post()` aufruft, kostet eine Datenbankabfrage pro Seite, bei einem großen Handbuch einige tausend. Entscheide anhand der ID, des Benutzers und von Daten, die sich cachen lassen, etwa Term-Meta.
 
-Die Prüfung auf Handbuch-Ebene, `AccessController::can_view_term()`, die über Einstiegsseite, Übersicht, Menü, Lernpfade sowie den Such- und den Filter-Endpunkt entscheidet, läuft nicht durch diesen Filter, und ebenso wenig der Schutz im Backend, der auf ihr aufbaut (Seitenliste, Mediathek, Editor, Kommentare, Handbuch-Einstellungen, die Wahl des Handbuchs bei Import und Export). Ohne Handbuch-Freigabe lässt sie nur durch, wer jedes Handbuch liest. Das Recht, eine einzelne Seite zu bearbeiten, kennt sie nicht: es öffnet diese eine Seite, nicht das Handbuch, und Listen, Suche und Navigation folgen für eine Autorin weiter den Handbuch-Regeln.
+Die Prüfung auf Handbuch-Ebene, `AccessController::can_view_term()`, die über Einstiegsseite, Übersicht, Menü, Lernpfade sowie den Such- und den Filter-Endpunkt entscheidet, läuft nicht durch diesen Filter, und ebenso wenig der Schutz im Backend, der auf ihr aufbaut (Seitenliste, Mediathek, Editor, Kommentare, Handbuch-Einstellungen, die Wahl des Handbuchs bei Import und Export). Ohne Handbuch-Freigabe lässt sie nur durch, wer jedes Handbuch liest. Das Recht, eine einzelne Seite zu bearbeiten, kennt sie nicht: es öffnet diese eine Seite, nicht das Handbuch, und Listen, Suche und Navigation folgen für eine Autorin weiter den Handbuch-Regeln. Auch die Kommentarlisten und die Kommentar-Feeds rufen ihn nicht auf: Sie werden in SQL eingegrenzt, und SQL kann keinen Filter aufrufen. Ein Callback, der den Zugriff erweitert, erreicht sie also nicht, sie behalten die strengere eingebaute Antwort.
 
 Gib einen Boolean zurück. Beispiel: Einem Servicekonto Lesezugriff auf alle Seiten geben. Einstiegsseiten, Übersicht und Backend öffnet das nicht; soll ein Konto wirklich alles lesen, nimm `living_handbook_read_all_capability`.
 
@@ -302,7 +302,7 @@ Gibt einen bool zurück.
 
 Bestimmt, welche der vier klassifizierenden Taxonomien diese Website nutzt: Seitentyp, Thema, Verantwortung, Zielgruppe. Standard ist das, was die Ankreuzfelder unter **Handbuch → Einstellungen → Einordnung** sagen, und alle vier, solange nichts gespeichert wurde.
 
-Eine Taxonomie, die nicht in der Liste steht, verschwindet aus Spalte und Filter der Seitenliste, aus der Facette auf der Einstiegsseite, aus dem Abzeichen auf Seite und Karte, aus dem Feld in der Editor-Seitenleiste und aus der Zeile, die ein Import im Transport-Block liest. Registriert bleibt es, und gelöscht wird nichts: die Begriffe bleiben, die Seiten behalten sie, und wer es zurückstellt, bekommt jede Zuordnung unverändert wieder.
+Eine Taxonomie, die nicht in der Liste steht, verschwindet aus Spalte und Filter der Seitenliste, aus der Facette auf der Einstiegsseite, aus dem Abzeichen auf Seite und Karte, aus der Zeile „Verantwortliche Rolle“ in der Fußzeile (bei der Verantwortung), aus dem Feld in der Editor-Seitenleiste und aus der Zeile, die ein Import im Transport-Block liest. Registriert bleibt es, und gelöscht wird nichts: die Begriffe bleiben, die Seiten behalten sie, und wer es zurückstellt, bekommt jede Zuordnung unverändert wieder.
 
 Die Handbuch-Gruppierung (`handbook_set`) steht bewusst nicht zur Wahl. An ihr hängt der Zugriff, und eine Seite ohne Handbuch ist im Frontend unsichtbar.
 

@@ -14,7 +14,7 @@ Auch die [Lernpfade](lernpfade-anlegen.md) des Handbuchs reisen mit. Auf der Zie
 ## Exportieren
 
 1. Öffne **Handbuch → Export**.
-2. Wähle das **Handbuch**. Zur Wahl stehen die Handbücher, die du lesen darfst. Danach kannst du im zweiten Feld eingrenzen: das ganze Handbuch oder nur ein Bereich. Ein Bereich exportiert mitsamt seinen Unterseiten.
+2. Wähle das **Handbuch**. Zur Wahl stehen die Handbücher, die du lesen darfst. Danach kannst du im zweiten Feld eingrenzen: das ganze Handbuch oder nur ein Bereich. Ein Bereich exportiert mitsamt seinen Unterseiten. Einen Bereich, den du nicht sehen darfst, kannst du nicht exportieren.
 3. Klicke auf **Bündel exportieren**. Die ZIP-Datei wird heruntergeladen.
 
 ## Importieren
@@ -38,6 +38,8 @@ Die Seiten und die Lernpfade stehen auf der Ziel-Website. Links zwischen den Sei
 * **Ein importiertes Handbuch startet immer mit der Sichtbarkeit „Alle Mitglieder“.** Das gilt auch, wenn es auf der alten Website öffentlich war. Ein Import soll nie versehentlich etwas veröffentlichen. Stelle die Sichtbarkeit danach von Hand um.
 * **Einzeln freigegebene Personen musst du neu eintragen.** Sie reisen nicht mit.
 * **In ein Handbuch, das du nicht lesen darfst, importierst du nicht.** Gibt es das Handbuch aus dem Bündel auf der Ziel-Website schon und darfst du es dort nicht lesen, bricht der Import mit „Du darfst nicht in dieses Handbuch importieren.“ ab, bevor er eine Seite anfasst. Ein Aktualisieren würde sonst Seiten überschreiben, die du nicht sehen darfst. Wähle ein anderes Ziel oder bitte jemanden, der das Handbuch lesen darf.
+* **Eine vorhandene Seite, die du nicht bearbeiten darfst, bleibt unangetastet**, auch bei **Aktualisieren**. Sie dient auch nicht als Eltern-Seite oder Lektion. Der Bericht nennt die Anzahl, für Lernpfade ebenso.
+* **Auch ein Import als gewöhnliche WordPress-Seiten folgt der Laufregel.** Ein späterer Lauf findet seine Seiten wieder und überspringt oder aktualisiert sie, statt neue Entwürfe anzulegen. Er erkennt sie an ihrer Herkunft aus dem Bündel, nicht am Namen: Eine andere Seite, die zufällig gleich heißt, bleibt in Ruhe.
 * **Ein Lernpfad verliert Lektionen, die nicht im Bündel stecken.** Sie fallen aus dem Pfad, und der Bericht weist darauf hin. Importierst du das Bündel als gewöhnliche WordPress-Seiten, kommen gar keine Pfade mit.
 * **Lernpfade erscheinen erst mit dem Modul.** Ist das Lernpfad-Modul auf der Ziel-Website aus, werden die Pfade trotzdem importiert. Sichtbar werden sie, sobald du es unter **Handbuch → Einstellungen → Lernpfade** einschaltest.
 * **Beim Aktualisieren bleiben die Pflegedaten der Ziel-Website erhalten.** Feedback-Zahlen und Prüfdaten werden nicht überschrieben.

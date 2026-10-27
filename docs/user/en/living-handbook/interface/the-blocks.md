@@ -36,7 +36,7 @@ Lists every handbook the current visitor may read, with name, description and pa
 
 Under each handbook stand the first page titles, so you see what is in it and not only what it is called. When there is more than is shown, an "All pages" link appears. Settings: display as **List** or as **Cards**, and **Page titles under each handbook** from 0 to 10; 0 turns the preview off.
 
-A handbook that has a parent handbook stands set in below it and names it. One thing matters here: access is not inherited. Every handbook decides for itself who may read it, so a handbook below another is not automatically as protected as the one above. If someone may not see the parent, the child still appears, simply at the top level.
+The overview shows handbooks at every level, each set in under the handbook it belongs to, which it also names. One thing matters here: access is not inherited. Every handbook decides for itself who may read it, so a handbook below another is not automatically as protected as the one above. If someone may not see the parent, the child still appears, simply at the top level.
 
 ### Handbook menu
 
@@ -72,7 +72,7 @@ The label is in the document even when you hide it. A search field with nothing 
 
 ### Handbook filter bar
 
-A handbook's facet filters as their own block: page type, topic, responsibility, audience. It only offers what the pages of this handbook actually carry, so it stays empty until something is set. It drives the result list of the Handbook entry block, even when it sits somewhere else entirely on the page.
+A handbook's facet filters as their own block: page type, topics, responsibility, audiences. The filter bar uses the same labels as the settings. It only offers what the pages of this handbook actually carry, so it stays empty until something is set. It drives the result list of the Handbook entry block, even when it sits somewhere else entirely on the page.
 
 ### Handbook navigation
 
@@ -112,7 +112,7 @@ Asks "Was this helpful?" with Yes and No. Works only on single pages. By default
 
 ![Icon of the Handbook page meta block](../assets/bloecke-seiten-meta.webp)
 
-Shows Created, Last updated, Last reviewed and the responsible role, including the review-status badge. Works only on single pages.
+Shows Created, Last updated, Last reviewed and the responsible role, including the review-status badge. The "Responsible role" line is left out while the group **Responsibility** is switched off in the [settings](../the-settings.md). Works only on single pages.
 
 ### The three learning path blocks
 
@@ -143,6 +143,6 @@ Every block offers two fields in the sidebar under **Advanced**: an **additional
 * Eltern-Seite: Interface
 * Reihenfolge: 2
 * Textauszug: Which blocks of the plugin you use yourself, first of all the Mermaid diagram, and which ones the plugin places on its own.
-* Letzte Aktualisierung: 2026-10-26
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage
