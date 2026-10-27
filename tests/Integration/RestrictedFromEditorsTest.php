@@ -458,6 +458,43 @@ final class RestrictedFromEditorsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Nor does a parent named in the transport block hang the page under a
+	 * page the editor may not edit. The same line still works for a page they
+	 * may edit.
+	 *
+	 * @return void
+	 */
+	public function test_a_transport_parent_must_be_a_page_the_importer_may_edit(): void {
+		$secret = $this->page( $this->admin, $this->board, 'Minutes' );
+		$open   = $this->page( $this->admin, $this->team, 'Team start' );
+		wp_set_current_user( $this->editor );
+
+		$created = array();
+		foreach ( array(
+			'planted' => 'Minutes',
+			'welcome' => 'Team start',
+		) as $slug => $parent_title ) {
+			$request = new WP_REST_Request( 'POST', '/living-handbook/v1/create' );
+			$request->set_param( 'title', ucfirst( $slug ) );
+			$request->set_param( 'slug', $slug );
+			$request->set_param( 'content', '<!-- wp:paragraph --><p>x</p><!-- /wp:paragraph -->' );
+			$request->set_param( 'handbook', $this->team );
+			$request->set_param( 'transport', array( 'parent' => $parent_title ) );
+			$result = ( new MarkdownImportPage() )->create_callback( $request );
+			$this->assertArrayHasKey( 'id', $result, wp_json_encode( $result ) );
+			$created[ $slug ] = (int) $result['id'];
+		}
+
+		$finalize = new WP_REST_Request( 'POST', '/living-handbook/v1/finalize' );
+		$finalize->set_param( 'ids', array_values( $created ) );
+		( new MarkdownImportPage() )->finalize_callback( $finalize );
+
+		$this->assertNotSame( $secret, (int) get_post_field( 'post_parent', $created['planted'] ), 'A page the editor may not edit does not become the parent.' );
+		$this->assertSame( 0, (int) get_post_field( 'post_parent', $created['planted'] ) );
+		$this->assertSame( $open, (int) get_post_field( 'post_parent', $created['welcome'] ), 'A page the editor may edit does.' );
+	}
+
+	/**
 	 * A role the site adds itself works like the built-in ones: a handbook
 	 * that names it is open to its members, and what they may do in the back
 	 * end follows the role's capabilities, not its name.

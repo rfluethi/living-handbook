@@ -630,6 +630,10 @@ final class MarkdownImportPage {
 	 * is accepted now; anything else makes the page a top-level one, which is
 	 * what the import does when it has no parent to give.
 	 *
+	 * The parent can also come from the file itself, as an "Eltern-Seite" line
+	 * in its transport block, which the finalize pass resolves by title. That
+	 * way holds to the same rule, see Postprocessor::resolve_parent().
+	 *
 	 * @param int $parent_id Requested parent id.
 	 * @return int
 	 */

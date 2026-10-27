@@ -458,6 +458,15 @@ final class Postprocessor {
 	/**
 	 * Set a page's parent from the stored parent title, then clear the marker.
 	 *
+	 * The title is looked up across every handbook, so the page it finds is
+	 * not necessarily one the importing person may touch. It becomes the parent
+	 * only when they may edit it, the same rule the import screen applies to a
+	 * parent it is handed (MarkdownImportPage::allowed_parent()). Up to 0.75.1
+	 * an "Eltern-Seite" line hung the page under any page of that title, a
+	 * private one or one in a handbook the person may not read. Without a
+	 * logged-in user (the scheduled sync, WP-CLI) the site itself is acting,
+	 * and the parent is taken as found.
+	 *
 	 * @param int $post_id Post id.
 	 * @return void
 	 */
@@ -467,7 +476,7 @@ final class Postprocessor {
 			return;
 		}
 		$parent = self::find_page_by_title( $parent_title, $post_id );
-		if ( 0 < $parent ) {
+		if ( 0 < $parent && ( 0 === get_current_user_id() || current_user_can( 'edit_post', $parent ) ) ) {
 			wp_update_post(
 				array(
 					'ID'          => $post_id,
