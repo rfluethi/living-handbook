@@ -511,12 +511,12 @@ final class StaticExportTest extends WP_UnitTestCase {
 	 * The same against a theme that actually has a header and a footer.
 	 *
 	 * This test exists because the first version of the cut did nothing at all
-	 * and nobody noticed: core blocks are serialised without their namespace, so
-	 * the markup says `wp:template-part`, not `wp:core/template-part`, and a
-	 * filter that matches nothing removes nothing, silently. Against the empty
-	 * test theme the result looked identical either way. Against a real theme
-	 * the export carried the site's header, its menu and its footer, and its own
-	 * page tree beside the template's, which is what Rico saw and I did not.
+	 * and nobody noticed: it looked for `wp:core/template-part`, while core
+	 * blocks are serialised without their namespace, and a filter that matches
+	 * nothing removes nothing, silently. Against the empty test theme the result
+	 * looked identical either way. Against a real theme the export carried the
+	 * site's header, its menu and its footer, and its own page tree beside the
+	 * template's.
 	 *
 	 * @return void
 	 */
