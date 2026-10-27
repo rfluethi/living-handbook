@@ -241,15 +241,47 @@ final class Privacy {
 			return;
 		}
 
-		$page = 1;
-		do {
-			$batch = self::pages_with_voters( $page );
-			$full  = count( $batch ) === self::BATCH;
-			foreach ( $batch as $post_id ) {
-				self::remove_voter( $post_id, $user_id );
-			}
-			++$page;
-		} while ( $full );
+		$candidates = self::pages_that_may_list( $user_id );
+		if ( array() === $candidates ) {
+			return;
+		}
+		update_meta_cache( 'post', $candidates );
+		foreach ( $candidates as $post_id ) {
+			self::remove_voter( $post_id, $user_id );
+		}
+	}
+
+	/**
+	 * Handbook pages whose voter list may hold this id.
+	 *
+	 * Deleting an account used to read the voter list of every page that had
+	 * one, a query per page, inside the request that deletes the user. The
+	 * list is stored serialised, an id as "i:<id>;" (or "s:<n>:"<id>";" in data
+	 * written as strings), so the database can narrow it down to the pages that
+	 * contain that text. That is a superset, since an array key is written the
+	 * same way; remove_voter() then checks each list exactly.
+	 *
+	 * Every status, the trash included: a page in the trash still holds the ids.
+	 *
+	 * @param int $user_id User id.
+	 * @return array<int, int>
+	 */
+	private static function pages_that_may_list( int $user_id ): array {
+		global $wpdb;
+
+		$id = (string) $user_id;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one query across all voter lists instead of one per page; account deletion, not a page view.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT pm.post_id FROM {$wpdb->postmeta} pm INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE pm.meta_key = %s AND p.post_type = %s AND ( pm.meta_value LIKE %s OR pm.meta_value LIKE %s ) ORDER BY pm.post_id ASC",
+				Feedback::VOTERS,
+				Handbook::POST_TYPE,
+				'%' . $wpdb->esc_like( 'i:' . $id . ';' ) . '%',
+				'%' . $wpdb->esc_like( 's:' . strlen( $id ) . ':"' . $id . '";' ) . '%'
+			)
+		);
+
+		return array_map( 'intval', (array) $ids );
 	}
 
 	/**
@@ -308,25 +340,28 @@ final class Privacy {
 	 * @return array<int, int>
 	 */
 	private static function pages_with_voters( int $page ): array {
-		return array_map(
+		$ids = array_map(
 			'intval',
 			get_posts(
 				AccessController::internal(
 					array(
-						'post_type'        => Handbook::POST_TYPE,
-						'post_status'      => array_keys( get_post_stati() ),
-						'meta_key'         => Feedback::VOTERS, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Privacy request or account deletion, not a page view.
-						'orderby'          => 'ID',
-						'order'            => 'ASC',
-						'posts_per_page'   => self::BATCH,
-						'paged'            => max( 1, $page ),
-						'fields'           => 'ids',
-						'no_found_rows'    => true,
-						'suppress_filters' => true,
+						'post_type'      => Handbook::POST_TYPE,
+						'post_status'    => array_keys( get_post_stati() ),
+						'meta_key'       => Feedback::VOTERS, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Privacy request, not a page view.
+						'orderby'        => 'ID',
+						'order'          => 'ASC',
+						'posts_per_page' => self::BATCH,
+						'paged'          => max( 1, $page ),
+						'fields'         => 'ids',
+						'no_found_rows'  => true,
 					)
 				)
 			)
 		);
+		// The caller reads every list of the batch; one query for all of them.
+		update_meta_cache( 'post', $ids );
+
+		return $ids;
 	}
 
 	/**
@@ -343,17 +378,16 @@ final class Privacy {
 			get_posts(
 				AccessController::internal(
 					array(
-						'post_type'        => Handbook::POST_TYPE,
-						'post_status'      => array_keys( get_post_stati() ),
-						'meta_key'         => Metadata::REVIEWER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Privacy request, not a page view.
-						'meta_value'       => (string) $user_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Privacy request, not a page view.
-						'orderby'          => 'ID',
-						'order'            => 'ASC',
-						'posts_per_page'   => $per_page,
-						'paged'            => max( 1, $page ),
-						'fields'           => 'ids',
-						'no_found_rows'    => true,
-						'suppress_filters' => true,
+						'post_type'      => Handbook::POST_TYPE,
+						'post_status'    => array_keys( get_post_stati() ),
+						'meta_key'       => Metadata::REVIEWER, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Privacy request, not a page view.
+						'meta_value'     => (string) $user_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Privacy request, not a page view.
+						'orderby'        => 'ID',
+						'order'          => 'ASC',
+						'posts_per_page' => $per_page,
+						'paged'          => max( 1, $page ),
+						'fields'         => 'ids',
+						'no_found_rows'  => true,
 					)
 				)
 			)

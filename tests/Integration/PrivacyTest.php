@@ -139,6 +139,46 @@ final class PrivacyTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * What forgetting a deleted account costs, with the given number of pages
+	 * whose voter lists do not name it, and one that does.
+	 *
+	 * @param int $others Pages voted on only by somebody else.
+	 * @return int Number of queries.
+	 */
+	private function cost_of_forgetting( int $others ): int {
+		global $wpdb;
+
+		$person = (int) self::factory()->user->create();
+		$other  = (int) self::factory()->user->create();
+		for ( $i = 0; $i < $others; $i++ ) {
+			$this->page_with_voters( array( $other, $other + 1000 + $i ) );
+		}
+		$page = $this->page_with_voters( array( $other, $person ) );
+
+		wp_cache_flush();
+		$before = $wpdb->num_queries;
+		( new \LivingHandbook\Privacy\Privacy() )->forget_deleted_user( $person );
+		$cost = $wpdb->num_queries - $before;
+
+		$this->assertSame( array( $other ), array_map( 'intval', (array) get_post_meta( $page, Feedback::VOTERS, true ) ), 'The account leaves the list it was in.' );
+		return $cost;
+	}
+
+	/**
+	 * Eight times the pages with voter lists must not cost eight times the
+	 * queries. Up to 0.76.0 every list was read on its own, inside the request
+	 * that deletes the account.
+	 *
+	 * @return void
+	 */
+	public function test_forgetting_an_account_does_not_cost_a_query_per_page(): void {
+		$small = $this->cost_of_forgetting( 5 );
+		$large = $this->cost_of_forgetting( 40 );
+
+		$this->assertLessThanOrEqual( $small + 2, $large, sprintf( 'With 40 other pages it took %d queries, with 5 it took %d.', $large, $small ) );
+	}
+
+	/**
 	 * The privacy policy guide gets a text that names what the plugin does.
 	 *
 	 * @return void
