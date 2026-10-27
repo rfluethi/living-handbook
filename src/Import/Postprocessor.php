@@ -187,13 +187,14 @@ final class Postprocessor {
 	 * taxonomy's terms now gets the existing ones assigned and the others left
 	 * out.
 	 *
-	 * The check applies only when a user is logged in. The scheduled sync runs
-	 * from cron with no user at all, and WP-CLI the same way; neither is a
-	 * person who could have smuggled a term in, and the files they apply were
-	 * put there by somebody who could edit the page. Asking current_user_can()
-	 * there would refuse everything and silently stop the sync from creating
-	 * the terms its repository names. Every route that reaches this with a user
-	 * is a request somebody made, so that is where the rule belongs.
+	 * Without a logged-in user the page's author stands in. The scheduled sync
+	 * runs from cron with no user at all, and WP-CLI the same way; asking
+	 * current_user_can() there would refuse everything. Up to 0.76.0 it
+	 * therefore allowed everything, and that was a way round the rule: a
+	 * contributor sets GitHub as the source of their own draft, and the next
+	 * scheduled sync creates whatever terms the file names. The source of a
+	 * page is chosen by whoever may edit it, so the rule follows the page's
+	 * author. A page without an author gets only existing terms.
 	 *
 	 * @param int      $post_id  Post id.
 	 * @param string[] $names    Term names.
@@ -205,23 +206,28 @@ final class Postprocessor {
 			return;
 		}
 		$tax = get_taxonomy( $taxonomy );
-		if ( get_current_user_id() > 0 && $tax instanceof \WP_Taxonomy ) {
-			if ( ! current_user_can( $tax->cap->assign_terms ) ) {
-				return;
-			}
-			if ( ! current_user_can( $tax->cap->edit_terms ) ) {
-				$existing = array();
-				foreach ( $names as $name ) {
-					$term = get_term_by( 'name', $name, $taxonomy );
-					if ( $term instanceof WP_Term ) {
-						$existing[] = (int) $term->term_id;
-					}
+		if ( ! $tax instanceof \WP_Taxonomy ) {
+			return;
+		}
+		$acting = get_current_user_id();
+		if ( 0 === $acting ) {
+			$acting = (int) get_post_field( 'post_author', $post_id );
+		}
+		if ( $acting > 0 && ! user_can( $acting, $tax->cap->assign_terms ) ) {
+			return;
+		}
+		if ( 0 === $acting || ! user_can( $acting, $tax->cap->edit_terms ) ) {
+			$existing = array();
+			foreach ( $names as $name ) {
+				$term = get_term_by( 'name', $name, $taxonomy );
+				if ( $term instanceof WP_Term ) {
+					$existing[] = (int) $term->term_id;
 				}
-				if ( array() !== $existing ) {
-					wp_set_object_terms( $post_id, $existing, $taxonomy );
-				}
-				return;
 			}
+			if ( array() !== $existing ) {
+				wp_set_object_terms( $post_id, $existing, $taxonomy );
+			}
+			return;
 		}
 		wp_set_object_terms( $post_id, count( $names ) > 1 ? $names : $names[0], $taxonomy );
 	}

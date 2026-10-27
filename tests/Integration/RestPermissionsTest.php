@@ -406,12 +406,14 @@ final class RestPermissionsTest extends WP_UnitTestCase {
 
 	/**
 	 * An editor, who may manage the terms, still creates them through an
-	 * import, and so does the scheduled sync, which runs without a user.
+	 * import, and so does the scheduled sync, which runs without a user, for a
+	 * page an editor wrote.
 	 *
 	 * @return void
 	 */
 	public function test_an_editor_and_the_sync_still_create_terms(): void {
-		wp_set_current_user( self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$editor = self::factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor );
 		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/create' );
 		$request->set_param( 'title', 'Terms' );
 		$request->set_param( 'transport', array( 'topic' => 'Editor topic' ) );
@@ -419,8 +421,50 @@ final class RestPermissionsTest extends WP_UnitTestCase {
 		$this->assertTrue( (bool) term_exists( 'Editor topic', 'handbook_topic' ) );
 
 		wp_set_current_user( 0 );
-		$page = self::factory()->post->create( array( 'post_type' => Handbook::POST_TYPE ) );
+		$page = self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_author' => $editor,
+			)
+		);
 		\LivingHandbook\Import\Postprocessor::apply_transport( $page, array( 'topic' => 'Cron topic' ) );
-		$this->assertTrue( (bool) term_exists( 'Cron topic', 'handbook_topic' ), 'Without a user, as in cron, terms are created as before.' );
+		$this->assertTrue( (bool) term_exists( 'Cron topic', 'handbook_topic' ), 'Without a user, as in cron, the editor\'s page still creates its terms.' );
+	}
+
+	/**
+	 * Without a user the page's author decides. Up to 0.76.0 the scheduled
+	 * sync created every term a file named, so a contributor who set GitHub as
+	 * the source of their own draft had the next sync create the terms they may
+	 * not create themselves.
+	 *
+	 * @return void
+	 */
+	public function test_the_sync_does_not_create_terms_for_a_contributors_page(): void {
+		$existing    = self::factory()->term->create(
+			array(
+				'taxonomy' => 'handbook_type',
+				'name'     => 'Anleitung',
+			)
+		);
+		$contributor = self::factory()->user->create( array( 'role' => 'contributor' ) );
+		$page        = self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'draft',
+				'post_author' => $contributor,
+			)
+		);
+
+		wp_set_current_user( 0 );
+		\LivingHandbook\Import\Postprocessor::apply_transport(
+			$page,
+			array(
+				'page_type' => 'Anleitung',
+				'topic'     => 'Smuggled topic',
+			)
+		);
+
+		$this->assertFalse( (bool) term_exists( 'Smuggled topic', 'handbook_topic' ), 'No new topic through the sync.' );
+		$this->assertSame( array( $existing ), wp_get_object_terms( $page, 'handbook_type', array( 'fields' => 'ids' ) ), 'An existing term is still assigned.' );
 	}
 }
