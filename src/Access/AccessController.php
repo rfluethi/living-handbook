@@ -939,6 +939,15 @@ final class AccessController {
 		if ( 0 === $user_id ) {
 			return false;
 		}
+		// The same exception as in can_view_post(), at the level of the handbook.
+		// Up to 0.75.1 an editor could open every page of a restricted handbook
+		// but not its entry page, and did not find it in the overview, the menu
+		// or the navigation links: two rules for one person, which nobody could
+		// explain. Decided on 2026-10-27: whoever may edit other people's posts
+		// reads every handbook, on both levels.
+		if ( user_can( $user_id, 'edit_others_posts' ) ) {
+			return true;
+		}
 		if ( Handbooks::VISIBILITY_MEMBERS === $visibility ) {
 			return true;
 		}

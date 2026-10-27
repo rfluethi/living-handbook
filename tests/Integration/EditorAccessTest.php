@@ -196,4 +196,41 @@ final class EditorAccessTest extends WP_UnitTestCase {
 
 		$this->assertNotContains( $foreign, $ids );
 	}
+
+	/**
+	 * An editor reads a restricted handbook on both levels: the pages and the
+	 * handbook itself, its entry page and its place in the lists of handbooks.
+	 * Up to 0.75.1 the pages were open to them and the handbook was not.
+	 *
+	 * @return void
+	 */
+	public function test_an_editor_reads_the_restricted_handbook_itself(): void {
+		$term_id = $this->restricted_handbook();
+		$this->page( (int) self::factory()->user->create( array( 'role' => 'author' ) ), 'publish', $term_id );
+		$editor = (int) self::factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor );
+
+		$this->assertTrue( AccessController::can_view_term( $term_id, $editor ) );
+		$this->assertContains( $term_id, wp_list_pluck( AccessController::readable_terms( $editor ), 'term_id' ), 'The handbook is in the overview, the menu and the navigation links.' );
+
+		$this->go_to( (string) get_term_link( $term_id, Handbooks::TAXONOMY ) );
+		try {
+			( new AccessController() )->guard_term_archive();
+		} catch ( WPDieException $e ) {
+			$this->fail( 'The editor was refused the entry page: ' . $e->getMessage() );
+		}
+		$this->assertTrue( is_tax( Handbooks::TAXONOMY ) );
+	}
+
+	/**
+	 * An author outside the allowed roles still does not get the handbook.
+	 *
+	 * @return void
+	 */
+	public function test_an_author_does_not_read_the_restricted_handbook(): void {
+		$term_id = $this->restricted_handbook();
+		$author  = (int) self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->assertFalse( AccessController::can_view_term( $term_id, $author ) );
+	}
 }

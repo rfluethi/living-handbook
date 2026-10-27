@@ -622,21 +622,23 @@ final class StaticExportTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * A handbook the exporting user may not read is refused, rather than
-	 * exported empty or exported anyway.
+	 * Whoever may export reads every handbook, so a restricted handbook is
+	 * exported for them. Up to 0.75.1 an editor could open every page of a
+	 * restricted handbook but was refused its export, because the export asked
+	 * the handbook-level rule, which had no exception for editors. Since 0.76.0
+	 * both levels have the same one (AccessController::evaluate_term()); what a
+	 * page filter hides still stays out, see the next test.
 	 *
 	 * @return void
 	 */
-	public function test_a_handbook_you_cannot_read_is_refused(): void {
+	public function test_a_restricted_handbook_is_exported_for_an_editor(): void {
 		$term = $this->handbook( 'Board', Handbooks::VISIBILITY_RESTRICTED );
 		update_term_meta( $term, Handbooks::META_ROLES, array( 'administrator' ) );
 		$this->page( $term, 'Minutes' );
 
-		$request = new WP_REST_Request( 'POST', '/living-handbook/v1/static-export' );
-		$request->set_param( 'handbook', $term );
-		$response = rest_do_request( $request );
+		$zip = $this->export( $term );
 
-		$this->assertSame( 403, $response->get_status() );
+		$this->assertNotFalse( $zip->locateName( 'minutes.html' ) );
 	}
 
 	/**
