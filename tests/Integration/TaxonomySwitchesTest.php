@@ -21,6 +21,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Frontend\Cards;
+use LivingHandbook\Frontend\PageMeta;
 use LivingHandbook\Frontend\Filters;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Import\HandbookExport;
@@ -29,7 +30,7 @@ use LivingHandbook\Taxonomy\Taxonomies;
 use WP_UnitTestCase;
 
 /**
- * Taxonomy\Taxonomies and the six places a switched-off taxonomy disappears.
+ * Taxonomy\Taxonomies and the places a switched-off taxonomy disappears from.
  */
 final class TaxonomySwitchesTest extends WP_UnitTestCase {
 
@@ -138,6 +139,25 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 		$out = Cards::page_card( $id );
 		$this->assertStringContainsString( 'data-role=""', $out );
 		$this->assertStringContainsString( 'data-topic="onboarding"', $out );
+	}
+
+	/**
+	 * The responsible role leaves the metadata footer as well. Up to 0.75.1 the
+	 * footer still named the role after the site had switched the taxonomy off.
+	 *
+	 * @return void
+	 */
+	public function test_a_switched_off_role_leaves_the_metadata_footer(): void {
+		$id = $this->page_with_terms();
+
+		$this->assertStringContainsString( 'Editor', PageMeta::render_meta( $id, false ) );
+
+		$this->switch_off( array( Taxonomies::ROLE ) );
+
+		$out = PageMeta::render_meta( $id, false );
+		$this->assertStringNotContainsString( 'Responsible role', $out );
+		$this->assertStringNotContainsString( 'Editor', $out );
+		$this->assertStringContainsString( 'Last reviewed', $out );
 	}
 
 	/**

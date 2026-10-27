@@ -81,9 +81,6 @@ final class PageMeta {
 		$editor_id   = (int) get_post_meta( $post_id, '_edit_last', true );
 		$reviewer_id = (int) get_post_meta( $post_id, Metadata::REVIEWER, true );
 
-		$role_terms = wp_get_object_terms( $post_id, Taxonomies::ROLE, array( 'fields' => 'names' ) );
-		$role       = ( ! is_wp_error( $role_terms ) && ! empty( $role_terms ) ) ? (string) $role_terms[0] : '—';
-
 		$created_value  = esc_html( (string) get_the_date( '', $post_id ) );
 		$updated_value  = '' !== $updated ? esc_html( self::format_date( $updated ) ) : '—';
 		$reviewed_value = '' !== $reviewed ? esc_html( self::format_date( $reviewed ) ) : esc_html__( 'never', 'living-handbook' );
@@ -91,7 +88,14 @@ final class PageMeta {
 		$items  = self::item( __( 'Created', 'living-handbook' ), $created_value, self::person( $author_id, $show_people ) );
 		$items .= self::item( __( 'Last updated', 'living-handbook' ), $updated_value, self::person( $editor_id, $show_people ) );
 		$items .= self::item( __( 'Last reviewed', 'living-handbook' ), $reviewed_value . $badge, self::person( $reviewer_id, $show_people ) );
-		$items .= self::item( __( 'Responsible role', 'living-handbook' ), esc_html( $role ), '' );
+
+		// Like the badges, the cards and the facets: a taxonomy the site has
+		// switched off is not shown, though its terms stay on the page.
+		if ( Taxonomies::is_enabled( Taxonomies::ROLE ) ) {
+			$role_terms = wp_get_object_terms( $post_id, Taxonomies::ROLE, array( 'fields' => 'names' ) );
+			$role       = ( ! is_wp_error( $role_terms ) && ! empty( $role_terms ) ) ? (string) $role_terms[0] : '—';
+			$items     .= self::item( __( 'Responsible role', 'living-handbook' ), esc_html( $role ), '' );
+		}
 
 		return '<footer class="living-handbook-meta"><dl class="living-handbook-metagrid">' . $items . '</dl></footer>';
 	}

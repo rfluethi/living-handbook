@@ -54,8 +54,9 @@ final class Taxonomies {
 	 * Whether this site uses one of the four classifying taxonomies.
 	 *
 	 * Switching one off hides it: the column and the filter in the backend, the
-	 * facet on the entry page, the badge on a page and on a card, the field in
-	 * the editor sidebar, and the line in an import's transport block. What it
+	 * facet on the entry page, the badge on a page and on a card, the role line
+	 * in the metadata footer, the field in the editor sidebar, and the line in
+	 * an import's transport block. What it
 	 * does not do is delete anything. The terms stay, the pages keep them, and
 	 * switching it back on brings every assignment back exactly as
 	 * it was. That was decided rather than assumed: a switch that quietly threw
