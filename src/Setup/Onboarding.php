@@ -13,6 +13,7 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Import\AppHandbook;
 use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\PostType\Handbook;
+use WP_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -50,11 +51,26 @@ final class Onboarding {
 	 */
 	public const OPTION_SETUP_NOTICE = 'living_handbook_setup_notice';
 
+	/**
+	 * The block that makes a page the handbook overview.
+	 */
 	private const OVERVIEW_BLOCK = 'wp:living-handbook/overview';
 
+	/**
+	 * The HTML id of the setup notice, which its dismiss script looks for.
+	 */
 	private const NOTICE_ID = 'living-handbook-setup-notice';
 
+	/**
+	 * The admin-ajax action and nonce action that dismiss the setup notice.
+	 */
 	private const DISMISS_ACTION = 'living_handbook_dismiss_setup';
+
+	/**
+	 * How many affected pages a notice links to by name. Enough to start with,
+	 * few enough that the notice stays a notice rather than a second page list.
+	 */
+	private const PAGE_LINKS = 10;
 
 	/**
 	 * Hook registration into WordPress.
@@ -310,8 +326,12 @@ final class Onboarding {
 	}
 
 	/**
-	 * Warn on the page list about pages that are invisible because they have no
-	 * handbook. This is the most common cause of "my pages do not show up".
+	 * Warns on the page list about pages that are invisible because they have
+	 * no handbook. This is the most common cause of "my pages do not show up".
+	 *
+	 * Only the first PAGE_LINKS pages are loaded, to link them; the number in
+	 * the message is the full count. Up to 0.75.1 the lookup stopped at 50
+	 * pages, and the message said 50 for any number above that.
 	 *
 	 * @return void
 	 */
@@ -324,14 +344,14 @@ final class Onboarding {
 			return;
 		}
 
-		$ids   = get_posts(
+		$query = new WP_Query(
 			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
-				'posts_per_page' => 50,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'post_type'           => Handbook::POST_TYPE,
+				'post_status'         => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+				'posts_per_page'      => self::PAGE_LINKS,
+				'fields'              => 'ids',
+				'ignore_sticky_posts' => true,
+				'tax_query'           => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One count on the page list, not on a page view.
 					array(
 						'taxonomy' => Handbooks::TAXONOMY,
 						'operator' => 'NOT EXISTS',
@@ -339,7 +359,7 @@ final class Onboarding {
 				),
 			)
 		);
-		$count = count( $ids );
+		$count = (int) $query->found_posts;
 		if ( 0 === $count ) {
 			return;
 		}
@@ -359,23 +379,22 @@ final class Onboarding {
 			'<div class="notice notice-warning"><p>%1$s</p>%2$s</div>',
 			esc_html( $message ),
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_url and esc_html below.
-			self::page_links( $ids, $count )
+			self::page_links( array_map( 'intval', $query->posts ), $count )
 		);
 	}
 
 	/**
-	 * Build a list of edit links to the affected pages for an admin notice, so a
-	 * warning points straight at the pages it is about. Shows at most ten links,
-	 * then a short "and N more" note.
+	 * Builds a list of edit links to the affected pages for an admin notice, so
+	 * a warning points straight at the pages it is about. Shows at most
+	 * PAGE_LINKS links, then a short "and N more" note.
 	 *
 	 * @param int[] $ids   Post IDs.
 	 * @param int   $count Total number of affected pages.
 	 * @return string HTML (a <ul>, possibly followed by a note), or '' when empty.
 	 */
 	private static function page_links( array $ids, int $count ): string {
-		$limit = 10;
 		$items = '';
-		foreach ( array_slice( $ids, 0, $limit ) as $id ) {
+		foreach ( array_slice( $ids, 0, self::PAGE_LINKS ) as $id ) {
 			$id   = (int) $id;
 			$edit = (string) get_edit_post_link( $id );
 			if ( '' === $edit ) {
@@ -392,14 +411,15 @@ final class Onboarding {
 			return '';
 		}
 		$html = '<ul>' . $items . '</ul>';
-		if ( $count > $limit ) {
+		if ( $count > self::PAGE_LINKS ) {
+			$more  = $count - self::PAGE_LINKS;
 			$html .= sprintf(
 				'<p>%s</p>',
 				esc_html(
 					sprintf(
 						/* translators: %d: number of further affected pages not listed. */
-						__( '… and %d more.', 'living-handbook' ),
-						$count - $limit
+						_n( '… and %d more.', '… and %d more.', $more, 'living-handbook' ),
+						$more
 					)
 				)
 			);
