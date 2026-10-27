@@ -846,7 +846,11 @@ final class StaticSite {
 				}
 
 				// The stylesheet sits in assets/, so the path is relative to that.
-				return 'url("' . str_replace( 'assets/', '', $name ) . '")';
+				// Only the leading folder goes: up to 0.75.1 every "assets/" in the
+				// path was removed, and a theme font under
+				// themes/twentytwentyfive/assets/fonts/ was pointed at a file that
+				// is not in the archive.
+				return 'url("' . substr( $name, strlen( 'assets/' ) ) . '")';
 			},
 			$css
 		);

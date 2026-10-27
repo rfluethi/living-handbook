@@ -958,4 +958,42 @@ final class StaticExportTest extends WP_UnitTestCase {
 
 		$this->assertSame( 'Reviewing keeps a handbook honest.', $this->index_texts( $zip )['Review pages'] ?? null );
 	}
+
+	/**
+	 * A font whose own path has an "assets" folder in it, as every font of
+	 * Twenty Twenty-Five has, is pointed at where it lies in the archive. Up
+	 * to 0.75.1 every "assets/" in the path was cut, not only the leading one.
+	 *
+	 * @return void
+	 */
+	public function test_a_font_under_an_assets_folder_is_found(): void {
+		$uploads  = wp_upload_dir();
+		$relative = 'lh-test/assets/fonts/font.woff2';
+		$file     = $uploads['basedir'] . '/' . $relative;
+		wp_mkdir_p( dirname( $file ) );
+		file_put_contents( $file, 'not really a font' ); // phpcs:ignore WordPress.WP.AlternativeFunctions -- writing a fixture.
+		$this->files[] = $file;
+
+		$url  = $uploads['baseurl'] . '/' . $relative;
+		$look = static function ( array $themes ) use ( $url ): array {
+			$themes['fonted'] = array(
+				'label' => 'With a font',
+				'css'   => '@font-face { font-family: "Test"; src: url(' . $url . ') format("woff2"); }',
+			);
+			return $themes;
+		};
+		add_filter( 'living_handbook_static_export_themes', $look );
+
+		$term = $this->handbook( 'Company' );
+		$this->page( $term, 'One' );
+
+		$zip   = $this->export( $term, 0, 'fonted' );
+		$style = (string) $zip->getFromName( 'assets/style.css' );
+
+		remove_filter( 'living_handbook_static_export_themes', $look );
+
+		$this->assertSame( 1, preg_match( '#url\("(site/[^"]*font\.woff2)"\)#', $style, $found ) );
+		$this->assertStringContainsString( '/assets/fonts/font.woff2', $found[1], 'The folder inside the path stays.' );
+		$this->assertNotFalse( $zip->locateName( 'assets/' . $found[1] ), 'The file the stylesheet names is in the archive.' );
+	}
 }
