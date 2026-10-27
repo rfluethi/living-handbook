@@ -443,6 +443,56 @@ final class BundlePathsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * An update run into a parent handbook matches only what sits in the parent
+	 * itself. The lookup used to include the child handbooks, so the copies an
+	 * earlier import had put into a child handbook were found by origin,
+	 * overwritten and moved into the parent: pages and paths alike.
+	 *
+	 * @return void
+	 */
+	public function test_update_into_a_parent_handbook_leaves_a_child_handbooks_copies_alone(): void {
+		$f        = $this->fixture();
+		$manifest = $this->export( $f['source'] );
+		$parent   = $this->handbook( 'Parent' );
+		$child    = (int) self::factory()->term->create(
+			array(
+				'taxonomy' => Handbooks::TAXONOMY,
+				'name'     => 'Child',
+				'parent'   => $parent,
+			)
+		);
+		$this->import( $manifest, HandbookImport::RULE_UPDATE, $child );
+
+		$child_page = $this->by_title( $this->in_handbook( Handbook::POST_TYPE, $child ), 'Basics' );
+		$child_path = $this->by_title( $this->in_handbook( Training::POST_TYPE, $child ), 'Start' );
+		$this->assertGreaterThan( 0, $child_page );
+		$this->assertGreaterThan( 0, $child_path );
+		wp_update_post(
+			array(
+				'ID'         => $child_page,
+				'post_title' => 'Child page edited',
+			)
+		);
+		wp_update_post(
+			array(
+				'ID'         => $child_path,
+				'post_title' => 'Child path edited',
+			)
+		);
+
+		$report = $this->import( $manifest, HandbookImport::RULE_UPDATE, $parent );
+
+		$this->assertSame( 0, $report['updated'], 'No page of the child handbook is taken over.' );
+		$this->assertSame( 0, $report['paths']['updated'], 'No path of the child handbook is taken over.' );
+		foreach ( array( $child_page, $child_path ) as $id ) {
+			$terms = wp_get_object_terms( $id, Handbooks::TAXONOMY, array( 'fields' => 'ids' ) );
+			$this->assertSame( array( $child ), array_map( 'intval', (array) $terms ), 'The copy stays in the child handbook.' );
+		}
+		$this->assertSame( 'Child page edited', get_the_title( $child_page ) );
+		$this->assertSame( 'Child path edited', get_the_title( $child_path ) );
+	}
+
+	/**
 	 * A path pinned as protected is not overwritten by an update run.
 	 *
 	 * @return void

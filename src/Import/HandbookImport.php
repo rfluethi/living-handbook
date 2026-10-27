@@ -719,11 +719,16 @@ final class HandbookImport {
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
 			'no_found_rows'  => true,
+			// Only the target handbook itself, not its child handbooks. With the
+			// default include_children an "update" run into a parent handbook
+			// matched a child handbook's page or path by origin, key or slug,
+			// overwrote it and moved it into the parent.
 			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				array(
-					'taxonomy' => Handbooks::TAXONOMY,
-					'field'    => 'term_id',
-					'terms'    => $term_id,
+					'taxonomy'         => Handbooks::TAXONOMY,
+					'field'            => 'term_id',
+					'terms'            => $term_id,
+					'include_children' => false,
 				),
 			),
 		);
