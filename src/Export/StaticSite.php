@@ -70,6 +70,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class StaticSite {
 
 	/**
+	 * Handle of the export screen's script (assets/js/static-export.js). The
+	 * bundle export (Import\HandbookExport) passes its area list to the same
+	 * script.
+	 */
+	public const SCRIPT_HANDLE = 'living-handbook-static-export';
+
+	/**
 	 * How many seconds one pass may spend rendering.
 	 */
 	private const BUDGET = 15;
@@ -173,6 +180,11 @@ final class StaticSite {
 	/**
 	 * Loads the export screen's script on the export page only.
 	 *
+	 * The script drives both forms of the screen: it fills their area lists
+	 * and runs the passes of the static export. Its configuration is printed
+	 * as data before it, with wp_add_inline_script(); wp_localize_script() is
+	 * meant for translated strings and turns every value into a string.
+	 *
 	 * @param string $hook Current admin page.
 	 * @return void
 	 */
@@ -182,21 +194,19 @@ final class StaticSite {
 		}
 
 		wp_register_script(
-			'living-handbook-static-export',
+			self::SCRIPT_HANDLE,
 			LIVING_HANDBOOK_URL . 'assets/js/static-export.js',
 			array( 'wp-api-fetch', 'wp-dom-ready', 'wp-i18n' ),
 			LIVING_HANDBOOK_VERSION,
 			true
 		);
-		wp_enqueue_script( 'living-handbook-static-export' );
-		wp_localize_script(
-			'living-handbook-static-export',
-			'lhStaticExport',
-			array(
-				'path' => '/living-handbook/v1/static-export',
-			)
+		wp_enqueue_script( self::SCRIPT_HANDLE );
+		wp_add_inline_script(
+			self::SCRIPT_HANDLE,
+			'var lhStaticExport = ' . wp_json_encode( array( 'path' => '/living-handbook/v1/static-export' ) ) . ';',
+			'before'
 		);
-		wp_set_script_translations( 'living-handbook-static-export', 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
+		wp_set_script_translations( self::SCRIPT_HANDLE, 'living-handbook', LIVING_HANDBOOK_DIR . 'languages' );
 	}
 
 	/**
@@ -923,7 +933,8 @@ final class StaticSite {
 
 		$style = SiteRenderer::stylesheet( (string) $state['theme'], implode( "\n", (array) $state['supports'] ) );
 		$zip->addFromString( 'assets/style.css', self::localise_css( $zip, $style ) );
-		$zip->addFromString( 'assets/site.js', SiteRenderer::script() );
+		$zip->addFromString( 'assets/site-strings.js', SiteRenderer::script_strings() );
+		self::add_plugin_file( $zip, 'assets/js/static-site.js', 'assets/site.js' );
 		// The plugin's own frontend script, for one thing it does that an export
 		// wants: images and diagrams that enlarge on a click, with the focus
 		// handling that goes with it. Its search, filter and feedback parts look

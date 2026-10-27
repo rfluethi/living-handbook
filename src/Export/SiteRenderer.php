@@ -319,6 +319,8 @@ final class SiteRenderer {
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
 		$out .= '<script src="' . esc_attr( $prefix ) . 'assets/search-index.js"></script>' . "\n";
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
+		$out .= '<script src="' . esc_attr( $prefix ) . 'assets/site-strings.js"></script>' . "\n";
+		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- written into an exported file.
 		$out .= '<script src="' . esc_attr( $prefix ) . 'assets/site.js"></script>' . "\n";
 		$out .= '</body>' . "\n</html>\n";
 
@@ -791,16 +793,23 @@ CSS;
 	}
 
 	/**
-	 * The one script the export ships: the menu on small screens, and the search.
+	 * Returns the labels of the export's own script, as a script that defines
+	 * them.
 	 *
-	 * @return string
+	 * The script itself is assets/js/static-site.js, copied into the archive
+	 * as assets/site.js; it is a file of its own so that it is linted and
+	 * read like every other script of the plugin. What it says comes from
+	 * here, translated, and is written next to it as assets/site-strings.js.
+	 *
+	 * The heading over the results is ready for every count the search can
+	 * show, so each one has the plural form its language gives it. Up to
+	 * 0.75.1 the script knew only the plural and said "1 pages found"; two
+	 * forms would still be wrong for a language with three. The search lists
+	 * at most MAX_RESULTS, so the list is short.
+	 *
+	 * @return string JavaScript that sets window.LH_STRINGS.
 	 */
-	public static function script(): string {
-		// The heading over the results, ready for every count the search can
-		// show, so each one has the plural form its language gives it. Up to
-		// 0.75.1 the script knew only the plural and said "1 pages found"; two
-		// forms would still be wrong for a language with three. The search
-		// lists at most MAX_RESULTS, so the list is short.
+	public static function script_strings(): string {
 		$counts = array();
 		for ( $count = 0; $count <= self::MAX_RESULTS; $count++ ) {
 			/* translators: %d: number of results. */
@@ -817,93 +826,7 @@ CSS;
 			JSON_UNESCAPED_UNICODE
 		);
 
-		$script = <<<'JS'
-( function () {
-	var pages = window.LH_PAGES || [];
-	var results = document.getElementById( 'lh-results' );
-	var body = document.getElementById( 'lh-body' );
-	var field = document.getElementById( 'lh-search' );
-	var toggle = document.querySelector( '.lh-menu-toggle' );
-	var nav = document.getElementById( 'lh-nav' );
-	var depth = ( document.querySelector( 'link[rel="stylesheet"]' ).getAttribute( 'href' ) || '' ).replace( 'assets/style.css', '' );
-
-	if ( toggle && nav ) {
-		toggle.addEventListener( 'click', function () {
-			var open = nav.classList.toggle( 'is-open' );
-			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
-		} );
-	}
-
-	if ( ! field || ! results || ! body ) {
-		return;
-	}
-
-	function escapeHtml( text ) {
-		return text.replace( /[&<>"']/g, function ( c ) {
-			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ c ];
-		} );
-	}
-
-	function snippet( text, needle ) {
-		var at = text.toLowerCase().indexOf( needle );
-		if ( at < 0 ) {
-			return escapeHtml( text.slice( 0, 160 ) );
-		}
-		var from = Math.max( 0, at - 60 );
-		var part = text.slice( from, at + needle.length + 100 );
-		var mark = part.toLowerCase().indexOf( needle );
-		return ( from > 0 ? '… ' : '' ) + escapeHtml( part.slice( 0, mark ) ) +
-			'<mark>' + escapeHtml( part.slice( mark, mark + needle.length ) ) + '</mark>' +
-			escapeHtml( part.slice( mark + needle.length ) ) + ' …';
-	}
-
-	function search( term ) {
-		var needle = term.trim().toLowerCase();
-		if ( needle.length < 2 ) {
-			results.hidden = true;
-			results.innerHTML = '';
-			body.hidden = false;
-			return;
-		}
-
-		var hits = pages.filter( function ( page ) {
-			return page.t.toLowerCase().indexOf( needle ) >= 0 || page.x.toLowerCase().indexOf( needle ) >= 0;
-		} ).slice( 0, LH_STRINGS.max );
-
-		var html = '<h2>' + escapeHtml( LH_STRINGS.results[ hits.length ] || String( hits.length ) ) + '</h2>';
-		if ( ! hits.length ) {
-			html += '<p>' + escapeHtml( LH_STRINGS.noResults ) + '</p>';
-		} else {
-			html += '<ol>';
-			hits.forEach( function ( page ) {
-				html += '<li><a href="' + depth + page.u + '">' + escapeHtml( page.t ) + '</a>' +
-					'<p>' + snippet( page.x, needle ) + '</p></li>';
-			} );
-			html += '</ol>';
-		}
-
-		results.innerHTML = html;
-		results.hidden = false;
-		body.hidden = true;
-	}
-
-	var timer = null;
-	field.addEventListener( 'input', function () {
-		window.clearTimeout( timer );
-		timer = window.setTimeout( function () {
-			search( field.value );
-		}, 150 );
-	} );
-	field.addEventListener( 'keydown', function ( event ) {
-		if ( 'Escape' === event.key ) {
-			field.value = '';
-			search( '' );
-		}
-	} );
-}() );
-JS;
-
-		return 'var LH_STRINGS = ' . ( is_string( $strings ) ? $strings : '{}' ) . ";\n" . $script . "\n";
+		return 'var LH_STRINGS = ' . ( is_string( $strings ) ? $strings : '{}' ) . ";\n";
 	}
 
 	/**

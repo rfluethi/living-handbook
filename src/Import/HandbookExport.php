@@ -179,11 +179,14 @@ final class HandbookExport {
 		</div>
 		<?php
 		if ( ! empty( $handbooks ) ) {
-			// JSON_HEX_TAG matters here: page titles reach this inline script, and
-			// wp_get_inline_script_tag() does not strip a closing script tag from
-			// the body, so a title holding one would break out of the element.
+			// The area lists of both forms on this screen are filled by the
+			// screen's script (assets/js/static-export.js), which is printed in
+			// the footer, after this. JSON_HEX_TAG matters here: page titles
+			// reach this inline script, and an inline script is not escaped, so
+			// a title holding a closing script tag would break out of the
+			// element.
 			$areas = wp_json_encode( $this->export_areas(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT );
-			wp_print_inline_script_tag( 'var lhExportAreas = ' . ( is_string( $areas ) ? $areas : '{}' ) . ';' . self::area_script() );
+			wp_add_inline_script( StaticSite::SCRIPT_HANDLE, 'var lhExportAreas = ' . ( is_string( $areas ) ? $areas : '{}' ) . ';', 'before' );
 		}
 	}
 
@@ -230,43 +233,6 @@ final class HandbookExport {
 			}
 		}
 		return $groups;
-	}
-
-	/**
-	 * The small script that refills the area field whenever the handbook selection
-	 * changes. Without JavaScript the field keeps its single "whole handbook"
-	 * entry, so a whole-handbook export still works.
-	 *
-	 * @return string
-	 */
-	private static function area_script(): string {
-		return <<<'JS'
-( function () {
-	var handbook = document.getElementById( 'lh-export-handbook' );
-	var area = document.getElementById( 'lh-export-area' );
-	if ( ! handbook || ! area || typeof lhExportAreas === 'undefined' ) {
-		return;
-	}
-	var whole = area.getAttribute( 'data-whole' ) || '';
-	function fill() {
-		var list = lhExportAreas[ handbook.value ] || [];
-		area.innerHTML = '';
-		var first = document.createElement( 'option' );
-		first.value = '0';
-		first.textContent = whole;
-		area.appendChild( first );
-		for ( var i = 0; i < list.length; i++ ) {
-			var option = document.createElement( 'option' );
-			option.value = String( list[ i ].id );
-			option.textContent = list[ i ].title;
-			area.appendChild( option );
-		}
-		area.disabled = ( '0' === handbook.value );
-	}
-	handbook.addEventListener( 'change', fill );
-	fill();
-}() );
-JS;
 	}
 
 	/**

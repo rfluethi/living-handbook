@@ -183,6 +183,7 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$this->assertNotFalse( $zip->locateName( 'index.html' ) );
 		$this->assertNotFalse( $zip->locateName( 'assets/style.css' ) );
 		$this->assertNotFalse( $zip->locateName( 'assets/site.js' ) );
+		$this->assertNotFalse( $zip->locateName( 'assets/site-strings.js' ) );
 		$this->assertNotFalse( $zip->locateName( 'assets/search-index.js' ) );
 		$this->assertNotFalse( $zip->locateName( 'README.txt' ) );
 		$this->assertNotFalse( $zip->locateName( 'upkeep.html' ) );
@@ -1021,17 +1022,21 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$term = $this->handbook( 'Company' );
 		$this->page( $term, 'One' );
 
-		$script = (string) $this->export( $term )->getFromName( 'assets/site.js' );
+		$zip     = $this->export( $term );
+		$labels  = (string) $zip->getFromName( 'assets/site-strings.js' );
+		$script  = (string) $zip->getFromName( 'assets/site.js' );
+		$shipped = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/js/static-site.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
 
-		$this->assertSame( 1, preg_match( '/^var LH_STRINGS = (\{.*?\});$/m', $script, $found ) );
+		$this->assertSame( $shipped, $script, 'The export ships the plugin\'s static-site.js as it is.' );
+		$this->assertSame( 1, preg_match( '/^var LH_STRINGS = (\{.*?\});$/m', $labels, $found ) );
 		$strings = (array) json_decode( $found[1], true );
 		$this->assertIsArray( $strings['results'] ?? null );
 		$this->assertSame( '0 pages found', $strings['results'][0] );
 		$this->assertSame( '1 page found', $strings['results'][1] );
 		$this->assertSame( '2 pages found', $strings['results'][2] );
 		$this->assertCount( (int) $strings['max'] + 1, $strings['results'], 'A heading for every count the search lists.' );
-		$this->assertStringContainsString( 'LH_STRINGS.results[ hits.length ]', $script );
-		$this->assertStringContainsString( '.slice( 0, LH_STRINGS.max )', $script );
+		$this->assertStringContainsString( 'strings.results[ hits.length ]', $script );
+		$this->assertStringContainsString( '.slice( 0, strings.max )', $script );
 	}
 
 	/**
