@@ -64,6 +64,22 @@ final class MoveToHandbook {
 	private const RESULT_ARG = 'lh_moved';
 
 	/**
+	 * Query argument carrying the number of pages left alone.
+	 */
+	private const SKIPPED_ARG = 'lh_skipped';
+
+	/**
+	 * Query argument saying that no handbook was chosen.
+	 */
+	private const NO_HANDBOOK_ARG = 'lh_no_handbook';
+
+	/**
+	 * Query argument saying that the chosen handbook may not be used by this
+	 * user (AccessController::may_use_handbook()).
+	 */
+	private const REFUSED_ARG = 'lh_handbook_refused';
+
+	/**
 	 * Set once a page has been moved, so a site that never used this feature
 	 * never pays for it. Without it every 404 on every site would ask the
 	 * database whether some page used to live at that address, and the answer on
@@ -229,10 +245,15 @@ final class MoveToHandbook {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WordPress verifies the bulk nonce before this filter runs.
 		$term_id = isset( $_REQUEST[ self::FIELD ] ) ? absint( wp_unslash( $_REQUEST[ self::FIELD ] ) ) : 0;
 		$term    = $term_id > 0 ? get_term( $term_id, Handbooks::TAXONOMY ) : null;
-		if ( ! $term instanceof WP_Term || ! AccessController::may_use_handbook( $term_id ) ) {
-			// No handbook chosen, or one the user may not use: nothing is moved, and the screen says so rather
-			// than reporting a silent success over zero pages.
-			return add_query_arg( array( 'lh_no_handbook' => 1 ), $redirect );
+		// Nothing is moved in either case, and the screen says why rather than
+		// reporting a silent success over zero pages. The second case needs a
+		// crafted request, since the dropdown offers usable handbooks only, but
+		// "no handbook was chosen" would then be the wrong answer.
+		if ( ! $term instanceof WP_Term ) {
+			return add_query_arg( array( self::NO_HANDBOOK_ARG => 1 ), $redirect );
+		}
+		if ( ! AccessController::may_use_handbook( $term_id ) ) {
+			return add_query_arg( array( self::REFUSED_ARG => 1 ), $redirect );
 		}
 
 		$moved   = 0;
@@ -251,8 +272,8 @@ final class MoveToHandbook {
 
 		return add_query_arg(
 			array(
-				self::RESULT_ARG => $moved,
-				'lh_skipped'     => $skipped,
+				self::RESULT_ARG  => $moved,
+				self::SKIPPED_ARG => $skipped,
 			),
 			$redirect
 		);
@@ -433,24 +454,28 @@ final class MoveToHandbook {
 	 * @return void
 	 */
 	public function notice(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_REQUEST['lh_no_handbook'] ) ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Reads the result flags of a redirect to show a notice; nothing is written.
+		if ( isset( $_REQUEST[ self::NO_HANDBOOK_ARG ] ) ) {
 			printf(
 				'<div class="notice notice-warning is-dismissible"><p>%s</p></div>',
 				esc_html__( 'Nothing was moved: no handbook was chosen. Pick one in the dropdown beside the bulk action.', 'living-handbook' )
 			);
 			return;
 		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( isset( $_REQUEST[ self::REFUSED_ARG ] ) ) {
+			printf(
+				'<div class="notice notice-warning is-dismissible"><p>%s</p></div>',
+				esc_html__( 'Nothing was moved: you may not move pages into that handbook, because it is kept from you. Pick one from the dropdown beside the bulk action.', 'living-handbook' )
+			);
+			return;
+		}
 		if ( ! isset( $_REQUEST[ self::RESULT_ARG ] ) ) {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$moved = absint( wp_unslash( $_REQUEST[ self::RESULT_ARG ] ) );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$skipped = isset( $_REQUEST['lh_skipped'] ) ? absint( wp_unslash( $_REQUEST['lh_skipped'] ) ) : 0;
+		$moved   = absint( wp_unslash( $_REQUEST[ self::RESULT_ARG ] ) );
+		$skipped = isset( $_REQUEST[ self::SKIPPED_ARG ] ) ? absint( wp_unslash( $_REQUEST[ self::SKIPPED_ARG ] ) ) : 0;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		$text = sprintf(
 			/* translators: %d: number of pages moved. */

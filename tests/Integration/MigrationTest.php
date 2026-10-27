@@ -148,6 +148,37 @@ final class MigrationTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A handbook the user may not use moves nothing, and the notice says that
+	 * rather than "no handbook was chosen". Up to 0.75.1 both cases got the
+	 * same answer.
+	 *
+	 * @return void
+	 */
+	public function test_a_handbook_kept_from_the_user_is_named_as_the_reason(): void {
+		$handbook = $this->handbook();
+		update_term_meta( $handbook, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_RESTRICTED );
+		update_term_meta( $handbook, Handbooks::META_ROLES, array( 'administrator' ) );
+		$page = $this->page( 'About us' );
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'editor' ) ) );
+		$_REQUEST['lh_handbook'] = (string) $handbook;
+		$redirect                = ( new MoveToHandbook() )->handle_bulk_action( 'edit.php?post_type=page', 'lh_move_to_handbook', array( $page ) );
+		unset( $_REQUEST['lh_handbook'] );
+
+		$this->assertSame( 'page', get_post_type( $page ) );
+		$this->assertStringContainsString( 'lh_handbook_refused=1', $redirect );
+
+		$_REQUEST['lh_handbook_refused'] = '1';
+		ob_start();
+		( new MoveToHandbook() )->notice();
+		$notice = (string) ob_get_clean();
+		unset( $_REQUEST['lh_handbook_refused'] );
+
+		$this->assertStringContainsString( 'kept from you', $notice );
+		$this->assertStringNotContainsString( 'no handbook was chosen', $notice );
+	}
+
+	/**
 	 * The redirect is looked up only on a site that has actually moved a page.
 	 * Without that switch every 404 on every installation would ask the database
 	 * whether some page used to live at that address, and on almost every
