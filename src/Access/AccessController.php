@@ -22,6 +22,7 @@ use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Training\Training;
 use LivingHandbook\Setup\Settings;
 use WP_Comment;
+use WP_Comment_Query;
 use WP_Post;
 use WP_Query;
 use WP_REST_Response;
@@ -477,6 +478,7 @@ final class AccessController {
 		// Comments are a separate read channel that the post query does not
 		// cover: gate the comment queries, the comment feeds, and single comment
 		// REST reads, so comments on a handbook a user may not view do not leak.
+		add_action( 'pre_get_comments', array( $this, 'separate_comment_cache' ) );
 		add_filter( 'comments_clauses', array( $this, 'filter_comment_clauses' ), 10, 2 );
 		add_filter( 'comment_feed_where', array( $this, 'filter_comment_feed_where' ), 10, 2 );
 		add_filter( 'rest_prepare_comment', array( $this, 'guard_rest_comment' ), 10, 2 );
@@ -1137,6 +1139,39 @@ final class AccessController {
 			return new WP_REST_Response( null, 404 );
 		}
 		return $response;
+	}
+
+	/**
+	 * Keeps the cached result of a comment query to the readers it was made for.
+	 *
+	 * WP_Comment_Query caches the ids it found under a key built from its
+	 * arguments alone, and comments_clauses, where filter_comment_clauses()
+	 * narrows the query, runs only when the cache misses. Without this, the
+	 * first reader's answer was served to everybody who asked the same
+	 * question: with a persistent object cache, a guest got the comments a
+	 * member had been shown, internal pages included. cache_domain is the
+	 * argument core puts into the key for exactly this; it gets a fingerprint
+	 * of the read rule (back end or site, the readable handbooks,
+	 * reads_unassigned(), and in the back end the user, whose own pages count),
+	 * appended to any domain the caller set.
+	 *
+	 * @param WP_Comment_Query|mixed $query The comment query being prepared.
+	 * @return void
+	 */
+	public function separate_comment_cache( $query ): void {
+		if ( ! $query instanceof WP_Comment_Query || ! self::should_filter_comments() ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		$rule    = array(
+			self::is_backend_read() ? 'admin:' . $user_id : 'site',
+			implode( ',', self::viewable_term_ids( $user_id ) ),
+			self::reads_unassigned( $user_id ) ? 'unassigned' : '',
+		);
+		$domain  = isset( $query->query_vars['cache_domain'] ) && is_string( $query->query_vars['cache_domain'] ) ? $query->query_vars['cache_domain'] : 'core';
+
+		$query->query_vars['cache_domain'] = $domain . ':living-handbook-' . substr( md5( implode( '|', $rule ) ), 0, 12 );
 	}
 
 	/**

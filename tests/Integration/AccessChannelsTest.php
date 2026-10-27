@@ -197,6 +197,34 @@ final class AccessChannelsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A guest asking the same comment query as a member before them does not
+	 * get the member's cached answer. Up to 0.75.1 the comment query cache was
+	 * keyed by the arguments alone, so the second reader got the first one's
+	 * comments, internal pages included; with a persistent object cache that
+	 * held across requests.
+	 *
+	 * @return void
+	 */
+	public function test_a_guest_does_not_get_a_members_cached_comments(): void {
+		$comment = (int) self::factory()->comment->create(
+			array(
+				'comment_post_ID'  => $this->page,
+				'comment_approved' => '1',
+			)
+		);
+		$args    = array(
+			'post_id' => $this->page,
+			'fields'  => 'ids',
+		);
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+		$this->assertContains( $comment, array_map( 'intval', get_comments( $args ) ), 'precondition: the member reads it' );
+
+		wp_set_current_user( 0 );
+		$this->assertNotContains( $comment, array_map( 'intval', get_comments( $args ) ) );
+	}
+
+	/**
 	 * A single comment REST read on a non-viewable page is refused for a guest.
 	 *
 	 * @return void
