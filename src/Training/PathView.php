@@ -185,13 +185,16 @@ final class PathView {
 			return '';
 		}
 
+		// The lessons of all paths at once, rather than path by path.
+		$lessons = Lessons::visible_ids_for( wp_list_pluck( $paths, 'ID' ), $user_id );
+
 		$items = '';
 		foreach ( $paths as $path ) {
 			$permalink = get_permalink( $path->ID );
 			if ( ! is_string( $permalink ) ) {
 				continue;
 			}
-			$count = count( Lessons::visible( $path->ID, $user_id ) );
+			$count = count( $lessons[ $path->ID ] ?? array() );
 
 			$items .= sprintf(
 				'<li class="living-handbook-paths__item"><a href="%1$s">%2$s</a> <span class="living-handbook-paths__count">%3$s</span></li>',

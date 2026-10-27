@@ -121,55 +121,127 @@ final class Lessons {
 	 * @return array<int, WP_Post>
 	 */
 	public static function visible( int $training_id, int $user_id ): array {
-		$ids = self::stored( $training_id );
+		$ids = self::visible_ids_for( array( $training_id ), $user_id )[ $training_id ] ?? array();
 		if ( array() === $ids ) {
 			return array();
 		}
 
-		$handbook = Handbooks::for_post( $training_id );
-		if ( $handbook <= 0 ) {
-			return array();
-		}
-
-		$query = new WP_Query(
-			array(
-				'post_type'              => Handbook::POST_TYPE,
-				'post_status'            => 'publish',
-				'post__in'               => $ids,
-				'orderby'                => 'post__in',
-				'posts_per_page'         => count( $ids ),
-				'no_found_rows'          => true,
-				'ignore_sticky_posts'    => true,
-				'update_post_meta_cache' => false,
-				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
-					array(
-						'taxonomy'         => Handbooks::TAXONOMY,
-						'field'            => 'term_id',
-						'terms'            => $handbook,
-						'include_children' => false,
-					),
-				),
-			)
-		);
-
+		// The callers show the lessons, so they get them whole, read in one
+		// query. Of their terms nothing is read: a lesson is shown by its title
+		// and its address, and the access decision is already made.
+		_prime_post_caches( $ids, false, false );
 		$lessons = array();
-		foreach ( $query->posts as $post ) {
-			if ( ! $post instanceof WP_Post ) {
-				continue;
+		foreach ( $ids as $id ) {
+			$post = get_post( $id );
+			if ( $post instanceof WP_Post ) {
+				$lessons[] = $post;
 			}
-			if ( ! AccessController::can_view_post( $post->ID, $user_id ) ) {
-				continue;
-			}
-			$lessons[] = $post;
 		}
 
-		// Every caller links the lessons, and the address of a page below
-		// another is built from its parents. Lessons come from all over the
-		// handbook, so without this each one loaded its parents one by one: a
-		// path of twenty lessons took 31 queries to show its list.
+		// The address of a page below another is built from its parents.
+		// Lessons come from all over the handbook, so without this each one
+		// loaded its parents one by one: a path of twenty lessons took 31
+		// queries to show its list.
 		PageTree::prime_ancestors( $lessons );
 
 		return $lessons;
+	}
+
+	/**
+	 * The ids of the lessons several paths have for this person, each list in
+	 * the path's own order.
+	 *
+	 * What visible() answers for one path, for a list of them at the cost of
+	 * one: the lesson lists of all paths are read in one query, and the lessons
+	 * of all paths of a handbook are found and decided together, then shared
+	 * out path by path. The entry page lists every path of a handbook with its
+	 * lesson count, and up to 0.75.1 asked visible() path by path, two queries
+	 * and more each, loading every lesson whole to count it.
+	 *
+	 * The rule is the one visible() always applied, per lesson and per path: a
+	 * lesson is in a path's list only when the path names it, it is published,
+	 * it is in the path's handbook, and this person may read it. The ids come
+	 * from WP_Query, so the access layer on the query applies; the decision per
+	 * page is AccessController::readable_posts(), can_view_post() with its
+	 * filter, on the few columns PageTree reads, so counting a lesson does not
+	 * load its text.
+	 *
+	 * @param array<int, int> $training_ids Learning path ids.
+	 * @param int             $user_id      User id (0 for a guest), for the explicit check per lesson.
+	 * @return array<int, array<int, int>> Lesson ids per path id.
+	 */
+	public static function visible_ids_for( array $training_ids, int $user_id ): array {
+		$training_ids = array_values( array_unique( array_filter( array_map( 'intval', $training_ids ), static fn( int $id ): bool => $id > 0 ) ) );
+		if ( array() === $training_ids ) {
+			return array();
+		}
+
+		// The lesson list is a meta value; read those of all paths at once.
+		update_meta_cache( 'post', $training_ids );
+
+		$out      = array();
+		$wanted   = array();
+		$handbook = array();
+		foreach ( $training_ids as $training_id ) {
+			$out[ $training_id ] = array();
+
+			$ids = self::stored( $training_id );
+			if ( array() === $ids ) {
+				continue;
+			}
+			$term = Handbooks::for_post( $training_id );
+			if ( $term <= 0 ) {
+				continue;
+			}
+			$handbook[ $training_id ] = $term;
+			$wanted[ $term ]          = array_merge( $wanted[ $term ] ?? array(), $ids );
+		}
+
+		// One query per handbook, which is one query: the paths shown together
+		// are the paths of one handbook. A lesson outside that handbook is not
+		// found, and so not listed, as before.
+		$readable = array();
+		foreach ( $wanted as $term => $ids ) {
+			$ids   = array_values( array_unique( $ids ) );
+			$query = new WP_Query(
+				array(
+					'post_type'           => Handbook::POST_TYPE,
+					'post_status'         => 'publish',
+					'post__in'            => $ids,
+					'posts_per_page'      => count( $ids ),
+					'fields'              => 'ids',
+					'no_found_rows'       => true,
+					'ignore_sticky_posts' => true,
+					'tax_query'           => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+						array(
+							'taxonomy'         => Handbooks::TAXONOMY,
+							'field'            => 'term_id',
+							'terms'            => $term,
+							'include_children' => false,
+						),
+					),
+				)
+			);
+			$found = AccessController::readable_posts( PageTree::partial_posts( array_map( 'intval', $query->posts ) ) );
+			foreach ( $found as $post ) {
+				if ( $post instanceof WP_Post ) {
+					$readable[ $term ][ (int) $post->ID ] = $post;
+				}
+			}
+		}
+
+		foreach ( $handbook as $training_id => $term ) {
+			foreach ( self::stored( $training_id ) as $id ) {
+				$post = $readable[ $term ][ $id ] ?? null;
+				// The explicit check visible() always made, for the user asked
+				// about, on the partial post, which does not load it again.
+				if ( $post instanceof WP_Post && AccessController::can_view_post( $post, $user_id ) ) {
+					$out[ $training_id ][] = $id;
+				}
+			}
+		}
+
+		return $out;
 	}
 
 	/**

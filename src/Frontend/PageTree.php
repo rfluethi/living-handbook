@@ -131,13 +131,23 @@ final class PageTree {
 	 * Read the COLUMNS of a list of pages, in the order of the list.
 	 *
 	 * WP_Query has no way to ask for a few columns, only for ids or for whole
-	 * posts, hence the one direct query. The ids come from a WP_Query that has
-	 * already applied every filter, so this only fills in what they are.
+	 * posts, hence the one direct query. The ids are meant to come from a
+	 * WP_Query that has already applied every filter, so this only fills in
+	 * what they are; the access decision per page is then
+	 * AccessController::readable_posts().
+	 *
+	 * What comes back are partial posts: no content, no excerpt. They must not
+	 * be handed to code that reads more than COLUMNS, and they are never put
+	 * into the post cache.
 	 *
 	 * @param array<int, int> $ids Page ids, in the order wanted.
 	 * @return array<int, WP_Post> Partial posts, in the order of $ids.
 	 */
-	private static function partial_posts( array $ids ): array {
+	public static function partial_posts( array $ids ): array {
+		if ( array() === $ids ) {
+			return array();
+		}
+
 		global $wpdb;
 
 		$in   = implode( ',', array_map( 'absint', $ids ) );
