@@ -11,6 +11,7 @@
 
 const fs = require( 'fs' );
 const vm = require( 'vm' );
+const stubs = require( './wp-stubs' );
 
 const source = process.argv[ 3 ] || 'app';
 
@@ -94,6 +95,7 @@ const sandbox = {
 	lhImport: { githubPath: '/living-handbook/v1/import-github' },
 	confirm: () => true,
 	wp: {
+		...stubs,
 		blocks: {},
 		apiFetch: () => Promise.resolve( { pages: [], notes: [ 'The handbook folder holds no Markdown files.' ] } )
 	}

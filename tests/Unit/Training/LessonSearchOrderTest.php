@@ -40,7 +40,7 @@ final class LessonSearchOrderTest extends TestCase {
 	public function test_every_answer_is_checked_against_the_latest_search(): void {
 		$script = (string) file_get_contents( $this->script() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
 
-		$this->assertStringContainsString( 'var request = ++latest;', $script );
+		$this->assertStringContainsString( 'const request = ++latest;', $script );
 		$this->assertSame( 2, substr_count( $script, 'if ( request !== latest ) {' ), 'The success and the error path both have to drop a stale answer.' );
 	}
 

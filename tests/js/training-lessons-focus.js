@@ -13,6 +13,7 @@
 
 const fs = require( 'fs' );
 const vm = require( 'vm' );
+const stubs = require( './wp-stubs' );
 
 const body = { name: 'body', click() {} };
 let active = body;
@@ -60,6 +61,11 @@ function element( tag ) {
 				this.children.splice( at, 0, child );
 			}
 			return child;
+		},
+		remove() {
+			if ( this.parentNode ) {
+				this.parentNode.removeChild( this );
+			}
 		},
 		removeChild( child ) {
 			this.children.splice( this.children.indexOf( child ), 1 );
@@ -141,7 +147,8 @@ const sandbox = {
 		addEventListener() {}
 	},
 	setTimeout,
-	clearTimeout
+	clearTimeout,
+	wp: { ...stubs }
 };
 sandbox.window = sandbox;
 

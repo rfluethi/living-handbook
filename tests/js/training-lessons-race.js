@@ -10,6 +10,7 @@
 
 const fs = require( 'fs' );
 const vm = require( 'vm' );
+const stubs = require( './wp-stubs' );
 
 function element( tag ) {
 	const el = {
@@ -86,6 +87,7 @@ const sandbox = {
 	clearTimeout: () => {},
 	lhTraining: { searchPath: '/living-handbook/v1/training-lessons' },
 	wp: {
+		...stubs,
 		apiFetch: ( options ) => new Promise( ( resolve ) => {
 			pending.push( { path: options.path, resolve } );
 		} )

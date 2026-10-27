@@ -1,5 +1,5 @@
 /**
- * The filter bar follows the column checkboxes while the page stays open.
+ * Keeps the filter bar of the handbook list in step with the column checkboxes.
  *
  * WordPress applies the "Screen Options" checkboxes immediately: tick a column
  * off and it disappears from the table, no reload. The filters above the list
@@ -16,35 +16,43 @@
  * the columns say, so taking the control away would leave a filtered list with
  * no way to clear it.
  */
+
 ( function () {
 	'use strict';
 
-	document.addEventListener( 'DOMContentLoaded', function () {
-		var filters = document.querySelectorAll( '.living-handbook-list-filter[data-column]' );
+	document.addEventListener( 'DOMContentLoaded', () => {
+		const filters = document.querySelectorAll(
+			'.living-handbook-list-filter[data-column]'
+		);
 		if ( ! filters.length ) {
 			return;
 		}
 
 		// One filter per column, so the lookup is a map rather than a scan per
 		// checkbox change.
-		var byColumn = {};
-		filters.forEach( function ( filter ) {
+		const byColumn = {};
+		filters.forEach( ( filter ) => {
 			byColumn[ filter.getAttribute( 'data-column' ) ] = filter;
 		} );
 
+		/**
+		 * Shows or hides the filter of the column a checkbox controls.
+		 *
+		 * @param {HTMLInputElement} checkbox A "Screen Options" column checkbox.
+		 * @return {void}
+		 */
 		function sync( checkbox ) {
-			var filter = byColumn[ checkbox.value ];
+			const filter = byColumn[ checkbox.value ];
 			if ( ! filter || '1' === filter.getAttribute( 'data-active' ) ) {
 				return;
 			}
 			filter.hidden = ! checkbox.checked;
 		}
 
-		var boxes = document.querySelectorAll( '.hide-column-tog' );
-		boxes.forEach( function ( checkbox ) {
-			checkbox.addEventListener( 'change', function () {
-				sync( checkbox );
+		document
+			.querySelectorAll( '.hide-column-tog' )
+			.forEach( ( checkbox ) => {
+				checkbox.addEventListener( 'change', () => sync( checkbox ) );
 			} );
-		} );
 	} );
-}() );
+} )();

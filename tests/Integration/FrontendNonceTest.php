@@ -71,7 +71,7 @@ final class FrontendNonceTest extends WP_UnitTestCase {
 		$script = (string) file_get_contents( LIVING_HANDBOOK_DIR . 'assets/frontend.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
 
 		$this->assertSame( 1, substr_count( $script, "'X-WP-Nonce'" ), 'One place sets the header, behind the check.' );
-		$this->assertStringContainsString( 'window.livingHandbook.nonce ) {', $script );
+		$this->assertStringContainsString( '! nonceRejected && settings.nonce ) {', $script );
 	}
 
 	/**

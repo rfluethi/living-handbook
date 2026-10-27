@@ -1,4 +1,4 @@
-/*
+/**
  * The lesson picker of a learning path.
  *
  * A search field that loads matches from the plugin's REST route on demand, and
@@ -9,66 +9,116 @@
  *
  * The whole list travels in one hidden comma separated field, so the order is
  * part of the value instead of something rebuilt from the order of form fields.
+ * Registered by Training\LessonPicker with wp-api-fetch, wp-dom-ready and
+ * wp-i18n as dependencies, and the REST path as lhTraining.
  */
+
+/* global lhTraining */
+
 ( function () {
 	'use strict';
 
-	var i18n = ( window.wp && window.wp.i18n ) ? window.wp.i18n : null;
-	var __ = i18n ? i18n.__ : function ( s ) { return s; };
-	var sprintf = i18n ? i18n.sprintf : function ( fmt ) {
-		var args = Array.prototype.slice.call( arguments, 1 );
-		var i = 0;
-		return String( fmt ).replace( /%(\d+\$)?[ds]/g, function () { return args[ i++ ]; } );
-	};
+	const { __, sprintf } = window.wp.i18n;
 
-	function ready( fn ) {
-		if ( window.wp && wp.domReady ) {
-			wp.domReady( fn );
-		} else if ( document.readyState !== 'loading' ) {
-			fn();
-		} else {
-			document.addEventListener( 'DOMContentLoaded', fn );
-		}
-	}
+	/**
+	 * Delay before a typed search is sent, in milliseconds. A little longer
+	 * than on the front end: an editor types full titles.
+	 */
+	const SEARCH_DEBOUNCE_MS = 250;
 
+	/**
+	 * Returns a debounced version of a function.
+	 *
+	 * @param {(...args: unknown[]) => void} fn   Function to call once the calls
+	 *                                            have paused.
+	 * @param {number}                       wait Pause in milliseconds.
+	 * @return {(...args: unknown[]) => void} The debounced function.
+	 */
 	function debounce( fn, wait ) {
-		var timer = null;
-		return function () {
-			var context = this;
-			var args = arguments;
+		let timer = null;
+		return function ( ...args ) {
 			if ( timer ) {
 				clearTimeout( timer );
 			}
-			timer = setTimeout( function () {
-				fn.apply( context, args );
-			}, wait );
+			timer = setTimeout( () => fn.apply( this, args ), wait );
 		};
 	}
 
-	function setup( root ) {
-		var trainingId = parseInt( root.getAttribute( 'data-training' ), 10 );
-		var value = root.querySelector( '.living-handbook-lessons__value' );
-		var list = root.querySelector( '.living-handbook-lessons__list' );
-		var empty = root.querySelector( '.living-handbook-lessons__empty' );
-		var search = root.querySelector( '.living-handbook-lessons__search' );
-		var results = root.querySelector( '.living-handbook-lessons__results' );
+	/**
+	 * Creates one of the small text buttons of a lesson row.
+	 *
+	 * @param {string} className Class that identifies the button's job.
+	 * @param {string} label     Visible label.
+	 * @return {HTMLButtonElement} The button.
+	 */
+	function rowButton( className, label ) {
+		const element = document.createElement( 'button' );
+		element.type = 'button';
+		element.className = 'button-link ' + className;
+		element.textContent = label;
+		return element;
+	}
 
+	/**
+	 * Keeps the focus on the button that was pressed.
+	 *
+	 * That is the whole point of having buttons: without it a keyboard user
+	 * loses their place on every move and has to tab back into the list. A
+	 * button the move has just disabled cannot take the focus, though: up to
+	 * 0.75.1 the last Move up of a row sent it to the page body. Then the other
+	 * button of the same row takes it, the one that has something left to do.
+	 * The disabled button stays disabled, so the list works the same for
+	 * everybody.
+	 *
+	 * @param {HTMLButtonElement} pressed The button that was used.
+	 * @param {HTMLButtonElement} other   The opposite button of the same row.
+	 * @return {void}
+	 */
+	function keepFocus( pressed, other ) {
+		const target = pressed.disabled ? other : pressed;
+		if ( target && ! target.disabled ) {
+			target.focus();
+		}
+	}
+
+	/**
+	 * Turns one lesson picker into a working control.
+	 *
+	 * @param {HTMLElement} root The picker, carrying data-training.
+	 * @return {void}
+	 */
+	function setup( root ) {
+		const value = root.querySelector( '.living-handbook-lessons__value' );
+		const list = root.querySelector( '.living-handbook-lessons__list' );
 		if ( ! value || ! list ) {
 			return;
 		}
+		const empty = root.querySelector( '.living-handbook-lessons__empty' );
+		const search = root.querySelector( '.living-handbook-lessons__search' );
 
+		/**
+		 * Returns the lesson IDs in their current order.
+		 *
+		 * @return {number[]} Post IDs.
+		 */
 		function ids() {
-			return Array.prototype.map.call( list.children, function ( item ) {
-				return parseInt( item.getAttribute( 'data-id' ), 10 );
-			} ).filter( function ( id ) {
-				return id > 0;
-			} );
+			return Array.from( list.children )
+				.map( ( item ) =>
+					parseInt( item.getAttribute( 'data-id' ), 10 )
+				)
+				.filter( ( id ) => id > 0 );
 		}
 
-		// One place writes the field and the empty note, so the two cannot drift
-		// apart after a move, a removal or an addition.
+		/**
+		 * Writes the hidden field, the empty note and the button states.
+		 *
+		 * One place writes them all, so they cannot drift apart after a move,
+		 * a removal or an addition.
+		 *
+		 * @return {void}
+		 */
 		function sync() {
-			var current = ids();
+			const current = ids();
 			value.value = current.join( ',' );
 			if ( empty ) {
 				if ( current.length ) {
@@ -77,9 +127,11 @@
 					empty.removeAttribute( 'hidden' );
 				}
 			}
-			Array.prototype.forEach.call( list.children, function ( item, index ) {
-				var up = item.querySelector( '.living-handbook-lessons__up' );
-				var down = item.querySelector( '.living-handbook-lessons__down' );
+			Array.from( list.children ).forEach( ( item, index ) => {
+				const up = item.querySelector( '.living-handbook-lessons__up' );
+				const down = item.querySelector(
+					'.living-handbook-lessons__down'
+				);
 				if ( up ) {
 					up.disabled = 0 === index;
 				}
@@ -89,30 +141,13 @@
 			} );
 		}
 
-		function button( className, label ) {
-			var element = document.createElement( 'button' );
-			element.type = 'button';
-			element.className = 'button-link ' + className;
-			element.textContent = label;
-			return element;
-		}
-
-		// Keeping the focus on the button that was pressed is the whole point of
-		// having buttons: without it a keyboard user loses their place on every
-		// move and has to tab back into the list.
-		//
-		// A button the move has just disabled cannot take the focus, though: up
-		// to 0.75.1 the last Move up of a row sent it to the page body. Then the
-		// other button of the same row takes it, the one that has something left
-		// to do. The disabled button stays disabled, so the list works the same
-		// for everybody.
-		function keepFocus( pressed, other ) {
-			var target = pressed.disabled ? other : pressed;
-			if ( target && ! target.disabled ) {
-				target.focus();
-			}
-		}
-
+		/**
+		 * Moves a lesson one place up or down.
+		 *
+		 * @param {HTMLLIElement} item      The lesson row.
+		 * @param {number}        direction -1 for up, 1 for down.
+		 * @return {void}
+		 */
 		function move( item, direction ) {
 			if ( direction < 0 && item.previousElementSibling ) {
 				list.insertBefore( item, item.previousElementSibling );
@@ -122,40 +157,78 @@
 			sync();
 		}
 
+		/**
+		 * Adds the Move up, Move down and Remove buttons to a lesson row.
+		 *
+		 * @param {HTMLLIElement} item The lesson row.
+		 * @return {void}
+		 */
 		function decorate( item ) {
 			if ( item.querySelector( '.living-handbook-lessons__up' ) ) {
 				return;
 			}
-			var title = item.querySelector( '.living-handbook-lessons__title' );
-			var name = title ? title.textContent : '';
+			const title = item.querySelector(
+				'.living-handbook-lessons__title'
+			);
+			const name = title ? title.textContent : '';
 
-			var controls = document.createElement( 'span' );
+			const controls = document.createElement( 'span' );
 			controls.className = 'living-handbook-lessons__controls';
 
-			var up = button( 'living-handbook-lessons__up', __( 'Move up', 'living-handbook' ) );
-			var down = button( 'living-handbook-lessons__down', __( 'Move down', 'living-handbook' ) );
-			var remove = button( 'living-handbook-lessons__remove', __( 'Remove', 'living-handbook' ) );
+			const up = rowButton(
+				'living-handbook-lessons__up',
+				__( 'Move up', 'living-handbook' )
+			);
+			const down = rowButton(
+				'living-handbook-lessons__down',
+				__( 'Move down', 'living-handbook' )
+			);
+			const remove = rowButton(
+				'living-handbook-lessons__remove',
+				__( 'Remove', 'living-handbook' )
+			);
 
-			// translators: %s is the title of a lesson.
-			up.setAttribute( 'aria-label', sprintf( __( 'Move %s up', 'living-handbook' ), name ) );
-			// translators: %s is the title of a lesson.
-			down.setAttribute( 'aria-label', sprintf( __( 'Move %s down', 'living-handbook' ), name ) );
-			// translators: %s is the title of a lesson.
-			remove.setAttribute( 'aria-label', sprintf( __( 'Remove %s', 'living-handbook' ), name ) );
+			up.setAttribute(
+				'aria-label',
+				sprintf(
+					/* translators: %s is the title of a lesson. */
+					__( 'Move %s up', 'living-handbook' ),
+					name
+				)
+			);
+			down.setAttribute(
+				'aria-label',
+				sprintf(
+					/* translators: %s is the title of a lesson. */
+					__( 'Move %s down', 'living-handbook' ),
+					name
+				)
+			);
+			remove.setAttribute(
+				'aria-label',
+				sprintf(
+					/* translators: %s is the title of a lesson. */
+					__( 'Remove %s', 'living-handbook' ),
+					name
+				)
+			);
 
-			up.addEventListener( 'click', function () {
+			up.addEventListener( 'click', () => {
 				move( item, -1 );
 				keepFocus( up, down );
 			} );
-			down.addEventListener( 'click', function () {
+			down.addEventListener( 'click', () => {
 				move( item, 1 );
 				keepFocus( down, up );
 			} );
-			remove.addEventListener( 'click', function () {
-				var next = item.nextElementSibling || item.previousElementSibling;
-				item.parentNode.removeChild( item );
+			remove.addEventListener( 'click', () => {
+				const next =
+					item.nextElementSibling || item.previousElementSibling;
+				item.remove();
 				sync();
-				var target = next ? next.querySelector( '.living-handbook-lessons__remove' ) : search;
+				const target = next
+					? next.querySelector( '.living-handbook-lessons__remove' )
+					: search;
 				if ( target ) {
 					target.focus();
 				}
@@ -167,44 +240,64 @@
 			item.appendChild( controls );
 		}
 
+		/**
+		 * Appends a lesson to the list, unless it is already in it.
+		 *
+		 * @param {number} id    Post ID of the page.
+		 * @param {string} title Page title.
+		 * @return {void}
+		 */
 		function add( id, title ) {
-			if ( ids().indexOf( id ) !== -1 ) {
+			if ( -1 !== ids().indexOf( id ) ) {
 				return;
 			}
-			var item = document.createElement( 'li' );
+			const item = document.createElement( 'li' );
 			item.setAttribute( 'data-id', String( id ) );
-			var name = document.createElement( 'span' );
-			name.className = 'living-handbook-lessons__title';
-			name.textContent = title;
-			item.appendChild( name );
+			const label = document.createElement( 'span' );
+			label.className = 'living-handbook-lessons__title';
+			label.textContent = title;
+			item.appendChild( label );
 			list.appendChild( item );
 			decorate( item );
 			sync();
 		}
 
-		Array.prototype.forEach.call( list.children, decorate );
+		Array.from( list.children ).forEach( decorate );
 		sync();
 
-		if ( ! search || ! results || ! window.wp || ! wp.apiFetch || ! window.lhTraining ) {
+		const results = root.querySelector(
+			'.living-handbook-lessons__results'
+		);
+		if ( ! search || ! results || typeof lhTraining === 'undefined' ) {
 			return;
 		}
+		const trainingId = parseInt( root.getAttribute( 'data-training' ), 10 );
 
+		/**
+		 * Shows the pages a search found, each as a button that adds it.
+		 *
+		 * @param {Array<{id: number, title: string}>} items Matching pages.
+		 * @return {void}
+		 */
 		function render( items ) {
 			results.textContent = '';
 			if ( ! items.length ) {
-				var none = document.createElement( 'li' );
+				const none = document.createElement( 'li' );
 				none.className = 'living-handbook-lessons__none';
-				none.textContent = __( 'No matching pages.', 'living-handbook' );
+				none.textContent = __(
+					'No matching pages.',
+					'living-handbook'
+				);
 				results.appendChild( none );
 				return;
 			}
-			items.forEach( function ( hit ) {
-				var entry = document.createElement( 'li' );
-				var choose = document.createElement( 'button' );
+			items.forEach( ( hit ) => {
+				const entry = document.createElement( 'li' );
+				const choose = document.createElement( 'button' );
 				choose.type = 'button';
 				choose.className = 'button-link';
 				choose.textContent = hit.title;
-				choose.addEventListener( 'click', function () {
+				choose.addEventListener( 'click', () => {
 					add( hit.id, hit.title );
 					search.value = '';
 					results.textContent = '';
@@ -221,40 +314,49 @@
 		// "onboarding" and replace it, so the list showed matches for words no
 		// longer in the field. A field emptied below two characters counts as a
 		// search of its own, so an answer still in flight cannot refill it.
-		var latest = 0;
+		let latest = 0;
 
-		var run = debounce( function () {
-			var term = search.value.trim();
-			var request = ++latest;
+		const run = debounce( () => {
+			const term = search.value.trim();
+			const request = ++latest;
 			if ( term.length < 2 ) {
 				results.textContent = '';
 				return;
 			}
-			wp.apiFetch( {
-				path: window.lhTraining.searchPath
-					+ '?training_id=' + encodeURIComponent( trainingId )
-					+ '&q=' + encodeURIComponent( term )
-			} ).then( function ( response ) {
-				if ( request !== latest ) {
-					return;
-				}
-				render( ( response && response.results ) || [] );
-			} ).catch( function () {
-				if ( request !== latest ) {
-					return;
-				}
-				results.textContent = '';
-				var failed = document.createElement( 'li' );
-				failed.className = 'living-handbook-lessons__none';
-				failed.textContent = __( 'The search failed. Please try again.', 'living-handbook' );
-				results.appendChild( failed );
-			} );
-		}, 250 );
+			window.wp
+				.apiFetch( {
+					path:
+						lhTraining.searchPath +
+						'?training_id=' +
+						encodeURIComponent( trainingId ) +
+						'&q=' +
+						encodeURIComponent( term ),
+				} )
+				.then( ( response ) => {
+					if ( request !== latest ) {
+						return;
+					}
+					render( ( response && response.results ) || [] );
+				} )
+				.catch( () => {
+					if ( request !== latest ) {
+						return;
+					}
+					results.textContent = '';
+					const failed = document.createElement( 'li' );
+					failed.className = 'living-handbook-lessons__none';
+					failed.textContent = __(
+						'The search failed. Please try again.',
+						'living-handbook'
+					);
+					results.appendChild( failed );
+				} );
+		}, SEARCH_DEBOUNCE_MS );
 
 		search.addEventListener( 'input', run );
 		// Enter in a search field submits the post form in the classic editor,
 		// which would save the path in the middle of choosing lessons.
-		search.addEventListener( 'keydown', function ( event ) {
+		search.addEventListener( 'keydown', ( event ) => {
 			if ( 'Enter' === event.key ) {
 				event.preventDefault();
 				run();
@@ -262,10 +364,9 @@
 		} );
 	}
 
-	ready( function () {
-		Array.prototype.forEach.call(
-			document.querySelectorAll( '.living-handbook-lessons' ),
-			setup
-		);
+	window.wp.domReady( () => {
+		document
+			.querySelectorAll( '.living-handbook-lessons' )
+			.forEach( setup );
 	} );
-}() );
+} )();

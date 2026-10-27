@@ -59,8 +59,8 @@ final class FrontendScriptTest extends WP_UnitTestCase {
 	public function test_a_filled_table_of_contents_is_left_as_it_is(): void {
 		$body = $this->function_body( 'buildToc' );
 
-		$guard = strpos( $body, "if ( list.querySelector( 'a[href^=\"#\"]' ) ) {" );
-		$build = strpos( $body, "document.createElement( 'li' )" );
+		$guard = strpos( $body, "const filled = list.querySelectorAll( 'a[href^=\"#\"]' );\n\t\t\tif ( filled.length ) {" );
+		$build = strpos( $body, 'tocItem( heading )' );
 
 		$this->assertNotFalse( $guard, 'buildToc() does not look for entries the server wrote.' );
 		$this->assertNotFalse( $build );

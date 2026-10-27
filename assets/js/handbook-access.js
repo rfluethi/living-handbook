@@ -1,24 +1,32 @@
-/*
- * Handbook access fields: show the roles and users rows only when the frontend
- * visibility is set to "restricted". Enqueued on the handbook_set term add and
- * edit screens by HandbookAdmin.
+/**
+ * Handbook access fields on the handbook_set term screens.
+ *
+ * Shows the roles and users rows only while the frontend visibility is set to
+ * "restricted", because they have no effect for any other setting. Enqueued on
+ * the term add and edit screens by HandbookAdmin.
  */
+
 ( function () {
 	'use strict';
 
-	var sel = document.getElementById( 'living_handbook_visibility' );
-	if ( ! sel ) {
+	const select = document.getElementById( 'living_handbook_visibility' );
+	if ( ! select ) {
 		return;
 	}
-	var rows = document.querySelectorAll( '.js-lh-restricted' );
+	const rows = document.querySelectorAll( '.js-lh-restricted' );
 
+	/**
+	 * Shows or hides the restricted-only rows for the current visibility.
+	 *
+	 * @return {void}
+	 */
 	function update() {
-		var restricted = 'restricted' === sel.value;
-		rows.forEach( function ( row ) {
+		const restricted = 'restricted' === select.value;
+		rows.forEach( ( row ) => {
 			row.style.display = restricted ? '' : 'none';
 		} );
 	}
 
-	sel.addEventListener( 'change', update );
+	select.addEventListener( 'change', update );
 	update();
-}() );
+} )();
