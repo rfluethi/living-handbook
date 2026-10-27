@@ -487,4 +487,76 @@ final class BundleTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '1-page.html', $notes, 'A refused file is named.' );
 		$this->assertStringContainsString( '2-gone.pdf', $notes, 'A missing file is named.' );
 	}
+
+	/**
+	 * A file of the bundle that is too large to hold in memory is not read, and
+	 * the report names it; the rest of the bundle is imported. Up to 0.76.0
+	 * every file was unpacked into memory whatever its size, and one video
+	 * past memory_limit ended the import in a fatal error half-way.
+	 *
+	 * @return void
+	 */
+	public function test_a_file_too_large_to_read_is_left_out_and_named(): void {
+		$path = (string) tempnam( sys_get_temp_dir(), 'lh-test-bundle' );
+		$zip  = new \ZipArchive();
+		$zip->open( $path, \ZipArchive::CREATE | \ZipArchive::OVERWRITE );
+		$zip->addFromString( 'media/1-small.pdf', "%PDF-1.4\n1 0 obj << /Type /Catalog >> endobj\ntrailer << /Root 1 0 R >>\n%%EOF\n" );
+		$zip->addFromString( 'media/2-video.pdf', "%PDF-1.4\n" . str_repeat( 'x', 8192 ) . "\n%%EOF\n" );
+		$zip->close();
+		$zip->open( $path );
+
+		$target   = $this->make_handbook( 'Large target' );
+		$manifest = array(
+			'format'   => 'living-handbook-bundle',
+			'handbook' => array( 'name' => 'Large source' ),
+			'pages'    => array(),
+			'media'    => array(
+				array(
+					'file'         => 'media/1-small.pdf',
+					'original_url' => 'https://old.example/wp-content/uploads/small.pdf',
+				),
+				array(
+					'file'         => 'media/2-video.pdf',
+					'original_url' => 'https://old.example/wp-content/uploads/video.pdf',
+				),
+			),
+		);
+
+		$limit = static function (): int {
+			return 4096;
+		};
+		add_filter( 'living_handbook_bundle_max_file_bytes', $limit );
+		$import = new \ReflectionMethod( HandbookImport::class, 'import_bundle' );
+		$import->setAccessible( true );
+		$report = $import->invoke( new HandbookImport(), $manifest, $zip, HandbookImport::RULE_SKIP, $target );
+		remove_filter( 'living_handbook_bundle_max_file_bytes', $limit );
+		$zip->close();
+		wp_delete_file( $path );
+
+		$notes = implode( "\n", (array) $report['notes'] );
+		$this->assertStringContainsString( 'too large', $notes );
+		$this->assertStringContainsString( '2-video.pdf', $notes, 'The file left out is named.' );
+		$this->assertStringNotContainsString( '1-small.pdf', $notes, 'The small file is imported.' );
+		$this->assertLessThanOrEqual( 128 * MB_IN_BYTES, HandbookImport::max_file_bytes(), 'Never more than 128 MB by default.' );
+	}
+
+	/**
+	 * The per-file limit is the smaller of 128 MB and a quarter of the free
+	 * memory, and 128 MB without a memory limit.
+	 *
+	 * @return void
+	 */
+	public function test_the_file_limit_follows_the_free_memory(): void {
+		$before = (string) ini_get( 'memory_limit' );
+
+		ini_set( 'memory_limit', '-1' ); // phpcs:ignore WordPress.PHP.IniSet.memory_limit_Disallowed -- the setting under test.
+		$unlimited = HandbookImport::max_file_bytes();
+		ini_set( 'memory_limit', (string) ( memory_get_usage() + 40 * MB_IN_BYTES ) ); // phpcs:ignore WordPress.PHP.IniSet.memory_limit_Disallowed -- the setting under test.
+		$tight = HandbookImport::max_file_bytes();
+		ini_set( 'memory_limit', $before ); // phpcs:ignore WordPress.PHP.IniSet.memory_limit_Disallowed -- restoring it.
+
+		$this->assertSame( 128 * MB_IN_BYTES, $unlimited );
+		$this->assertLessThanOrEqual( 10 * MB_IN_BYTES, $tight, 'A quarter of about 40 MB free.' );
+		$this->assertGreaterThan( 9 * MB_IN_BYTES, $tight );
+	}
 }

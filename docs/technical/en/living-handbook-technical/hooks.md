@@ -112,7 +112,7 @@ add_filter(
 
 ### `living_handbook_bundle_max_bytes`
 
-Filters how many bytes a handbook bundle (**Handbook → Import**, tab **Bundle**) may unpack to (default 1 GB). A bundle has its own limits, not the ZIP import's: it carries the PDFs and videos its pages link to, and the export sets no limit. Like `living_handbook_zip_max_bytes`, this guards against an archive that is small on upload and huge on reading; it is not a promise about what the server can carry. Each file of the bundle is read on its own, so the memory it needs is set by its largest file, not by this total. The uploaded file itself stays bounded by `upload_max_filesize` and `post_max_size`.
+Filters how many bytes a handbook bundle (**Handbook → Import**, tab **Bundle**) may unpack to (default 1 GB). A bundle has its own limits, not the ZIP import's: it carries the PDFs and videos its pages link to, and the export sets no limit. Like `living_handbook_zip_max_bytes`, this guards against an archive that is small on upload and huge on reading; it is not a promise about what the server can carry. Each file of the bundle is read on its own, so the memory it needs is set by its largest file, not by this total, and that file is held to `living_handbook_bundle_max_file_bytes`. The uploaded file itself stays bounded by `upload_max_filesize` and `post_max_size`.
 
 Parameters:
 
@@ -136,6 +136,16 @@ Filters how many entries a handbook bundle may have (default 20000). A bundle is
 Parameters:
 
 - `int $entries` The default limit.
+
+Return an integer.
+
+### `living_handbook_bundle_max_file_bytes`
+
+Filters how large a single file of a handbook bundle may be, unpacked, for the import to read it (default: the smaller of 128 MB and a quarter of the PHP memory still free; without a `memory_limit` the 128 MB apply). The import reads each file into memory whole, and a single large video would otherwise stop the import half-way at `memory_limit`. A larger file is not read, and the import's report names it. Raise it only together with `memory_limit`.
+
+Parameters:
+
+- `int $bytes` The default limit in bytes.
 
 Return an integer.
 

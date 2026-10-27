@@ -112,7 +112,7 @@ add_filter(
 
 ### `living_handbook_bundle_max_bytes`
 
-Filtert, auf wie viele Bytes ein Handbuch-Bündel (**Handbuch → Import**, Reiter **Bündel**) höchstens entpacken darf (Standard 1 GB). Das Bündel hat eigene Grenzen, nicht die des ZIP-Imports: Es trägt die PDFs und Videos mit, auf die seine Seiten verweisen, und der Export setzt keine Grenze. Wie `living_handbook_zip_max_bytes` ist das ein Schutz gegen ein Archiv, das beim Hochladen klein und beim Lesen riesig ist, keine Zusage über das, was der Server trägt. Jede Datei des Bündels wird einzeln gelesen; den Speicher bestimmt also die größte Datei, nicht diese Summe. Die hochgeladene Datei selbst bleibt durch `upload_max_filesize` und `post_max_size` begrenzt.
+Filtert, auf wie viele Bytes ein Handbuch-Bündel (**Handbuch → Import**, Reiter **Bündel**) höchstens entpacken darf (Standard 1 GB). Das Bündel hat eigene Grenzen, nicht die des ZIP-Imports: Es trägt die PDFs und Videos mit, auf die seine Seiten verweisen, und der Export setzt keine Grenze. Wie `living_handbook_zip_max_bytes` ist das ein Schutz gegen ein Archiv, das beim Hochladen klein und beim Lesen riesig ist, keine Zusage über das, was der Server trägt. Jede Datei des Bündels wird einzeln gelesen; den Speicher bestimmt also die größte Datei, nicht diese Summe, und für sie gilt `living_handbook_bundle_max_file_bytes`. Die hochgeladene Datei selbst bleibt durch `upload_max_filesize` und `post_max_size` begrenzt.
 
 Parameter:
 
@@ -136,6 +136,16 @@ Filtert, wie viele Einträge ein Handbuch-Bündel höchstens haben darf (Standar
 Parameter:
 
 - `int $entries` Die Standardgrenze.
+
+Gib eine Ganzzahl zurück.
+
+### `living_handbook_bundle_max_file_bytes`
+
+Filtert, wie groß eine einzelne Datei eines Handbuch-Bündels entpackt höchstens sein darf, damit der Import sie liest (Standard: das Kleinere aus 128 MB und einem Viertel des noch freien PHP-Speichers; ohne `memory_limit` gelten die 128 MB). Jede Datei wird beim Import ganz in den Speicher gelesen, und eine einzelne große Videodatei würde sonst den Import mitten im Lauf an `memory_limit` scheitern lassen. Eine größere Datei wird nicht gelesen, und der Bericht des Imports nennt sie. Erhöhe den Wert nur zusammen mit `memory_limit`.
+
+Parameter:
+
+- `int $bytes` Die Standardgrenze in Bytes.
 
 Gib eine Ganzzahl zurück.
 

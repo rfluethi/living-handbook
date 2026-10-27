@@ -16,6 +16,7 @@ use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
 use LivingHandbook\Training\Lessons;
 use LivingHandbook\Training\Training;
+use WP_Error;
 use WP_Term;
 use ZipArchive;
 
@@ -118,7 +119,7 @@ final class HandbookImport {
 	 * the uploaded one, which upload_max_filesize already bounds. What the limit
 	 * still stops is the archive that is small on upload and huge on reading.
 	 * Each file is read on its own, so the memory a bundle needs is its largest
-	 * file, not this total.
+	 * file, not this total; that one is held to max_file_bytes().
 	 */
 	public const BUNDLE_MAX_TOTAL_BYTES = 1073741824;
 
@@ -232,8 +233,8 @@ final class HandbookImport {
 	 * bundle's own, entry count and uncompressed total, each with its filter;
 	 * not the Markdown ZIP import's, which are sized for text files and refused
 	 * bundles with videos that the export had written without complaint. A
-	 * per-file limit is not applied: a bundle carries the PDFs and videos its
-	 * pages link to, and those are larger than any Markdown file.
+	 * file too large to read does not refuse the bundle: it is left out when
+	 * it is reached, and the report names it (see read_bundle_file()).
 	 *
 	 * Public and static so the bounds can be tested without an HTTP upload.
 	 *
@@ -314,7 +315,7 @@ final class HandbookImport {
 		return $this->import_manifest(
 			$manifest,
 			static function ( string $file ) use ( $zip ) {
-				return $zip->getFromName( $file );
+				return self::read_bundle_file( $zip, $file );
 			},
 			$rule,
 			$chosen,
@@ -323,12 +324,66 @@ final class HandbookImport {
 	}
 
 	/**
+	 * Read one file of a bundle, unless it is too large to hold in memory.
+	 *
+	 * ZipArchive::getFromName() unpacks the whole file into a string, and the
+	 * sideload after it needs more copies of it. The bundle's total limit does
+	 * not stop one large file, a training video, from running into
+	 * memory_limit, and that ends the import in a fatal error with half the
+	 * pages written. The unpacked size the archive states is checked first; a
+	 * file above max_file_bytes() is not read, and the report names it.
+	 *
+	 * @param ZipArchive $zip  The open bundle.
+	 * @param string     $file Path inside the bundle.
+	 * @return string|false|WP_Error The contents, false when the file is missing, or a "too_large" error.
+	 */
+	private static function read_bundle_file( ZipArchive $zip, string $file ) {
+		$stat = $zip->statName( $file );
+		if ( false === $stat ) {
+			return false;
+		}
+		if ( (int) $stat['size'] > self::max_file_bytes() ) {
+			return new WP_Error( 'too_large', $file );
+		}
+		return $zip->getFromName( $file );
+	}
+
+	/**
+	 * The largest bundle file this request reads, in bytes.
+	 *
+	 * The smaller of 128 MB and a quarter of the memory still free. A quarter,
+	 * because a file is in memory several times on its way into the media
+	 * library: as read from the archive, in the upload's buffer, and for a
+	 * document once more in the temporary copy its type is read from. Without
+	 * a memory limit (-1) the 128 MB apply. Changeable with the
+	 * living_handbook_bundle_max_file_bytes filter.
+	 *
+	 * @return int
+	 */
+	public static function max_file_bytes(): int {
+		$max   = 128 * MB_IN_BYTES;
+		$limit = (string) ini_get( 'memory_limit' );
+		if ( '-1' !== trim( $limit ) ) {
+			$free = (int) wp_convert_hr_to_bytes( $limit ) - memory_get_usage();
+			$max  = min( $max, intdiv( max( 0, $free ), 4 ) );
+		}
+
+		/**
+		 * Filters the largest file of a handbook bundle that is read on import.
+		 *
+		 * @param int $bytes The default, the smaller of 128 MB and a quarter of the free memory.
+		 */
+		return (int) apply_filters( 'living_handbook_bundle_max_file_bytes', $max );
+	}
+
+	/**
 	 * Import a decoded manifest. The media reader hands back the bytes of a file
-	 * inside the bundle, or false. Keeping that a callable means the import logic
-	 * does not depend on ZipArchive and can be exercised directly in tests.
+	 * inside the bundle, false when it is missing, or a WP_Error "too_large" when
+	 * it is not read. Keeping that a callable means the import logic does not
+	 * depend on ZipArchive and can be exercised directly in tests.
 	 *
 	 * @param array<string, mixed> $manifest     Decoded manifest.
-	 * @param callable             $media_reader Returns the bytes of a bundle file, or false.
+	 * @param callable             $media_reader Returns the bytes of a bundle file, false, or a "too_large" WP_Error.
 	 * @param string               $rule         Run rule.
 	 * @param int                  $chosen       Chosen target handbook term ID, or 0 for the bundle's own.
 	 * @param bool                 $as_pages     Create ordinary WordPress pages instead of handbook pages.
@@ -610,15 +665,16 @@ final class HandbookImport {
 	 * nobody notices until that site is gone.
 	 *
 	 * @param array<string, mixed> $manifest     Decoded manifest.
-	 * @param callable             $media_reader Returns the bytes of a bundle file, or false.
+	 * @param callable             $media_reader Returns the bytes of a bundle file, false, or a "too_large" WP_Error.
 	 * @param array<string, mixed> $report       Report (out).
 	 * @return array<string, string>
 	 */
 	private function import_media( array $manifest, callable $media_reader, array &$report ): array {
-		$map     = array();
-		$missing = array();
-		$refused = array();
-		$items   = isset( $manifest['media'] ) && is_array( $manifest['media'] ) ? $manifest['media'] : array();
+		$map       = array();
+		$missing   = array();
+		$refused   = array();
+		$too_large = array();
+		$items     = isset( $manifest['media'] ) && is_array( $manifest['media'] ) ? $manifest['media'] : array();
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) ) {
 				continue;
@@ -629,6 +685,10 @@ final class HandbookImport {
 				continue;
 			}
 			$data = $media_reader( $file );
+			if ( $data instanceof WP_Error ) {
+				$too_large[] = basename( $file );
+				continue;
+			}
 			if ( ! is_string( $data ) || '' === $data ) {
 				$missing[] = basename( $file );
 				continue;
@@ -648,6 +708,13 @@ final class HandbookImport {
 				/* translators: %s: comma-separated file names. */
 				__( 'These files from the bundle were not imported, because their type is not accepted, their content does not match their name, or they could not be stored: %s. Pages that use them still point at the old site.', 'living-handbook' ),
 				implode( ', ', array_unique( $refused ) )
+			);
+		}
+		if ( array() !== $too_large ) {
+			$report['notes'][] = sprintf(
+				/* translators: %s: comma-separated file names. */
+				__( 'These files from the bundle were not imported, because they are too large for the import on this website: %s. Pages that use them still point at the old site.', 'living-handbook' ),
+				implode( ', ', array_unique( $too_large ) )
 			);
 		}
 		if ( array() !== $missing ) {
