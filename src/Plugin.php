@@ -166,6 +166,7 @@ final class Plugin {
 		}
 
 		self::rename_meta_keys();
+		self::store_default_options();
 
 		GitSync::reschedule();
 
@@ -179,6 +180,28 @@ final class Plugin {
 
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 		Lock::release( self::UPGRADE_LOCK, $lock );
+	}
+
+	/**
+	 * Store the switches a site has never saved, with the value they already
+	 * mean.
+	 *
+	 * Three options are read on every request: whether learning paths are on,
+	 * which classifying taxonomies are in use, and whether guests may vote. A
+	 * site that never opened those settings has no row for them, and without a
+	 * persistent object cache WordPress remembers a missing option for one
+	 * request only, so each of them cost a database query on every page view
+	 * (measured for 0.76.0). Stored once, autoloaded, they come with the options
+	 * WordPress loads anyway. The values change nothing: an empty taxonomy
+	 * setting means "all four", as a missing one does, and the two others are
+	 * off, as a missing one is. add_option() leaves a saved choice alone.
+	 *
+	 * @return void
+	 */
+	private static function store_default_options(): void {
+		add_option( Taxonomies::OPTION_ENABLED, '', '', true );
+		add_option( Training::OPTION_ENABLED, '0', '', true );
+		add_option( Settings::OPTION_PUBLIC_FEEDBACK, '0', '', true );
 	}
 
 	/**
@@ -280,6 +303,7 @@ final class Plugin {
 
 		Seeder::seed();
 		Onboarding::activate();
+		self::store_default_options();
 		GitSync::schedule();
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 
