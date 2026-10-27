@@ -1,0 +1,4 @@
+# Third-party bundle, replaced only by bin/update-mermaid.sh.
+assets/js/mermaid.min.js
+node_modules/
+vendor/

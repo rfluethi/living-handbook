@@ -1,0 +1,24 @@
+{
+	"name": "living-handbook-dev",
+	"private": true,
+	"description": "Development tooling for Living Handbook: linting and formatting only. Nothing here is built or shipped; the plugin serves the files in assets/ as they are.",
+	"license": "GPL-2.0-or-later",
+	"engines": {
+		"node": "^20.19.0 || ^22.13.0 || >=24"
+	},
+	"scripts": {
+		"lint:js": "eslint assets bin",
+		"lint:css": "stylelint \"assets/**/*.css\"",
+		"format": "prettier --write \"assets/**/*.js\" \"bin/**/*.js\"",
+		"lint": "npm run lint:js && npm run lint:css"
+	},
+	"devDependencies": {
+		"@wordpress/eslint-plugin": "27.1.0",
+		"@wordpress/prettier-config": "4.57.0",
+		"@wordpress/stylelint-config": "26.1.0",
+		"eslint": "9.39.5",
+		"prettier": "npm:wp-prettier@3.9.6",
+		"stylelint": "17.16.0"
+	},
+	"prettier": "@wordpress/prettier-config"
+}
