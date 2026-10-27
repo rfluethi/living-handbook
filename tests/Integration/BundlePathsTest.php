@@ -312,6 +312,31 @@ final class BundlePathsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The pages of a bundle are asked the same question as its paths: a page
+	 * the filter hides stays out, and a path that had it as a lesson loses it.
+	 * Up to 0.75.1 the bundle carried the page the site had just hidden.
+	 *
+	 * @return void
+	 */
+	public function test_export_leaves_out_a_page_the_user_may_not_view(): void {
+		$f = $this->fixture();
+		add_filter(
+			'living_handbook_can_view_post',
+			static function ( bool $allowed, int $post_id ) use ( $f ): bool {
+				return $post_id === $f['hammer'] ? false : $allowed;
+			},
+			10,
+			2
+		);
+
+		$manifest = $this->export( $f['source'] );
+		$titles   = wp_list_pluck( (array) $manifest['pages'], 'title' );
+
+		$this->assertNotContains( 'Hammer', $titles );
+		$this->assertContains( 'Basics', $titles );
+	}
+
+	/**
 	 * A path has an editor of its own, so an image in its introduction travels
 	 * like an image on a page.
 	 *

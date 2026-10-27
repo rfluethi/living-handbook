@@ -409,9 +409,15 @@ JS;
 			)
 		);
 
-		$all = array();
+		// Every page is asked, as the website export and the learning paths of
+		// this bundle are. get_posts() runs without the result filter, and the
+		// query layer lets editors through, so up to 0.75.1 a site that narrowed
+		// access through living_handbook_can_view_post found the page it had just
+		// hidden in the next bundle.
+		$user_id = get_current_user_id();
+		$all     = array();
 		foreach ( $posts as $post ) {
-			if ( $post instanceof WP_Post ) {
+			if ( $post instanceof WP_Post && AccessController::can_view_post( $post->ID, $user_id ) ) {
 				$all[ $post->ID ] = $post;
 			}
 		}
