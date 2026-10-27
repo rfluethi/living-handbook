@@ -182,6 +182,22 @@ final class TaxonomySwitchesTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Each facet is headed by the label of its taxonomy, the one the settings
+	 * show. Up to 0.75.1 the audience facet said "Audience" where the settings
+	 * said "Audiences".
+	 *
+	 * @return void
+	 */
+	public function test_each_facet_carries_the_label_of_its_taxonomy(): void {
+		$id  = $this->page_with_terms();
+		$out = Filters::facets( get_term( (int) Handbooks::for_post( $id ), Handbooks::TAXONOMY ) );
+
+		foreach ( Taxonomies::all() as $label ) {
+			$this->assertStringContainsString( '<legend>' . $label . '</legend>', $out );
+		}
+	}
+
+	/**
 	 * The editor sidebar and the term screen are gone with it: both hang on the
 	 * registration, which is where the switch takes effect.
 	 *

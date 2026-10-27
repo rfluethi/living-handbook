@@ -876,24 +876,18 @@ final class Filters {
 	}
 
 	/**
-	 * Human-readable label for a facet parameter. Mirrors the taxonomy display
-	 * names so the filter reads the same as the rest of the interface.
+	 * Returns the label of a facet: the label of its taxonomy in Taxonomies::all(),
+	 * so the filter bar, the settings and the editor name a taxonomy the same way.
+	 *
+	 * Up to 0.75.1 the facets kept a copy of their own, and the audience facet
+	 * said "Audience" where the settings said "Audiences".
 	 *
 	 * @param string $param Request parameter name.
-	 * @return string
+	 * @return string The label, or an empty string for an unknown parameter.
 	 */
 	private static function facet_label( string $param ): string {
-		switch ( $param ) {
-			case 'lh_type':
-				return __( 'Page type', 'living-handbook' );
-			case 'lh_topic':
-				return __( 'Topics', 'living-handbook' );
-			case 'lh_role':
-				return __( 'Responsibility', 'living-handbook' );
-			case 'lh_audience':
-				return __( 'Audience', 'living-handbook' );
-			default:
-				return '';
-		}
+		$taxonomy = self::facet_map()[ $param ] ?? '';
+
+		return Taxonomies::all()[ $taxonomy ] ?? '';
 	}
 }
