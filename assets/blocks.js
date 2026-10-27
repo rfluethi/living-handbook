@@ -14,6 +14,7 @@
 
 	const { blocks, element, serverSideRender, i18n, blockEditor, components } =
 		window.wp;
+	const { useBlockProps } = blockEditor;
 
 	const el = element.createElement;
 	const Fragment = element.Fragment;
@@ -85,6 +86,37 @@
 	}
 
 	/**
+	 * Registers a block, with its editor view inside the block wrapper.
+	 *
+	 * Every block here declares apiVersion 3 in its block.json. From version 2
+	 * on, the editor leaves the wrapper element to the block: whatever edit()
+	 * returns is the block's root, and it is only selectable, outlined and
+	 * given its toolbar, anchor and class when it carries useBlockProps(). Up
+	 * to 0.75.1 the edit functions returned their note or preview bare, so a
+	 * placed block could not be clicked to select it in the editor.
+	 *
+	 * @param {string} name     Block name.
+	 * @param {Object} settings Client-side settings; edit() renders the
+	 *                          content inside the wrapper.
+	 * @return {void}
+	 */
+	function registerBlockType( name, settings ) {
+		const render = settings.edit;
+
+		/**
+		 * Renders the block's wrapper around its editor view.
+		 *
+		 * @param {Object} props Block edit props.
+		 * @return {Object} The element.
+		 */
+		function BlockEdit( props ) {
+			return el( 'div', useBlockProps(), render( props ) );
+		}
+
+		blocks.registerBlockType( name, { ...settings, edit: BlockEdit } );
+	}
+
+	/**
 	 * Registers a block that only shows a descriptive note in the editor,
 	 * because it renders from the front-end page context, which the editor
 	 * does not have.
@@ -94,7 +126,7 @@
 	 * @return {void}
 	 */
 	function dynamic( name, text ) {
-		blocks.registerBlockType( name, {
+		registerBlockType( name, {
 			edit() {
 				return note( text );
 			},
@@ -104,7 +136,7 @@
 		} );
 	}
 
-	blocks.registerBlockType( 'living-handbook/overview', {
+	registerBlockType( 'living-handbook/overview', {
 		edit( props ) {
 			const preview = RangeControl
 				? el( RangeControl, {
@@ -146,7 +178,7 @@
 	// The attribute value "sidebar" is the editor's "Menu" and renders the
 	// class living-handbook-nav--tree (Frontend\Navigation): the whole tree,
 	// open. "accordion" renders living-handbook-nav--accordion.
-	blocks.registerBlockType( 'living-handbook/navigation', {
+	registerBlockType( 'living-handbook/navigation', {
 		edit( props ) {
 			const control = SelectControl
 				? el( SelectControl, {
@@ -184,7 +216,7 @@
 		},
 	} );
 
-	blocks.registerBlockType( 'living-handbook/toc', {
+	registerBlockType( 'living-handbook/toc', {
 		edit( props ) {
 			const controls = [];
 			if ( SelectControl ) {
@@ -249,7 +281,7 @@
 		},
 	} );
 
-	blocks.registerBlockType( 'living-handbook/pagemeta', {
+	registerBlockType( 'living-handbook/pagemeta', {
 		edit( props ) {
 			const control = ToggleControl
 				? el( ToggleControl, {
@@ -330,7 +362,7 @@
 		} );
 	}
 
-	blocks.registerBlockType( 'living-handbook/entry', {
+	registerBlockType( 'living-handbook/entry', {
 		edit( props ) {
 			return el(
 				Fragment,
@@ -352,7 +384,7 @@
 		},
 	} );
 
-	blocks.registerBlockType( 'living-handbook/search-form', {
+	registerBlockType( 'living-handbook/search-form', {
 		edit( props ) {
 			const controls = [
 				toggleControl(
@@ -429,7 +461,7 @@
 		},
 	} );
 
-	blocks.registerBlockType( 'living-handbook/filters', {
+	registerBlockType( 'living-handbook/filters', {
 		edit() {
 			return note(
 				__(
@@ -443,7 +475,7 @@
 		},
 	} );
 
-	blocks.registerBlockType( 'living-handbook/menu', {
+	registerBlockType( 'living-handbook/menu', {
 		edit() {
 			return el( serverSideRender, { block: 'living-handbook/menu' } );
 		},
@@ -497,7 +529,7 @@
 		)
 	);
 
-	blocks.registerBlockType( 'living-handbook/search', {
+	registerBlockType( 'living-handbook/search', {
 		edit( props ) {
 			return el(
 				Fragment,
