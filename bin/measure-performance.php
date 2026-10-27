@@ -79,10 +79,23 @@ function lh_measure_run( $label, $state, $render, $top ) {
 	global $wpdb;
 
 	$wpdb->queries = array();
-	$mem_before    = memory_get_usage();
+	// A real peak needs memory_reset_peak_usage(), which PHP has from 8.2 on:
+	// the peak since the start of the render, above what was in use before it.
+	// Without it, memory_get_peak_usage() would be the peak of the whole
+	// process, so the difference of the usage before and after is reported
+	// instead, under its own name. That difference is not a peak: whatever the
+	// render allocated and freed again is not in it, and that is most of what a
+	// render allocates. It used to be reported as the peak.
+	$real_peak = function_exists( 'memory_reset_peak_usage' );
+	gc_collect_cycles();
+	$mem_before = memory_get_usage();
+	if ( $real_peak ) {
+		memory_reset_peak_usage();
+	}
 	$start         = microtime( true );
 	$html          = (string) $render();
 	$wall_ms       = ( microtime( true ) - $start ) * 1000;
+	$mem_after     = $real_peak ? memory_get_peak_usage() : memory_get_usage();
 	$queries       = is_array( $wpdb->queries ) ? $wpdb->queries : array();
 	$wpdb->queries = array();
 
@@ -93,13 +106,14 @@ function lh_measure_run( $label, $state, $render, $top ) {
 
 	lh_measure_say(
 		sprintf(
-			'  %-5s %4d queries, %7.1f ms total, %6.1f ms in the database, %5.1f KB HTML, %5.1f MB peak',
+			'  %-5s %4d queries, %7.1f ms total, %6.1f ms in the database, %5.1f KB HTML, %5.1f MB %s',
 			$state,
 			count( $queries ),
 			$wall_ms,
 			$db_ms,
 			strlen( $html ) / 1024,
-			( memory_get_usage() - $mem_before ) / 1048576
+			( $mem_after - $mem_before ) / 1048576,
+			$real_peak ? 'peak' : 'retained (no peak before PHP 8.2)'
 		)
 	);
 
@@ -201,9 +215,13 @@ if ( '' === $lh_entry_template ) {
 	lh_measure_view(
 		'Entry page',
 		function () use ( $lh_slug, $lh_entry_template ) {
+			// Only the handbook, as in the main query of a real entry page. With
+			// a post type the query is one the access layer restricts, and its
+			// queried object becomes the first handbook a guest may read rather
+			// than this one, so with more than one public handbook the entry page
+			// measured the navigation of whichever sorted first by name.
 			$query                     = new WP_Query(
 				array(
-					'post_type'    => 'handbook',
 					'handbook_set' => $lh_slug,
 				)
 			);
