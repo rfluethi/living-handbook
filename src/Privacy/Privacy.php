@@ -223,7 +223,8 @@ final class Privacy {
 	}
 
 	/**
-	 * Removes the person from every voter list, and reports the reviews and the access kept.
+	 * Removes the person from every voter list, and reports the reviews and the
+	 * access lists kept.
 	 *
 	 * The batches run over every page that has a voter list, whoever is on it,
 	 * ordered by id. That set does not shrink while the eraser works, because a

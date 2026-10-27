@@ -2,12 +2,13 @@
 /**
  * Frontend access control, enforced per handbook.
  *
- * A handbook page is viewable when its handbook allows the current user; pages
- * without a handbook are fail-closed. Administrators read every handbook
- * (reads_everything()), everybody else, editors included, reads what a
- * handbook grants them. In wp-admin the same rule keeps other people's pages
- * of a handbook the user may not read out of the lists and out of the editor;
- * one's own pages stay one's own.
+ * A handbook page is viewable when its handbook allows the current user.
+ * Administrators read every handbook (reads_everything()); everybody else,
+ * editors included, reads what a handbook grants them. A page in no handbook
+ * is work in progress and readable only by those who look after other
+ * people's pages (reads_unassigned()). In wp-admin the same rule keeps other
+ * people's pages of a handbook the user may not read out of the lists and out
+ * of the editor; one's own pages stay one's own.
  *
  * @package LivingHandbook
  */
@@ -32,12 +33,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * The single place that decides who may read handbook content, wired into
- * every frontend read path: single pages, handbook entry pages (term
+ * Decides in one place who may read handbook content, and is wired into every
+ * read path: on the front end single pages, handbook entry pages (term
  * archives), result sets (archives, search, REST collections, custom loops),
- * single REST reads, and the comment channels (comment queries, comment feeds,
- * and single comment REST reads), which core exposes independently of the post
- * query.
+ * single REST reads, media, oEmbed and previous/next links; in the back end
+ * the capabilities (map_meta_cap), the lists and the handbook term screens;
+ * and the comment channels, reading (comment queries, feeds, single REST
+ * reads) as well as writing (comments_open, pings_open), which core exposes
+ * independently of the post query.
  */
 final class AccessController {
 
@@ -47,8 +50,9 @@ final class AccessController {
 	 * The read filters below protect the display path, but the plugin's own
 	 * maintenance code reads handbook pages too: the scheduled sync looks up the
 	 * pages it has to pull, the import looks up the page a source path already
-	 * created, and the post-processor resolves internal links. Those run without
-	 * a logged-in user and outside wp-admin (cron, the REST import endpoints), so
+	 * created, the post-processor resolves internal links, and the website
+	 * export and the privacy tools collect pages. Many of them run without a
+	 * logged-in user and outside wp-admin (cron, the REST import endpoints), so
 	 * the display filters would narrow them to public handbooks and the plugin
 	 * would silently stop maintaining every internal handbook.
 	 *
@@ -81,7 +85,7 @@ final class AccessController {
 	private static array $term_cache = array();
 
 	/**
-	 * The post types this controller guards.
+	 * Returns the post types this controller guards.
 	 *
 	 * Handbook pages, and learning paths, which carry the same handbook term and
 	 * are therefore decided by exactly the same rules. The list is not narrowed
@@ -112,13 +116,13 @@ final class AccessController {
 	}
 
 	/**
-	 * Whether a user reads every handbook, whatever its settings say.
+	 * Determines whether a user reads every handbook, whatever its settings say.
 	 *
-	 * Administrators, by the manage_options capability. Until this change it was
+	 * Administrators, by the manage_options capability. Up to 0.75.1 it was
 	 * everybody who may edit other people's posts, the editor role among them,
-	 * and a handbook could not be kept from the editors. Decided on 2026-10-27
-	 * (E-0075): an editor reads what a handbook grants them like everybody else.
-	 * A site with roles of its own can name another capability.
+	 * and a handbook could not be kept from the editors. Since 0.76.0 (E-0075)
+	 * an editor reads what a handbook grants them like everybody else. A site
+	 * with roles of its own can name another capability.
 	 *
 	 * @param int $user_id User ID (0 for a guest).
 	 * @return bool
@@ -129,7 +133,7 @@ final class AccessController {
 		}
 
 		/**
-		 * Filter the capability that reads every handbook regardless of its
+		 * Filters the capability that reads every handbook regardless of its
 		 * visibility settings.
 		 *
 		 * @param string $capability Capability. Default 'manage_options'.
@@ -157,12 +161,21 @@ final class AccessController {
 	}
 
 	/**
-	 * The handbooks a user may not read.
+	 * Returns the handbooks a user may not read.
 	 *
 	 * @param int $user_id User ID (0 for a guest).
 	 * @return int[]
 	 */
 	public static function hidden_term_ids( int $user_id ): array {
+		return array_values( array_filter( self::handbook_ids(), static fn( int $term_id ): bool => ! self::can_view_term( $term_id, $user_id ) ) );
+	}
+
+	/**
+	 * Returns the ids of every handbook of the site.
+	 *
+	 * @return array<int, int>
+	 */
+	private static function handbook_ids(): array {
 		$terms = get_terms(
 			array(
 				'taxonomy'   => Handbooks::TAXONOMY,
@@ -170,21 +183,12 @@ final class AccessController {
 				'fields'     => 'ids',
 			)
 		);
-		if ( is_wp_error( $terms ) ) {
-			return array();
-		}
-		$ids = array();
-		foreach ( $terms as $term_id ) {
-			if ( ! self::can_view_term( (int) $term_id, $user_id ) ) {
-				$ids[] = (int) $term_id;
-			}
-		}
-		return $ids;
+		return is_array( $terms ) ? array_map( 'intval', $terms ) : array();
 	}
 
 	/**
-	 * Whether the current user may put pages into a handbook, or take them out
-	 * of it: import into it, move pages into it, export it.
+	 * Determines whether the current user may put pages into a handbook, or take
+	 * them out of it: import into it, move pages into it, export it.
 	 *
 	 * Whoever may not read a handbook may not write into it either. A bundle
 	 * update into a handbook kept to administrators would otherwise overwrite
@@ -203,7 +207,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Keep the handbooks of a list the current user may use.
+	 * Returns the handbooks of a list the current user may use.
 	 *
 	 * For the plugin's own pickers: the import target, the export, the bulk move.
 	 *
@@ -308,10 +312,11 @@ final class AccessController {
 
 	/**
 	 * Whether this request is a back-end read: wp-admin itself, or an
-	 * admin-ajax tool of somebody who may edit other people's posts.
+	 * admin-ajax tool of somebody who reads pages in no handbook
+	 * (reads_unassigned()).
 	 *
-	 * The file admin-ajax.php always runs with is_admin() true, so a front-end AJAX read
-	 * would look like a back-end one; only the second kind is let in.
+	 * The file admin-ajax.php always runs with is_admin() true, so a front-end
+	 * AJAX read would look like a back-end one; only the second kind is let in.
 	 *
 	 * @return bool
 	 */
@@ -320,7 +325,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Close editing, deleting and reading of other people's pages in a handbook
+	 * Closes editing, deleting and reading of other people's pages in a handbook
 	 * the user may not read, and the settings of such a handbook.
 	 *
 	 * The front-end rule alone is no rule when the back end hands out the same
@@ -328,6 +333,8 @@ final class AccessController {
 	 * open its pages in the editor, and change its visibility in the handbook
 	 * settings (manage_categories, which every editor has). One's own pages stay
 	 * editable wherever they are (E-0069), and the files of a page follow it.
+	 * map_meta_cap is asked everywhere, not only in wp-admin, so this also holds
+	 * for the block editor's REST requests and for may_edit().
 	 *
 	 * @param string[]|mixed $caps    Primitive capabilities required.
 	 * @param string|mixed   $cap     The capability asked for.
@@ -427,7 +434,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -501,13 +508,16 @@ final class AccessController {
 	}
 
 	/**
-	 * Keep the previous/next post of a guarded page inside what the user may view.
+	 * Keeps the previous/next post of a guarded page inside what the user may
+	 * view.
 	 *
 	 * The neighbour has to be in a handbook the user may view, and in none they
-	 * may not: the same fail-closed rule as can_view_post(), expressed in SQL.
-	 * A page in no handbook is never a neighbour. What SQL cannot express is the
-	 * living_handbook_can_view_post filter; a site that widens access through it
-	 * gets the stricter answer here, which is the safe direction.
+	 * may not: the fail-closed rule of can_view_post(), expressed in SQL. It is
+	 * stricter in two ways, both in the safe direction: a page in no handbook is
+	 * never a neighbour, not even for reads_unassigned(), because previous/next
+	 * leads readers through a handbook and such a page is in none; and the
+	 * living_handbook_can_view_post filter, which SQL cannot express, is not
+	 * applied.
 	 *
 	 * The clause ends up in core's cache key for the adjacent post (an md5 of the
 	 * whole query), so two users with different handbooks do not share an entry.
@@ -546,7 +556,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Close comments and pings on a guarded post the current user may not view.
+	 * Closes comments and pings on a guarded post the current user may not view.
 	 *
 	 * @param bool|mixed       $open    Whether comments (or pings) are open.
 	 * @param int|string|mixed $post_id Post id.
@@ -566,7 +576,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Block direct access to a single handbook page the user may not view.
+	 * Blocks direct access to a single handbook page the user may not view.
 	 *
 	 * @return void
 	 */
@@ -598,7 +608,10 @@ final class AccessController {
 	 * editing, the preview was refused, and saving reported an error although
 	 * the change had been stored. The edit_post capability is the right line:
 	 * an author passes it for their own pages only, a contributor for their own
-	 * drafts only, so nobody reads a page of somebody else this way.
+	 * drafts only. An editor passes it for other people's pages too, but
+	 * guard_meta_caps() denies it for pages in a handbook the editor may not
+	 * read, so nobody reads a page of somebody else this way that they could not
+	 * read anyway.
 	 *
 	 * This is deliberately not part of can_view_post(). Lists, search, the
 	 * navigation and the entry page still follow the handbook's rules, so an
@@ -613,7 +626,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Block the attachment page of a file that belongs to a page the user may
+	 * Blocks the attachment page of a file that belongs to a page the user may
 	 * not view.
 	 *
 	 * The REST and query channels already let an attachment inherit the
@@ -649,7 +662,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Block direct access to a handbook entry page (term archive) the user may
+	 * Blocks direct access to a handbook entry page (term archive) the user may
 	 * not view.
 	 *
 	 * @return void
@@ -672,7 +685,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Deny the current request.
+	 * Denies the current request.
 	 *
 	 * A guest is sent to the login form, which returns them to the page they
 	 * asked for once they are signed in. A signed-in visitor who still may not
@@ -722,14 +735,14 @@ final class AccessController {
 		);
 
 		/**
-		 * Filter the heading of the built-in no-access page.
+		 * Filters the heading of the built-in no-access page.
 		 *
 		 * @param string $title Heading.
 		 */
 		$title = (string) apply_filters( 'living_handbook_access_denied_title', $title );
 
 		/**
-		 * Filter the message of the built-in no-access page.
+		 * Filters the message of the built-in no-access page.
 		 *
 		 * @param string  $message Message shown to the signed-in visitor.
 		 * @param WP_User $user    The signed-in user.
@@ -750,7 +763,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Mark query arguments as an internal maintenance lookup.
+	 * Marks query arguments as an internal maintenance lookup.
 	 *
 	 * Wrap the arguments of a lookup the plugin makes about its own pages, so it
 	 * is not narrowed to the handbooks the current user may read.
@@ -778,16 +791,24 @@ final class AccessController {
 	}
 
 	/**
-	 * Coarse pre-query access layer.
+	 * Adds the coarse access restriction to a query before it runs.
 	 *
 	 * Runs on pre_get_posts, so it also covers queries that set suppress_filters
 	 * (the get_posts default) and would never reach the_posts, and front-end
-	 * admin-ajax reads. It appends a tax_query that keeps only pages in a handbook
-	 * the user may view. This is deliberately the coarse layer: it checks "at
-	 * least one viewable handbook", while a page may belong to several handbooks
-	 * and needs all of them to allow the user. The precise, fail-closed decision
-	 * stays in filter_posts() and can_view_post() on the display path; this layer
-	 * only closes the channels that bypass it.
+	 * admin-ajax reads. What it adds depends on who asks and where:
+	 *
+	 * - A back-end read (is_backend_read()): post__not_in for other people's
+	 *   pages in a handbook the user may not read, the rule of
+	 *   visible_in_backend(). A tax_query cannot say "or my own".
+	 * - A user who reads pages in no handbook (reads_unassigned()): a NOT IN
+	 *   tax_query on the handbooks they may not read, so those pages stay.
+	 * - Everybody else: a tax_query on the handbooks they may view.
+	 *
+	 * The last two are deliberately coarse: they check "at least one viewable
+	 * handbook", while a page may belong to several handbooks and needs all of
+	 * them to allow the user. The precise, fail-closed decision stays in
+	 * filter_posts() and can_view_post() on the display path; this layer only
+	 * closes the channels that bypass it.
 	 *
 	 * @param WP_Query $query The query being prepared.
 	 * @return void
@@ -814,11 +835,9 @@ final class AccessController {
 			return;
 		}
 
-		// A back-end read (see is_backend_read(); an earlier version let every
-		// edit_posts user through on admin-ajax, for a link search that never
-		// asks for this type) keeps pages in no handbook and one's own pages,
-		// which is what the back end is for, and leaves out other people's pages
-		// in a handbook the user may not read. Up to 0.76.0 it left out nothing.
+		// A back-end read keeps pages in no handbook and one's own pages, which is
+		// what the back end is for, and leaves out other people's pages in a
+		// handbook the user may not read. Up to 0.75.1 it left out nothing.
 		if ( self::is_backend_read() ) {
 			$hidden = self::hidden_post_ids( $user_id );
 			if ( array() !== $hidden ) {
@@ -854,12 +873,12 @@ final class AccessController {
 
 		$existing = $query->get( 'tax_query' );
 		if ( empty( $existing ) || ! is_array( $existing ) ) {
-			$query->set( 'tax_query', array( $restriction ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			$query->set( 'tax_query', array( $restriction ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- The access restriction itself; a handbook query without it would hand out every page.
 			return;
 		}
 		// Nest the existing tax_query and AND our restriction, so an existing OR
 		// relation cannot dissolve the restriction.
-		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+		$query->set( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- See above.
 			'tax_query',
 			array(
 				'relation' => 'AND',
@@ -870,17 +889,20 @@ final class AccessController {
 	}
 
 	/**
-	 * Remove handbook posts the current user may not view from any result set.
+	 * Removes the posts the current user may not read from a result set.
 	 *
-	 * This runs on the_posts, which core applies to full-object queries (the
-	 * display path). Core returns id-only and id=>parent queries (fields =>
-	 * 'ids') before the_posts runs, so those never reach this filter. That is
-	 * acceptable: a bare id exposes no content, and every actual content read
-	 * (single page, entry page, single REST item, comments) is guarded on its
-	 * own.
+	 * In wp-admin by the back-end rule (visible_in_backend()), everywhere else
+	 * by can_view_post(); attachments follow the page they belong to.
+	 *
+	 * This runs on the_posts, which core applies to full-object queries.
+	 * Core returns id-only and id=>parent queries (fields => 'ids') before
+	 * the_posts runs, so those never reach this filter. That is acceptable: a
+	 * bare id exposes no content, and every actual content read (single page,
+	 * entry page, single REST item, comments) is guarded on its own.
 	 *
 	 * @param WP_Post[] $posts Posts returned by the query.
-	 * @param WP_Query  $query The query (unused, kept for the filter signature).
+	 * @param WP_Query  $query The query; the plugin's internal lookups and the
+	 *                         singular main query pass unchanged.
 	 * @return WP_Post[]
 	 */
 	public function filter_posts( array $posts, WP_Query $query ): array {
@@ -928,16 +950,17 @@ final class AccessController {
 	}
 
 	/**
-	 * The posts of a set the current user may read, for posts that were not read
-	 * through WP_Query.
+	 * Returns the posts of a set the current user may read, for posts that were
+	 * not read through WP_Query.
 	 *
 	 * The same decision filter_posts() and restrict_query() make for a query, in
 	 * one call, for a caller that loads its rows itself: PageTree reads the few
 	 * columns a navigation needs instead of whole posts, and WP_Query cannot do
-	 * that. Both layers are applied, the coarse one (at least one handbook of the
-	 * page is readable, which is what restrict_query() adds to a query) and the
-	 * precise one (can_view_post(), with its filter, per page), so a page that is
-	 * dropped from a query is dropped here as well.
+	 * that. In the back end it is visible_in_backend(). Elsewhere both layers are
+	 * applied: the coarse one, as restrict_query() adds it to a query (no hidden
+	 * handbook for reads_unassigned(), at least one readable handbook for
+	 * everybody else), and the precise one (can_view_post(), with its filter,
+	 * per page), so a page that is dropped from a query is dropped here as well.
 	 *
 	 * Unlike filter_posts(), this puts nothing into the post cache. The posts
 	 * handed in may be partial objects, and a partial object in the cache would
@@ -1007,7 +1030,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Drop the posts a user may not read: guarded posts by can_view_post(), and
+	 * Drops the posts a user may not read: guarded posts by can_view_post(), and
 	 * attachments by the page they belong to.
 	 *
 	 * @param array<int|string, mixed> $posts   Posts to decide on.
@@ -1043,7 +1066,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Return a 404 for a single REST read of an attachment that belongs to a
+	 * Returns a 404 for a single REST read of an attachment that belongs to a
 	 * handbook page the user may not view.
 	 *
 	 * @param mixed   $response The prepared response.
@@ -1067,7 +1090,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Hide a non-viewable handbook page from the oEmbed lookup.
+	 * Hides a non-viewable handbook page from the oEmbed lookup.
 	 *
 	 * @param int|mixed $post_id Post id core resolved from the URL.
 	 * @param string    $url     The requested URL (unused).
@@ -1083,7 +1106,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Empty the oEmbed payload of a non-viewable handbook page.
+	 * Empties the oEmbed payload of a non-viewable handbook page.
 	 *
 	 * The lookup filter above already covers the REST route; this one closes the
 	 * paths that resolve the post themselves before asking for the data.
@@ -1101,7 +1124,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Return a 404 for single REST reads of non-viewable handbook pages.
+	 * Returns a 404 for single REST reads of non-viewable handbook pages.
 	 *
 	 * @param mixed   $response The prepared response.
 	 * @param WP_Post $post     The post being prepared.
@@ -1248,33 +1271,17 @@ final class AccessController {
 	}
 
 	/**
-	 * The handbook term ids the given user may view.
+	 * Returns the handbook term ids the given user may view.
 	 *
 	 * @param int $user_id User ID (0 for a guest).
 	 * @return int[]
 	 */
 	public static function viewable_term_ids( int $user_id ): array {
-		$terms = get_terms(
-			array(
-				'taxonomy'   => Handbooks::TAXONOMY,
-				'hide_empty' => false,
-				'fields'     => 'ids',
-			)
-		);
-		if ( is_wp_error( $terms ) ) {
-			return array();
-		}
-		$ids = array();
-		foreach ( $terms as $term_id ) {
-			if ( self::can_view_term( (int) $term_id, $user_id ) ) {
-				$ids[] = (int) $term_id;
-			}
-		}
-		return $ids;
+		return array_values( array_filter( self::handbook_ids(), static fn( int $term_id ): bool => self::can_view_term( $term_id, $user_id ) ) );
 	}
 
 	/**
-	 * The handbook terms the given user may view, as full term objects.
+	 * Returns the handbook terms the given user may view, as term objects.
 	 *
 	 * The single source for the three frontend lists of readable handbooks (the
 	 * overview cards, the compact menu, and the navigation-block links), so the
@@ -1304,12 +1311,12 @@ final class AccessController {
 	}
 
 	/**
-	 * Fill the caches the per-post access decision reads from, for the whole
+	 * Fills the caches the per-post access decision reads from, for the whole
 	 * result set at once.
 	 *
-	 * The_posts runs before WP_Query fills its own caches, so at this point the
-	 * post objects we are handed are not in the post cache and their handbook
-	 * membership is not in the term cache. Deciding access post by post then
+	 * WordPress applies the_posts before WP_Query fills its own caches, so at
+	 * this point the post objects handed in are not in the post cache and their
+	 * handbook membership is not in the term cache. Deciding access post by post then
 	 * costs two queries per row, which a navigation tree over a few thousand
 	 * pages turns into a few thousand queries. Both caches are filled here in
 	 * one go; WordPress fills them again a few lines later, and finds them warm.
@@ -1356,8 +1363,8 @@ final class AccessController {
 	}
 
 	/**
-	 * Read the handbook membership of a set of posts into the term cache, in one
-	 * query, and nothing else.
+	 * Reads the handbook membership of a set of posts into the term cache, in
+	 * one query, and nothing else.
 	 *
 	 * What update_object_term_cache() does, for the one taxonomy the access
 	 * decision reads. That function cannot be narrowed: it reads every taxonomy
@@ -1408,11 +1415,12 @@ final class AccessController {
 	}
 
 	/**
-	 * Whether a user may view a handbook page.
+	 * Determines whether a user may view a handbook page.
 	 *
 	 * A page may belong to more than one handbook. Access is combined
 	 * fail-closed: the page is viewable only when every handbook it belongs to
-	 * allows the user, and a page without any handbook is not viewable.
+	 * allows the user. A page in no handbook is viewable only for those who read
+	 * every handbook or who read pages in no handbook (reads_unassigned()).
 	 *
 	 * The membership is read with get_the_terms(), which goes through the object
 	 * term cache; wp_get_object_terms() would query every time. See
@@ -1452,7 +1460,7 @@ final class AccessController {
 		}
 
 		/**
-		 * Filter whether a user may view a handbook page.
+		 * Filters whether a user may view a handbook page.
 		 *
 		 * @param bool $allowed Whether access is granted.
 		 * @param int  $post_id Post ID.
@@ -1462,7 +1470,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Whether a user may view a handbook (the grouping term).
+	 * Determines whether a user may view a handbook (the grouping term).
 	 *
 	 * Memoized per request: the same term/user decision is reused rather than
 	 * re-reading term meta and user data for every page of the handbook.
@@ -1484,7 +1492,7 @@ final class AccessController {
 	}
 
 	/**
-	 * Compute (uncached) whether a user may view a handbook term.
+	 * Computes (uncached) whether a user may view a handbook term.
 	 *
 	 * @param int $term_id Handbook term ID.
 	 * @param int $user_id User ID (0 for a guest).
@@ -1502,10 +1510,8 @@ final class AccessController {
 		if ( 0 === $user_id ) {
 			return false;
 		}
-		// The same exception as in can_view_post(), at the level of the handbook:
-		// the pages and the handbook follow one rule. Until E-0075 that rule let
-		// everybody who may edit other people's posts read everything, so no
-		// handbook could be kept from the editors; now only administrators do.
+		// Who reads every page reads every handbook: the pages and the handbook
+		// follow one rule, reads_everything().
 		if ( self::reads_everything( $user_id ) ) {
 			return true;
 		}

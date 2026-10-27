@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class HandbookAdmin {
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -43,8 +43,8 @@ final class HandbookAdmin {
 	}
 
 	/**
-	 * Enqueue the visibility toggle script on the handbook term add and edit
-	 * screens only. Replaces the former inline script.
+	 * Enqueues the visibility toggle script on the handbook term add and edit
+	 * screens only.
 	 *
 	 * @param string $hook Current admin page hook suffix.
 	 * @return void
@@ -67,7 +67,7 @@ final class HandbookAdmin {
 	}
 
 	/**
-	 * Fields on the "add term" screen.
+	 * Renders the access fields on the "add term" screen.
 	 *
 	 * @return void
 	 */
@@ -96,7 +96,7 @@ final class HandbookAdmin {
 	}
 
 	/**
-	 * Fields on the "edit term" screen.
+	 * Renders the access fields on the "edit term" screen.
 	 *
 	 * @param WP_Term $term The term being edited.
 	 * @return void
@@ -144,7 +144,7 @@ final class HandbookAdmin {
 	}
 
 	/**
-	 * Add the Access column to the handbook list table.
+	 * Adds the Access column to the handbook list table.
 	 *
 	 * @param array<string, string> $columns Columns.
 	 * @return array<string, string>
@@ -155,7 +155,7 @@ final class HandbookAdmin {
 	}
 
 	/**
-	 * Render the Access column value for a handbook.
+	 * Returns the Access column value for a handbook.
 	 *
 	 * @param string $content Existing content.
 	 * @param string $column  Column key.
@@ -196,8 +196,16 @@ final class HandbookAdmin {
 			$extra[] = sprintf( _n( '%d user', '%d users', count( $users ), 'living-handbook' ), count( $users ) );
 		}
 
-		$detail = empty( $extra ) ? '' : ': ' . implode( ', ', $extra );
-		return esc_html( __( 'Restricted', 'living-handbook' ) . $detail );
+		if ( empty( $extra ) ) {
+			return esc_html__( 'Restricted', 'living-handbook' );
+		}
+		return esc_html(
+			sprintf(
+				/* translators: %s: the allowed roles and the number of allowed users, comma separated. */
+				__( 'Restricted: %s', 'living-handbook' ),
+				implode( ', ', $extra )
+			)
+		);
 	}
 
 	/**
@@ -277,7 +285,7 @@ final class HandbookAdmin {
 	}
 
 	/**
-	 * Save the access configuration for a handbook term.
+	 * Saves the access configuration of a handbook term.
 	 *
 	 * @param int $term_id Term ID.
 	 * @return void

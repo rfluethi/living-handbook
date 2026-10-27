@@ -41,21 +41,62 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Handbooks {
 
+	/**
+	 * The taxonomy that groups pages into handbooks.
+	 */
 	public const TAXONOMY = 'handbook_set';
 
+	/**
+	 * Term meta holding who may read a handbook: one of the VISIBILITY_* values.
+	 */
 	public const META_VISIBILITY = 'living_handbook_visibility';
-	public const META_ROLES      = 'living_handbook_roles';
-	public const META_USERS      = 'living_handbook_users';
 
-	public const VISIBILITY_PUBLIC     = 'public';
-	public const VISIBILITY_MEMBERS    = 'members';
+	/**
+	 * Term meta holding the roles a restricted handbook admits.
+	 */
+	public const META_ROLES = 'living_handbook_roles';
+
+	/**
+	 * Term meta holding the user ids a restricted handbook admits one by one.
+	 * Personal data: see Privacy.
+	 */
+	public const META_USERS = 'living_handbook_users';
+
+	/**
+	 * Visibility: everybody, signed in or not.
+	 */
+	public const VISIBILITY_PUBLIC = 'public';
+
+	/**
+	 * Visibility: every signed-in user. The default.
+	 */
+	public const VISIBILITY_MEMBERS = 'members';
+
+	/**
+	 * Visibility: the roles and users named in META_ROLES and META_USERS.
+	 */
 	public const VISIBILITY_RESTRICTED = 'restricted';
 
+	/**
+	 * Term meta holding what a handbook says about comments: one of the
+	 * COMMENTS_* values.
+	 */
 	public const META_COMMENTS = 'living_handbook_comments';
 
+	/**
+	 * Comments: each page decides. The default.
+	 */
 	public const COMMENTS_INHERIT = 'inherit';
-	public const COMMENTS_OPEN    = 'open';
-	public const COMMENTS_CLOSED  = 'closed';
+
+	/**
+	 * Comments: open on every page of the handbook.
+	 */
+	public const COMMENTS_OPEN = 'open';
+
+	/**
+	 * Comments: closed on every page of the handbook.
+	 */
+	public const COMMENTS_CLOSED = 'closed';
 
 	/**
 	 * Guard so that the enforcement's own write does not trigger it again.
@@ -65,7 +106,7 @@ final class Handbooks {
 	private static bool $enforcing = false;
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks with WordPress.
 	 *
 	 * @return void
 	 */
@@ -81,13 +122,16 @@ final class Handbooks {
 		add_action( 'set_object_terms', array( $this, 'enforce_single' ), 10, 6 );
 
 		// A handbook may decide about comments for all of its pages at once.
-		// Late priority so this is the last word: the point of the setting is to
-		// spare somebody opening two hundred pages one by one.
+		// Priority 99, after the page setting and other plugins, because the
+		// point of the setting is to spare somebody opening two hundred pages
+		// one by one. AccessController::guard_comments_open() runs at 100 and
+		// has to stay after this: a handbook set to "open" must not reopen
+		// comments for somebody who may not read the page.
 		add_filter( 'comments_open', array( __CLASS__, 'filter_comments_open' ), 99, 2 );
 	}
 
 	/**
-	 * Let a handbook decide about comments for every page it holds.
+	 * Lets a handbook decide about comments for every page it holds.
 	 *
 	 * Without this the only switch is the one on each page, which is fine for a
 	 * page and useless for a handbook: turning comments on for two hundred pages
@@ -124,7 +168,7 @@ final class Handbooks {
 	}
 
 	/**
-	 * What a handbook says about comments: inherit, open or closed.
+	 * Returns what a handbook says about comments: inherit, open or closed.
 	 *
 	 * Anything unknown, including a handbook that does not exist, reads as
 	 * inherit, so a stray value can never silently open comments.
@@ -145,7 +189,7 @@ final class Handbooks {
 	}
 
 	/**
-	 * The handbook a page belongs to, as a term id, or 0.
+	 * Returns the handbook a page belongs to, as a term id, or 0.
 	 *
 	 * The one definition of "the handbook of this page". Three places carried
 	 * their own copy of the same expression, and they did not agree with each
@@ -183,7 +227,7 @@ final class Handbooks {
 	}
 
 	/**
-	 * Keep a handbook page in exactly one handbook.
+	 * Keeps a handbook page or a learning path in exactly one handbook.
 	 *
 	 * The data model says one handbook per page, and everything built on it
 	 * assumes exactly that: the navigation shows one tree, a page has one entry
@@ -193,9 +237,9 @@ final class Handbooks {
 	 * something worse: a page whose navigation showed a tree the page is not in.
 	 *
 	 * So the rule is enforced where the terms are written, and only for handbook
-	 * pages. Of several handbooks the one just added wins, because ticking a
-	 * second box is the deliberate act; when several arrive at once, the lowest
-	 * term id decides, the same rule for_post() reads by.
+	 * pages and learning paths. Of several handbooks the one just added wins,
+	 * because ticking a second box is the deliberate act; when several arrive at
+	 * once, the lowest term id decides, the same rule for_post() reads by.
 	 *
 	 * Access is deliberately not relaxed: can_view_post() still requires every
 	 * handbook of a page to allow the reader, so an assignment made before this
@@ -267,7 +311,7 @@ final class Handbooks {
 	}
 
 	/**
-	 * Count only handbook pages towards a handbook's page count.
+	 * Counts only handbook pages towards a handbook's page count.
 	 *
 	 * Core counts every published object in a term, and since learning paths sit
 	 * in the same term, the overview card would report "12 pages" for ten pages
@@ -289,7 +333,7 @@ final class Handbooks {
 
 		foreach ( (array) $terms as $term ) {
 			$term  = (int) $term;
-			$count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- A recount, as core's _update_post_term_count() does it; a cached count would be the stale one.
 				$wpdb->prepare(
 					"SELECT COUNT(*) FROM {$wpdb->term_relationships}, {$wpdb->posts}
 					 WHERE {$wpdb->posts}.ID = {$wpdb->term_relationships}.object_id
@@ -303,7 +347,7 @@ final class Handbooks {
 
 			/** This action is documented in wp-includes/taxonomy.php */
 			do_action( 'edit_term_taxonomy', $term, self::TAXONOMY ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- A core hook, fired here because this callback replaces a core one and everything listening for a recount has to hear it.
-			$wpdb->update( $wpdb->term_taxonomy, array( 'count' => $count ), array( 'term_taxonomy_id' => $term ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update( $wpdb->term_taxonomy, array( 'count' => $count ), array( 'term_taxonomy_id' => $term ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Writes the count as core does; clean_term_cache() below drops the cached term.
 			/** This action is documented in wp-includes/taxonomy.php */
 			do_action( 'edited_term_taxonomy', $term, self::TAXONOMY ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- See above.
 
@@ -312,7 +356,7 @@ final class Handbooks {
 	}
 
 	/**
-	 * Register the grouping taxonomy.
+	 * Registers the grouping taxonomy.
 	 *
 	 * @return void
 	 */
@@ -339,9 +383,11 @@ final class Handbooks {
 				'show_in_rest'          => true,
 				'query_var'             => true,
 				/**
-				 * The URL base of a handbook grouping term. English and fixed by
-				 * default; filterable for the same reason and with the same caveat
-				 * as the page slug, see living_handbook_post_type_slug.
+				 * Filters the URL base of a handbook grouping term.
+				 *
+				 * English and fixed by default; filterable for the same reason and
+				 * with the same caveat as the page slug, see
+				 * living_handbook_post_type_slug.
 				 *
 				 * @param string $slug The rewrite base. Default 'handbook-set'.
 				 */
@@ -354,9 +400,10 @@ final class Handbooks {
 	}
 
 	/**
-	 * Force an empty REST term list for users who may not edit posts, so the
-	 * handbook list is not readable anonymously. Editors keep the list they need
-	 * to assign a handbook in the block editor.
+	 * Forces an empty REST term list for users who may not edit posts, so the
+	 * handbook list is not readable anonymously. Users who may edit posts get the
+	 * handbooks they may read, which is what the block editor offers them to
+	 * assign.
 	 *
 	 * @param array<string, mixed> $args    Prepared query args.
 	 * @param mixed                $request The REST request (unused).
@@ -382,8 +429,10 @@ final class Handbooks {
 	}
 
 	/**
-	 * Block a single REST term read for users who may not edit posts, so the
-	 * per-id endpoint cannot be used to read one handbook around the empty list.
+	 * Blocks a single REST term read for users who may not edit posts, so the
+	 * per-id endpoint cannot be used to read one handbook around the empty list,
+	 * and for a handbook the user may not use
+	 * (AccessController::may_use_handbook()), which the list leaves out as well.
 	 *
 	 * @param mixed $response The prepared response.
 	 * @param mixed $item     The term.
@@ -400,7 +449,7 @@ final class Handbooks {
 	}
 
 	/**
-	 * Register the access configuration as term meta on the grouping taxonomy.
+	 * Registers the access configuration as term meta on the grouping taxonomy.
 	 *
 	 * The default visibility, used when nothing is configured, is members only
 	 * (fail-closed).
@@ -456,9 +505,10 @@ final class Handbooks {
 	}
 
 	/**
-	 * Whether the current user may edit a handbook's access configuration.
+	 * Determines whether the current user may edit a handbook's access
+	 * configuration.
 	 *
-	 * The handbook's own edit right as well (see
+	 * It takes manage_categories and the edit right on the handbook itself (see
 	 * AccessController::guard_meta_caps()): somebody who may not read a
 	 * handbook may not open it by changing its settings either.
 	 *
