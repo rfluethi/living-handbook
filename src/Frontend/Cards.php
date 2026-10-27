@@ -2,9 +2,9 @@
 /**
  * Card rendering for the handbook overview and entry pages.
  *
- * Ported from the prototype: a page card carries a type badge, a short excerpt,
- * the responsible role and a freshness dot. Area tiles show the top level of a
- * handbook, and a handbook card links from the overview to a handbook entry.
+ * A page card carries a type badge, a short excerpt, the responsible role and
+ * a freshness dot. Area tiles show the top level of a handbook, and a handbook
+ * card links from the overview to a handbook entry.
  *
  * @package LivingHandbook
  */
@@ -31,7 +31,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Cards {
 
 	/**
-	 * Render a single handbook page as a card.
+	 * Words of a page's content on its card, when the page has no excerpt.
+	 */
+	private const CARD_WORDS = 22;
+
+	/**
+	 * Words of a page's content on an area tile. Fewer than on a card: a tile
+	 * stands in a denser grid and says what an area holds, not what a page says.
+	 */
+	private const AREA_WORDS = 18;
+
+	/**
+	 * Renders a single handbook page as a card.
 	 *
 	 * @param int $post_id Post ID.
 	 * @return string
@@ -57,12 +68,14 @@ final class Cards {
 				. '<span class="living-handbook-visually-hidden">' . esc_html( $label ) . '</span></span>';
 		}
 
-		$excerpt = self::excerpt( $post_id, 22 );
+		$excerpt = self::excerpt( $post_id, self::CARD_WORDS );
 
 		$badge = '' !== $type_name
 			? '<span class="living-handbook-badge living-handbook-badge--type">' . esc_html( $type_name ) . '</span>'
 			: '';
 
+		// An empty span when there is no role: the meta row spreads its items
+		// apart, and the placeholder keeps the freshness dot at the end of it.
 		$role_line = '<span></span>';
 		if ( '' !== $role_name ) {
 			/* translators: %s: name of the responsible role. */
@@ -113,7 +126,7 @@ final class Cards {
 	}
 
 	/**
-	 * Render the badge row for a single handbook page (type, topic, audience).
+	 * Renders the badge row for a single handbook page (type, topic, audience).
 	 *
 	 * @param int $post_id Post ID.
 	 * @return string
@@ -144,7 +157,7 @@ final class Cards {
 	}
 
 	/**
-	 * Render the most recently updated pages of a handbook as a card grid.
+	 * Renders the most recently updated pages of a handbook as a card grid.
 	 *
 	 * @param int $term_id Handbook term ID.
 	 * @param int $limit   Maximum number of cards (0 for all).
@@ -159,7 +172,7 @@ final class Cards {
 				'orderby'        => 'modified',
 				'order'          => 'DESC',
 				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Pages belong to a handbook by term; there is no other key to scope by.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',
@@ -183,7 +196,8 @@ final class Cards {
 	}
 
 	/**
-	 * Cache key of the rendered area cards, scoped to the current viewer.
+	 * Returns the cache key of the rendered area cards, scoped to the current
+	 * viewer.
 	 *
 	 * Public so a test can assert that two users who may see different handbooks
 	 * do not share one cache entry.
@@ -200,7 +214,8 @@ final class Cards {
 	}
 
 	/**
-	 * Cache key of a handbook's preview on the overview, scoped like the areas.
+	 * Returns the cache key of a handbook's preview on the overview, scoped like
+	 * the areas.
 	 *
 	 * @param int $term_id Handbook term ID.
 	 * @param int $limit   How many pages the preview lists.
@@ -220,8 +235,8 @@ final class Cards {
 	 */
 	private static function viewer_scope(): string {
 		// The cached lists are built from queries that are filtered per user, so
-		// the key has to carry who is asking. Without that, the first editor to
-		// open the page fills the cache with pages a guest may not see, and
+		// the key has to carry who is asking. Without that, the first viewer with
+		// wider access fills the cache with pages a guest may not see, and
 		// everyone gets them for the next day. Two things decide what a viewer
 		// gets: the handbooks they may read, and whether they read everything
 		// (AccessController::reads_everything()), which viewable_term_ids() does
@@ -232,19 +247,17 @@ final class Cards {
 	}
 
 	/**
-	 * Render the top-level pages of a handbook as area tiles.
+	 * Renders the top-level pages of a handbook as area tiles.
 	 *
-	 * The whole handbook is loaded in one query (PageTree) and the child counts
-	 * are read from that map, so the rendered markup is cached per handbook and
-	 * viewer, and reused until a handbook page or term changes. The cache shares
-	 * the version counter that Navigation::invalidate() bumps.
+	 * The whole handbook is loaded once (PageTree::children_map()) and the
+	 * child counts are read from that map, so the rendered markup is cached per
+	 * handbook and viewer, and reused until a handbook page or term changes. The
+	 * cache shares the version counter that Navigation::invalidate() bumps.
 	 *
 	 * @param int $term_id Handbook term ID.
 	 * @return string
 	 */
 	public static function areas( int $term_id ): string {
-		// Shared cache version, bumped by Navigation::invalidate() on page and
-		// term changes.
 		$cache_key = self::areas_cache_key( $term_id );
 
 		$cached = get_transient( $cache_key );
@@ -270,7 +283,7 @@ final class Cards {
 			// This markup is cached and shared by everybody with the same
 			// handbooks, so whether one visitor has entered the password cannot
 			// decide what goes in. A protected page shows no text here at all.
-			$excerpt = '' !== $post->post_password ? '' : self::excerpt( $post->ID, 18 );
+			$excerpt = '' !== $post->post_password ? '' : self::excerpt( $post->ID, self::AREA_WORDS );
 
 			/* translators: %d: number of subpages. */
 			$count_label = sprintf( _n( '%d subpage', '%d subpages', $children, 'living-handbook' ), $children );
@@ -292,7 +305,7 @@ final class Cards {
 	}
 
 	/**
-	 * Render a handbook (grouping term) as a card that links to its entry page.
+	 * Renders a handbook (grouping term) as a card that links to its entry page.
 	 *
 	 * @param WP_Term $term        Handbook term.
 	 * @param int     $preview     How many page titles to list under the card; 0 for none.
@@ -403,7 +416,7 @@ final class Cards {
 	}
 
 	/**
-	 * Read the cached previews of several handbooks in one query.
+	 * Reads the cached previews of several handbooks in one query.
 	 *
 	 * Without a persistent object cache a transient is two rows in the options
 	 * table, and get_transient() reads them per call: one query per card even

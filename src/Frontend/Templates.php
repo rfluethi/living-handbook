@@ -1,12 +1,13 @@
 <?php
 /**
- * Block templates for the handbook entry and single pages.
+ * Block templates for the handbook entry pages, single pages and learning
+ * paths.
  *
- * Registers block templates (WP 6.7+) so each handbook term archive shows its
- * entry page with the handbook navigation, and single handbook pages get
- * navigation, content and an on-this-page column, using the active block
- * theme's header and footer. Needs a block theme; classic themes fall back to
- * their own templates.
+ * Each handbook term archive shows its entry page with the handbook
+ * navigation, a single handbook page gets navigation, content and an
+ * on-this-page column, and a learning path gets navigation and its lessons,
+ * all with the active block theme's header and footer. Needs a block theme;
+ * classic themes fall back to their own templates.
  *
  * There is deliberately no template for the overview: the post type archive is
  * switched off (Handbook::register_post_type, has_archive => false), so an
@@ -21,6 +22,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Frontend;
 
 use LivingHandbook\Handbook\Handbooks;
+use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Training\Training;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -33,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Templates {
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -42,15 +44,11 @@ final class Templates {
 	}
 
 	/**
-	 * Register the entry and single block templates.
+	 * Registers the entry, single page and learning path block templates.
 	 *
 	 * @return void
 	 */
 	public function register_templates(): void {
-		if ( ! function_exists( 'register_block_template' ) ) {
-			return;
-		}
-
 		register_block_template(
 			'living-handbook//taxonomy-' . Handbooks::TAXONOMY,
 			array(
@@ -61,7 +59,7 @@ final class Templates {
 		);
 
 		register_block_template(
-			'living-handbook//single-handbook',
+			'living-handbook//single-' . Handbook::POST_TYPE,
 			array(
 				'title'       => __( 'Handbook page', 'living-handbook' ),
 				'description' => __( 'Single handbook page: navigation left, content centre, on-this-page right.', 'living-handbook' ),
@@ -133,8 +131,8 @@ final class Templates {
 	 */
 	private static function single_content(): string {
 		// The page itself comes first: title, then content. Everything about the
-		// page follows it, in one block at the foot: the feedback prompt, then the
-		// source note, the badges and the metadata footer.
+		// page follows it, in a run of blocks at the foot: the feedback prompt,
+		// then the source note, the badges and the metadata footer.
 		//
 		// The two separator blocks are static, so the dividers are there whether or
 		// not their neighbours render: a guest without public feedback gets no
@@ -191,10 +189,10 @@ final class Templates {
 	/**
 	 * The single learning path template markup.
 	 *
-	 * The same two columns as a handbook page, minus the on-this-page column: a
-	 * path is a list, and a list of its own headings would be a list of a list.
-	 * The path bar is not here either, for the same reason it is on every lesson:
-	 * you are not inside the path yet when you are looking at it.
+	 * The same columns as a handbook page, minus the on-this-page column: a path
+	 * is a list, and a list of its own headings would be a list of a list. The
+	 * path bar is left out too: it belongs to a lesson read through the path, and
+	 * on the path itself the reader has not entered it yet.
 	 *
 	 * @return string
 	 */

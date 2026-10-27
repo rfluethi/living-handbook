@@ -39,11 +39,47 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class Filters {
 
+	/**
+	 * Request parameter of the full-text search on an entry page.
+	 */
 	private const SEARCH_PARAM = 'lh_s';
 
-	public const REST_NAMESPACE    = 'living-handbook/v1';
-	public const REST_ROUTE        = '/filter';
+	/**
+	 * REST namespace of the plugin's front-end routes.
+	 */
+	public const REST_NAMESPACE = 'living-handbook/v1';
+
+	/**
+	 * REST route that returns the filtered result column of an entry page.
+	 */
+	public const REST_ROUTE = '/filter';
+
+	/**
+	 * REST route of the quick search, which returns matching pages as links.
+	 */
 	public const REST_ROUTE_SEARCH = '/search';
+
+	/**
+	 * Pages the quick search lists. A dropdown of links, not a result page:
+	 * past eight the reader is better served by a sharper search.
+	 */
+	private const SEARCH_LIMIT = 8;
+
+	/**
+	 * Characters of page text quoted on each side of a search hit.
+	 */
+	private const SNIPPET_RADIUS = 80;
+
+	/**
+	 * Shortest search word a snippet is quoted around when the whole search is
+	 * not in the text. Shorter words match inside too many other words.
+	 */
+	private const SNIPPET_MIN_WORD = 3;
+
+	/**
+	 * Cards per page of the filtered result list.
+	 */
+	private const PER_PAGE = 24;
 
 	/**
 	 * Indent per hierarchy level in the facet list, in rem.
@@ -51,7 +87,7 @@ final class Filters {
 	private const FACET_INDENT = 0.9;
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -60,18 +96,21 @@ final class Filters {
 	}
 
 	/**
-	 * Register the REST route that returns the filtered result list.
+	 * Registers the REST routes of the filtered result list and the quick search.
 	 *
 	 * Both routes carry `permission_callback => '__return_true'` on purpose. A
 	 * public handbook has to stay searchable for logged-out visitors, so a blanket
 	 * login requirement would be wrong here. The access decision sits one level
-	 * deeper instead: rest_search() and rest_filter() check can_view_term() for the
-	 * handbook and can_view_post() for every single hit before anything is
-	 * returned, so the routes never hand out more than the caller may see.
+	 * deeper instead. Both handlers check can_view_term() for the handbook before
+	 * anything else. rest_search() then checks can_view_post() for every hit;
+	 * rest_filter() renders through WP_Query, which AccessController filters on
+	 * every query (restrict_query() and filter_posts()). So the routes never hand
+	 * out more than the caller may see.
 	 *
-	 * That makes the in-handler check load-bearing. Anyone adding a new return path
-	 * here must run it through the same check; `tests/Integration/RestAccessTest.php`
-	 * guards this, so a regression fails the suite instead of reaching the frontend.
+	 * That makes these checks load-bearing. Anyone adding a new return path here
+	 * must run it through one of the two; `tests/Integration/RestAccessTest.php`
+	 * guards this, so a regression fails the suite instead of reaching the
+	 * frontend.
 	 *
 	 * @return void
 	 */
@@ -113,7 +152,7 @@ final class Filters {
 	}
 
 	/**
-	 * REST handler: return the matching pages of one handbook as a small list of
+	 * Returns the matching pages of one handbook as a small list of
 	 * title and permalink, for the on-page search typeahead. Access to the
 	 * handbook and to each page is checked, so it cannot surface a page the
 	 * current user may not read.
@@ -137,10 +176,10 @@ final class Filters {
 			array(
 				'post_type'      => Handbook::POST_TYPE,
 				'post_status'    => 'publish',
-				'posts_per_page' => 8,
+				'posts_per_page' => self::SEARCH_LIMIT,
 				'no_found_rows'  => true,
 				's'              => $search,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Pages belong to a handbook by term; there is no other key to scope by.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',
@@ -171,7 +210,7 @@ final class Filters {
 		}
 
 		// The sentence the browser announces, made here because only here is
-		// there a plural form for it. The script used to take one fixed string,
+		// there a plural form for it. Up to 0.75.1 the script took one fixed string,
 		// "%d matching pages", and put the number in: "1 matching pages" in
 		// English, and wrong in every language with more than two forms. The
 		// script runs in the static export as well, where wp.i18n is not loaded,
@@ -224,7 +263,7 @@ final class Filters {
 			return array();
 		}
 
-		$radius = 80;
+		$radius = self::SNIPPET_RADIUS;
 
 		$text = wp_strip_all_tags( strip_shortcodes( excerpt_remove_blocks( $post->post_content ) ) );
 		$text = wp_specialchars_decode( $text, ENT_QUOTES );
@@ -249,7 +288,7 @@ final class Filters {
 				}
 			);
 			foreach ( $words as $word ) {
-				if ( mb_strlen( $word ) >= 3 ) {
+				if ( mb_strlen( $word ) >= self::SNIPPET_MIN_WORD ) {
 					$at = mb_stripos( $text, $word );
 					if ( false !== $at ) {
 						$search = $word;
@@ -266,8 +305,8 @@ final class Filters {
 		$length = mb_strlen( $search ) + ( 2 * $radius );
 		$cut    = mb_substr( $text, $start, $length );
 
-		// Do not start or end mid-word: a snippet that begins with "ngsseite" reads
-		// as a typo rather than as a quotation.
+		// Do not start or end mid-word: a snippet that begins with "mentation"
+		// reads as a typo rather than as a quotation.
 		if ( $start > 0 ) {
 			$space = mb_strpos( $cut, ' ' );
 			$cut   = false !== $space ? mb_substr( $cut, $space + 1 ) : $cut;
@@ -321,7 +360,7 @@ final class Filters {
 	}
 
 	/**
-	 * REST handler: return the main-column HTML for a handbook and the given
+	 * Returns the main-column HTML for a handbook and the given
 	 * selections and search. Access to the handbook is checked, so the endpoint
 	 * cannot be used to read a handbook the current user may not see.
 	 *
@@ -352,7 +391,7 @@ final class Filters {
 	}
 
 	/**
-	 * Whether any filter or the search is active for the given selections.
+	 * Tells whether any filter or the search is active for the given selections.
 	 *
 	 * @param array<string, string[]> $selections Facet selections.
 	 * @param string                  $search     Search term.
@@ -363,7 +402,7 @@ final class Filters {
 	}
 
 	/**
-	 * The current facet selections from the request (parameter to slugs).
+	 * Returns the current facet selections from the request (parameter to slugs).
 	 *
 	 * @return array<string, string[]>
 	 */
@@ -379,21 +418,21 @@ final class Filters {
 	}
 
 	/**
-	 * The current page number from the request, at least 1.
+	 * Returns the current page number from the request, at least 1.
 	 *
 	 * @return int
 	 */
 	public static function current_paged(): int {
 		$paged = (int) get_query_var( 'paged' );
 		if ( $paged < 1 ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A read-only parameter of a public page; nothing is written.
 			$paged = isset( $_GET['paged'] ) ? absint( wp_unslash( $_GET['paged'] ) ) : 0;
 		}
 		return max( 1, $paged );
 	}
 
 	/**
-	 * Render the prominent search form for a handbook.
+	 * Renders the prominent search form for a handbook.
 	 *
 	 * Carries the active facet selections as hidden fields so a no-JS search
 	 * submit keeps the current filters.
@@ -432,6 +471,9 @@ final class Filters {
 		// The label is in the document either way: a search field with nothing but
 		// a placeholder loses its accessible name the moment something is typed
 		// into it. Showing it is a visual choice, leaving it out is not.
+		//
+		// The wrapper attributes come from get_block_wrapper_attributes(), which
+		// escapes its own output, or are the plugin's fixed class.
 		$id         = wp_unique_id( 'living-handbook-search-' );
 		$attributes = isset( $options['wrapper_attributes'] ) && '' !== $options['wrapper_attributes']
 			? (string) $options['wrapper_attributes']
@@ -451,7 +493,7 @@ final class Filters {
 	}
 
 	/**
-	 * Render the taxonomy facet form for a handbook.
+	 * Renders the taxonomy facet form for a handbook.
 	 *
 	 * Only the terms used by pages of this handbook are offered. The form has a
 	 * submit button so it works without JavaScript; the frontend script hides
@@ -653,7 +695,7 @@ final class Filters {
 	}
 
 	/**
-	 * Render the filtered result cards for a handbook, with pagination.
+	 * Renders the filtered result cards for a handbook, with pagination.
 	 *
 	 * Runs its own query scoped to the handbook (by term id) plus the given
 	 * facet selections (by slug) and the search, so it does not depend on
@@ -692,11 +734,11 @@ final class Filters {
 		$args  = array(
 			'post_type'      => Handbook::POST_TYPE,
 			'post_status'    => 'publish',
-			'posts_per_page' => 24,
+			'posts_per_page' => self::PER_PAGE,
 			'paged'          => $paged,
 			'orderby'        => 'modified',
 			'order'          => 'DESC',
-			'tax_query'      => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			'tax_query'      => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Pages belong to a handbook by term; there is no other key to scope by.
 		);
 		if ( '' !== $search ) {
 			$args['s'] = $search;
@@ -719,9 +761,9 @@ final class Filters {
 
 		// The rendered count is exact when everything fits on one page. With
 		// pagination we cannot recount across pages cheaply and show the query
-		// total; it can be off only by the rare page that also belongs to a
-		// second, more restrictive handbook, which the precise access filter
-		// (the_posts) removes but the coarse query count still includes.
+		// total. It can be off only by a page the living_handbook_can_view_post
+		// filter drops in the precise access check (the_posts) after the coarse
+		// tax_query (restrict_query()) let it through and counted it.
 		$paginated = $query->max_num_pages > 1;
 		$count     = $paginated ? (int) $query->found_posts : $rendered;
 
@@ -752,8 +794,12 @@ final class Filters {
 	}
 
 	/**
-	 * Build the paginate_links base URL: the term archive with the active
+	 * Builds the paginate_links base URL: the term archive with the active
 	 * search and facets kept, and a %#% placeholder for the page number.
+	 *
+	 * The placeholder goes in as a plain word and is swapped afterwards, because
+	 * add_query_arg() would encode the percent signs and paginate_links() would
+	 * no longer find it.
 	 *
 	 * @param WP_Term                 $term       Handbook term.
 	 * @param array<string, string[]> $selections Facet selections.
@@ -779,7 +825,13 @@ final class Filters {
 	}
 
 	/**
-	 * Published page IDs of a handbook.
+	 * Returns the published page IDs of a handbook, for the facet terms.
+	 *
+	 * Through get_posts(), which suppresses the_posts, so only the coarse access
+	 * layer (restrict_query(), the readable handbooks) applies here, not the
+	 * living_handbook_can_view_post filter. Accepted on purpose: what can leak is
+	 * the name of a term on a page that filter hides, never the page, and the
+	 * result list it leads to is filtered precisely.
 	 *
 	 * @param WP_Term $term Handbook term.
 	 * @return int[]
@@ -792,7 +844,7 @@ final class Filters {
 				'posts_per_page' => -1,
 				'fields'         => 'ids',
 				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Pages belong to a handbook by term; there is no other key to scope by.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',
@@ -806,27 +858,27 @@ final class Filters {
 	}
 
 	/**
-	 * The sanitized full-text search value from the request.
+	 * Returns the sanitized full-text search value from the request.
 	 *
 	 * @return string
 	 */
 	public static function search_value(): string {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A read-only parameter of a public page; nothing is written.
 		if ( empty( $_GET[ self::SEARCH_PARAM ] ) ) {
 			return '';
 		}
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A read-only parameter of a public page; nothing is written.
 		return sanitize_text_field( wp_unslash( $_GET[ self::SEARCH_PARAM ] ) );
 	}
 
 	/**
-	 * The sanitized slug values of one facet parameter from the request.
+	 * Returns the sanitized slug values of one facet parameter from the request.
 	 *
 	 * @param string $param Request parameter name.
 	 * @return array<int, string>
 	 */
 	private static function param_values( string $param ): array {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- A read-only parameter of a public page; nothing is written.
 		if ( empty( $_GET[ $param ] ) ) {
 			return array();
 		}
@@ -835,13 +887,13 @@ final class Filters {
 	}
 
 	/**
-	 * Sanitized slugs from a request value, whatever shape it arrived in.
+	 * Returns the sanitized slugs of a request value, whatever shape it arrived in.
 	 *
 	 * A URL can make a parameter a string, a list, or a list of lists
 	 * (?lh_type[a][]=x). sanitize_title() expects a string, and handed an array
-	 * it threw a TypeError in PHP 8: any visitor could produce the "critical
-	 * error" page, on every request, with one hand-written URL (0.75.0). Only
-	 * strings are kept; anything nested is dropped.
+	 * it throws a TypeError in PHP 8. Up to 0.75.0 any visitor could produce the
+	 * "critical error" page that way with one hand-written URL. Only strings are
+	 * kept; anything nested is dropped.
 	 *
 	 * @param mixed $raw Request value.
 	 * @return array<int, string>
@@ -852,7 +904,7 @@ final class Filters {
 	}
 
 	/**
-	 * Map of request parameters to the taxonomy they filter.
+	 * Returns the map of request parameters to the taxonomy they filter.
 	 *
 	 * @return array<string, string>
 	 */

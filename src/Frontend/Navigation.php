@@ -8,13 +8,9 @@
  *
  * The title row is built exactly like every other row that has children: a
  * toggle on the left opens and closes the whole navigation, and the handbook
- * name beside it is an ordinary link to the handbook's start page. That is a
- * change from the first version, which made the whole block a native <details>
- * with the title as its <summary>. A <summary> can toggle or it can link, not
- * both dependably, so the way to the start page had to hang beside it as a
- * small arrow, and testers did not read that arrow as a way anywhere. The
- * toggle is now a button like the others, which costs a few lines of script and
- * makes the title behave the way every other entry in the list behaves.
+ * name beside it is an ordinary link to the handbook's start page. It is not a
+ * native <details> with the title as its <summary>: a <summary> can toggle or
+ * it can link, not both dependably.
  *
  * The two display variants:
  * - "sidebar" (Menu): the whole tree is shown, nothing collapses.
@@ -27,7 +23,7 @@
  *   reader without the script never reached a page outside the current branch.
  *
  * The styling and the toggle behaviour ship with the plugin (frontend.css and
- * frontend.js); the VSN plugin is no longer required.
+ * frontend.js).
  *
  * @package LivingHandbook
  */
@@ -66,7 +62,7 @@ final class Navigation {
 	public const CACHE_VERSION_OPTION = 'living_handbook_nav_version';
 
 	/**
-	 * Render the sidebar navigation for a handbook.
+	 * Renders the sidebar navigation for a handbook.
 	 *
 	 * @param int    $term_id Handbook term ID.
 	 * @param string $variant Either 'sidebar' (menu) or 'accordion'.
@@ -110,7 +106,7 @@ final class Navigation {
 		$title = esc_html( $term->name );
 		$entry = get_term_link( $term );
 
-		$label = '' === $title ? '' : $title;
+		$label = $title;
 		if ( ! is_wp_error( $entry ) ) {
 			$label = '<a href="' . esc_url( (string) $entry ) . '">' . $title . '</a>';
 		}
@@ -147,9 +143,10 @@ final class Navigation {
 	}
 
 	/**
-	 * Bump the shared cache version, which retires every cached area card list
-	 * at once. Hooked to the events that change a handbook: saving, deleting or
-	 * restoring a page, and changes to the handbook terms.
+	 * Bumps the shared cache version, which retires the cached area tiles and
+	 * overview previews (Cards) at once. Hooked in Blocks::register() to the
+	 * events that change a handbook: saving, trashing, restoring and deleting a
+	 * page, and changes to the handbook terms.
 	 *
 	 * @return void
 	 */
@@ -177,7 +174,7 @@ final class Navigation {
 	}
 
 	/**
-	 * Render the navigation for the handbook a page belongs to.
+	 * Renders the navigation for the handbook a page belongs to.
 	 *
 	 * @param int    $post_id Current post ID.
 	 * @param string $variant Either 'sidebar' (menu) or 'accordion'.

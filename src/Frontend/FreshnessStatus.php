@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Derives a review status from the last review date and the review interval.
  *
- * Four states, not three. A page with no review date and no interval is not
- * reviewed, due or overdue; it is a page nobody has looked at, and that is a
+ * Four states, not three. A page without a review date or without an interval
+ * is not reviewed, due or overdue; it is a page nobody has looked at, and that is a
  * state of its own with its own answer ("set a review date"). It used to be the
  * absence of a state: NONE existed as a value, had no label, and was skipped
  * wherever a badge or a dot was drawn, so a freshly imported handbook showed
@@ -28,13 +28,28 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 final class FreshnessStatus {
 
-	public const OK      = 'ok';
-	public const DUE     = 'due';
-	public const OVERDUE = 'overdue';
-	public const NONE    = 'none';
+	/**
+	 * Reviewed, and the interval has not passed yet.
+	 */
+	public const OK = 'ok';
 
 	/**
-	 * Every status, in the order a person reads them: from the page that needs
+	 * The interval has passed, twice the interval has not.
+	 */
+	public const DUE = 'due';
+
+	/**
+	 * More than twice the interval has passed.
+	 */
+	public const OVERDUE = 'overdue';
+
+	/**
+	 * No review date or no interval: nobody has looked at the page yet.
+	 */
+	public const NONE = 'none';
+
+	/**
+	 * Returns every status, in the order a person reads them: from the page that needs
 	 * attention most to the one that needs none, with the page nobody has looked
 	 * at yet at the end. Used wherever all four are offered at once.
 	 *
@@ -45,7 +60,7 @@ final class FreshnessStatus {
 	}
 
 	/**
-	 * Compute the status for a post.
+	 * Computes the status for a post.
 	 *
 	 * Overdue (escalated) means more than twice the interval has passed.
 	 *
@@ -62,7 +77,8 @@ final class FreshnessStatus {
 	}
 
 	/**
-	 * The rule itself, without WordPress and without the clock.
+	 * Decides the status from a review date, an interval and a moment: the rule
+	 * itself, without WordPress and without the clock.
 	 *
 	 * Freshness tracking is what this plugin is for, so the rule that decides
 	 * whether a page counts as reviewed, due or overdue is worth having in one
@@ -110,7 +126,7 @@ final class FreshnessStatus {
 	 * Calendar days, not 86400-second blocks: across a change to or from summer
 	 * time the day stays the day.
 	 *
-	 * @param string             $date     A date strtotime() understands, usually Y-m-d.
+	 * @param string             $date     A date DateTimeImmutable can read, usually Y-m-d.
 	 * @param int                $days     Days to add.
 	 * @param \DateTimeZone|null $timezone Zone. Default UTC.
 	 * @return int|false Unix timestamp, or false for a date that cannot be read.
@@ -126,7 +142,7 @@ final class FreshnessStatus {
 	}
 
 	/**
-	 * Human-readable label for a status.
+	 * Returns the human-readable label for a status.
 	 *
 	 * @param string $status Status value.
 	 * @return string

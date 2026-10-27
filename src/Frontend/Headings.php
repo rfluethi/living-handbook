@@ -3,11 +3,9 @@
  * Addressable sections: stable heading ids and a link to each one.
  *
  * Pointing someone at one section of a long page is the everyday case in a
- * handbook, and until now it could not be done. The ids existed, but they were
- * made in the browser from the position of the heading (`lh-section-3`), which
- * is not an address: insert a heading anywhere above and every link below it
- * silently points at the wrong section. Nobody outside had copied such a link
- * yet, which made this the cheap moment to fix it.
+ * handbook. Up to 0.75.1 the ids were made in the browser from the position of
+ * the heading (`lh-section-3`), which is not an address: insert a heading
+ * anywhere above and every link below it silently points at the wrong section.
  *
  * The id is therefore made on the server from the heading text, with a counter
  * for repeats, and a small link is added at the end of the heading so the
@@ -40,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Headings {
 
 	/**
-	 * Hook registration into WordPress.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -51,7 +49,7 @@ final class Headings {
 	}
 
 	/**
-	 * Add an id and an anchor link to the h2, h3 and h4 of a handbook page.
+	 * Adds an id and an anchor link to the h2, h3 and h4 of a handbook page.
 	 *
 	 * @param string $content The post content.
 	 * @return string
@@ -65,7 +63,7 @@ final class Headings {
 	}
 
 	/**
-	 * Add the ids and anchor links to a piece of rendered content, whatever the
+	 * Adds the ids and anchor links to a piece of rendered content, whatever the
 	 * request looks like.
 	 *
 	 * The filter above asks where it is before doing anything, which is right for

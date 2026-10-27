@@ -43,7 +43,7 @@ final class PageTree {
 	private const COLUMNS = array( 'ID', 'post_parent', 'post_title', 'post_name', 'menu_order', 'post_password', 'post_status', 'post_type', 'post_date' );
 
 	/**
-	 * Return the published pages of a handbook grouped by parent id.
+	 * Returns the published pages of a handbook grouped by parent id.
 	 *
 	 * The map is keyed by parent post id (0 for the top level); each value is the
 	 * ordered list of child pages. Pages are ordered by menu order, then title,
@@ -100,7 +100,7 @@ final class PageTree {
 				// grouping is hierarchical: harmless while nobody nested anything,
 				// wrong the moment somebody does, and it would file a child's pages
 				// under the parent's name.
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Pages belong to a handbook by term; there is no other key to scope by.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_id',
@@ -129,7 +129,7 @@ final class PageTree {
 	}
 
 	/**
-	 * Read the COLUMNS of a list of pages, in the order of the list.
+	 * Reads the COLUMNS of a list of pages, in the order of the list.
 	 *
 	 * WP_Query has no way to ask for a few columns, only for ids or for whole
 	 * posts, hence the one direct query. The ids are meant to come from a
@@ -176,7 +176,7 @@ final class PageTree {
 	}
 
 	/**
-	 * Load the parents of a set of pages, and theirs, up to the top, into the
+	 * Loads the parents of a set of pages, and theirs, up to the top, into the
 	 * post cache, a level per query.
 	 *
 	 * The address of a page in a hierarchical type is its parents' slugs and
@@ -219,7 +219,8 @@ final class PageTree {
 	}
 
 	/**
-	 * The first pages of a handbook's top level, for a preview on its card.
+	 * Returns the first pages of a handbook's top level, for a preview on its
+	 * card.
 	 *
 	 * The limit is in the query, not in the output: a handbook of two hundred
 	 * pages must not be loaded to show three of them, and five such handbooks on
@@ -227,9 +228,9 @@ final class PageTree {
 	 * One row more than asked for is fetched, which is how the caller knows
 	 * whether there is a "more" to offer without counting the whole handbook.
 	 *
-	 * Access is not checked here and does not have to be: every query for handbook
-	 * pages passes AccessController, which drops what the current visitor may not
-	 * read. That is the one rule this plugin has.
+	 * Access is not checked here and does not have to be: the query passes
+	 * AccessController (restrict_query() and filter_posts()), which drops what
+	 * the current visitor may not read.
 	 *
 	 * @param int $term_id Handbook term id.
 	 * @param int $limit   How many pages the caller wants to show.
@@ -263,7 +264,7 @@ final class PageTree {
 				// By term_taxonomy_id, which the term already carries: by term_id
 				// WordPress first looks that up with a query of its own, one per
 				// card on the overview.
-				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Pages belong to a handbook by term; there is no other key to scope by.
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
 						'field'            => 'term_taxonomy_id',

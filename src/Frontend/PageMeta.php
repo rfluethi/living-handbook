@@ -26,7 +26,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class PageMeta {
 
 	/**
-	 * Build the feedback prompt markup.
+	 * Avatar size in pixels next to a person in the footer: the height of two
+	 * lines of the footer text.
+	 */
+	private const AVATAR_SIZE = 28;
+
+	/**
+	 * Returns the feedback prompt markup.
 	 *
 	 * A logged-in visitor always sees the buttons. A logged-out visitor sees them
 	 * only when public feedback is switched on, matching what the REST endpoint
@@ -57,7 +63,7 @@ final class PageMeta {
 	}
 
 	/**
-	 * Build the metadata footer markup.
+	 * Returns the metadata footer markup.
 	 *
 	 * @param int  $post_id     Post ID.
 	 * @param bool $show_people Whether to show the person (avatar and name).
@@ -130,7 +136,7 @@ final class PageMeta {
 		if ( false === $user ) {
 			return '';
 		}
-		$avatar = (string) get_avatar( $user_id, 28, '', '', array( 'class' => 'living-handbook-person__avatar' ) );
+		$avatar = (string) get_avatar( $user_id, self::AVATAR_SIZE, '', '', array( 'class' => 'living-handbook-person__avatar' ) );
 		return '<span class="living-handbook-person">' . $avatar
 			. '<span class="living-handbook-person__name">' . esc_html( $user->display_name ) . '</span></span>';
 	}

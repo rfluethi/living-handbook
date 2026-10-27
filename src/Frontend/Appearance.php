@@ -7,10 +7,10 @@
  * This is the escape hatch for the case the theme gets it wrong, which is a
  * real case: a theme whose presets do not match what it actually paints, or one
  * whose contrast is too low to read. Rather than send people to the Custom CSS
- * field with a list of variable names, the ten values that matter are fields.
+ * field with a list of variable names, the eleven values that matter are fields.
  *
  * Not every colour of the plugin is one: the page-type badge takes the accent
- * on purpose, so the three badge kinds stay told apart, and the three freshness
+ * on purpose, so the three badge kinds stay told apart, and the four freshness
  * chips take their backgrounds from their own colours. A field for every value
  * would be a list of variable names again, only slower.
  *
@@ -44,20 +44,30 @@ final class Appearance {
 	public const OPTION_COLORS = 'living_handbook_colors';
 
 	/**
-	 * Option holding the base size in percent. 100 is the plugin default, one rem.
+	 * Option holding the base size in percent. SIZE_DEFAULT is the plugin
+	 * default, one rem.
 	 */
 	public const OPTION_BASE_SIZE = 'living_handbook_base_size';
 
 	/**
-	 * Smallest and largest base size in percent. Below 75 the badges and the
-	 * metadata footer stop being readable, above 150 the navigation no longer
-	 * fits its column.
+	 * Base size in percent when nothing is set: one rem, nothing printed.
+	 */
+	public const SIZE_DEFAULT = 100;
+
+	/**
+	 * Smallest base size in percent. Below it the badges and the metadata
+	 * footer stop being readable.
 	 */
 	public const SIZE_MIN = 75;
+
+	/**
+	 * Largest base size in percent. Above it the navigation no longer fits its
+	 * column.
+	 */
 	public const SIZE_MAX = 150;
 
 	/**
-	 * The colour fields, in the order they are shown.
+	 * Returns the colour fields, in the order they are shown.
 	 *
 	 * Each key maps to the custom property --lh-user-<key with dashes>, which the
 	 * stylesheet reads as the first choice for the matching --lh- variable.
@@ -114,7 +124,7 @@ final class Appearance {
 	}
 
 	/**
-	 * The stored colours, validated, with empty entries dropped.
+	 * Returns the stored colours, validated, with empty entries dropped.
 	 *
 	 * @return array<string, string>
 	 */
@@ -125,16 +135,16 @@ final class Appearance {
 	}
 
 	/**
-	 * The stored base size in percent, inside its bounds.
+	 * Returns the stored base size in percent, inside its bounds.
 	 *
 	 * @return int
 	 */
 	public static function base_size(): int {
-		return self::sanitize_size( get_option( self::OPTION_BASE_SIZE, 100 ) );
+		return self::sanitize_size( get_option( self::OPTION_BASE_SIZE, self::SIZE_DEFAULT ) );
 	}
 
 	/**
-	 * Keep only known keys holding a valid hex colour.
+	 * Keeps only known keys holding a valid hex colour.
 	 *
 	 * WordPress's sanitize_hex_color() returns null for anything else, so a
 	 * pasted colour function, a variable name or an attempt to close the style
@@ -166,22 +176,23 @@ final class Appearance {
 	}
 
 	/**
-	 * Clamp the base size to its bounds, falling back to 100 for anything that is
-	 * not a number.
+	 * Clamps the base size to its bounds, falling back to SIZE_DEFAULT for
+	 * anything that is not a number.
 	 *
 	 * @param mixed $value Submitted value.
 	 * @return int
 	 */
 	public static function sanitize_size( $value ): int {
 		if ( ! is_numeric( $value ) ) {
-			return 100;
+			return self::SIZE_DEFAULT;
 		}
 
 		return (int) max( self::SIZE_MIN, min( self::SIZE_MAX, (int) round( (float) $value ) ) );
 	}
 
 	/**
-	 * The CSS for the current settings, or an empty string when nothing is set.
+	 * Returns the CSS for the current settings, or an empty string when nothing
+	 * is set.
 	 *
 	 * @return string
 	 */
@@ -202,7 +213,7 @@ final class Appearance {
 		// a handbook container, the enlarged-image overlay for one, which is
 		// appended to the document body.
 		$size = self::base_size();
-		if ( 100 !== $size ) {
+		if ( self::SIZE_DEFAULT !== $size ) {
 			$declarations[] = '--lh-base:' . round( $size / 100, 4 ) . 'rem';
 		}
 
@@ -214,11 +225,12 @@ final class Appearance {
 	}
 
 	/**
-	 * Black or white, whichever reads better on the given colour.
+	 * Returns near-black or white, whichever reads better on the given colour.
 	 *
-	 * The threshold is not a guess: it is the point where the contrast ratio
-	 * against white and against black are equal, so the choice is always the
-	 * higher of the two.
+	 * The two WCAG 2 contrast ratios, against white and against black, are
+	 * compared directly, so the choice is always the higher of the two. The dark
+	 * choice is printed as #111111 rather than pure black, which is measured as
+	 * black: the difference in contrast is negligible.
 	 *
 	 * @param string $hex A validated hex colour, three or six digits.
 	 * @return string
@@ -263,20 +275,17 @@ final class Appearance {
 	}
 
 	/**
-	 * The colours the active theme declares in its theme.json, as value => name.
+	 * Returns the colour palette of the site, as value => name: the colours the
+	 * active theme declares in its theme.json, then the custom colours saved in
+	 * the Site Editor.
 	 *
-	 * Offered next to each field as one-click presets. This is the theme's own
-	 * palette, the same list the block editor shows, so a site picks a colour the
-	 * theme already uses instead of inventing one beside it. A theme without a
-	 * palette simply gets no presets.
+	 * Offered next to each field as one-click presets. This is the same list the
+	 * block editor shows, so a site picks a colour it already uses instead of
+	 * inventing one beside it. A site without a palette simply gets no presets.
 	 *
 	 * @return array<string, string>
 	 */
 	public static function theme_palette(): array {
-		if ( ! function_exists( 'wp_get_global_settings' ) ) {
-			return array();
-		}
-
 		$palette = wp_get_global_settings( array( 'color', 'palette' ) );
 		$entries = array();
 

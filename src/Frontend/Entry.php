@@ -26,6 +26,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class Entry {
 
 	/**
+	 * Cards in the "Recently updated" grid of an entry page.
+	 */
+	private const RECENT_COUNT = 6;
+
+	/**
 	 * Renders the overview: a card per handbook the current user may read.
 	 *
 	 * A handbook that has handbooks of its own shows them set in below it, at
@@ -89,7 +94,7 @@ final class Entry {
 	}
 
 	/**
-	 * Group readable handbooks by the handbook they belong to.
+	 * Groups readable handbooks by the handbook they belong to.
 	 *
 	 * The grouping taxonomy has been hierarchical since it was registered, so a
 	 * handbook could always have a parent; nothing read it, and the overview drew
@@ -139,7 +144,7 @@ final class Entry {
 	}
 
 	/**
-	 * The handbooks below one handbook that the visitor may read.
+	 * Returns the handbooks below one handbook that the visitor may read.
 	 *
 	 * @param int $term_id Parent handbook id.
 	 * @return array<int, WP_Term>
@@ -151,7 +156,7 @@ final class Entry {
 	}
 
 	/**
-	 * Render a compact menu of the handbooks the current user may read, for use
+	 * Renders a compact menu of the handbooks the current user may read, for use
 	 * in a site header or navigation area. On narrow screens the list collapses
 	 * behind a toggle button, so the block works on mobile like a menu.
 	 *
@@ -199,7 +204,7 @@ final class Entry {
 	}
 
 	/**
-	 * Render the entry page of one handbook.
+	 * Renders the entry page of one handbook.
 	 *
 	 * The result column, and only that: either the filtered result list (when a
 	 * search or facet is active) or the areas and recently updated pages. The
@@ -209,9 +214,7 @@ final class Entry {
 	 *
 	 * The wrapper carries the handbook term id, which is what the search bar and
 	 * the filter bar look for when they filter through the REST route, wherever
-	 * on the page they sit. The status line announces the result count after an
-	 * update, and sits outside the column so replacing the list does not replace
-	 * the region that announces it.
+	 * on the page they sit.
 	 *
 	 * @param WP_Term $term    Handbook term.
 	 * @param string  $display 'cards' (grid) or 'list' (single column).
@@ -237,9 +240,9 @@ final class Entry {
 	}
 
 	/**
-	 * The main-column content of a handbook entry: the filtered result list when
-	 * a search or facet is active, otherwise the areas and recently updated
-	 * pages. Shared by the server render and the REST filter route.
+	 * Returns the main-column content of a handbook entry: the filtered result
+	 * list when a search or facet is active, otherwise the areas and recently
+	 * updated pages. Shared by the server render and the REST filter route.
 	 *
 	 * @param WP_Term                 $term       Handbook term.
 	 * @param array<string, string[]> $selections Facet selections (parameter to slugs).
@@ -268,7 +271,7 @@ final class Entry {
 			$body .= '<h2 class="living-handbook-entry__h">' . esc_html__( 'Areas', 'living-handbook' ) . '</h2>' . $areas;
 		}
 
-		$recent = Cards::page_grid( $term_id, 6 );
+		$recent = Cards::page_grid( $term_id, self::RECENT_COUNT );
 		if ( '' !== $recent ) {
 			$body .= '<h2 class="living-handbook-entry__h">' . esc_html__( 'Recently updated', 'living-handbook' ) . '</h2>' . $recent;
 		}
