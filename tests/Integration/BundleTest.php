@@ -447,4 +447,44 @@ final class BundleTest extends WP_UnitTestCase {
 		$this->assertGreaterThan( MarkdownImportPage::ZIP_MAX_TOTAL_BYTES, HandbookImport::BUNDLE_MAX_TOTAL_BYTES );
 		$this->assertGreaterThan( MarkdownImportPage::ZIP_MAX_ENTRIES, HandbookImport::BUNDLE_MAX_ENTRIES );
 	}
+
+	/**
+	 * A file of the bundle that does not arrive is named in the report: one
+	 * that is refused, and one the manifest lists but the archive lacks. Up to
+	 * 0.76.0 both were dropped without a word, and the page kept pointing at
+	 * the old site.
+	 *
+	 * @return void
+	 */
+	public function test_a_file_that_does_not_arrive_is_named_in_the_report(): void {
+		$target   = $this->make_handbook( 'Media target' );
+		$manifest = array(
+			'format'   => 'living-handbook-bundle',
+			'handbook' => array( 'name' => 'Media source' ),
+			'pages'    => array(),
+			'media'    => array(
+				array(
+					'file'         => 'media/1-page.html',
+					'original_url' => 'https://old.example/wp-content/uploads/page.html',
+				),
+				array(
+					'file'         => 'media/2-gone.pdf',
+					'original_url' => 'https://old.example/wp-content/uploads/gone.pdf',
+				),
+			),
+		);
+
+		$report = ( new HandbookImport() )->import_manifest(
+			$manifest,
+			static function ( string $file ) {
+				return 'media/1-page.html' === $file ? '<script>alert(1)</script>' : false;
+			},
+			HandbookImport::RULE_SKIP,
+			$target
+		);
+
+		$notes = implode( "\n", (array) $report['notes'] );
+		$this->assertStringContainsString( '1-page.html', $notes, 'A refused file is named.' );
+		$this->assertStringContainsString( '2-gone.pdf', $notes, 'A missing file is named.' );
+	}
 }

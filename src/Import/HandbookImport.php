@@ -364,7 +364,7 @@ final class HandbookImport {
 			}
 		}
 
-		$media_map = $this->import_media( $manifest, $media_reader );
+		$media_map = $this->import_media( $manifest, $media_reader, $report );
 
 		$pages = isset( $manifest['pages'] ) && is_array( $manifest['pages'] ) ? $manifest['pages'] : array();
 		// Shallow keys first, so a parent always exists before its children.
@@ -605,13 +605,20 @@ final class HandbookImport {
 	 * Sideload the bundle's media and return a map of the original URL to the new
 	 * one, so page content can be pointed at this site's copies.
 	 *
+	 * A file that does not arrive is named in the report. Until 0.76.0 it was
+	 * dropped without a word, and the page kept pointing at the old site, which
+	 * nobody notices until that site is gone.
+	 *
 	 * @param array<string, mixed> $manifest     Decoded manifest.
 	 * @param callable             $media_reader Returns the bytes of a bundle file, or false.
+	 * @param array<string, mixed> $report       Report (out).
 	 * @return array<string, string>
 	 */
-	private function import_media( array $manifest, callable $media_reader ): array {
-		$map   = array();
-		$items = isset( $manifest['media'] ) && is_array( $manifest['media'] ) ? $manifest['media'] : array();
+	private function import_media( array $manifest, callable $media_reader, array &$report ): array {
+		$map     = array();
+		$missing = array();
+		$refused = array();
+		$items   = isset( $manifest['media'] ) && is_array( $manifest['media'] ) ? $manifest['media'] : array();
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) ) {
 				continue;
@@ -623,6 +630,7 @@ final class HandbookImport {
 			}
 			$data = $media_reader( $file );
 			if ( ! is_string( $data ) || '' === $data ) {
+				$missing[] = basename( $file );
 				continue;
 			}
 			// Not sideload_image(): that takes images only, and a bundle also
@@ -630,7 +638,24 @@ final class HandbookImport {
 			$url = MarkdownImportPage::sideload_media( basename( $file ), $data );
 			if ( '' !== $url ) {
 				$map[ $original ] = $url;
+			} else {
+				$refused[] = basename( $file );
 			}
+		}
+
+		if ( array() !== $refused ) {
+			$report['notes'][] = sprintf(
+				/* translators: %s: comma-separated file names. */
+				__( 'These files from the bundle were not imported, because their type is not accepted, their content does not match their name, or they could not be stored: %s. Pages that use them still point at the old site.', 'living-handbook' ),
+				implode( ', ', array_unique( $refused ) )
+			);
+		}
+		if ( array() !== $missing ) {
+			$report['notes'][] = sprintf(
+				/* translators: %s: comma-separated file names. */
+				__( 'These files are listed in the bundle but missing from it: %s. Pages that use them still point at the old site.', 'living-handbook' ),
+				implode( ', ', array_unique( $missing ) )
+			);
 		}
 		return $map;
 	}

@@ -62,7 +62,7 @@ final class MarkdownImportPage {
 
 	public const MENU_SLUG = 'living-handbook-import';
 
-	private const IMAGE_EXTENSIONS = array( 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg' );
+	private const IMAGE_EXTENSIONS = array( 'png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg' );
 
 	// Attachment meta that marks an image the plugin imported, so a re-import
 	// reuses only its own uploads and re-uploads when the source image changed.
@@ -932,6 +932,9 @@ final class MarkdownImportPage {
 	 * so an HTML file called "x.png" is refused rather than stored and served
 	 * with whatever type the server guesses. An SVG cannot be read that way; it
 	 * has to contain an svg element, and is cleaned by the caller after that.
+	 * Nor can an AVIF everywhere: PHP 8.1, the oldest the plugin runs on, reads
+	 * it as 0x0 at best, depending on the build, so its file signature is
+	 * checked instead (see is_avif()).
 	 *
 	 * Public and static so the decision can be tested on its own.
 	 *
@@ -949,6 +952,9 @@ final class MarkdownImportPage {
 		if ( 'svg' === $ext ) {
 			return false !== stripos( $data, '<svg' ) ? $name : '';
 		}
+		if ( 'avif' === $ext ) {
+			return self::is_avif( $data ) ? $name : '';
+		}
 
 		$size = @getimagesizefromstring( $data ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Not an image is an answer here, not a warning.
 		$mime = is_array( $size ) ? (string) $size['mime'] : '';
@@ -961,6 +967,33 @@ final class MarkdownImportPage {
 		);
 
 		return $want[ $ext ] === $mime ? $name : '';
+	}
+
+	/**
+	 * Whether the data starts like an AVIF file.
+	 *
+	 * AVIF is an ISO base media file: it opens with an "ftyp" box whose major
+	 * brand, or one of whose compatible brands, is "avif" (a still image) or
+	 * "avis" (an image sequence). An HTML file named "x.avif" has none of that.
+	 * This is the same reading WordPress's own wp_get_avif_info() starts with,
+	 * without depending on the PHP version.
+	 *
+	 * @param string $data File contents.
+	 * @return bool
+	 */
+	private static function is_avif( string $data ): bool {
+		if ( strlen( $data ) < 16 || 'ftyp' !== substr( $data, 4, 4 ) ) {
+			return false;
+		}
+		$box = unpack( 'N', substr( $data, 0, 4 ) );
+		$end = min( is_array( $box ) ? (int) $box[1] : 0, strlen( $data ) );
+
+		// Major brand at 8, minor version at 12, compatible brands from 16.
+		$brands = array( substr( $data, 8, 4 ) );
+		for ( $at = 16; $at + 4 <= $end; $at += 4 ) {
+			$brands[] = substr( $data, $at, 4 );
+		}
+		return array() !== array_intersect( array( 'avif', 'avis' ), $brands );
 	}
 
 	/**

@@ -124,6 +124,43 @@ final class SideloadAllowlistTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The start of an AVIF file: the ftyp box with the given brands, then a
+	 * free box. Enough for the signature; no image library has to read it.
+	 *
+	 * @param string $major      Major brand.
+	 * @param string $compatible Compatible brands, four characters each.
+	 * @return string
+	 */
+	private function avif( string $major = 'avif', string $compatible = 'mif1miaf' ): string {
+		$ftyp = $major . pack( 'N', 0 ) . $compatible;
+		return pack( 'N', 8 + strlen( $ftyp ) ) . 'ftyp' . $ftyp . pack( 'N', 8 ) . 'free';
+	}
+
+	/**
+	 * An AVIF image, which WordPress accepts as an upload, is imported. Up to
+	 * 0.76.0 it was neither on the image list nor on the document list, and
+	 * was dropped without a word.
+	 *
+	 * @return void
+	 */
+	public function test_an_avif_image_is_stored(): void {
+		$this->assertStringEndsWith( '.avif', MarkdownImportPage::sideload_image( 'photo.avif', $this->avif() ) );
+		$this->assertStringEndsWith( '.avif', MarkdownImportPage::sideload_media( '17-sequence.avif', $this->avif( 'avis', 'msf1' ) ), 'A bundle carries it too.' );
+		$this->assertNotSame( '', MarkdownImportPage::image_file_name( 'brand.avif', $this->avif( 'mif1', 'avifmiaf' ) ), 'A compatible brand is enough.' );
+	}
+
+	/**
+	 * A file named .avif has to be one.
+	 *
+	 * @return void
+	 */
+	public function test_html_dressed_as_avif_is_refused(): void {
+		$this->assertSame( '', MarkdownImportPage::sideload_image( 'x.avif', '<html><script>alert(1)</script></html>' ) );
+		$this->assertSame( '', MarkdownImportPage::sideload_media( '18-x.avif', '<html><script>alert(1)</script></html>' ) );
+		$this->assertSame( '', MarkdownImportPage::image_file_name( 'movie.avif', $this->avif( 'isom', 'mp41' ) ), 'Another ISO media file is no AVIF.' );
+	}
+
+	/**
 	 * How many attachments exist.
 	 *
 	 * @return int
