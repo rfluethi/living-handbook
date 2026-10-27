@@ -309,6 +309,86 @@ final class BundleTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A password-protected page stays protected on the target: the bundle
+	 * carries the password, and the import sets it on a new page and on an
+	 * updated one. Up to 0.75.1 the page arrived without it and stood open.
+	 *
+	 * @return void
+	 */
+	public function test_a_protected_page_keeps_its_password(): void {
+		$handbook = $this->make_handbook( 'Source' );
+		$secret   = $this->make_page( $handbook, 'Secret page' );
+		$this->make_page( $handbook, 'Open page' );
+		wp_update_post(
+			array(
+				'ID'            => $secret,
+				'post_password' => wp_slash( 'pa\\ss "word"' ),
+			)
+		);
+
+		$manifest = $this->export( $handbook );
+		$entries  = array();
+		foreach ( $manifest['pages'] as $entry ) {
+			$entries[ (string) $entry['title'] ] = $entry;
+		}
+		$this->assertSame( 'pa\\ss "word"', $entries['Secret page']['password'] ?? null );
+		$this->assertArrayNotHasKey( 'password', $entries['Open page'], 'An open page carries no password key, as in older bundles.' );
+
+		$target = $this->make_handbook( 'Target' );
+		$this->import( $manifest, HandbookImport::RULE_SKIP, $target );
+		$ids  = $this->pages_in( $target );
+		$copy = 0;
+		$open = 0;
+		foreach ( $ids as $id ) {
+			$post = get_post( $id );
+			$this->assertNotNull( $post );
+			if ( 'Secret page' === $post->post_title ) {
+				$copy = $id;
+			} elseif ( 'Open page' === $post->post_title ) {
+				$open = $id;
+			}
+		}
+		$this->assertGreaterThan( 0, $copy );
+		$this->assertSame( 'pa\\ss "word"', get_post( $copy )->post_password ?? null, 'A new page gets the password.' );
+		$this->assertSame( '', get_post( $open )->post_password ?? null );
+
+		// The update rule: the existing page had lost its password here.
+		wp_update_post(
+			array(
+				'ID'            => $secret,
+				'post_password' => '',
+			)
+		);
+		$report = $this->import( $manifest, HandbookImport::RULE_UPDATE, $handbook );
+		$this->assertSame( 2, $report['updated'], 'report: ' . (string) wp_json_encode( $report ) );
+		$this->assertSame( 'pa\\ss "word"', get_post( $secret )->post_password ?? null, 'An updated page gets the password.' );
+	}
+
+	/**
+	 * A bundle without the password key, as every bundle up to 0.75.1, leaves
+	 * the password of an existing page alone on update.
+	 *
+	 * @return void
+	 */
+	public function test_a_bundle_without_password_leaves_an_existing_one_alone(): void {
+		$handbook = $this->make_handbook( 'Source' );
+		$page     = $this->make_page( $handbook, 'Page' );
+
+		$manifest = $this->export( $handbook );
+		$this->assertArrayNotHasKey( 'password', $manifest['pages'][0] );
+		wp_update_post(
+			array(
+				'ID'            => $page,
+				'post_password' => 'local',
+			)
+		);
+
+		$this->import( $manifest, HandbookImport::RULE_UPDATE, $handbook );
+
+		$this->assertSame( 'local', get_post( $page )->post_password ?? null );
+	}
+
+	/**
 	 * The export carries no personal data: the per-user allowlist of a restricted
 	 * handbook stays behind, because a bundle is a file that gets passed around.
 	 *

@@ -610,6 +610,43 @@ final class BundlePathsTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A password-protected path keeps its password in the bundle and on the
+	 * target, as a page does.
+	 *
+	 * @return void
+	 */
+	public function test_a_protected_path_keeps_its_password(): void {
+		update_option( Training::OPTION_ENABLED, 1 );
+		$source = $this->handbook( 'Source' );
+		$lesson = $this->page( $source, 'Lesson' );
+		$path   = $this->path( $source, 'Locked', array( $lesson ) );
+		wp_update_post(
+			array(
+				'ID'            => $path,
+				'post_password' => 'trail',
+			)
+		);
+
+		$manifest = $this->export( $source );
+		$this->assertSame( 'trail', $this->paths_by_title( $manifest )['Locked']['password'] ?? null );
+
+		$target = $this->handbook( 'Target' );
+		$this->import( $manifest, HandbookImport::RULE_SKIP, $target );
+		$copies = $this->in_handbook( Training::POST_TYPE, $target );
+		$this->assertCount( 1, $copies );
+		$this->assertSame( 'trail', get_post( $copies[0] )->post_password ?? null, 'A new path gets the password.' );
+
+		wp_update_post(
+			array(
+				'ID'            => $path,
+				'post_password' => '',
+			)
+		);
+		$this->import( $manifest, HandbookImport::RULE_UPDATE, $source );
+		$this->assertSame( 'trail', get_post( $path )->post_password ?? null, 'An updated path gets the password.' );
+	}
+
+	/**
 	 * The result screen names the paths when the bundle had any, and stays as it
 	 * was when it had none.
 	 *

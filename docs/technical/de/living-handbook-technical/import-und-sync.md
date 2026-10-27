@@ -65,6 +65,8 @@ Das Bündel enthält die Konfiguration des Handbuchs (Sichtbarkeit und erlaubte 
 
 **Lernpfade.** Das Bündel nimmt die Lernpfade des Handbuchs mit, in jedem Status (veröffentlicht, geplant, Entwurf, ausstehend, privat), im Manifest-Feld `paths`. Jeder Eintrag trägt `key` (`path:<slug>`, bei einer Kollision mit angehängtem `-<ID>`), `origin_id`, `title`, `slug`, `status`, `content`, `excerpt`, `lessons`, die Lektionen als geordnete Liste der Seiten-Keys des Bündels, und `media` wie bei einer Seite. Die `version` des Manifests bleibt 1; ältere Plugin-Versionen ignorieren `paths`. Beim Export des ganzen Handbuchs bleibt auch ein Pfad ohne Lektionen drin. Bei einem Bereichs-Export behält ein Pfad nur die Lektionen im Bereich, und ein Pfad ohne Lektion im Bereich fehlt im Bündel.
 
+**Passwortgeschützte Seiten.** Eine Seite oder ein Lernpfad mit Passwort trägt im Bündel das Feld `password` mit dem Passwort im Klartext; ohne Passwort fehlt das Feld, wie in älteren Bündeln. Der geschützte Text steht ohnehin lesbar im Bündel, das Passwort macht die Datei also nicht schutzwürdiger, es erhält aber den Schutz auf der Zielseite. Ein Bündel ist damit so vertraulich zu behandeln wie die geschützten Seiten selbst: nicht weitergeben, wo diese nicht hingehören, und nach dem Import nicht herumliegen lassen.
+
 **Was die exportierende Person nicht lesen darf, fehlt.** Der Bündel-Export lässt Seiten und Pfade weg, die der Filter `living_handbook_can_view_post` für die exportierende Person verbirgt, wie es der Website-Export auch tut.
 
 ## Ein Handbuch als statische Website exportieren
@@ -96,7 +98,7 @@ Auf dem Import-Bildschirm nimmt der Reiter **Bündel** eine Datei entgegen, die 
 
 Eine Seite wird über die Herkunfts-ID erkannt, mit der sie exportiert wurde, danach über ihren Bündel-Schlüssel, danach über den Slug innerhalb des Ziel-Handbuchs. Zwei Regeln gelten unabhängig von deiner Wahl: Eine Seite mit dem Merkmal **geschützt** (`_lh_import_protected`) wird nie überschrieben, und **es wird nie etwas gelöscht**: Eine Seite, die es hier gibt, im Bündel aber fehlt, bleibt einfach bestehen.
 
-Beim Aktualisieren bleibt die eigene Pflege dieser Seite erhalten: Die Feedback-Zähler sowie Prüfdatum, Prüfintervall und Prüfer bleiben so, wie sie hier sind, denn das ist lokale Pflege. Eine vom Import neu angelegte Seite übernimmt diese Werte dagegen aus dem Bündel.
+Beim Aktualisieren bleibt die eigene Pflege dieser Seite erhalten: Die Feedback-Zähler sowie Prüfdatum, Prüfintervall und Prüfer bleiben so, wie sie hier sind, denn das ist lokale Pflege. Eine vom Import neu angelegte Seite übernimmt diese Werte dagegen aus dem Bündel. Das Passwort einer Seite oder eines Lernpfads (`password`) wird dagegen beim Anlegen wie beim Aktualisieren gesetzt, damit eine geschützte Seite auf der Zielseite nicht offen steht; ein Eintrag ohne Feld, etwa aus einem älteren Bündel, lässt ein hier gesetztes Passwort unverändert.
 
 **Importieren nach** entscheidet, wo die Seiten landen. Standardmäßig geht das Bündel in sein eigenes Handbuch, jenes, aus dem es exportiert wurde; existiert es hier noch nicht, wird es angelegt. Wähle stattdessen ein vorhandenes Handbuch, um die Seiten dort abzulegen; dieses behält seine eigene Zugriffs-Konfiguration.
 

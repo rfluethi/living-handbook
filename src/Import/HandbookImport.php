@@ -539,6 +539,7 @@ final class HandbookImport {
 			'post_content' => (string) wp_slash( $content ),
 			'post_excerpt' => (string) wp_slash( wp_kses_post( isset( $path['excerpt'] ) ? (string) $path['excerpt'] : '' ) ),
 		);
+		$data = $this->with_password( $data, $path );
 
 		$is_new = ( 0 === $existing );
 		if ( $is_new ) {
@@ -778,6 +779,7 @@ final class HandbookImport {
 			'post_parent'  => $parent_id,
 			'menu_order'   => isset( $page['order'] ) ? (int) $page['order'] : 0,
 		);
+		$data = $this->with_password( $data, $page );
 
 		$is_new = ( 0 === $existing );
 		if ( $is_new ) {
@@ -833,6 +835,29 @@ final class HandbookImport {
 		if ( $is_new ) {
 			$this->apply_review_meta( $post_id, isset( $page['meta'] ) && is_array( $page['meta'] ) ? $page['meta'] : array() );
 		}
+	}
+
+	/**
+	 * Carry the password of a bundle entry over to the post data.
+	 *
+	 * A page protected on the source site has to stay protected here; up to
+	 * 0.75.1 the import dropped the password and the page stood open. It is
+	 * set on a new post and on an updated one alike, because an update that
+	 * left an old password, or none, would not be the page the bundle holds.
+	 * An entry without the key, from an older bundle or an unprotected post,
+	 * leaves the post data alone, so an update keeps a password set here.
+	 *
+	 * @param array<string, mixed> $data  Post data for wp_insert_post() or wp_update_post().
+	 * @param array<string, mixed> $entry Page or path entry of the bundle.
+	 * @return array<string, mixed>
+	 */
+	private function with_password( array $data, array $entry ): array {
+		$password = isset( $entry['password'] ) && is_scalar( $entry['password'] ) ? (string) $entry['password'] : '';
+		if ( '' !== $password ) {
+			// wp_insert_post() unslashes its input, and a password may hold a backslash.
+			$data['post_password'] = wp_slash( $password );
+		}
+		return $data;
 	}
 
 	/**

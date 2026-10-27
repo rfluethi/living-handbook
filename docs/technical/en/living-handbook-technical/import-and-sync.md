@@ -66,6 +66,8 @@ The bundle carries the handbook's configuration (visibility and allowed roles), 
 
 **Learning paths.** The bundle takes the handbook's learning paths along, in every status (published, scheduled, draft, pending, private), in the manifest field `paths`. Each entry carries `key` (`path:<slug>`, with `-<ID>` appended on a collision), `origin_id`, `title`, `slug`, `status`, `content`, `excerpt`, `lessons`, the lessons as an ordered list of the bundle's page keys, and `media` as for a page. The manifest `version` stays 1; older plugin versions ignore `paths`. When the whole handbook is exported, a path without lessons stays in. In an area export a path keeps only the lessons in the area, and a path without a lesson in the area is missing from the bundle.
 
+**Password-protected pages.** A page or learning path with a password carries the field `password` in the bundle, holding the password in plain text; without a password the field is absent, as in older bundles. The protected text is readable in the bundle anyway, so the password does not make the file more sensitive, but it keeps the protection on the target site. Treat a bundle as confidential as the protected pages themselves: do not pass it on where they do not belong, and do not leave it lying around after the import.
+
 **What the exporting person may not read is left out.** The bundle export omits pages and paths that the `living_handbook_can_view_post` filter hides from the exporting person, as the website export does too.
 
 ## Exporting a handbook as a static website
@@ -97,7 +99,7 @@ On the import screen, the **Bundle** tab takes a bundle exported from another si
 
 A page is recognised by the origin id it was exported with, then by its bundle key, then by slug within the target handbook. Two rules hold whatever you choose: a page carrying the **protected** flag (`_lh_import_protected`) is never overwritten, and **nothing is ever deleted** — a page that exists here but is missing from the bundle simply stays.
 
-On update the site's own upkeep is preserved: the feedback counts and the review date, interval and reviewer stay as they are here, because they are local maintenance. A page created by the import does take those values from the bundle.
+On update the site's own upkeep is preserved: the feedback counts and the review date, interval and reviewer stay as they are here, because they are local maintenance. A page created by the import does take those values from the bundle. The password of a page or learning path (`password`), on the other hand, is set on create and on update alike, so a protected page does not stand open on the target; an entry without the field, from an older bundle for instance, leaves a password set here as it is.
 
 **Import into** decides where the pages land. By default the bundle goes into its own handbook, the one it was exported from, which is created here if it does not exist yet. Pick an existing handbook instead to put the pages there; that handbook keeps its own access configuration.
 

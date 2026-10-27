@@ -565,16 +565,19 @@ JS;
 			}
 			$keys[ $key ] = true;
 
-			$paths[] = array(
-				'key'       => $key,
-				'origin_id' => home_url() . '#' . $post->ID,
-				'title'     => $post->post_title,
-				'slug'      => $this->post_slug( $post ),
-				'status'    => $post->post_status,
-				'content'   => $post->post_content,
-				'excerpt'   => $post->post_excerpt,
-				'lessons'   => $lessons,
-				'media'     => $this->collect_page_media( $post, $media ),
+			$paths[] = $this->with_password(
+				array(
+					'key'       => $key,
+					'origin_id' => home_url() . '#' . $post->ID,
+					'title'     => $post->post_title,
+					'slug'      => $this->post_slug( $post ),
+					'status'    => $post->post_status,
+					'content'   => $post->post_content,
+					'excerpt'   => $post->post_excerpt,
+					'lessons'   => $lessons,
+					'media'     => $this->collect_page_media( $post, $media ),
+				),
+				$post
 			);
 		}
 
@@ -631,7 +634,7 @@ JS;
 
 		$page_media = $this->collect_page_media( $post, $media );
 
-		return array(
+		$entry = array(
 			'key'          => $this->page_key( $post, $in_set ),
 			'origin_id'    => home_url() . '#' . $post->ID,
 			'parent_key'   => ( $post->post_parent > 0 && isset( $in_set[ $post->post_parent ] ) )
@@ -654,6 +657,30 @@ JS;
 			),
 			'media'        => $page_media,
 		);
+
+		return $this->with_password( $entry, $post );
+	}
+
+	/**
+	 * Add the post password to a bundle entry, when the post has one.
+	 *
+	 * Up to 0.75.1 the bundle left the password out, and the importer created
+	 * the page without one: a page protected here stood open on the target.
+	 * The protected text travels in the bundle in plain text either way, so the
+	 * password does not make the file more sensitive than it already is; it only
+	 * keeps the protection on the site the bundle goes to. The key is absent
+	 * for an unprotected post, so a bundle without protected pages looks exactly
+	 * like one from an older version.
+	 *
+	 * @param array<string, mixed> $entry Page or path entry.
+	 * @param WP_Post              $post  The post.
+	 * @return array<string, mixed>
+	 */
+	private function with_password( array $entry, WP_Post $post ): array {
+		if ( '' !== $post->post_password ) {
+			$entry['password'] = $post->post_password;
+		}
+		return $entry;
 	}
 
 	/**
