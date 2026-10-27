@@ -122,7 +122,7 @@ final class MermaidBlock {
 		$title = isset( $attributes['title'] ) ? trim( (string) $attributes['title'] ) : '';
 		$desc  = isset( $attributes['description'] ) ? trim( (string) $attributes['description'] ) : '';
 
-		$wrapper = get_block_wrapper_attributes( array( 'class' => 'living-handbook-figure' ) );
+		$wrapper = Blocks::wrapper_attributes( 'living-handbook-figure' );
 
 		$pre = '<pre class="mermaid"';
 		if ( '' !== $title ) {

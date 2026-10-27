@@ -83,7 +83,7 @@ final class SourceNoteBlock {
 				. esc_html__( 'View the source file', 'living-handbook' ) . '</a>';
 		}
 
-		$wrapper = get_block_wrapper_attributes( array( 'class' => 'lh-source-note' ) );
+		$wrapper = Blocks::wrapper_attributes( 'lh-source-note' );
 		return Blocks::with_anchor( '<div ' . $wrapper . '>' . $body . '</div>', $attributes );
 	}
 
