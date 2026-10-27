@@ -123,6 +123,8 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 * Fixed: a scheduled sync keeps the page order and excerpts the file does not set; links to sections of other pages work; MkDocs imports keep their metadata.
 * Fixed: "delete everything" removes trashed pages, customised templates and every setting; the media library stays. Updates migrate without an admin visit.
 * Fixed: a bundle keeps the password of a protected page; saving a page no longer makes user 1 its reviewer (check pages that name user 1).
+* Security: a cached comment list is kept per read rule; setting GitHub as a source needs the right to upload files over REST too; a transport block cannot hang a page under one you may not edit.
+* Fixed: the website export keeps content of edited templates; the entry page's search field has its border again; the plugin's blocks can be selected in the editor.
 * Faster: the navigation of a large handbook needs a fraction of the memory, and lists, learning paths and the overview need fewer queries.
 * Fixed: dates turn at midnight in the site's time zone, plural forms, anchors on WordPress 6.8, and many smaller things listed in the changelog.
 
