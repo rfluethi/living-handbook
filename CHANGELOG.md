@@ -6,9 +6,9 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
-## [0.76.0] - 2026-10-26
+## [0.76.0] - 2026-10-27
 
-The rest of the independent review of 0.75.0: every finding that needed no product decision. Each code fix comes with a test that fails against 0.75.1; those were run against the old code one at a time. The commits carry the reasoning for each one; this entry is the map.
+The rest of the independent review of 0.75.0: every finding that needed no product decision, and the decisions taken on 2026-10-27 for the ones that did. Each code fix comes with a test that fails against 0.75.1; those were run against the old code one at a time. The commits carry the reasoning for each one; this entry is the map.
 
 ### Fixed
 
@@ -56,14 +56,22 @@ The rest of the independent review of 0.75.0: every finding that needed no produ
 
 ### Added
 
+* **Learning paths travel in a bundle.** A bundle carries the learning paths of the handbook in a new `paths` list, with their lessons as references to the pages in the same bundle; on import they point at the imported pages. An area export keeps only lessons inside the area; an import as ordinary pages brings no paths; on a site with learning paths switched off the paths are kept for later. The manifest version stays 1, so an older plugin imports the pages and ignores the paths. The bundle export now also leaves out a page the access filter hides, as the website export did.
 * **Privacy tools.** A personal data exporter for feedback votes and for reviews, an eraser that removes a person from the voter lists (the totals stay), the same on deleting a user, and a suggested text for the privacy policy covering feedback, profile pictures from Gravatar, the GitHub requests and the reading progress kept in the browser. Who reviewed a page is exported but kept, as part of the page's editorial record.
 * **Reference pages** for every meta field and every REST route, in English and German.
 
 ### Changed
 
+* **Whoever may edit a page gets it back in the block editor, the preview and on the page itself.** An author's own new page has no handbook yet, an author's page in a restricted handbook lies outside what the author may read, and in both cases the block editor answered 404, the preview was refused and saving reported an error although the change was stored. WordPress's edit_post right now opens that one page; lists, search, navigation and the entry page still follow the handbook.
+* **Editors read a restricted handbook on both levels.** Whoever may edit other people's posts could open every page of a restricted handbook, but not its entry page, did not find it in the overview, the menu or the navigation, and was refused its website export. The handbook-level rule has the same exception now.
+* **Loading the app handbook again names what it left behind.** Pages still tied to the shipped copy whose file is gone are listed in the result and deleted nowhere; pages loaded without the connection to the source are no longer overwritten, and the result says how to get the current version.
+* **A new installation's overview page lives at `/handbooks/`.** At `/handbook/`, the base of every handbook page, a subpage of the overview answered 404. Existing overview pages keep their address.
+* **Whoever builds a learning path can walk through it before publishing.** The path bar appears on the lessons of an unpublished path for people who may edit it.
+* **A refused page for visitors without access says why**, on saving and, for a page that became unusable later, below the selector.
+
 * **mermaid.js 11.17.2**, past a published KaTeX advisory in 11.16.0, with its version and checksum recorded, a script to update it, and the licenses of the libraries bundled inside it.
 * **CI and release.** Fixed WordPress releases (6.8.11, 7.1.3) instead of a trunk that called itself "latest", with trunk as an allowed failure; Actions pinned to commits; the PHP-Scoper download checked against its checksum; the release waits for the integration tests; Plugin Check runs on the built ZIP; permissions read-only unless a job needs more.
-* **Documentation.** It now says that editors and administrators read every handbook, what that means for authors in the block editor, that reloading the app handbook leaves removed pages behind, that learning paths do not travel in a bundle, and what the plugin contacts outside the site. Minimum version, settings, block count, terminology and the bundle's handling of people match the code. The German technical documentation imports with its pictures, and the technical pages load in reading order.
+* **Documentation.** It now says that editors and administrators read every handbook, what that means for authors in the block editor, what reloading the app handbook does with removed and handed-over pages, that the media library survives an uninstall, and what the plugin contacts outside the site. The German documentation follows German spelling throughout, the reading texts describe the current state instead of its history, and the changelog in `readme.txt` keeps the last ten versions. Minimum version, settings, block count, terminology and the bundle's handling of people match the code. The German technical documentation imports with its pictures, and the technical pages load in reading order.
 * `SECURITY.md` names supported versions, a response time and private vulnerability reporting.
 
 ## [0.75.1] - 2026-10-26

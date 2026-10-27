@@ -116,9 +116,12 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 = 0.76.0 =
 * Security: comments can only be written by people who may read the page; previous/next links, attachment pages, cards and search snippets respect access rules and passwords.
 * Security: imports store only real images (and, in bundles, ordinary media files); an imported page cannot be placed under a page you may not edit.
+* New: a bundle carries the handbook's learning paths, pointing at the imported pages.
 * New: WordPress's privacy tools export and erase the plugin's personal data, with a suggested privacy policy text.
+* Changed: whoever may edit a page gets it in the block editor and the preview, even in a handbook they may not read; editors and administrators read every handbook, its entry page included.
+* Changed: loading the app handbook again lists pages that are no longer shipped and leaves pages loaded without the source connection alone. A new installation's overview page lives at /handbooks/.
 * Fixed: a scheduled sync keeps the page order and excerpts the file does not set; links to sections of other pages work; MkDocs imports keep their metadata.
-* Fixed: "delete everything" really removes everything the plugin created; updates migrate without an admin visit.
+* Fixed: "delete everything" removes trashed pages, customised templates and every setting; the media library stays. Updates migrate without an admin visit.
 * Fixed: dates turn at midnight in the site's time zone, plural forms, anchors on WordPress 6.8, and many smaller things listed in the changelog.
 
 = 0.75.1 =
@@ -160,7 +163,7 @@ Older versions are listed in [CHANGELOG.md on GitHub](https://github.com/rflueth
 == Upgrade Notice ==
 
 = 0.76.0 =
-Closes the remaining findings of an independent review: access rules on comments, attachment pages and protected pages, safer imports, privacy tools, and a complete uninstall. Recommended for every site.
+Closes an independent review: access on comments, attachments and protected pages, safer imports, privacy tools, learning paths in bundles, and authors can edit their own pages again. Recommended for every site.
 
 = 0.75.1 =
 Security and bug fix release, recommended for every site: updated libraries with published vulnerabilities, a website export that cannot carry files from outside the uploads folder, and learning paths that work without saving the permalinks.
