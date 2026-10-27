@@ -107,7 +107,7 @@ final class HandbookExport {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Export', 'living-handbook' ); ?></h1>
-			<p class="description" style="max-width:820px"><?php esc_html_e( 'Download a handbook, or a single area within it, as a bundle: one ZIP with its pages, configuration and media. Import it on another site running the plugin.', 'living-handbook' ); ?></p>
+			<p class="description" style="max-width:820px"><?php esc_html_e( 'Download a handbook, or a single area within it, as a bundle: one ZIP with its pages, learning paths, configuration and media. Import it on another site running the plugin.', 'living-handbook' ); ?></p>
 
 			<?php if ( empty( $handbooks ) ) : ?>
 				<div class="notice notice-warning inline"><p><?php esc_html_e( 'There are no handbooks yet, so there is nothing to export.', 'living-handbook' ); ?></p></div>
