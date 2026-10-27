@@ -100,6 +100,19 @@
 		// Keeping the focus on the button that was pressed is the whole point of
 		// having buttons: without it a keyboard user loses their place on every
 		// move and has to tab back into the list.
+		//
+		// A button the move has just disabled cannot take the focus, though: up
+		// to 0.75.1 the last Move up of a row sent it to the page body. Then the
+		// other button of the same row takes it, the one that has something left
+		// to do. The disabled button stays disabled, so the list works the same
+		// for everybody.
+		function keepFocus( pressed, other ) {
+			var target = pressed.disabled ? other : pressed;
+			if ( target && ! target.disabled ) {
+				target.focus();
+			}
+		}
+
 		function move( item, direction ) {
 			if ( direction < 0 && item.previousElementSibling ) {
 				list.insertBefore( item, item.previousElementSibling );
@@ -132,11 +145,11 @@
 
 			up.addEventListener( 'click', function () {
 				move( item, -1 );
-				up.focus();
+				keepFocus( up, down );
 			} );
 			down.addEventListener( 'click', function () {
 				move( item, 1 );
-				down.focus();
+				keepFocus( down, up );
 			} );
 			remove.addEventListener( 'click', function () {
 				var next = item.nextElementSibling || item.previousElementSibling;
