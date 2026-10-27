@@ -11,9 +11,11 @@ The normal case is **Maintained in WordPress**: you edit the page directly in Wo
 
 ## Steps
 
+Your account needs the right to upload files for this, so at least the WordPress role Author. A sync stores the file's images in the media library. With the role Contributor the choice **Synced from GitHub** is therefore greyed out, and there is no **Sync now** button.
+
 1. Open the page in the editor and find the **Source** box.
 2. Set the source to **Synced from GitHub**.
-3. Enter the address of the Markdown file. It starts with `raw.githubusercontent.com`. You find this address on GitHub through the **Raw** button on the file view.
+3. Enter the address of the Markdown file. The easiest is to copy it from the address bar while you look at the file on GitHub; it has the form `https://github.com/…/blob/…`. The raw address, which starts with `raw.githubusercontent.com`, works too.
 4. Save. On saving, WordPress fetches the file right away and rebuilds the page.
 
 ## Result
@@ -58,6 +60,6 @@ WordPress actively asks GitHub whether the file still exists and what it contain
 * Eltern-Seite: Content
 * Reihenfolge: 3
 * Textauszug: A page can stay permanently connected to a Markdown file on GitHub; this guide sets that up.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

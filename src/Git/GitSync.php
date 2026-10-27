@@ -2052,16 +2052,20 @@ final class GitSync {
 		if ( '' === $source ) {
 			$source = self::SOURCE_WORDPRESS;
 		}
-		$url    = (string) get_post_meta( $post->ID, self::META_URL, true );
-		$status = (string) get_post_meta( $post->ID, self::META_STATUS, true );
+		$url      = (string) get_post_meta( $post->ID, self::META_URL, true );
+		$status   = (string) get_post_meta( $post->ID, self::META_STATUS, true );
+		$may_pull = self::may_pull();
 		?>
 		<p><label><input type="radio" name="living_handbook_source" value="wordpress" <?php checked( self::SOURCE_WORDPRESS, $source ); ?>> <?php esc_html_e( 'Maintained in WordPress', 'living-handbook' ); ?></label></p>
-		<p><label><input type="radio" name="living_handbook_source" value="github" <?php checked( self::SOURCE_GITHUB, $source ); ?>> <?php esc_html_e( 'Synced from GitHub', 'living-handbook' ); ?></label></p>
+		<p><label><input type="radio" name="living_handbook_source" value="github" <?php checked( self::SOURCE_GITHUB, $source ); ?> <?php disabled( ! $may_pull && self::SOURCE_GITHUB !== $source ); ?>> <?php esc_html_e( 'Synced from GitHub', 'living-handbook' ); ?></label></p>
+		<?php if ( ! $may_pull ) : ?>
+			<p class="description"><?php esc_html_e( 'Only someone who may upload files can set GitHub as the source or change it, because a sync stores the page\'s images in the media library.', 'living-handbook' ); ?></p>
+		<?php endif; ?>
 		<p>
 			<label for="living_handbook_markdown_source"><?php esc_html_e( 'Markdown source (raw or blob URL)', 'living-handbook' ); ?></label>
-			<input type="url" id="living_handbook_markdown_source" name="living_handbook_markdown_source" value="<?php echo esc_attr( $url ); ?>" class="widefat" placeholder="https://github.com/... or https://raw.githubusercontent.com/...">
+			<input type="url" id="living_handbook_markdown_source" name="living_handbook_markdown_source" value="<?php echo esc_attr( $url ); ?>" class="widefat" placeholder="https://github.com/owner/repo/blob/main/page.md" <?php wp_readonly( ! $may_pull && self::SOURCE_GITHUB === $source ); ?>>
 		</p>
-		<?php if ( self::SOURCE_GITHUB === $source && '' !== $url ) : ?>
+		<?php if ( $may_pull && self::SOURCE_GITHUB === $source && '' !== $url ) : ?>
 			<p>
 				<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=living_handbook_git_sync_now&post=' . $post->ID ), 'living_handbook_git_sync_now_' . $post->ID ) ); ?>"><?php esc_html_e( 'Sync now', 'living-handbook' ); ?></a>
 			</p>
@@ -2093,6 +2097,14 @@ final class GitSync {
 
 		$raw    = isset( $_POST['living_handbook_source'] ) ? sanitize_text_field( wp_unslash( $_POST['living_handbook_source'] ) ) : '';
 		$source = self::SOURCE_GITHUB === $raw ? self::SOURCE_GITHUB : self::SOURCE_WORDPRESS;
+		if ( self::SOURCE_GITHUB === $source && ! self::may_pull() ) {
+			// Source and address stay as they are. Saving a GitHub source pulls
+			// the page now and on every scheduled run, and every pull stores the
+			// images it references in the media library; edit_post alone let a
+			// contributor, who may not upload a file, have the sync do it for
+			// them from any repository.
+			return;
+		}
 		update_post_meta( $post_id, self::META_SOURCE, $source );
 
 		// Sanitize on the way in, then normalize the blob URL and validate it as
@@ -2111,6 +2123,20 @@ final class GitSync {
 			Postprocessor::finalize( array( $post_id ) );
 			self::$is_syncing = false;
 		}
+	}
+
+	/**
+	 * Whether the current user may have a page pulled from GitHub: set GitHub
+	 * as its source, change that source, or sync it now.
+	 *
+	 * A pull sideloads the images the Markdown references, so it is an upload
+	 * on the user's behalf, and needs the right to upload files on top of the
+	 * right to edit the page.
+	 *
+	 * @return bool
+	 */
+	private static function may_pull(): bool {
+		return current_user_can( 'upload_files' );
 	}
 
 	/**
@@ -2258,7 +2284,9 @@ final class GitSync {
 	public function sync_now(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- The nonce is verified by check_admin_referer below, which needs the post id from the URL first.
 		$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
-		if ( 0 === $post_id || ! current_user_can( 'edit_post', $post_id ) || ! check_admin_referer( 'living_handbook_git_sync_now_' . $post_id ) ) {
+		// upload_files as well as edit_post: a pull stores the page's images in
+		// the media library (see save_meta()).
+		if ( 0 === $post_id || ! current_user_can( 'edit_post', $post_id ) || ! self::may_pull() || ! check_admin_referer( 'living_handbook_git_sync_now_' . $post_id ) ) {
 			wp_die( esc_html__( 'You are not allowed to do this.', 'living-handbook' ) );
 		}
 		$this->sync_page( $post_id );

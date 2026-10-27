@@ -5,15 +5,17 @@ Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben.
 <details>
 <summary>Konzept: Jede Seite hat eine Quelle</summary>
 
-Der Normalfall ist **In WordPress gepflegt**: Du bearbeitest die Seite direkt in WordPress. Die Alternative ist **Von GitHub synchronisiert**: Die Seite wird aus einer Datei auf GitHub befüllt. Bearbeiten lässt sie sich dann in WordPress nicht mehr, ihr Editor ist gesperrt. Das ist Absicht. Sonst würde der nächste Abgleich deine Änderungen überschreiben. In der Seitenliste zeigt eine eigene Spalte, welche Quelle jede Seite hat.
+Der Normalfall ist **In WordPress gepflegt**: Du bearbeitest die Seite direkt in WordPress. Die Alternative ist **Aus GitHub synchronisiert**: Die Seite wird aus einer Datei auf GitHub befüllt. Bearbeiten lässt sie sich dann in WordPress nicht mehr, ihr Editor ist gesperrt. Das ist Absicht. Sonst würde der nächste Abgleich deine Änderungen überschreiben. In der Seitenliste zeigt eine eigene Spalte, welche Quelle jede Seite hat.
 
 </details>
 
 ## Schritte
 
+Dafür braucht dein Konto das Recht, Dateien hochzuladen, also mindestens die WordPress-Rolle Autor. Ein Abgleich legt die Bilder der Datei in der Mediathek ab. Mit der Rolle Mitarbeiter ist die Wahl **Aus GitHub synchronisiert** darum ausgegraut, und den Knopf **Jetzt synchronisieren** gibt es nicht.
+
 1. Öffne die Seite im Editor und suche den Kasten **Quelle**.
-2. Stelle die Quelle auf **Von GitHub synchronisiert**.
-3. Trage die Adresse der Markdown-Datei ein. Sie beginnt mit `raw.githubusercontent.com`. Diese Adresse findest du auf GitHub über den Knopf **Raw** auf der Datei-Ansicht.
+2. Stelle die Quelle auf **Aus GitHub synchronisiert**.
+3. Trage die Adresse der Markdown-Datei ein. Am einfachsten kopierst du sie aus der Adresszeile, während du die Datei auf GitHub ansiehst; sie hat die Form `https://github.com/…/blob/…`. Die Raw-Adresse, die mit `raw.githubusercontent.com` beginnt, geht ebenso.
 4. Speichere. Beim Speichern holt WordPress die Datei sofort ab und baut die Seite neu auf.
 
 ## Ergebnis
@@ -58,6 +60,6 @@ WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinste
 * Eltern-Seite: Inhalte
 * Reihenfolge: 3
 * Textauszug: Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben; diese Anleitung richtet das ein.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-10-27
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage
