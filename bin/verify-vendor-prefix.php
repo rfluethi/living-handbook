@@ -242,8 +242,17 @@ echo "Only what runs ships:\n";
 // each one is a file Plugin Check and a host's scanner read, and the test
 // fixtures of an SVG sanitizer look like attacks because that is their job.
 $dev_files = array();
-if ( is_dir( $root . '/vendor/bin' ) ) {
-	$dev_files[] = 'vendor/bin';
+foreach ( array(
+	'vendor/bin',
+	// Command-line tools outside vendor/bin. The scanner has no ABSPATH guard and
+	// would be reachable over the web; the lint command needs symfony/console.
+	'vendor/enshrined/svg-sanitize/src/svg-scanner.php',
+	'vendor/symfony/yaml/Resources/bin',
+	'vendor/symfony/yaml/Command',
+) as $tool ) {
+	if ( file_exists( $root . '/' . $tool ) ) {
+		$dev_files[] = $tool;
+	}
 }
 $iterator = new RecursiveIteratorIterator(
 	new RecursiveDirectoryIterator( $root . '/vendor', FilesystemIterator::SKIP_DOTS ),

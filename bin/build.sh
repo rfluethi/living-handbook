@@ -68,6 +68,14 @@ cp -R vendor "$dest"/
 # PHP-Scoper nor the rebuilt autoloader sees it. The license texts stay: they
 # are the one file of a library that has to ship with it.
 rm -rf "${dest}/vendor/bin"
+# Three command-line tools that live outside vendor/bin: the SVG sanitizer's
+# scanner and Symfony YAML's lint script with its command class. The scanner is
+# a PHP file without an ABSPATH guard, reachable over the web inside
+# wp-content/plugins; the lint command needs symfony/console, which is not
+# installed. Nothing in the plugin uses them, and as they go before the
+# autoloader is rebuilt, the classmap does not name them either.
+rm -f "${dest}/vendor/enshrined/svg-sanitize/src/svg-scanner.php"
+rm -rf "${dest}/vendor/symfony/yaml/Resources/bin" "${dest}/vendor/symfony/yaml/Command"
 find "${dest}/vendor" -mindepth 2 -name '.*' -prune -exec rm -rf {} +
 find "${dest}/vendor" -mindepth 3 -type d \( -name tests -o -name Tests -o -name docs -o -name docker \) -prune -exec rm -rf {} +
 find "${dest}/vendor" -mindepth 3 -type f \( -iname '*.md' -o -name '*.dist' -o -name '*.neon' -o -name 'psalm.xml' \
