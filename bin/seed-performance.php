@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $lh_total = (int) ( getenv( 'LH_SEED_PAGES' ) ?: 2000 );
 $lh_total = max( 1, $lh_total );
-$lh_reset = '' !== (string) getenv( 'LH_SEED_RESET' );
+$lh_reset = '1' === (string) getenv( 'LH_SEED_RESET' );
 
 $lh_post_type    = 'handbook';
 $lh_handbook_tax = 'handbook_set';

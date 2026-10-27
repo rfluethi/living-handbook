@@ -69,13 +69,12 @@ function lh_measure_pattern( $sql ) {
 /**
  * Render once and report what it cost.
  *
- * @param string   $label  What is being rendered.
  * @param string   $state  'cold' or 'warm'.
  * @param callable $render Returns the rendered HTML.
  * @param int      $top    How many query patterns to list.
  * @return void
  */
-function lh_measure_run( $label, $state, $render, $top ) {
+function lh_measure_run( $state, $render, $top ) {
 	global $wpdb;
 
 	$wpdb->queries = array();
@@ -153,8 +152,8 @@ function lh_measure_view( $label, $render, $top ) {
 	lh_measure_say( '' );
 	lh_measure_say( $label );
 	wp_cache_flush();
-	lh_measure_run( $label, 'cold', $render, $top );
-	lh_measure_run( $label, 'warm', $render, 0 );
+	lh_measure_run( 'cold', $render, $top );
+	lh_measure_run( 'warm', $render, 0 );
 }
 
 /**
