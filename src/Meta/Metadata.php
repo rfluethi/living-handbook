@@ -309,10 +309,7 @@ final class Metadata {
 			return;
 		}
 
-		$reviewed = isset( $_POST['living_handbook_reviewed'] ) ? sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewed'] ) ) : '';
-		if ( '' !== $reviewed && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $reviewed ) ) {
-			$reviewed = '';
-		}
+		$reviewed = isset( $_POST['living_handbook_reviewed'] ) ? self::sanitize_date_value( sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewed'] ) ) ) : '';
 		update_post_meta( $post_id, self::REVIEWED, $reviewed );
 
 		$interval = isset( $_POST['living_handbook_interval'] ) ? absint( $_POST['living_handbook_interval'] ) : 0;
@@ -321,10 +318,7 @@ final class Metadata {
 		$reviewer = isset( $_POST['living_handbook_reviewer'] ) ? self::posted_reviewer( sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewer'] ) ) ) : 0;
 		update_post_meta( $post_id, self::REVIEWER, $reviewer );
 
-		$depth = isset( $_POST['living_handbook_toc_depth'] ) ? absint( $_POST['living_handbook_toc_depth'] ) : 0;
-		if ( $depth > 6 ) {
-			$depth = 0;
-		}
+		$depth = isset( $_POST['living_handbook_toc_depth'] ) ? self::sanitize_toc_depth_value( absint( $_POST['living_handbook_toc_depth'] ) ) : 0;
 		update_post_meta( $post_id, self::TOC_DEPTH, $depth );
 
 		$ai_exclude = isset( $_POST['living_handbook_ai_exclude'] );
@@ -486,8 +480,8 @@ final class Metadata {
 			return;
 		}
 
-		$reviewed = isset( $_REQUEST['living_handbook_reviewed'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['living_handbook_reviewed'] ) ) : '';
-		if ( '' !== $reviewed && 1 === preg_match( '/^\d{4}-\d{2}-\d{2}$/', $reviewed ) ) {
+		$reviewed = isset( $_REQUEST['living_handbook_reviewed'] ) ? self::sanitize_date_value( sanitize_text_field( wp_unslash( $_REQUEST['living_handbook_reviewed'] ) ) ) : '';
+		if ( '' !== $reviewed ) {
 			update_post_meta( $post_id, self::REVIEWED, $reviewed );
 		}
 
@@ -496,9 +490,12 @@ final class Metadata {
 			update_post_meta( $post_id, self::INTERVAL, absint( $interval ) );
 		}
 
+		// -1 is the form's "no change". Any other value is a choice, and goes
+		// through the same check as in the meta box and Quick Edit, so a user id
+		// that does not exist means nobody.
 		$reviewer = isset( $_REQUEST['living_handbook_reviewer'] ) ? (int) $_REQUEST['living_handbook_reviewer'] : -1;
 		if ( $reviewer >= 0 ) {
-			update_post_meta( $post_id, self::REVIEWER, $reviewer );
+			update_post_meta( $post_id, self::REVIEWER, self::posted_reviewer( $reviewer ) );
 		}
 	}
 
@@ -545,10 +542,7 @@ final class Metadata {
 			return;
 		}
 
-		$reviewed = isset( $_POST['living_handbook_reviewed'] ) ? sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewed'] ) ) : '';
-		if ( '' !== $reviewed && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $reviewed ) ) {
-			$reviewed = '';
-		}
+		$reviewed = isset( $_POST['living_handbook_reviewed'] ) ? self::sanitize_date_value( sanitize_text_field( wp_unslash( $_POST['living_handbook_reviewed'] ) ) ) : '';
 		update_post_meta( $post_id, self::REVIEWED, $reviewed );
 
 		$interval = isset( $_POST['living_handbook_interval'] ) ? absint( $_POST['living_handbook_interval'] ) : 0;

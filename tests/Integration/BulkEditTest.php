@@ -119,6 +119,42 @@ final class BulkEditTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A reviewer chosen in Bulk Edit passes the same check as in the meta box
+	 * and Quick Edit: a user id that does not exist is stored as nobody, an
+	 * existing one as it is. Up to 0.75.1 Bulk Edit stored any number.
+	 *
+	 * @return void
+	 */
+	public function test_a_reviewer_that_does_not_exist_is_stored_as_nobody(): void {
+		$admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin );
+		$id = $this->page( '2026-03-04', 90, $admin );
+
+		$this->bulk_request( array( 'living_handbook_reviewer' => (string) ( $admin + 1000 ) ) );
+		( new Metadata() )->save_bulk_edit( $id );
+		$this->assertSame( '0', (string) get_post_meta( $id, Metadata::REVIEWER, true ) );
+
+		$this->bulk_request( array( 'living_handbook_reviewer' => (string) $admin ) );
+		( new Metadata() )->save_bulk_edit( $id );
+		$this->assertSame( (string) $admin, (string) get_post_meta( $id, Metadata::REVIEWER, true ) );
+	}
+
+	/**
+	 * A malformed date in Bulk Edit is not written, the page keeps its own.
+	 *
+	 * @return void
+	 */
+	public function test_a_malformed_date_changes_nothing(): void {
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$id = $this->page( '2026-03-04' );
+
+		$this->bulk_request( array( 'living_handbook_reviewed' => '4 March 2026' ) );
+		( new Metadata() )->save_bulk_edit( $id );
+
+		$this->assertSame( '2026-03-04', (string) get_post_meta( $id, Metadata::REVIEWED, true ) );
+	}
+
+	/**
 	 * Without the marker WordPress sets on a bulk edit, nothing runs. An
 	 * ordinary save carries the same field names from the meta box.
 	 *
