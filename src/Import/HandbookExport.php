@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Import;
 
+use LivingHandbook\Access\AccessController;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Handbook\Handbooks;
@@ -16,6 +17,8 @@ use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Support\TempFiles;
 use LivingHandbook\Taxonomy\Taxonomies;
+use LivingHandbook\Training\Lessons;
+use LivingHandbook\Training\Training;
 use WP_Post;
 use WP_Term;
 use ZipArchive;
@@ -31,7 +34,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * plugin without reaching back to this one. It carries the handbook configuration,
  * every page as a block-markup snapshot with a stable hierarchy key, the four
  * taxonomy terms, the freshness metadata, the source per page (a GitHub page
- * keeps its source URL so the target resumes syncing), and the referenced media.
+ * keeps its source URL so the target resumes syncing), the handbook's learning
+ * paths with their lessons as page keys, and the referenced media.
  * Local operational data (feedback counts, sync status) is deliberately left out.
  *
  * The bundle format is specified in the vault (entscheide-und-ideen, "Bündelformat").
@@ -428,10 +432,15 @@ JS;
 			$root_id = 0;
 		}
 
-		$pages = array();
+		$pages     = array();
+		$id_to_key = array();
 		foreach ( $exported as $post ) {
-			$pages[] = $this->build_page( $post, $exported, $media );
+			$page                   = $this->build_page( $post, $exported, $media );
+			$id_to_key[ $post->ID ] = (string) $page['key'];
+			$pages[]                = $page;
 		}
+
+		$paths = $this->build_paths( $term, $id_to_key, $media, $root_id > 0 );
 
 		// A root id that survived the block above is guaranteed to be in the set.
 		$area = null;
@@ -464,8 +473,106 @@ JS;
 				// has a different set of users. Whoever imports sets the people.
 			),
 			'pages'    => $pages,
+			// Learning paths of the handbook. An optional addition to version 1
+			// rather than a version 2: no importer has ever read the version, and
+			// one that does not know this key leaves it alone and imports the
+			// pages exactly as before. A bump would announce an incompatibility
+			// that does not exist and would not stop an older plugin either.
+			'paths'    => $paths,
 			'media'    => $this->media_manifest( $media ),
 		);
+	}
+
+	/**
+	 * The learning paths of a handbook, each with its lessons as page keys of
+	 * this bundle.
+	 *
+	 * A path stores its lessons as post IDs, which mean nothing on another site,
+	 * so they travel as the keys of the pages they point at, and only those: a
+	 * lesson that is not among the exported pages (another handbook, a page
+	 * since deleted, or outside the area) has no key to point at and is left
+	 * out. For an area export that is most of the point. A path keeps only its
+	 * lessons inside the area, and a path with none left there is not part of
+	 * the area at all, so it is not exported. The download streams the ZIP
+	 * directly and has no screen to say so; this is where that rule lives.
+	 *
+	 * A whole-handbook export keeps a path even when it has no lessons yet: it
+	 * is still a path somebody started in this handbook.
+	 *
+	 * A path is exported only when the exporting user may view it, the same
+	 * check that decides it everywhere else. Whoever exports holds
+	 * edit_others_posts and so passes it; the check is there so that a site
+	 * narrowing access through the living_handbook_can_view_post filter is
+	 * not bypassed by the export.
+	 *
+	 * @param WP_Term                     $term      Handbook term.
+	 * @param array<int, string>          $id_to_key Exported page ID to its key in this bundle.
+	 * @param array<string, array<mixed>> $media     Collected media (out).
+	 * @param bool                        $is_area   Whether this is an area export.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private function build_paths( WP_Term $term, array $id_to_key, array &$media, bool $is_area ): array {
+		$posts = get_posts(
+			array(
+				'post_type'      => Training::POST_TYPE,
+				'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+				'posts_per_page' => -1,
+				'orderby'        => array(
+					'title' => 'ASC',
+					'ID'    => 'ASC',
+				),
+				'no_found_rows'  => true,
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+					array(
+						'taxonomy'         => Handbooks::TAXONOMY,
+						'field'            => 'term_id',
+						'terms'            => $term->term_id,
+						'include_children' => false,
+					),
+				),
+			)
+		);
+
+		$user_id = get_current_user_id();
+		$paths   = array();
+		$keys    = array();
+		foreach ( $posts as $post ) {
+			if ( ! $post instanceof WP_Post || ! AccessController::can_view_post( $post->ID, $user_id ) ) {
+				continue;
+			}
+
+			$lessons = array();
+			foreach ( Lessons::stored( $post->ID ) as $lesson_id ) {
+				if ( isset( $id_to_key[ $lesson_id ] ) ) {
+					$lessons[] = $id_to_key[ $lesson_id ];
+				}
+			}
+			if ( $is_area && array() === $lessons ) {
+				continue;
+			}
+
+			// Two drafts without a slug and with the same title would share a
+			// key, and the importer would then write both into one path.
+			$key = 'path:' . $this->post_slug( $post );
+			if ( isset( $keys[ $key ] ) ) {
+				$key .= '-' . $post->ID;
+			}
+			$keys[ $key ] = true;
+
+			$paths[] = array(
+				'key'       => $key,
+				'origin_id' => home_url() . '#' . $post->ID,
+				'title'     => $post->post_title,
+				'slug'      => $this->post_slug( $post ),
+				'status'    => $post->post_status,
+				'content'   => $post->post_content,
+				'excerpt'   => $post->post_excerpt,
+				'lessons'   => $lessons,
+				'media'     => $this->collect_page_media( $post, $media ),
+			);
+		}
+
+		return $paths;
 	}
 
 	/**

@@ -14,6 +14,8 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Taxonomy\Taxonomies;
+use LivingHandbook\Training\Lessons;
+use LivingHandbook\Training\Training;
 use WP_Term;
 use ZipArchive;
 
@@ -293,11 +295,20 @@ final class HandbookImport {
 	public function import_manifest( array $manifest, callable $media_reader, string $rule, int $chosen = 0, bool $as_pages = false ): array {
 		$this->as_pages = $as_pages;
 
+		// The page counters stay page counters: the summary and the run rules
+		// speak of pages, and a "3 created" that quietly included two learning
+		// paths would be a wrong number on the one screen that reports it.
 		$report = array(
 			'created'   => 0,
 			'updated'   => 0,
 			'skipped'   => 0,
 			'protected' => 0,
+			'paths'     => array(
+				'created'   => 0,
+				'updated'   => 0,
+				'skipped'   => 0,
+				'protected' => 0,
+			),
 			'notes'     => array(),
 		);
 
@@ -338,7 +349,151 @@ final class HandbookImport {
 			Postprocessor::finalize( $touched );
 		}
 
+		$paths = isset( $manifest['paths'] ) && is_array( $manifest['paths'] ) ? $manifest['paths'] : array();
+		if ( array() !== $paths ) {
+			$this->import_paths( $paths, $term_id, $rule, $media_map, $key_to_id, $report );
+		}
+
 		return $report;
+	}
+
+	/**
+	 * Import the learning paths of a bundle, after its pages.
+	 *
+	 * After, because a path is a list of pages: its lessons arrive as page keys
+	 * and only become post IDs once the pages exist here, through $key_to_id. A
+	 * page that was skipped or protected is in that map too, with the ID of the
+	 * page that already exists, so a path still points at it.
+	 *
+	 * @param array<int|string, mixed> $paths     Path entries of the manifest.
+	 * @param int                      $term_id   Target handbook term ID, 0 when importing as pages.
+	 * @param string                   $rule      Run rule.
+	 * @param array<string, string>    $media_map Original URL to new URL.
+	 * @param array<string, int>       $key_to_id Bundle key to new page ID.
+	 * @param array<string, mixed>     $report    Report (out).
+	 * @return void
+	 */
+	private function import_paths( array $paths, int $term_id, string $rule, array $media_map, array $key_to_id, array &$report ): void {
+		if ( $this->as_pages ) {
+			// A learning path is an order over handbook pages and is shown only
+			// inside a handbook. Ordinary pages have neither, so there is nothing
+			// a path could become.
+			$report['notes'][] = __( 'The learning paths in the bundle were not imported: they need handbook pages, and this import created ordinary WordPress pages.', 'living-handbook' );
+			return;
+		}
+
+		foreach ( $paths as $path ) {
+			if ( is_array( $path ) ) {
+				$this->import_path( $path, $term_id, $rule, $media_map, $key_to_id, $report );
+			}
+		}
+
+		$counts  = (array) $report['paths'];
+		$written = (int) ( $counts['created'] ?? 0 ) + (int) ( $counts['updated'] ?? 0 );
+		if ( $written > 0 && ! Training::is_enabled() ) {
+			// The type is registered either way, so the paths are stored and kept;
+			// the module switch only decides whether they are shown.
+			$report['notes'][] = __( 'Learning paths are switched off on this site. The imported paths are kept and appear once learning paths are switched on in the settings.', 'living-handbook' );
+		}
+	}
+
+	/**
+	 * Import one learning path: the same matching and the same run rules as a
+	 * page, then the lessons mapped from bundle keys to this site's page IDs.
+	 *
+	 * @param array<string, mixed>  $path      Path entry.
+	 * @param int                   $term_id   Target handbook term ID.
+	 * @param string                $rule      Run rule.
+	 * @param array<string, string> $media_map Original URL to new URL.
+	 * @param array<string, int>    $key_to_id Bundle key to new page ID.
+	 * @param array<string, mixed>  $report    Report (out).
+	 * @return void
+	 */
+	private function import_path( array $path, int $term_id, string $rule, array $media_map, array $key_to_id, array &$report ): void {
+		$key = isset( $path['key'] ) ? (string) $path['key'] : '';
+		if ( '' === $key ) {
+			return;
+		}
+		$origin = isset( $path['origin_id'] ) ? (string) $path['origin_id'] : '';
+		$slug   = isset( $path['slug'] ) ? sanitize_title( (string) $path['slug'] ) : '';
+		$title  = isset( $path['title'] ) ? sanitize_text_field( (string) $path['title'] ) : $slug;
+
+		$existing = ( self::RULE_CREATE === $rule ) ? 0 : $this->find_existing( $origin, $key, $slug, $term_id, Training::POST_TYPE );
+
+		if ( $existing > 0 && '' !== (string) get_post_meta( $existing, self::META_PROTECTED, true ) ) {
+			++$report['paths']['protected'];
+			return;
+		}
+		if ( $existing > 0 && self::RULE_SKIP === $rule ) {
+			++$report['paths']['skipped'];
+			return;
+		}
+
+		$content = isset( $path['content'] ) ? (string) $path['content'] : '';
+		foreach ( $media_map as $from => $to ) {
+			$content = str_replace( $from, $to, $content );
+		}
+		// External content, cleaned exactly like a page's.
+		$content = HtmlSanitizer::clean_blocks( $content );
+
+		$data = array(
+			'post_type'    => Training::POST_TYPE,
+			'post_title'   => $title,
+			'post_content' => (string) wp_slash( $content ),
+			'post_excerpt' => (string) wp_slash( wp_kses_post( isset( $path['excerpt'] ) ? (string) $path['excerpt'] : '' ) ),
+		);
+
+		$is_new = ( 0 === $existing );
+		if ( $is_new ) {
+			$status              = isset( $path['status'] ) ? (string) $path['status'] : 'draft';
+			$data['post_status'] = in_array( $status, self::STATUSES, true ) ? $status : 'draft';
+			$data['post_name']   = $slug;
+			$result              = wp_insert_post( $data, true );
+		} else {
+			$data['ID'] = $existing;
+			$result     = wp_update_post( $data, true );
+		}
+		if ( is_wp_error( $result ) ) {
+			$report['notes'][] = $result->get_error_message();
+			return;
+		}
+
+		$post_id = (int) $result;
+		if ( $is_new ) {
+			++$report['paths']['created'];
+		} else {
+			++$report['paths']['updated'];
+		}
+
+		update_post_meta( $post_id, self::META_ORIGIN, $origin );
+		update_post_meta( $post_id, self::META_BUNDLE_KEY, $key );
+		wp_set_object_terms( $post_id, array( $term_id ), Handbooks::TAXONOMY, false );
+
+		$lessons = array();
+		$missing = 0;
+		foreach ( ( isset( $path['lessons'] ) && is_array( $path['lessons'] ) ? $path['lessons'] : array() ) as $lesson_key ) {
+			$lesson_key = is_scalar( $lesson_key ) ? (string) $lesson_key : '';
+			if ( '' !== $lesson_key && isset( $key_to_id[ $lesson_key ] ) ) {
+				$lessons[] = $key_to_id[ $lesson_key ];
+			} else {
+				++$missing;
+			}
+		}
+		Lessons::store( $post_id, $lessons );
+
+		if ( $missing > 0 ) {
+			$report['notes'][] = sprintf(
+				/* translators: 1: number of lessons, 2: learning path title. */
+				_n(
+					'Learning path "%2$s": %1$d lesson is not among the pages of the bundle and was left out.',
+					'Learning path "%2$s": %1$d lessons are not among the pages of the bundle and were left out.',
+					$missing,
+					'living-handbook'
+				),
+				$missing,
+				$title
+			);
+		}
 	}
 
 	/**
@@ -550,15 +705,16 @@ final class HandbookImport {
 	 * Find an existing page for a bundle entry within the target handbook: by
 	 * origin id, then bundle key, then slug.
 	 *
-	 * @param string $origin  Origin id from the bundle.
-	 * @param string $key     Bundle key.
-	 * @param string $slug    Page slug.
-	 * @param int    $term_id Target handbook term ID.
+	 * @param string $origin    Origin id from the bundle.
+	 * @param string $key       Bundle key.
+	 * @param string $slug      Page slug.
+	 * @param int    $term_id   Target handbook term ID.
+	 * @param string $post_type Post type to look in: handbook pages, or learning paths.
 	 * @return int Post ID, or 0.
 	 */
-	private function find_existing( string $origin, string $key, string $slug, int $term_id ): int {
+	private function find_existing( string $origin, string $key, string $slug, int $term_id, string $post_type = Handbook::POST_TYPE ): int {
 		$base = array(
-			'post_type'      => Handbook::POST_TYPE,
+			'post_type'      => $post_type,
 			'post_status'    => self::STATUSES,
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
@@ -719,6 +875,29 @@ final class HandbookImport {
 			(int) $report['skipped'],
 			(int) $report['protected']
 		);
+
+		$paths = isset( $report['paths'] ) && is_array( $report['paths'] ) ? $report['paths'] : array();
+		$total = 0;
+		foreach ( array( 'created', 'updated', 'skipped', 'protected' ) as $count ) {
+			$paths[ $count ] = isset( $paths[ $count ] ) ? (int) $paths[ $count ] : 0;
+			$total          += $paths[ $count ];
+		}
+		if ( $total > 0 ) {
+			$summary .= ' ' . sprintf(
+				/* translators: 1: number of learning paths in the bundle, 2: created, 3: updated, 4: skipped, 5: protected. */
+				_n(
+					'%1$d learning path: %2$d created, %3$d updated, %4$d skipped, %5$d protected.',
+					'%1$d learning paths: %2$d created, %3$d updated, %4$d skipped, %5$d protected.',
+					$total,
+					'living-handbook'
+				),
+				$total,
+				$paths['created'],
+				$paths['updated'],
+				$paths['skipped'],
+				$paths['protected']
+			);
+		}
 
 		$notes = '';
 		foreach ( array_unique( (array) $report['notes'] ) as $note ) {
