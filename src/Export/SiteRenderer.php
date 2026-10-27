@@ -27,6 +27,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Turns handbook pages into a self-contained website.
+ *
+ * @phpstan-type IndexEntry array{title: string, slug: string, parent: int, order: int}
+ * @phpstan-type ExportIndex array<int, IndexEntry>
+ * @phpstan-type SiteInfo array{
+ *     title: string,
+ *     description: string,
+ *     language: string,
+ *     generated: string,
+ *     source: string,
+ *     slug: string
+ * }
  */
 final class SiteRenderer {
 
@@ -52,7 +63,7 @@ final class SiteRenderer {
 	private const MAX_RESULTS = 50;
 
 	/**
-	 * The path a page gets inside the export, without the extension.
+	 * Returns the path a page gets inside the export.
 	 *
 	 * The slugs of a page's ancestors, joined with slashes, which is the same key
 	 * the bundle export uses. Files rather than folders with an index.html: a
@@ -61,6 +72,7 @@ final class SiteRenderer {
 	 *
 	 * @param int                              $post_id Page id.
 	 * @param array<int, array<string, mixed>> $index   The export index, keyed by post id.
+	 * @phpstan-param ExportIndex $index
 	 * @return string
 	 */
 	public static function path_for( int $post_id, array $index ): string {
@@ -90,7 +102,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The prefix that leads from one file back to the export root.
+	 * Returns the prefix that leads from one file back to the export root.
 	 *
 	 * @param string $path File path inside the export.
 	 * @return string Empty for a file at the root, otherwise "../" per level.
@@ -102,7 +114,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * A relative link from one file in the export to another.
+	 * Returns a relative link from one file in the export to another.
 	 *
 	 * @param string $from File path of the page holding the link.
 	 * @param string $to   File path of the target.
@@ -126,12 +138,16 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The full HTML of one page.
+	 * Returns the full HTML of one page, built by hand.
+	 *
+	 * The fallback for an installation whose block template cannot be read.
 	 *
 	 * @param WP_Post                          $post    The page.
 	 * @param string                           $content Rendered, link-rewritten content.
 	 * @param array<int, array<string, mixed>> $index   The export index.
-	 * @param array<string, mixed>             $site    Site-wide values: title, generated.
+	 * @param array<string, mixed>             $site    Site-wide values.
+	 * @phpstan-param ExportIndex $index
+	 * @phpstan-param SiteInfo $site
 	 * @return string
 	 */
 	public static function page( WP_Post $post, string $content, array $index, array $site ): string {
@@ -157,7 +173,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * A page whose body was rendered from the block template.
+	 * Returns the full HTML of a page whose body was rendered from the block template.
 	 *
 	 * The template already carries the title, the content and everything the site
 	 * arranged around them, so nothing is added here but the trail back to the
@@ -168,6 +184,8 @@ final class SiteRenderer {
 	 * @param string                           $rendered The rendered template, links already rewritten.
 	 * @param array<int, array<string, mixed>> $index    The export index.
 	 * @param array<string, mixed>             $site     Site-wide values.
+	 * @phpstan-param ExportIndex $index
+	 * @phpstan-param SiteInfo $site
 	 * @return string
 	 */
 	public static function page_from_template( WP_Post $post, string $rendered, array $index, array $site ): string {
@@ -181,10 +199,12 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The start page: what the handbook is, and everything in it.
+	 * Returns the start page: what the handbook is, and everything in it.
 	 *
 	 * @param array<int, array<string, mixed>> $index The export index.
 	 * @param array<string, mixed>             $site  Site-wide values.
+	 * @phpstan-param ExportIndex $index
+	 * @phpstan-param SiteInfo $site
 	 * @return string
 	 */
 	public static function start_page( array $index, array $site ): string {
@@ -223,6 +243,8 @@ final class SiteRenderer {
 	 * @param array<string, mixed>             $site       Site-wide values.
 	 * @param bool                             $diagram    Whether this page holds a Mermaid diagram.
 	 * @param bool                             $with_nav   Whether the frame brings its own page tree.
+	 * @phpstan-param ExportIndex $index
+	 * @phpstan-param SiteInfo $site
 	 * @return string
 	 */
 	private static function document( string $title, string $body, string $prefix, array $index, int $current_id, array $site, bool $diagram, bool $with_nav = true ): string {
@@ -260,8 +282,7 @@ final class SiteRenderer {
 
 		// With the page rendered from the template, the page tree is already in it,
 		// where the site put it. A second one down the left would be the export
-		// showing its own furniture next to the site's, which is exactly what it
-		// looked like before this was fixed.
+		// showing its own furniture next to the site's.
 		$out .= $with_nav ? '<div class="lh-layout">' : '<div class="lh-layout lh-layout--plain">';
 		if ( $with_nav ) {
 			$out .= '<nav id="lh-nav" class="lh-nav" aria-label="' . esc_attr__( 'Handbook', 'living-handbook' ) . '">';
@@ -312,6 +333,7 @@ final class SiteRenderer {
 	 * @param string                           $here       File path of the page being rendered.
 	 * @param int                              $current_id Current page id.
 	 * @param int                              $depth      Recursion depth.
+	 * @phpstan-param ExportIndex $index
 	 * @return string
 	 */
 	private static function tree( array $index, int $above, string $here, int $current_id, int $depth ): string {
@@ -357,6 +379,7 @@ final class SiteRenderer {
 	 * @param int                              $post_id Current page.
 	 * @param array<int, array<string, mixed>> $index   The export index.
 	 * @param string                           $here    File path of the current page.
+	 * @phpstan-param ExportIndex $index
 	 * @return string
 	 */
 	private static function crumbs( int $post_id, array $index, string $here ): string {
@@ -380,7 +403,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * Fill the table-of-contents block the template rendered empty.
+	 * Fills the table-of-contents block the template rendered empty.
 	 *
 	 * On the site that list is built in the browser, from the headings in the
 	 * document. In an export it is built here instead, from the same anchors, so
@@ -412,7 +435,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * Drop the people from the metadata footer.
+	 * Drops the people from the metadata footer.
 	 *
 	 * An avatar is a request to an external service and a name is a name. Both
 	 * belong on the site, not in a file that gets mailed around. The dates and
@@ -426,23 +449,55 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The list items of a table of contents, from the headings in the content.
+	 * The headings a table of contents lists: every h2 and h3 with an id.
+	 *
+	 * The text is plain, without the "#" link each heading carries to itself:
+	 * in a list of links to those same headings it would read as part of every
+	 * title.
+	 *
+	 * @param string $content Rendered content.
+	 * @return array<int, array{level: int, id: string, text: string}> Empty when there are fewer than two:
+	 *                                                                 one heading is a title, not a table of contents.
+	 */
+	private static function headings( string $content ): array {
+		if ( ! preg_match_all( '#<h([23])[^>]*\sid="([^"]+)"[^>]*>(.*?)</h\1>#is', $content, $matches, PREG_SET_ORDER ) || count( $matches ) < 2 ) {
+			return array();
+		}
+
+		$headings = array();
+		foreach ( $matches as $match ) {
+			$headings[] = array(
+				'level' => (int) $match[1],
+				'id'    => (string) $match[2],
+				'text'  => trim( wp_strip_all_tags( self::without_anchor( (string) $match[3] ) ) ),
+			);
+		}
+
+		return $headings;
+	}
+
+	/**
+	 * Removes the "#" links the server adds to every heading.
+	 *
+	 * @param string $html Rendered markup.
+	 * @return string
+	 */
+	private static function without_anchor( string $html ): string {
+		return (string) preg_replace( '#<a class="living-handbook-anchor".*?</a>#is', '', $html );
+	}
+
+	/**
+	 * The list items of the table-of-contents block, from the headings in the content.
 	 *
 	 * @param string $content Rendered content.
 	 * @return string
 	 */
 	private static function toc_items( string $content ): string {
-		preg_match_all( '#<h([23])[^>]*\sid="([^"]+)"[^>]*>(.*?)</h\1>#is', $content, $matches, PREG_SET_ORDER );
-		if ( count( $matches ) < 2 ) {
-			return '';
-		}
-
 		$items = '';
-		foreach ( $matches as $match ) {
-			$level  = 3 === (int) $match[1] ? ' living-handbook-toc__item--sub' : '';
-			$text   = (string) preg_replace( '#<a class="living-handbook-anchor".*?</a>#is', '', $match[3] );
-			$items .= '<li class="living-handbook-toc__item' . $level . '"><a href="#' . esc_attr( $match[2] ) . '">'
-				. esc_html( trim( wp_strip_all_tags( $text ) ) ) . '</a></li>';
+		foreach ( self::headings( $content ) as $heading ) {
+			$level  = 3 === $heading['level'] ? ' living-handbook-toc__item--sub' : '';
+			$items .= '<li class="living-handbook-toc__item' . $level . '"><a href="#' . esc_attr( $heading['id'] ) . '">'
+				. esc_html( $heading['text'] ) . '</a></li>';
 		}
 
 		return $items;
@@ -459,21 +514,15 @@ final class SiteRenderer {
 	 * @return string
 	 */
 	private static function toc( string $content ): string {
-		if ( 1 !== preg_match_all( '#<h([23])[^>]*\sid="([^"]+)"[^>]*>(.*?)</h\1>#is', $content, $matches, PREG_SET_ORDER ) && array() === $matches ) {
-			return '';
-		}
-		if ( count( $matches ) < 2 ) {
-			// One heading is a title, not a table of contents.
+		$headings = self::headings( $content );
+		if ( array() === $headings ) {
 			return '';
 		}
 
 		$items = '';
-		foreach ( $matches as $match ) {
-			$level = 3 === (int) $match[1] ? ' class="lh-toc__sub"' : '';
-			// The heading carries the "#" link to itself; in a list of links to
-			// those same headings it would read as part of every title.
-			$text   = (string) preg_replace( '#<a class="living-handbook-anchor".*?</a>#is', '', $match[3] );
-			$items .= '<li' . $level . '><a href="#' . esc_attr( $match[2] ) . '">' . esc_html( trim( wp_strip_all_tags( $text ) ) ) . '</a></li>';
+		foreach ( $headings as $heading ) {
+			$level  = 3 === $heading['level'] ? ' class="lh-toc__sub"' : '';
+			$items .= '<li' . $level . '><a href="#' . esc_attr( $heading['id'] ) . '">' . esc_html( $heading['text'] ) . '</a></li>';
 		}
 
 		return '<details class="lh-toc" open><summary>' . esc_html__( 'On this page', 'living-handbook' ) . '</summary><ul>' . $items . '</ul></details>';
@@ -512,7 +561,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * One entry of the search index.
+	 * Returns one entry of the search index.
 	 *
 	 * @param string $title   Page title.
 	 * @param string $path    File path inside the export.
@@ -522,7 +571,7 @@ final class SiteRenderer {
 	public static function index_entry( string $title, string $path, string $content ): array {
 		// Without this every heading would contribute a stray "#" to the text, and
 		// the search would show it in the snippet around a hit.
-		$text = (string) preg_replace( '#<a class="living-handbook-anchor".*?</a>#is', '', $content );
+		$text = self::without_anchor( $content );
 		$text = wp_strip_all_tags( $text );
 		// Plain text, not HTML: the search script escapes what it shows, so an
 		// entity left in here was escaped a second time and the reader saw
@@ -545,7 +594,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The search index as a JavaScript file.
+	 * Returns the search index as a JavaScript file.
 	 *
 	 * A .js file rather than .json, and a global rather than a fetch, because a
 	 * page opened from the file system may not fetch the file next to it: most
@@ -562,8 +611,12 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The stylesheet: the plugin's own frontend CSS, a small layout that stands
-	 * in for the theme, and the colours of the chosen look.
+	 * Returns the export's stylesheet.
+	 *
+	 * In this order: the core block styles, the theme's global styles, the
+	 * block supports collected while rendering, the plugin's frontend CSS, a
+	 * small layout that stands in for the theme, the colours of the chosen
+	 * look, and the print rules. Why the order matters is explained below.
 	 *
 	 * @param string $theme         The look the export was given.
 	 * @param string $block_support The layout rules the style engine collected while rendering.
@@ -592,14 +645,14 @@ final class SiteRenderer {
 		// Then the block supports collected while rendering, then the plugin's
 		// stylesheet, then the export's own layout, then the colours of the chosen
 		// look, then print.
-		$colours = SiteThemes::uses_site_colours( $theme ) ? Appearance::css() : SiteThemes::css( $theme );
+		$colors = SiteThemes::uses_site_colors( $theme ) ? Appearance::css() : SiteThemes::css( $theme );
 
 		return self::block_library_css() . "\n"
 			. self::global_styles() . "\n"
 			. $block_support . "\n"
 			. $frontend . "\n"
 			. self::layout_css() . "\n"
-			. $colours . "\n"
+			. $colors . "\n"
 			. SiteThemes::print_css();
 	}
 
@@ -621,7 +674,7 @@ final class SiteRenderer {
 	}
 
 	/**
-	 * The theme's global styles, and the font faces that go with them.
+	 * Returns the theme's global styles, and the font faces that go with them.
 	 *
 	 * This is the theme.json layer: the palette, the font families and sizes, the
 	 * spacing scale and the layout rules, as the custom properties everything
@@ -854,10 +907,11 @@ JS;
 	}
 
 	/**
-	 * The note that travels with the ZIP, so somebody who unpacks it in a year
-	 * knows what it is and what it is not.
+	 * Returns the note that travels with the ZIP, so somebody who unpacks it in
+	 * a year knows what it is and what it is not.
 	 *
 	 * @param array<string, mixed> $site Site-wide values.
+	 * @phpstan-param SiteInfo $site
 	 * @return string
 	 */
 	public static function readme( array $site ): string {

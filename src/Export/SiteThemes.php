@@ -36,7 +36,7 @@ final class SiteThemes {
 	public const DEFAULT_THEME = 'site';
 
 	/**
-	 * Every available look: key to label and CSS.
+	 * Returns every available look: key to label and CSS.
 	 *
 	 * @return array<string, array{label: string, css: string}>
 	 */
@@ -61,7 +61,7 @@ final class SiteThemes {
 		);
 
 		/**
-		 * Filter the looks offered for a static website export.
+		 * Filters the looks offered for a static website export.
 		 *
 		 * Each entry is keyed by a slug and holds a label and a block of CSS,
 		 * appended after the export's own stylesheet. Setting the `--lh-user-*`
@@ -71,16 +71,27 @@ final class SiteThemes {
 		 *
 		 * @param array<string, array{label: string, css: string}> $themes The available looks.
 		 */
-		/**
-		 * A filter can return anything at all, whatever the documented shape says,
-		 * so what comes back is treated as unknown and rebuilt entry by entry.
-		 *
-		 * @var array<string, mixed> $filtered
-		 */
-		$filtered = (array) apply_filters( 'living_handbook_static_export_themes', $themes );
+		$filtered = apply_filters( 'living_handbook_static_export_themes', $themes );
 
+		return self::rebuild( $filtered, $themes[ self::DEFAULT_THEME ] );
+	}
+
+	/**
+	 * Rebuilds the filtered looks entry by entry.
+	 *
+	 * A filter can return anything at all, whatever the documented shape says,
+	 * so what comes back is treated as unknown here: an entry without a usable
+	 * slug or label is dropped, and the default is put back when a filter
+	 * removed it, because it is what an export falls back to and the screen
+	 * would otherwise offer no valid choice.
+	 *
+	 * @param mixed                             $filtered The filter's answer.
+	 * @param array{label: string, css: string} $fallback The default look.
+	 * @return array<string, array{label: string, css: string}>
+	 */
+	private static function rebuild( $filtered, array $fallback ): array {
 		$out = array();
-		foreach ( $filtered as $key => $theme ) {
+		foreach ( (array) $filtered as $key => $theme ) {
 			$slug  = sanitize_key( (string) $key );
 			$entry = is_array( $theme ) ? $theme : array();
 			$label = isset( $entry['label'] ) ? (string) $entry['label'] : '';
@@ -93,17 +104,15 @@ final class SiteThemes {
 			);
 		}
 
-		// The default is not optional: it is what an export falls back to, and a
-		// filter that removed it would leave the screen with no valid choice.
 		if ( ! isset( $out[ self::DEFAULT_THEME ] ) ) {
-			$out = array( self::DEFAULT_THEME => $themes[ self::DEFAULT_THEME ] ) + $out;
+			$out = array( self::DEFAULT_THEME => $fallback ) + $out;
 		}
 
 		return $out;
 	}
 
 	/**
-	 * The key of a chosen look, or the default when it is not one we have.
+	 * Returns the key of a chosen look, or the default when it is not one we have.
 	 *
 	 * @param string $key Requested key.
 	 * @return string
@@ -115,20 +124,21 @@ final class SiteThemes {
 	}
 
 	/**
-	 * The CSS of one look.
+	 * Returns the CSS of one look, or of the default when it is not one we have.
 	 *
 	 * @param string $key Theme key.
 	 * @return string
 	 */
 	public static function css( string $key ): string {
+		// One call to all(): every call runs the filter again.
 		$themes = self::all();
-		$key    = self::normalize( $key );
+		$key    = sanitize_key( $key );
 
-		return $themes[ $key ]['css'];
+		return ( $themes[ $key ] ?? $themes[ self::DEFAULT_THEME ] )['css'];
 	}
 
 	/**
-	 * Whether a look wants the site's own colours.
+	 * Whether a look wants the site's own colors.
 	 *
 	 * Only the default does. The others exist precisely to leave the site's
 	 * palette behind, and layering the settings on top would half-apply it: a
@@ -137,7 +147,7 @@ final class SiteThemes {
 	 * @param string $key Theme key.
 	 * @return bool
 	 */
-	public static function uses_site_colours( string $key ): bool {
+	public static function uses_site_colors( string $key ): bool {
 		return self::DEFAULT_THEME === self::normalize( $key );
 	}
 
@@ -221,7 +231,7 @@ CSS;
 	}
 
 	/**
-	 * What every look gets: a print stylesheet.
+	 * Returns what every look gets: a print stylesheet.
 	 *
 	 * A static export is the copy people print, and the browser's default would
 	 * put the page tree, the search box and the menu button on paper. This drops

@@ -32,6 +32,7 @@ use LivingHandbook\Frontend\Headings;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Support\TempFiles;
+use LivingHandbook\Support\TimeBudget;
 use WP_Error;
 use WP_Post;
 use WP_Query;
@@ -46,6 +47,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * The static website export: planning, rendering, packing and delivery.
+ *
+ * @phpstan-import-type SiteInfo from SiteRenderer
+ * @phpstan-import-type ExportIndex from SiteRenderer
+ *
+ * @phpstan-type StaticJob array{
+ *     job: string,
+ *     user: int,
+ *     term: int,
+ *     root: int,
+ *     index: ExportIndex,
+ *     queue: array<int, int>,
+ *     position: int,
+ *     mermaid: bool,
+ *     template: string,
+ *     supports: array<string, string>,
+ *     zip: string,
+ *     theme: string,
+ *     site: SiteInfo
+ * }
  */
 final class StaticSite {
 
@@ -81,7 +101,7 @@ final class StaticSite {
 	private const STYLESHEET_ASSETS = array( 'woff2', 'woff', 'ttf', 'otf', 'eot', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico' );
 
 	/**
-	 * Hook registration.
+	 * Registers the hooks.
 	 *
 	 * @return void
 	 */
@@ -92,9 +112,13 @@ final class StaticSite {
 	}
 
 	/**
-	 * Who may export. The same rule as the bundle export: a static copy carries
-	 * every page of a handbook out of the site's access rules, so it is not a
-	 * thing an author of their own pages gets to do.
+	 * Whether the current user may export at all.
+	 *
+	 * The same rule as the bundle export: a static copy carries every page the
+	 * user can read in a handbook out of the site's access rules, so it is not
+	 * a thing an author of their own pages gets to do. Which handbook and which
+	 * of its pages are decided per export, by can_view_term() and
+	 * can_view_post().
 	 *
 	 * @return bool
 	 */
@@ -147,7 +171,7 @@ final class StaticSite {
 	}
 
 	/**
-	 * Load the export screen's script on the export page only.
+	 * Loads the export screen's script on the export page only.
 	 *
 	 * @param string $hook Current admin page.
 	 * @return void
@@ -176,7 +200,7 @@ final class StaticSite {
 	}
 
 	/**
-	 * One pass of an export: start a new one, or continue the one named.
+	 * Runs one pass of an export: starts a new one, or continues the one named.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return WP_REST_Response|WP_Error
@@ -190,7 +214,7 @@ final class StaticSite {
 			);
 		}
 
-		$job = self::clean_job_id( (string) $request->get_param( 'job' ) );
+		$job = TimeBudget::job_id( (string) $request->get_param( 'job' ) );
 		if ( '' !== $job ) {
 			$state = self::load_job( $job );
 			if ( null === $state ) {
@@ -251,6 +275,7 @@ final class StaticSite {
 	 * @param int     $root_id Top-level page to export on its own, 0 for all.
 	 * @param string  $theme   The look the export gets.
 	 * @return array<string, mixed>
+	 * @phpstan-return StaticJob
 	 */
 	private static function plan( WP_Term $term, int $root_id, string $theme ): array {
 		$user_id = get_current_user_id();
@@ -341,7 +366,7 @@ final class StaticSite {
 				'title'       => $name,
 				'description' => (string) $term->description,
 				'language'    => str_replace( '_', '-', (string) get_locale() ),
-				'generated'   => date_i18n( (string) get_option( 'date_format' ) ),
+				'generated'   => (string) wp_date( (string) get_option( 'date_format' ) ),
 				'source'      => (string) home_url( '/' ),
 				'slug'        => (string) $term->slug,
 			),
@@ -384,6 +409,7 @@ final class StaticSite {
 	 * Render pages until the budget is up, then either finish or pause.
 	 *
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param StaticJob $state
 	 * @return array<string, mixed>|WP_Error The answer for the browser, or the
 	 *                                       reason the archive cannot be written.
 	 */
@@ -473,6 +499,7 @@ final class StaticSite {
 	 * handbook that may well be internal.
 	 *
 	 * @param array<string, mixed> $state Job state, updated in place.
+	 * @phpstan-param StaticJob $state
 	 * @return ZipArchive|null
 	 */
 	private static function open_zip( array &$state ): ?ZipArchive {
@@ -500,6 +527,7 @@ final class StaticSite {
 	 * @param WP_Post               $post  The page.
 	 * @param array<string, mixed>  $state Job state, updated in place.
 	 * @param array<string, string> $links Exported addresses to their file, from link_targets().
+	 * @phpstan-param StaticJob $state
 	 * @return void
 	 */
 	private static function add_page( ZipArchive $zip, WP_Post $post, array &$state, array $links ): void {
@@ -528,7 +556,7 @@ final class StaticSite {
 		$state['supports'] = $supports;
 
 		/**
-		 * Filter the HTML of one page of a static export.
+		 * Filters the HTML of one page of a static export.
 		 *
 		 * @param string  $html The complete document.
 		 * @param WP_Post $post The page it was built from.
@@ -584,6 +612,7 @@ final class StaticSite {
 	 * @param WP_Post                          $post     The page.
 	 * @param array<int, array<string, mixed>> $index    The export index.
 	 * @param string                           $template The prepared template markup.
+	 * @phpstan-param ExportIndex $index
 	 * @return array{content: string, body: string, from_template: bool}
 	 */
 	private static function render_page( WP_Post $post, array $index, string $template ): array {
@@ -632,6 +661,7 @@ final class StaticSite {
 	 * The file the search entries of a job are collected in, beside its archive.
 	 *
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param StaticJob $state
 	 * @return string
 	 */
 	private static function entries_file( array $state ): string {
@@ -642,6 +672,7 @@ final class StaticSite {
 	 * Read the collected search entries back.
 	 *
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param StaticJob $state
 	 * @return array<int, array<string, string>>
 	 */
 	private static function read_entries( array $state ): array {
@@ -667,6 +698,7 @@ final class StaticSite {
 	 * index.html rather than a site the reader may not be able to open.
 	 *
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param StaticJob $state
 	 * @return array<string, string> Address without trailing slash to file path from the export root.
 	 */
 	private static function link_targets( array $state ): array {
@@ -880,6 +912,7 @@ final class StaticSite {
 	 *
 	 * @param ZipArchive           $zip   The open archive.
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param StaticJob $state
 	 * @return void
 	 */
 	private static function add_site_files( ZipArchive $zip, array $state ): void {
@@ -904,6 +937,7 @@ final class StaticSite {
 	 * The size of the finished archive, in bytes.
 	 *
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param StaticJob $state
 	 * @return int Zero when the file is gone, which the caller shows as "0 B".
 	 */
 	private static function zip_size( array $state ): int {
@@ -1065,6 +1099,7 @@ final class StaticSite {
 	 * The name the browser saves the file under.
 	 *
 	 * @param array<string, mixed> $state Job state.
+	 * @phpstan-param StaticJob $state
 	 * @return string
 	 */
 	private static function file_name( array $state ): string {
@@ -1078,7 +1113,7 @@ final class StaticSite {
 	}
 
 	/**
-	 * Hand the finished file to the browser and remove it.
+	 * Sends the finished file to the browser and deletes it.
 	 *
 	 * @return void
 	 */
@@ -1089,8 +1124,8 @@ final class StaticSite {
 		check_admin_referer( self::ACTION );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- check_admin_referer above.
-		$raw   = isset( $_GET['job'] ) ? wp_unslash( $_GET['job'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- clean_job_id() below is the sanitisation, and it keeps case on purpose.
-		$state = self::load_job( self::clean_job_id( is_string( $raw ) ? $raw : '' ) );
+		$raw   = isset( $_GET['job'] ) ? wp_unslash( $_GET['job'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- TimeBudget::job_id() below is the sanitization, and it keeps case on purpose.
+		$state = self::load_job( TimeBudget::job_id( is_string( $raw ) ? $raw : '' ) );
 		if ( null === $state || '' === (string) $state['zip'] || ! is_readable( (string) $state['zip'] ) ) {
 			// The likeliest reason by far is that it was already fetched: the file
 			// is deleted as it is handed over. Saying so beats "no longer
@@ -1113,28 +1148,11 @@ final class StaticSite {
 	}
 
 	/**
-	 * Reduce a job id from a request to the characters one can hold.
-	 *
-	 * Case is kept, and that is not cosmetic. The id goes into a transient name,
-	 * and lower-casing it here would build a key that the database still finds,
-	 * because its collation ignores case, while the object cache does not: one
-	 * pass would read a stale copy of the job from the cache and the export would
-	 * repeat a page forever. sanitize_key() lower-cases, so it is not used.
-	 *
-	 * @param string $job Raw job id.
-	 * @return string
-	 */
-	private static function clean_job_id( string $job ): string {
-		$clean = preg_replace( '/[^A-Za-z0-9]/', '', $job );
-
-		return is_string( $clean ) ? $clean : '';
-	}
-
-	/**
 	 * Load a job, and only for the person it belongs to.
 	 *
 	 * @param string $job Job id.
 	 * @return array<string, mixed>|null
+	 * @phpstan-return StaticJob|null
 	 */
 	private static function load_job( string $job ): ?array {
 		if ( '' === $job ) {
@@ -1149,6 +1167,11 @@ final class StaticSite {
 			return null;
 		}
 
+		/**
+		 * Written by plan() and run(), so in their shape.
+		 *
+		 * @var StaticJob $state
+		 */
 		return $state;
 	}
 
@@ -1158,23 +1181,18 @@ final class StaticSite {
 	 * @return float
 	 */
 	private static function time_budget(): float {
-		$budget = (float) self::BUDGET;
-
-		$limit = (float) ini_get( 'max_execution_time' );
-		if ( $limit > 0.0 ) {
-			$budget = min( $budget, max( 5.0, $limit * 0.6 ) );
-		}
+		$budget = TimeBudget::seconds( (float) self::BUDGET );
 
 		/**
-		 * Filter how long one pass of a static export may take, in seconds.
+		 * Filters how long one pass of a static export may take, in seconds.
 		 *
-		 * @param float $budget Seconds.
+		 * @param float $budget Seconds. Default 15, less where PHP's own limit is tight.
 		 */
 		return (float) apply_filters( 'living_handbook_static_export_time_budget', $budget );
 	}
 
 	/**
-	 * The second half of the export screen: the form for a static website.
+	 * Prints the second half of the export screen: the form for a static website.
 	 *
 	 * @param array<int, WP_Term> $handbooks The handbooks to offer.
 	 * @return void
@@ -1221,7 +1239,7 @@ final class StaticSite {
 							<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $theme['label'] ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<p class="description"><?php esc_html_e( '"Like this site" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other three leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team.', 'living-handbook' ); ?></p>
+					<p class="description"><?php esc_html_e( '"Like this site" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other looks leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team.', 'living-handbook' ); ?></p>
 				</td>
 			</tr>
 		</table>
