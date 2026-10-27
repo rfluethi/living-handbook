@@ -196,17 +196,39 @@ final class Cards {
 		// term changes.
 		$version = (int) get_option( Navigation::CACHE_VERSION_OPTION, 0 );
 
-		// The card list is built from a query that is filtered per user, so the
-		// key has to carry who is asking. Without that, the first editor to open
-		// the page fills the cache with pages a guest may not see, and everyone
-		// gets them for the next day. Two things decide what a viewer gets: the
-		// handbooks they may read, and whether they bypass the filter altogether
-		// (edit_others_posts), which viewable_term_ids() does not express.
-		$scope = current_user_can( 'edit_others_posts' )
+		return 'lh_areas_' . $version . '_' . $term_id . '_' . self::viewer_scope();
+	}
+
+	/**
+	 * Cache key of a handbook's preview on the overview, scoped like the areas.
+	 *
+	 * @param int $term_id Handbook term ID.
+	 * @param int $limit   How many pages the preview lists.
+	 * @return string
+	 */
+	public static function preview_cache_key( int $term_id, int $limit ): string {
+		$version = (int) get_option( Navigation::CACHE_VERSION_OPTION, 0 );
+
+		return 'lh_preview_' . $version . '_' . $term_id . '_' . $limit . '_' . self::viewer_scope();
+	}
+
+	/**
+	 * What decides which pages of a handbook the current viewer gets, as a
+	 * short string for a cache key.
+	 *
+	 * @return string
+	 */
+	private static function viewer_scope(): string {
+		// The cached lists are built from queries that are filtered per user, so
+		// the key has to carry who is asking. Without that, the first editor to
+		// open the page fills the cache with pages a guest may not see, and
+		// everyone gets them for the next day. Two things decide what a viewer
+		// gets: the handbooks they may read, and whether they bypass the filter
+		// altogether (edit_others_posts), which viewable_term_ids() does not
+		// express.
+		return current_user_can( 'edit_others_posts' )
 			? 'editor'
 			: substr( md5( implode( ',', AccessController::viewable_term_ids( get_current_user_id() ) ) ), 0, 12 );
-
-		return 'lh_areas_' . $version . '_' . $term_id . '_' . $scope;
 	}
 
 	/**
@@ -340,32 +362,76 @@ final class Cards {
 			return '';
 		}
 
+		// Cached like the area tiles, per handbook and per access profile, and
+		// retired by the same version counter when a page or a handbook changes.
+		// An overview of ten handbooks otherwise ran four queries per card on
+		// every view, for three titles each.
+		$cache_key = self::preview_cache_key( (int) $term->term_id, $limit );
+		$cached    = get_transient( $cache_key );
+		if ( is_string( $cached ) ) {
+			return $cached;
+		}
+
+		$out   = '';
 		$pages = PageTree::top_level( (int) $term->term_id, $limit );
-		if ( array() === $pages ) {
-			return '';
+		if ( array() !== $pages ) {
+			$more  = count( $pages ) > $limit;
+			$pages = array_slice( $pages, 0, $limit );
+
+			$items = '';
+			foreach ( $pages as $post ) {
+				$items .= sprintf(
+					'<li><a href="%1$s">%2$s</a></li>',
+					esc_url( (string) get_permalink( $post ) ),
+					esc_html( get_the_title( $post ) )
+				);
+			}
+
+			if ( $more ) {
+				$items .= sprintf(
+					'<li class="living-handbook-card__more"><a href="%1$s">%2$s</a></li>',
+					esc_url( $link ),
+					esc_html__( 'All pages', 'living-handbook' )
+				);
+			}
+
+			$out = '<ul class="living-handbook-card__preview">' . $items . '</ul>';
 		}
 
-		$more  = count( $pages ) > $limit;
-		$pages = array_slice( $pages, 0, $limit );
+		set_transient( $cache_key, $out, DAY_IN_SECONDS );
+		return $out;
+	}
 
-		$items = '';
-		foreach ( $pages as $post ) {
-			$items .= sprintf(
-				'<li><a href="%1$s">%2$s</a></li>',
-				esc_url( (string) get_permalink( $post ) ),
-				esc_html( get_the_title( $post ) )
-			);
+	/**
+	 * Read the cached previews of several handbooks in one query.
+	 *
+	 * Without a persistent object cache a transient is two rows in the options
+	 * table, and get_transient() reads them per call: one query per card even
+	 * when every preview is cached. The overview knows all its cards up front,
+	 * so it asks for all their rows at once and each card then finds its own in
+	 * memory. With a persistent object cache transients do not live in the
+	 * options table, and there is nothing to read ahead.
+	 *
+	 * @param array<int, WP_Term> $terms Handbooks on the overview.
+	 * @param int                 $limit How many pages each preview lists.
+	 * @return void
+	 */
+	public static function prime_previews( array $terms, int $limit ): void {
+		if ( $limit < 1 || array() === $terms || wp_using_ext_object_cache() ) {
+			return;
 		}
 
-		if ( $more ) {
-			$items .= sprintf(
-				'<li class="living-handbook-card__more"><a href="%1$s">%2$s</a></li>',
-				esc_url( $link ),
-				esc_html__( 'All pages', 'living-handbook' )
-			);
+		$names = array();
+		foreach ( $terms as $term ) {
+			if ( $term instanceof WP_Term ) {
+				$key     = self::preview_cache_key( (int) $term->term_id, $limit );
+				$names[] = '_transient_' . $key;
+				$names[] = '_transient_timeout_' . $key;
+			}
 		}
-
-		return '<ul class="living-handbook-card__preview">' . $items . '</ul>';
+		if ( array() !== $names ) {
+			wp_prime_option_caches( $names );
+		}
 	}
 
 	/**

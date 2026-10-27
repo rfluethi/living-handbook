@@ -75,8 +75,8 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Admin\MoveToHandbook::OPTION_ANY_MOVED );
 	delete_option( LivingHandbook\Git\GitSync::OPTION_SYNC_LOCK );
 
-	// Always: remove the area cards cache (transients keyed by version and by
-	// viewer). There is no lh_nav_ prefix to clean up. The navigation is built
+	// Always: remove the area cards cache and the handbook previews of the
+	// overview (transients keyed by version and by viewer). There is no lh_nav_ prefix to clean up. The navigation is built
 	// fresh on every request, see Navigation::CACHE_VERSION_OPTION.
 	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
 	//
@@ -91,6 +91,7 @@ function living_handbook_run_uninstall(): void {
 	// longer prefix another plugin might use.
 	$transient_prefixes = array(
 		'lh_areas_',
+		'lh_preview_',
 		'living_handbook_import_',
 		'living_handbook_static_',
 		'living_handbook_bundle_report_',

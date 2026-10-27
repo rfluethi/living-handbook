@@ -20,6 +20,7 @@ use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use WP_Post;
 use WP_Query;
+use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -238,23 +239,35 @@ final class PageTree {
 		if ( $term_id <= 0 || $limit < 1 ) {
 			return array();
 		}
+		$term = get_term( $term_id, Handbooks::TAXONOMY );
+		if ( ! $term instanceof WP_Term ) {
+			return array();
+		}
 
 		$query = new WP_Query(
 			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => 'publish',
-				'post_parent'    => 0,
-				'posts_per_page' => $limit + 1,
-				'orderby'        => array(
+				'post_type'              => Handbook::POST_TYPE,
+				'post_status'            => 'publish',
+				'post_parent'            => 0,
+				'posts_per_page'         => $limit + 1,
+				'orderby'                => array(
 					'menu_order' => 'ASC',
 					'title'      => 'ASC',
 				),
-				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+				'no_found_rows'          => true,
+				// A preview prints a title and a link. The meta of the pages is
+				// not read at all, and of their terms only the handbook, which
+				// the access filter needs and reads by itself.
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				// By term_taxonomy_id, which the term already carries: by term_id
+				// WordPress first looks that up with a query of its own, one per
+				// card on the overview.
+				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					array(
 						'taxonomy'         => Handbooks::TAXONOMY,
-						'field'            => 'term_id',
-						'terms'            => $term_id,
+						'field'            => 'term_taxonomy_id',
+						'terms'            => (int) $term->term_taxonomy_id,
 						'include_children' => false,
 					),
 				),

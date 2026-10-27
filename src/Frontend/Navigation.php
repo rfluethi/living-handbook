@@ -54,7 +54,8 @@ final class Navigation {
 	 * Option holding the shared cache version of the frontend.
 	 *
 	 * The name says navigation for historical reasons; what reads it is the area
-	 * cards cache in Cards::areas_cache_key(). The navigation itself is not
+	 * cards cache in Cards::areas_cache_key() and the handbook previews on the
+	 * overview in Cards::preview_cache_key(). The navigation itself is not
 	 * cached, and deliberately so: its markup carries the current page and its
 	 * open branches, so an entry would be needed per page and per viewer, and on
 	 * a large handbook that is a cache that never hits and never stops growing.

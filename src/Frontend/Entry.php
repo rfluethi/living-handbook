@@ -44,6 +44,9 @@ final class Entry {
 			$names[ (int) $term->term_id ] = $term->name;
 		}
 
+		// The cached previews of all cards in one read, not one per card.
+		Cards::prime_previews( $readable, $preview );
+
 		$cards = '';
 		foreach ( $by_parent[0] ?? array() as $term ) {
 			$cards .= Cards::handbook_card( $term, $preview );
