@@ -18,13 +18,12 @@ Typical cases: an audit that wants the wording as it stood on a date; an externa
 ## How it works
 
 1. Open **Handbook → Export**. The section is called **Export as a website**, below the bundle export.
-2. Pick the **handbook**, and optionally a single area in the second field.
+2. Pick the **handbook**, and optionally a single area in the second field. The handbooks you may read are offered. An area you may not view cannot be exported.
 3. Pick the **look**. There are four:
-   * **Like this site:** your theme travels along. Colours, fonts and spacing come from its `theme.json`, the font files sit in the ZIP, and what you set under Appearance comes on top. This is the default.
+   * **Like this site:** your theme travels along. Colours, fonts and spacing come from its `theme.json`, and what you set under Appearance comes on top. The font files that live on this site go into the ZIP; a font from another server keeps its address. This is the default.
    * **Plain, neutral:** no house colours. Usually the better choice for a copy that leaves the team.
    * **Dark:** light text on a dark page, for reading at night.
-   * **Paper, for printing:** serif text, a narrower measure, high contrast.
-   Every look prints cleanly: the page list, the search box and the footer are left off paper, and links to the outside world print with their address.
+   * **Paper, for printing:** serif text, a narrower measure, high contrast. Every look prints cleanly: the page list, the search box and the footer are left off paper, and links to the outside world print with their address.
 4. Click **Build the website**. The progress counts the pages, because it is built in several passes: the browser fetches one after another, so a large handbook does not run into a timeout.
 5. When it is done, a button appears with the file size. That downloads the ZIP.
 
@@ -50,7 +49,8 @@ Two more things work as they do on the site: **images and diagrams enlarge on a 
 * **It is out of date from the first minute.** Nothing in it updates itself. For content that stays current, give people access rather than exports.
 * **Comments and "Was this helpful?" are missing.** Both need a server, and there is none.
 * **There are no classification filters**, only the search. The filter bar lives on queries to WordPress.
-* **People are not in it.** A page's footer shows the dates and the responsible role, but no names and no avatars: the file leaves the building, the names stay here.
+* **People are not in it.** A page's footer shows the dates and the responsible role (the role only while the Responsibility group is switched on), but no names and no avatars: the file leaves the building, the names stay here.
+* **Password-protected pages are left out**, because their password form does not work without the website; a link to one still leads to the website.
 * **A very large handbook makes a large file.** The images are most of it. When in doubt, narrow the export to one area.
 
 </details>
@@ -68,6 +68,6 @@ Two more things work as they do on the site: **images and diagrams enlarge on a 
 * Eltern-Seite: Content
 * Reihenfolge: 5
 * Textauszug: Export a handbook as a finished HTML website, for readers who have no WordPress and no access to this site.
-* Letzte Aktualisierung: 2026-08-09
+* Letzte Aktualisierung: 2026-11-08
 * Letzte Prüfung: 2026-08-09
 * Prüfintervall: 180 Tage

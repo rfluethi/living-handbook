@@ -1,21 +1,10 @@
 # Contributing
 
-This is an internal team project that is open for anyone to read and, if useful,
-to build on. Contributions are welcome but not actively solicited, and that
-sentence has a practical consequence worth stating plainly rather than leaving
-you to find out.
+This is an internal team project that is open for anyone to read and, if useful, to build on. Contributions are welcome but not actively solicited, and that sentence has a practical consequence worth stating plainly rather than leaving you to find out.
 
-**Open an issue before you write code.** There is no public backlog here: the
-task list lives in the maintainer's own workspace, so an open repository with no
-issues does not mean there is nothing to do, it means the list is somewhere you
-cannot see. A pull request that arrives unannounced may well duplicate work that
-is half finished, or change something in a direction that has already been
-decided against, and finding that out after you wrote it is the worst moment
-for everyone. An issue costs you five minutes and gets you an answer about where
-the thing already stands.
+**Open an issue before you write code.** There is no public backlog here: the task list lives in the maintainer's own workspace, so an open repository with no issues does not mean there is nothing to do, it means the list is somewhere you cannot see. A pull request that arrives unannounced may well duplicate work that is half finished, or change something in a direction that has already been decided against, and finding that out after you wrote it is the worst moment for everyone. An issue costs you five minutes and gets you an answer about where the thing already stands.
 
-Small and obvious fixes, a typo, a broken link, a wrong version number in the
-docs, need none of that. Send them.
+Small and obvious fixes, a typo, a broken link, a wrong version number in the docs, need none of that. Send them.
 
 ## Development setup
 
@@ -23,44 +12,29 @@ docs, need none of that. Send them.
 composer install
 ```
 
-That is enough to run the checks. It is not enough to see the plugin: `vendor/`
-is a runtime dependency, so the plugin needs it installed before WordPress loads
-it.
+That is enough to run the checks. It is not enough to see the plugin: `vendor/` is a runtime dependency, so the plugin needs it installed before WordPress loads it.
 
 ## Running it locally
 
-The repository ships a [`wp-env`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/)
-configuration, so a working WordPress with the plugin in it is two commands.
-It needs Docker running.
+The repository ships a [`wp-env`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/) configuration, so a working WordPress with the plugin in it is two commands. It needs Docker running.
 
 ```bash
 composer install          # vendor/ first: the plugin needs it at runtime
 npx wp-env start
 ```
 
-The site is at `http://localhost:8888`, the admin at `/wp-admin` with
-`admin` / `password`. `npx wp-env stop` stops it, `npx wp-env destroy` throws the
-database away.
+The site is at `http://localhost:8888`, the admin at `/wp-admin` with `admin` / `password`. `npx wp-env stop` stops it, `npx wp-env destroy` throws the database away.
 
-Two things the configuration takes care of, because both look like a broken
-plugin when they are missing:
+Two things the configuration takes care of, because both look like a broken plugin when they are missing:
 
-- **Pretty permalinks.** A handbook's entry page lives at
-  `/handbook-set/<slug>/`, which plain permalinks cannot serve. The `afterStart`
-  script sets them.
-- **A block theme.** The plugin registers block templates, which only a block
-  theme uses; on a classic theme the front end falls back to the theme's own
-  layout and looks wrong for a reason that is not obvious. A current WordPress
-  activates a block theme by default, so nothing extra is needed, but if you
-  switch themes, switch to a block theme.
+- **Pretty permalinks.** A handbook's entry page lives at `/handbook-set/<slug>/`, which plain permalinks cannot serve. The `afterStart` script sets them.
+- **A block theme.** The plugin registers block templates, which only a block theme uses; on a classic theme the front end falls back to the theme's own layout and looks wrong for a reason that is not obvious. A current WordPress activates a block theme by default, so nothing extra is needed, but if you switch themes, switch to a block theme.
 
-`.wp-env.override.json` is ignored by git, so you can change the port or the
-WordPress version for yourself without touching the shared config.
+`.wp-env.override.json` is ignored by git, so you can change the port or the WordPress version for yourself without touching the shared config.
 
 ## Before you open a pull request
 
-Run the checks locally. All four run in CI on every pull request, and a pull
-request is not merged until they are green:
+Run the checks locally. All four run in CI on every pull request, and a pull request is not merged until they are green:
 
 ```bash
 composer lint             # PHPCS, WordPress coding standards
@@ -69,14 +43,9 @@ composer test             # PHPUnit, unit tests
 composer test:integration # PHPUnit, integration tests against a real WordPress
 ```
 
-The integration tests are the ones that need setting up, because they need a
-database and a WordPress checkout; the section below does that once. They are
-not optional: they are more than four fifths of the suite, and they are where a
-change to access control, import or the block templates is actually caught. CI
-runs them against MySQL 8 on every push to `main` and every pull request.
+The integration tests are the ones that need setting up, because they need a database and a WordPress checkout; the section below does that once. They are not optional: they are more than four fifths of the suite, and they are where a change to access control, import or the block templates is actually caught. CI runs them against MySQL 8 on every push to `main` and every pull request.
 
-The unit tests additionally run on PHP 8.1, 8.2, 8.3 and 8.4, because 8.1 is the
-declared minimum and 8.4 is what current hosts ship.
+The unit tests additionally run on PHP 8.1, 8.2, 8.3 and 8.4, because 8.1 is the declared minimum and 8.4 is what current hosts ship.
 
 ### Setting up the integration test suite
 
@@ -148,20 +117,12 @@ Do not extract the zip inside the repository; that would commit a second copy of
 
 ## Conventions
 
-- **English is the language of the repository.** Code, comments, commit messages, pull request and issue text, `readme.txt` and the English `docs/` are written in English, so the project stays open to contributors who do not speak German. The German files in the repository are the localisation files `languages/*-de_DE.*` and the German app handbook under `docs/user/de/`, whose pages and image names are German too. The German source of the developer docs is kept in the project's own workspace, not in this repository; the English `docs/` here is produced from it.
+- **English is the language of the repository.** Code, comments, commit messages, pull request and issue text, `readme.txt` and the English `docs/` are written in English, so the project stays open to contributors who do not speak German. The German files in the repository are the localisation files `languages/*-de_DE.*`, the German app handbook under `docs/user/de/` and the German technical documentation under `docs/technical/de/`, whose pages and image names are German too. Neither language is the source of the other: they are separate texts, and a change to one is a change to both.
 - Target PHP 8.1 and WordPress 6.8 or newer.
 - Follow the WordPress coding standards (enforced by PHPCS).
 - All user-facing strings use the `living-handbook` text domain, and English is the source language, so the plugin is translatable into any language.
 - **German content that ships with the plugin uses German spelling, with `ß`.** That is the app handbook under `docs/user/de/`, the technical documentation under `docs/technical/de/`, and the `de_DE` translation. `de_CH` is the Swiss variant of the same text with `ß` resolved to `ss`, derived from `de_DE` rather than written separately. Both follow the current rules; they differ only in that Switzerland dropped the `ß`. Neither is the pre-1996 spelling, and no file here uses it.
 - Escape on output, sanitize on input, check capabilities and nonces.
-- **Two changelogs, and they are not the same file.** `readme.txt` carries the
-  short, user-facing entry that WordPress shows in the update dialog; wp.org
-  reads it and the 300-character limit on an upgrade notice is enforced by a
-  test. `CHANGELOG.md` carries the long version: what was wrong, what changed
-  and why it was decided that way. A user-facing change goes in both, the short
-  form in `readme.txt` and the reasoning in `CHANGELOG.md`. An internal change
-  goes in `CHANGELOG.md` alone.
-- Releasing is written down in [`docs/technical/en/living-handbook-technical/releasing.md`](docs/technical/en/living-handbook-technical/releasing.md). Read it
-  before touching a version number: three files have to agree, and a build
-  refuses to run when they do not.
+- **Two changelogs, and they are not the same file.** `readme.txt` carries the short, user-facing entry that WordPress shows in the update dialog; wp.org reads it and the 300-character limit on an upgrade notice is enforced by a test. `CHANGELOG.md` carries the long version: what was wrong, what changed and why it was decided that way. A user-facing change goes in both, the short form in `readme.txt` and the reasoning in `CHANGELOG.md`. An internal change goes in `CHANGELOG.md` alone.
+- Releasing is written down in [`docs/technical/en/living-handbook-technical/releasing.md`](docs/technical/en/living-handbook-technical/releasing.md). Read it before touching a version number: three files have to agree, and a build refuses to run when they do not.
 - Branch off `main`, keep pull requests focused, and make sure CI is green.
