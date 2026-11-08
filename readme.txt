@@ -116,6 +116,7 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 = 0.76.0 =
 * Security: comments can only be written by people who may read the page; previous/next links, attachment pages, cards and search snippets respect access rules and passwords.
 * Security: imports store only real images (and, in bundles, ordinary media files); an imported page cannot be placed under a page you may not edit.
+* Security: the bundled YAML library is updated past a published vulnerability that let a crafted mkdocs.yml stall an import.
 * New: a bundle carries the handbook's learning paths, pointing at the imported pages.
 * New: WordPress's privacy tools export and erase the plugin's personal data, with a suggested privacy policy text.
 * Changed: whoever may edit a page gets it in the block editor and the preview, even in a handbook they may not read. Only administrators read every handbook; editors read what a handbook grants them, on the site and in wp-admin.

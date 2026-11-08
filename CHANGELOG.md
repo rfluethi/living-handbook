@@ -53,6 +53,7 @@ The rest of the independent review of 0.75.0: every finding that needed no produ
 * Migrations after an update by WP-CLI or auto-update waited for the next admin visit; they run on the next request now, behind a lock. Deactivation rebuilt the plugin's rewrite rules instead of removing them, and network activation is refused instead of half-working.
 * The four classifying taxonomies wrote rewrite rules nobody can use, and their labels were sentence fragments that do not translate.
 * The admin's inline CSS and JavaScript go through registered handles and load only where needed.
+* symfony/yaml is updated to 6.4.50, past GHSA-hwfg-qwvh-2wfx: a crafted `mkdocs.yml` could keep the YAML parser busy for minutes and hold up the import.
 
 
 **Found after the review, in an independent second review of the 0.76.0 changes, a browser test of 37 scenarios on a fresh site and a measurement on 2000 pages.**
