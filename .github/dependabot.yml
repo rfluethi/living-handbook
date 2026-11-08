@@ -29,6 +29,11 @@ updates:
       # other's versions; one pull request keeps them installable together.
       lint-tools:
         patterns: [ '*' ]
+    ignore:
+      # @wordpress/stylelint-config 27 requires stylelint 17 as a peer, so npm ci
+      # refuses stylelint 18. Lift this when the WordPress preset accepts it.
+      - dependency-name: stylelint
+        update-types: [ 'version-update:semver-major' ]
     labels: [ dependencies ]
 
   - package-ecosystem: github-actions

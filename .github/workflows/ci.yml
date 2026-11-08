@@ -120,7 +120,29 @@ jobs:
           bash bin/build.sh
           mkdir -p build
           unzip -q living-handbook-*.zip -d build
+      # Two groups of checks are left out, everything else stays strict.
+      #
+      # The five runtime checks of the Performance category load a demo page of
+      # every viewable post type. They create it, then look it up with
+      # get_posts() as a logged-out visitor. A handbook page in no handbook is
+      # invisible to a visitor by design (AccessController::restrict_query fails
+      # closed), so the lookup finds nothing and Plugin Check aborts the whole
+      # run with "Unable to retrieve post URL for post type: handbook", before
+      # it reports a single finding.
+      #
+      # offloading_files reports nine false positives: the GitHub host names of
+      # the import's allowlist, the URL rewrite that turns a GitHub page address
+      # into its raw file, and the privacy text that names GitHub and Gravatar.
+      # The plugin fetches Markdown from GitHub on purpose and serves none of
+      # its own assets from elsewhere. Explain both at the wordpress.org review.
       - name: Plugin Check
         uses: WordPress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
         with:
           build-dir: './build/living-handbook'
+          exclude-checks: |
+            enqueued_scripts_size
+            enqueued_styles_size
+            enqueued_scripts_scope
+            enqueued_styles_scope
+            non_blocking_scripts
+            offloading_files
