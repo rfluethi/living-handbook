@@ -13,10 +13,10 @@
 		"lint": "npm run lint:js && npm run lint:css"
 	},
 	"devDependencies": {
-		"@wordpress/eslint-plugin": "27.1.0",
-		"@wordpress/prettier-config": "4.57.0",
-		"@wordpress/stylelint-config": "26.1.0",
-		"eslint": "9.39.5",
+		"@wordpress/eslint-plugin": "28.1.0",
+		"@wordpress/prettier-config": "5.1.0",
+		"@wordpress/stylelint-config": "27.1.0",
+		"eslint": "10.14.0",
 		"prettier": "npm:wp-prettier@3.9.6",
 		"stylelint": "17.16.0"
 	},
