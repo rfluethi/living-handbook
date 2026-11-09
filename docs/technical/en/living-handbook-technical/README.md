@@ -25,6 +25,7 @@ Two audiences share this folder. The first two pages are for anyone running the 
 | [rest-routes.md](rest-routes.md) | Every route under `living-handbook/v1`, with method, permission and parameters, and what the plugin changes on WordPress's own routes. |
 | [bundle-format.md](bundle-format.md) | The bundle a handbook export writes and an import reads: the manifest, matching, and what travels. |
 | [ai-access.md](ai-access.md) | The seven reading abilities for AI tools, the access rule they share, and the count of failed searches. |
+| [protected-files.md](protected-files.md) | The protected folder for files of internal handbooks, the delivery, the server rules for Apache and nginx, and the self-test. |
 
 ## Where the other documentation lives
 

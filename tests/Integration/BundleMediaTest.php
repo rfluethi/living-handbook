@@ -16,6 +16,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Tests\Integration;
 
 use LivingHandbook\Import\HandbookExport;
+use LivingHandbook\Import\HandbookImport;
 use WP_Term;
 use WP_UnitTestCase;
 use ZipArchive;
@@ -124,6 +125,97 @@ final class BundleMediaTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( (string) $large[0], $by_url, 'The size the page shows is in the bundle, under the URL the content uses.' );
 		$this->assertNotFalse( $zip->getFromName( $by_url[ (string) $large[0] ] ), 'And its file is in the ZIP.' );
 		$zip->close();
+	}
+
+	/**
+	 * A protected image travels in the bundle, read from the protected folder.
+	 *
+	 * @return void
+	 */
+	public function test_a_protected_image_travels(): void {
+		$term_id = (int) self::factory()->term->create(
+			array(
+				'taxonomy' => 'handbook_set',
+				'name'     => 'Intern ' . wp_generate_password( 6, false ),
+			)
+		);
+		update_term_meta( $term_id, 'living_handbook_visibility', 'members' );
+		$post_id = (int) self::factory()->post->create(
+			array(
+				'post_type'   => 'handbook',
+				'post_status' => 'publish',
+			)
+		);
+		wp_set_object_terms( $post_id, array( $term_id ), 'handbook_set' );
+		$image = (int) self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg', $post_id );
+		try {
+			$this->assertTrue( \LivingHandbook\Files\ProtectedFiles::is_protected( $image ) );
+			$url = (string) wp_get_attachment_url( $image );
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => '<!-- wp:image {"id":' . $image . '} --><figure class="wp-block-image"><img src="' . esc_url( $url ) . '" alt=""/></figure><!-- /wp:image -->',
+				)
+			);
+
+			$term = get_term( $term_id, 'handbook_set' );
+			$this->assertInstanceOf( WP_Term::class, $term );
+			$path            = ( new HandbookExport() )->build_zip( $term );
+			$this->bundles[] = $path;
+
+			$zip = new ZipArchive();
+			$this->assertTrue( true === $zip->open( $path ) );
+			$manifest = json_decode( (string) $zip->getFromName( 'manifest.json' ), true );
+			$this->assertIsArray( $manifest );
+			$by_url = array();
+			foreach ( (array) $manifest['media'] as $item ) {
+				$by_url[ (string) $item['original_url'] ] = (string) $item['file'];
+			}
+			$this->assertArrayHasKey( $url, $by_url );
+			$this->assertSame( (string) file_get_contents( (string) get_attached_file( $image ) ), (string) $zip->getFromName( $by_url[ $url ] ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local file.
+
+			// Back in, into another members handbook: the file is attached to its
+			// page and lands in the protected folder, and the page follows.
+			$target = (int) self::factory()->term->create( array( 'taxonomy' => 'handbook_set' ) );
+			update_term_meta( $target, 'living_handbook_visibility', 'members' );
+			$report = ( new HandbookImport() )->import_manifest(
+				$manifest,
+				static fn( string $file ) => $zip->getFromName( $file ),
+				HandbookImport::RULE_CREATE,
+				$target
+			);
+			$zip->close();
+			$this->assertSame( 1, $report['created'], (string) wp_json_encode( $report ) );
+			$pages = get_posts(
+				array(
+					'post_type'   => 'handbook',
+					'post_status' => 'any',
+					'fields'      => 'ids',
+					'tax_query'   => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- test.
+						array(
+							'taxonomy' => 'handbook_set',
+							'terms'    => $target,
+						),
+					),
+				)
+			);
+			$this->assertCount( 1, $pages );
+			$children = get_children(
+				array(
+					'post_parent' => (int) $pages[0],
+					'post_type'   => 'attachment',
+					'fields'      => 'ids',
+				)
+			);
+			$this->assertCount( 1, $children, 'The imported file belongs to its page.' );
+			$copy = (int) reset( $children );
+			$this->assertTrue( \LivingHandbook\Files\ProtectedFiles::is_protected( $copy ) );
+			$this->assertStringContainsString( (string) wp_get_attachment_url( $copy ), (string) get_post_field( 'post_content', (int) $pages[0], 'raw' ) );
+			wp_delete_attachment( $copy, true );
+		} finally {
+			wp_delete_attachment( $image, true );
+			\LivingHandbook\Files\ServerRules::remove();
+		}
 	}
 
 	/**

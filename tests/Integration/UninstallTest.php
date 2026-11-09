@@ -270,6 +270,47 @@ final class UninstallTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Protected files: an ordinary uninstall leaves them locked, as
+	 * deactivating does (fail-closed). "Remove everything" brings them back to
+	 * the normal folder first, because the media library stays (E-0074) and
+	 * nothing would answer the rule any more.
+	 *
+	 * @return void
+	 */
+	public function test_protected_files_stay_locked_unless_everything_goes(): void {
+		$term_id = (int) self::factory()->term->create( array( 'taxonomy' => Handbooks::TAXONOMY ) );
+		update_term_meta( $term_id, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_MEMBERS );
+		$page = (int) self::factory()->post->create(
+			array(
+				'post_type'   => Handbook::POST_TYPE,
+				'post_status' => 'publish',
+			)
+		);
+		wp_set_object_terms( $page, array( $term_id ), Handbooks::TAXONOMY );
+		$image  = (int) self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg', $page );
+		$folder = \LivingHandbook\Files\ProtectedFiles::folder();
+		try {
+			$this->assertTrue( \LivingHandbook\Files\ProtectedFiles::is_protected( $image ) );
+
+			$this->uninstall();
+			$this->assertTrue( \LivingHandbook\Files\ProtectedFiles::is_protected( $image ), 'An ordinary uninstall keeps the files locked.' );
+			$this->assertFileExists( $folder['path'] . '/.htaccess' );
+
+			update_option( GitSync::OPTION_UNINSTALL, true );
+			$this->uninstall();
+			$this->assertSame( 'attachment', get_post_type( $image ), 'The media library stays.' );
+			$this->assertFalse( \LivingHandbook\Files\ProtectedFiles::is_protected( $image ) );
+			$this->assertFileExists( (string) get_attached_file( $image ) );
+			$this->assertFileDoesNotExist( $folder['path'] . '/.htaccess' );
+			$this->assertStringNotContainsString( $folder['path'], (string) get_attached_file( $image ) );
+			$this->assertFalse( get_option( 'living_handbook_moved_files' ), 'Moving back leaves no option behind.' );
+		} finally {
+			wp_delete_attachment( $image, true );
+			\LivingHandbook\Files\ServerRules::remove();
+		}
+	}
+
+	/**
 	 * A page in the trash and an unsaved draft are handbook content too.
 	 *
 	 * post_status 'any' leaves out every status registered with

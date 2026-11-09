@@ -84,6 +84,15 @@ function living_handbook_run_uninstall(): void {
 	LivingHandbook\Search\SearchLog::drop();
 	delete_option( LivingHandbook\Search\SearchLog::OPTION_ENABLED );
 
+	// Always: the bookkeeping of the file protection (E-0076). The files and
+	// their rule stay unless everything goes, see below: fail-closed, like
+	// deactivating.
+	LivingHandbook\Files\ProtectedFiles::unschedule();
+	delete_option( LivingHandbook\Files\ProtectedFiles::OPTION_QUEUE );
+	delete_option( LivingHandbook\Files\ProtectedFiles::OPTION_MOVED );
+	delete_option( LivingHandbook\Files\ServerRules::OPTION_SELFTEST );
+	delete_option( LivingHandbook\Files\ProtectedFiles::LOCK );
+
 	// Always: remove the transients the plugin writes. The area cards and the
 	// handbook previews of the overview (keyed by version and by viewer; the
 	// navigation itself is not cached, see Navigation::CACHE_VERSION_OPTION),
@@ -131,6 +140,14 @@ function living_handbook_run_uninstall(): void {
 	if ( ! $remove_content && ! apply_filters( 'living_handbook_uninstall_remove_content', false ) ) {
 		return;
 	}
+
+	// The media library stays (E-0074), so its protected files go back to the
+	// normal folder first: without the plugin they would sit behind a rule
+	// that nothing answers. Then the rule itself goes.
+	LivingHandbook\Files\ProtectedFiles::release_all();
+	LivingHandbook\Files\ServerRules::remove();
+	// Moving back wrote the map of moved addresses again.
+	delete_option( LivingHandbook\Files\ProtectedFiles::OPTION_MOVED );
 
 	// Register the data model so wp_delete_post and wp_delete_term run cleanly
 	// (init has not fired during uninstall). All taxonomies must be registered

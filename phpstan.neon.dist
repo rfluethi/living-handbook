@@ -9,3 +9,4 @@ parameters:
 		- src
 	scanFiles:
 		- tests/phpstan/constants.php
+		- tests/phpstan/wp-cli.php

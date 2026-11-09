@@ -269,6 +269,39 @@ final class StaticExportTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * A protected file of a members handbook travels like any other: the
+	 * export is made by someone who may read it, and the folder is inside the
+	 * uploads (E-0076).
+	 *
+	 * @return void
+	 */
+	public function test_protected_images_travel_with_the_export(): void {
+		$term  = $this->handbook( 'Intern', Handbooks::VISIBILITY_MEMBERS );
+		$page  = $this->page( $term, 'Mit Bild' );
+		$image = (int) self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/canola.jpg', $page );
+		try {
+			$this->assertTrue( \LivingHandbook\Files\ProtectedFiles::is_protected( $image ) );
+			$url = (string) wp_get_attachment_url( $image );
+			wp_update_post(
+				array(
+					'ID'           => $page,
+					'post_content' => '<p><img src="' . $url . '" alt="Raps"></p>',
+				)
+			);
+
+			$zip      = $this->export( $term );
+			$html     = (string) $zip->getFromName( 'mit-bild.html' );
+			$relative = (string) get_post_meta( $image, '_wp_attached_file', true );
+
+			$this->assertNotFalse( $zip->locateName( 'assets/media/' . $relative ) );
+			$this->assertStringContainsString( 'src="assets/media/' . $relative . '"', $html );
+		} finally {
+			wp_delete_attachment( $image, true );
+			\LivingHandbook\Files\ServerRules::remove();
+		}
+	}
+
+	/**
 	 * A link that climbs out of the uploads folder does not take the file it
 	 * names into the archive. In 0.75.0 "uploads/../wp-config.php" did: the
 	 * part after the uploads URL was appended to the folder unchecked, so any

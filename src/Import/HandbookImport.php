@@ -485,6 +485,10 @@ final class HandbookImport {
 			$this->import_paths( $paths, $term_id, $rule, $media_map, $key_to_id, $report );
 		}
 
+		if ( $term_id > 0 ) {
+			self::attach_media( $media_map, array_values( array_unique( array_map( 'intval', $key_to_id ) ) ) );
+		}
+
 		$refused = (int) $report['refused'];
 		if ( $refused > 0 ) {
 			$report['notes'][] = sprintf(
@@ -513,6 +517,39 @@ final class HandbookImport {
 		}
 
 		return $report;
+	}
+
+	/**
+	 * Attaches each imported file to the first imported page that uses it.
+	 *
+	 * The files arrive before the pages, unattached. A file of a handbook that
+	 * not everyone may read is protected through its page (E-0076): attached,
+	 * it moves into the protected folder and the page follows its new address.
+	 * A file attached elsewhere already keeps its page, as in the Markdown
+	 * import.
+	 *
+	 * @param array<string, string> $media_map Original URL to new URL.
+	 * @param array<int, int>       $page_ids  Imported pages.
+	 * @return void
+	 */
+	private static function attach_media( array $media_map, array $page_ids ): void {
+		foreach ( array_unique( array_values( $media_map ) ) as $url ) {
+			$attachment_id = attachment_url_to_postid( $url );
+			if ( $attachment_id <= 0 || 0 !== (int) wp_get_post_parent_id( $attachment_id ) ) {
+				continue;
+			}
+			foreach ( $page_ids as $page_id ) {
+				if ( $page_id > 0 && false !== strpos( (string) get_post_field( 'post_content', $page_id, 'raw' ), $url ) ) {
+					wp_update_post(
+						array(
+							'ID'          => $attachment_id,
+							'post_parent' => $page_id,
+						)
+					);
+					break;
+				}
+			}
+		}
 	}
 
 	/**

@@ -432,6 +432,35 @@ add_filter(
 );
 ```
 
+### `living_handbook_protected_files_handoff`
+
+Filters how the web server takes over sending a protected file. By default PHP reads the file itself, in blocks. With one of these values the plugin sends only the headers and leaves the content to the server: `x-accel-redirect` (nginx, with the internal location from [protected-files.md](protected-files.md)), `x-sendfile` (Apache with `mod_xsendfile`) or `x-litespeed-location` (LiteSpeed, untested). Switch it on only when the server is set up for it: a header it does not understand gives an empty file.
+
+Parameters:
+
+- `string $way` The way, or `''` for PHP. Default `''`.
+
+Return a string. Example for nginx:
+
+```php
+add_filter(
+	'living_handbook_protected_files_handoff',
+	function (): string {
+		return 'x-accel-redirect';
+	}
+);
+```
+
+### `living_handbook_protected_files_internal_path`
+
+Filters the internal nginx location that holds the protected folder for `X-Accel-Redirect`. It has to match the `location` block with `internal;` that the **Access** tab shows.
+
+Parameters:
+
+- `string $path` The location, with a leading and a trailing slash. Default `'/lh-protected-internal/'`.
+
+Return a string.
+
 ## Actions
 
 _None. A hook is a commitment whose signature cannot be changed later without breaking whoever uses it, so one is added when something actually needs it, not from a list. Three candidates, after an import, on the metadata and on the freshness evaluation, are kept as a note in the project's own workspace, with signature and purpose._

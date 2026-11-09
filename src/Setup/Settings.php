@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Setup;
 
 use LivingHandbook\Access\AccessController;
+use LivingHandbook\Files\ProtectionAdmin;
 use LivingHandbook\Frontend\Appearance;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
@@ -433,6 +434,13 @@ final class Settings {
 			self::tab_page( 'access' ),
 			'living_handbook_access_section',
 			array( 'label_for' => self::OPTION_DENIED_PAGE )
+		);
+		add_settings_field(
+			'living_handbook_protected_files',
+			__( 'Protected files', 'living-handbook' ),
+			array( ProtectionAdmin::class, 'render_field' ),
+			self::tab_page( 'access' ),
+			'living_handbook_access_section'
 		);
 
 		add_settings_section( 'living_handbook_uninstall_section', '', '__return_null', self::tab_page( 'uninstall' ) );

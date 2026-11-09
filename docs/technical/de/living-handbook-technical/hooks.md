@@ -402,6 +402,35 @@ add_filter(
 );
 ```
 
+### `living_handbook_protected_files_handoff`
+
+Filtert, wie der Webserver das Senden einer geschützten Datei übernimmt. Standardmäßig liest PHP die Datei selbst, in Blöcken. Mit einem dieser Werte schickt das Plugin nur noch die Kopfzeilen und überlässt den Inhalt dem Server: `x-accel-redirect` (nginx, mit dem internen Ort aus [dateischutz.md](dateischutz.md)), `x-sendfile` (Apache mit `mod_xsendfile`) oder `x-litespeed-location` (LiteSpeed, ungeprüft). Schalte ihn nur ein, wenn der Server dafür eingerichtet ist: Eine Kopfzeile, die er nicht versteht, ergibt eine leere Datei.
+
+Parameter:
+
+- `string $way` Der Weg, oder `''` für PHP. Standard `''`.
+
+Gib eine Zeichenkette zurück. Beispiel für nginx:
+
+```php
+add_filter(
+	'living_handbook_protected_files_handoff',
+	function (): string {
+		return 'x-accel-redirect';
+	}
+);
+```
+
+### `living_handbook_protected_files_internal_path`
+
+Filtert den internen nginx-Ort, unter dem der Schutzordner für `X-Accel-Redirect` liegt. Er muss zum `location`-Block mit `internal;` passen, den der Reiter **Zugriff** zeigt.
+
+Parameter:
+
+- `string $path` Der Ort, mit Schrägstrich vorne und hinten. Standard `'/lh-protected-internal/'`.
+
+Gib eine Zeichenkette zurück.
+
 ## Actions
 
 _Keine. Ein Hook ist eine Zusage, deren Signatur sich später nicht ändern lässt, ohne zu brechen, wer ihn nutzt; einer kommt also dazu, wenn etwas ihn wirklich braucht, nicht von einer Liste. Drei Kandidaten, nach einem Import, an den Metadaten und an der Aktualitätsbewertung, liegen als Notiz mit Signatur und Zweck im eigenen Arbeitsbereich des Projekts._

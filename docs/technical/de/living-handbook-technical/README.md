@@ -17,6 +17,7 @@ Für alle, die das Plugin installieren, gestalten oder erweitern. Die englische 
 11. [REST-Routen](rest-routen.md): jede Route unter `living-handbook/v1`, mit Methode, Berechtigung und Parametern, und was das Plugin an den Routen von WordPress ändert.
 12. [Bündelformat](bundle-format.md): das Bündel, das ein Handbuch-Export schreibt und ein Import liest: Manifest, Abgleich und was mitreist.
 13. [KI-Zugang](ki-zugang.md): die sieben lesenden Abilities für KI-Werkzeuge, die Zugriffsregel, die sie teilen, und die Zählung erfolgloser Suchen.
+14. [Dateischutz](dateischutz.md): der Schutzordner für Dateien interner Handbücher, die Auslieferung, die Serverregeln für Apache und nginx und der Selbsttest.
 
 ## Die eine Regel
 

@@ -19,6 +19,11 @@ use LivingHandbook\Blocks\Patterns;
 use LivingHandbook\Blocks\SourceNoteBlock;
 use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Feedback\Feedback;
+use LivingHandbook\Files\FileDelivery;
+use LivingHandbook\Files\ProtectCommand;
+use LivingHandbook\Files\ProtectedFiles;
+use LivingHandbook\Files\ProtectionAdmin;
+use LivingHandbook\Files\ServerRules;
 use LivingHandbook\Frontend\Filters;
 use LivingHandbook\Frontend\FrontendRenderer;
 use LivingHandbook\Frontend\Headings;
@@ -125,6 +130,12 @@ final class Plugin {
 		( new Onboarding() )->register();
 		( new Privacy() )->register();
 		( new SearchLog() )->register();
+		( new ProtectedFiles() )->register();
+		( new FileDelivery() )->register();
+		( new ProtectionAdmin() )->register();
+		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( 'WP_CLI' ) ) {
+			\WP_CLI::add_command( 'living-handbook protect-files', ProtectCommand::class );
+		}
 		( new Abilities() )->register();
 
 		// After an update the migrations have to run before anything relies on
@@ -183,6 +194,12 @@ final class Plugin {
 		// this on every version change costs nothing once it exists.
 		SearchLog::install();
 		SearchLog::schedule();
+
+		// 0.79.0: the protected folder and its rule, and one pass over every
+		// handbook file, so an existing site's files move without anyone
+		// pressing a button. The queue works in the background, in passes.
+		ServerRules::ensure();
+		ProtectedFiles::enqueue( 'all' );
 
 		// An update can bring a post type or a rewrite rule the stored rules do
 		// not know: 0.75.0 added learning paths, and an installation that had
@@ -324,6 +341,7 @@ final class Plugin {
 		GitSync::schedule();
 		SearchLog::install();
 		SearchLog::schedule();
+		ServerRules::ensure();
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 
 		flush_rewrite_rules();
@@ -347,6 +365,7 @@ final class Plugin {
 	public static function deactivate(): void {
 		GitSync::unschedule();
 		SearchLog::unschedule();
+		ProtectedFiles::unschedule();
 		delete_option( 'rewrite_rules' );
 	}
 }
