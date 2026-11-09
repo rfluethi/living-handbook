@@ -14,6 +14,7 @@ use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Search\SearchLog;
 use WP_Term;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -385,6 +386,12 @@ final class Privacy {
 				. __( 'A handbook can be opened to named people only. Their user accounts are stored with the handbook\'s settings for as long as they are meant to read it, and are removed when an account is deleted.', 'living-handbook' ),
 			'<strong>' . __( 'Content from GitHub', 'living-handbook' ) . '</strong> '
 				. __( 'Handbook pages can be imported and kept up to date from GitHub. These requests are made by this website\'s server to api.github.com, raw.githubusercontent.com and codeload.github.com. They name the repository and the files, and contain no data about the visitors of this site.', 'living-handbook' ),
+			'<strong>' . __( 'Searches without results', 'living-handbook' ) . '</strong> '
+				. sprintf(
+					/* translators: %d: number of days the counts are kept. */
+					__( 'When a search in a handbook finds no page, we count the search term so that the editors can see what is missing. We store the term in lower case, the handbook, the calendar week and whether the search came from the website or from an AI tool, nothing else: no user account, no IP address, no time of day and no cookie. Very short and very long terms are not stored. A term is stored as it was typed, so it can contain a name. Because nothing is tied to a person, these counts cannot be exported or erased for a person. They are deleted after %d days.', 'living-handbook' ),
+					SearchLog::retention_days()
+				),
 			'<strong>' . __( 'Progress through learning paths', 'living-handbook' ) . '</strong> '
 				. __( 'Which lessons of a learning path you have opened is kept in your browser\'s local storage, so the path can mark them as read. It is not sent to this website and is gone when you clear your browser data.', 'living-handbook' ),
 		);

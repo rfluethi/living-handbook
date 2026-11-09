@@ -76,6 +76,14 @@ function living_handbook_run_uninstall(): void {
 	delete_option( LivingHandbook\Admin\MoveToHandbook::OPTION_ANY_MOVED );
 	delete_option( LivingHandbook\Git\GitSync::OPTION_SYNC_LOCK );
 
+	// Always: the count of failed searches (E-0078). It is the plugin's own
+	// bookkeeping, not content anyone wrote, and kept for a limited time
+	// anyway, so it goes with the options rather than waiting for "Remove
+	// everything".
+	LivingHandbook\Search\SearchLog::unschedule();
+	LivingHandbook\Search\SearchLog::drop();
+	delete_option( LivingHandbook\Search\SearchLog::OPTION_ENABLED );
+
 	// Always: remove the transients the plugin writes. The area cards and the
 	// handbook previews of the overview (keyed by version and by viewer; the
 	// navigation itself is not cached, see Navigation::CACHE_VERSION_OPTION),

@@ -30,6 +30,7 @@ use LivingHandbook\Import\MarkdownImportPage;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Privacy\Privacy;
+use LivingHandbook\Search\SearchLog;
 use LivingHandbook\Setup\Onboarding;
 use LivingHandbook\Setup\Seeder;
 use LivingHandbook\Setup\Settings;
@@ -118,6 +119,7 @@ final class Plugin {
 		( new SourceNoteBlock() )->register();
 		( new Onboarding() )->register();
 		( new Privacy() )->register();
+		( new SearchLog() )->register();
 
 		// After an update the migrations have to run before anything relies on
 		// them. This used to hang on admin_init, which left it to the next visit
@@ -170,6 +172,12 @@ final class Plugin {
 
 		GitSync::reschedule();
 
+		// 0.77.0: the count of failed searches has its own table and a daily
+		// cleanup. dbDelta() leaves a table of the right shape alone, so running
+		// this on every version change costs nothing once it exists.
+		SearchLog::install();
+		SearchLog::schedule();
+
 		// An update can bring a post type or a rewrite rule the stored rules do
 		// not know: 0.75.0 added learning paths, and an installation that had
 		// the module switched on before the update had no rule for them. Rebuild
@@ -202,6 +210,9 @@ final class Plugin {
 		add_option( Taxonomies::OPTION_ENABLED, '', '', true );
 		add_option( Training::OPTION_ENABLED, '0', '', true );
 		add_option( Settings::OPTION_PUBLIC_FEEDBACK, '0', '', true );
+		// Read only when a search finds nothing, so not autoloaded. On by
+		// default (E-0078).
+		add_option( SearchLog::OPTION_ENABLED, '1', '', false );
 	}
 
 	/**
@@ -305,6 +316,8 @@ final class Plugin {
 		Onboarding::activate();
 		self::store_default_options();
 		GitSync::schedule();
+		SearchLog::install();
+		SearchLog::schedule();
 		update_option( self::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
 
 		flush_rewrite_rules();
@@ -327,6 +340,7 @@ final class Plugin {
 	 */
 	public static function deactivate(): void {
 		GitSync::unschedule();
+		SearchLog::unschedule();
 		delete_option( 'rewrite_rules' );
 	}
 }

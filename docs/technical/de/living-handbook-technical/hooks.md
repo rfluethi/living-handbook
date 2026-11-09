@@ -383,6 +383,25 @@ Parameter:
 
 Gibt ein Array derselben Form zurück; ein Eintrag ohne Label fällt weg.
 
+### `living_handbook_search_log_retention_days`
+
+Filtert, wie viele Tage die Zählung der Suchen ohne Treffer aufbewahrt wird (Standard 90). Das Plugin zählt jede Suche, die keine Seite findet, je Suchbegriff, Handbuch, Kalenderwoche und Quelle. Ein täglicher Cron-Lauf löscht jede Woche, deren erster Tag älter ist als dieser Wert. Der Wert wird zwischen 7 und 365 gehalten, eine Suche bleibt also nie länger gespeichert als die zurückgegebene Zahl von Tagen. Was gezählt wird und warum, steht in [ki-zugang.md](ki-zugang.md).
+
+Parameter:
+
+- `int $days` Aufbewahrung in Tagen. Standard `90`.
+
+Gib eine Ganzzahl zurück. Beispiel, die Zählung 30 Tage behalten:
+
+```php
+add_filter(
+	'living_handbook_search_log_retention_days',
+	function (): int {
+		return 30;
+	}
+);
+```
+
 ## Actions
 
 _Keine. Ein Hook ist eine Zusage, deren Signatur sich später nicht ändern lässt, ohne zu brechen, wer ihn nutzt; einer kommt also dazu, wenn etwas ihn wirklich braucht, nicht von einer Liste. Drei Kandidaten, nach einem Import, an den Metadaten und an der Aktualitätsbewertung, liegen als Notiz mit Signatur und Zweck im eigenen Arbeitsbereich des Projekts._
@@ -391,4 +410,4 @@ _Keine. Ein Hook ist eine Zusage, deren Signatur sich später nicht ändern läs
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 7
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09

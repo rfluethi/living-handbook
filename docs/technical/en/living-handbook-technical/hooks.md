@@ -413,6 +413,25 @@ Parameters:
 
 Return an array of the same shape; an entry without a label is dropped.
 
+### `living_handbook_search_log_retention_days`
+
+Filters how many days the count of failed searches is kept (default 90). The plugin counts each search that found no page per term, handbook, calendar week and source, and a daily cron run deletes every week whose first day is older than this. The value is held between 7 and 365, so a search is never kept longer than the number of days returned. What is counted and why is in [ai-access.md](ai-access.md).
+
+Parameters:
+
+- `int $days` Days to keep. Defaults to `90`.
+
+Return an integer. Example, keep the counts for 30 days:
+
+```php
+add_filter(
+	'living_handbook_search_log_retention_days',
+	function (): int {
+		return 30;
+	}
+);
+```
+
 ## Actions
 
 _None. A hook is a commitment whose signature cannot be changed later without breaking whoever uses it, so one is added when something actually needs it, not from a list. Three candidates, after an import, on the metadata and on the freshness evaluation, are kept as a note in the project's own workspace, with signature and purpose._
@@ -421,4 +440,4 @@ _None. A hook is a commitment whose signature cannot be changed later without br
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 8
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09

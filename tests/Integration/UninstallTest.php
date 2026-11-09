@@ -243,6 +243,33 @@ final class UninstallTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The count of failed searches goes with every uninstall, not only with
+	 * "Remove everything": it is the plugin's bookkeeping, not content (E-0078).
+	 *
+	 * The test framework turns DROP TABLE into DROP TEMPORARY TABLE, so the
+	 * statement is caught on its way rather than the table looked for.
+	 *
+	 * @return void
+	 */
+	public function test_the_search_log_and_its_cleanup_go_on_every_uninstall(): void {
+		wp_schedule_event( time() + 300, 'daily', 'living_handbook_search_log_cleanup' );
+		$dropped = false;
+		$catch   = static function ( string $query ) use ( &$dropped ): string {
+			if ( false !== stripos( $query, 'DROP TABLE IF EXISTS ' . $GLOBALS['wpdb']->prefix . 'living_handbook_failed_searches' ) ) {
+				$dropped = true;
+			}
+			return $query;
+		};
+		add_filter( 'query', $catch, 1 );
+
+		$this->uninstall();
+
+		remove_filter( 'query', $catch, 1 );
+		$this->assertTrue( $dropped );
+		$this->assertFalse( wp_next_scheduled( 'living_handbook_search_log_cleanup' ) );
+	}
+
+	/**
 	 * A page in the trash and an unsaved draft are handbook content too.
 	 *
 	 * post_status 'any' leaves out every status registered with

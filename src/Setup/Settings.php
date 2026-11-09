@@ -14,6 +14,7 @@ use LivingHandbook\Access\AccessController;
 use LivingHandbook\Frontend\Appearance;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Search\SearchLog;
 use LivingHandbook\Taxonomy\Taxonomies;
 use LivingHandbook\Training\Training;
 
@@ -309,6 +310,15 @@ final class Settings {
 			)
 		);
 		register_setting(
+			self::group( 'feedback' ),
+			SearchLog::OPTION_ENABLED,
+			array(
+				'type'              => 'integer',
+				'sanitize_callback' => array( SearchLog::class, 'sanitize_enabled' ),
+				'default'           => 1,
+			)
+		);
+		register_setting(
 			self::group( 'access' ),
 			self::OPTION_DENIED_PAGE,
 			array(
@@ -404,6 +414,13 @@ final class Settings {
 			self::OPTION_PUBLIC_FEEDBACK,
 			__( 'Public feedback', 'living-handbook' ),
 			array( $this, 'render_public_feedback_field' ),
+			self::tab_page( 'feedback' ),
+			'living_handbook_feedback_section'
+		);
+		add_settings_field(
+			SearchLog::OPTION_ENABLED,
+			__( 'Failed searches', 'living-handbook' ),
+			array( $this, 'render_search_log_field' ),
 			self::tab_page( 'feedback' ),
 			'living_handbook_feedback_section'
 		);
@@ -759,6 +776,27 @@ final class Settings {
 		$on = self::public_feedback_enabled();
 		echo '<label><input type="checkbox" name="' . esc_attr( self::OPTION_PUBLIC_FEEDBACK ) . '" value="1" ' . checked( $on, true, false ) . '> ' . esc_html__( 'Show "Was this helpful?" to logged-out visitors on public pages', 'living-handbook' ) . '</label>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- checked() returns a safe attribute string; the surrounding text is escaped.
 		echo '<p class="description">' . esc_html__( 'Off by default. When on, anyone can vote on a public page. To keep it privacy-friendly, votes are not tied to a person: no cookie, no IP and nothing else personal is stored, so the same visitor can vote again after reloading. On internal pages only logged-in users vote, one vote each, regardless of this setting.', 'living-handbook' ) . '</p>';
+	}
+
+	/**
+	 * Renders the switch for counting failed searches.
+	 *
+	 * A cleared checkbox sends nothing; options.php then stores what the
+	 * sanitizer makes of a missing value, which is 0.
+	 *
+	 * @return void
+	 */
+	public function render_search_log_field(): void {
+		$on   = SearchLog::enabled();
+		$name = SearchLog::OPTION_ENABLED;
+		echo '<label><input type="checkbox" name="' . esc_attr( $name ) . '" value="1" ' . checked( $on, true, false ) . '> ' . esc_html__( 'Count searches that find nothing', 'living-handbook' ) . '</label>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- checked() returns a safe attribute string; the surrounding text is escaped.
+		echo '<p class="description">' . esc_html(
+			sprintf(
+				/* translators: %d: number of days failed searches are kept. */
+				__( 'On by default. Counts each search term that found no page, per handbook and calendar week, so editors see what readers look for and do not find. No user account, IP address, time of day or cookie is stored. Searches with filters selected are not counted. Counts are deleted after %d days, and when the plugin is deleted.', 'living-handbook' ),
+				SearchLog::retention_days()
+			)
+		) . '</p>';
 	}
 
 	/**

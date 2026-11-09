@@ -23,6 +23,7 @@ namespace LivingHandbook\Frontend;
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
+use LivingHandbook\Search\SearchLog;
 use LivingHandbook\Taxonomy\Taxonomies;
 use WP_Post;
 use WP_Query;
@@ -215,7 +216,10 @@ final class Filters {
 		// English, and wrong in every language with more than two forms. The
 		// script runs in the static export as well, where wp.i18n is not loaded,
 		// so the plural cannot be left to it.
-		$count   = count( $results );
+		$count = count( $results );
+		if ( 0 === $count ) {
+			SearchLog::record( $term_id, $search, SearchLog::SOURCE_SITE );
+		}
 		$summary = sprintf(
 			/* translators: %d: number of matching pages in the page search. */
 			_n( '%d matching page', '%d matching pages', $count, 'living-handbook' ),
@@ -771,6 +775,7 @@ final class Filters {
 		$out = '<p class="living-handbook-count">' . esc_html( sprintf( _n( '%d page found', '%d pages found', $count, 'living-handbook' ), $count ) ) . '</p>';
 
 		if ( 0 === $count ) {
+			self::count_failed_search( $term, $selections, $search, $paged );
 			return $out . '<p class="living-handbook-empty">' . esc_html__( 'No matches. Adjust the filters or the search.', 'living-handbook' ) . '</p>';
 		}
 
@@ -791,6 +796,32 @@ final class Filters {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Counts an empty result list as a failed search, when it is one.
+	 *
+	 * Only a plain search on the first page counts. With a facet selected, an
+	 * empty list says the combination is empty, not that a page is missing; a
+	 * later page of results is never empty for a search that found something on
+	 * the first. See SearchLog for what is stored (E-0078).
+	 *
+	 * @param WP_Term                 $term       Handbook term.
+	 * @param array<string, string[]> $selections Facet selections.
+	 * @param string                  $search     Search term.
+	 * @param int                     $paged      Page number (1-based).
+	 * @return void
+	 */
+	private static function count_failed_search( WP_Term $term, array $selections, string $search, int $paged ): void {
+		if ( '' === $search || $paged > 1 ) {
+			return;
+		}
+		foreach ( $selections as $slugs ) {
+			if ( ! empty( $slugs ) ) {
+				return;
+			}
+		}
+		SearchLog::record( (int) $term->term_id, $search, SearchLog::SOURCE_SITE );
 	}
 
 	/**
