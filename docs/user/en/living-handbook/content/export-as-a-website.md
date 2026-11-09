@@ -5,11 +5,13 @@ You want to give a handbook to somebody who has no WordPress and no access to th
 <details>
 <summary>Concept: How this differs from the bundle</summary>
 
-There are two exports, and they aim at different things.
+There are three exports, and they aim at different things.
 
 The **bundle** moves a handbook to another WordPress site running Living Handbook. It carries the pages as data, with their tags, review dates and visibility, so a living handbook can grow out of it again over there. See [Move a handbook](move-a-handbook.md).
 
 The **website** is a snapshot to read. It carries finished pages, not data: one file per page, the images beside them, a page list and a search. It cannot be turned back into a handbook.
+
+The **Markdown export** gives the pages as text files that the Markdown import reads back. See [Export a handbook as Markdown](export-as-markdown.md).
 
 Typical cases: an audit that wants the wording as it stood on a date; an external team you do not want to give accounts to; a copy for the archive; a laptop with no network.
 

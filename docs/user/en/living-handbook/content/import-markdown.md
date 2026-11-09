@@ -82,6 +82,7 @@ A second import of the same source creates no copies. It updates the existing pa
 * [Writing content](writing-content.md)
 * [GitHub sync](github-sync.md)
 * [Move a handbook](move-a-handbook.md)
+* [Export a handbook as Markdown](export-as-markdown.md): the way back, as a ZIP file this import reads in again
 * [Technical details in the developer documentation](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/en/living-handbook-technical/import-and-sync.md)
 
 ## Transport-Metadaten
@@ -92,6 +93,6 @@ A second import of the same source creates no copies. It updates the existing pa
 * Eltern-Seite: Content
 * Reihenfolge: 2
 * Textauszug: This guide brings finished Markdown texts into your handbook as pages: pasted, as a ZIP file or from a GitHub address.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

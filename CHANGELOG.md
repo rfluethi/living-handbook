@@ -6,6 +6,27 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.80.0] - 2026-11-09
+
+The Markdown export as decided in E-0083: the way out of the plugin and back in. A handbook is no longer only portable to another WordPress site (bundle) or readable without one (website); it can leave as text files and come back from them.
+
+### Added
+
+* **Markdown export** (`Export\MarkdownExport`), the third section of the export screen. A handbook or one of its areas becomes a ZIP with `mkdocs.yml` (navigation in the handbook's order), `docs/` (a folder with `README.md` for a page with subpages, a `.md` file for every other page), `docs/assets/` (the files from the uploads folder the pages refer to, protected ones included, after the website export's path check) and `EXPORT.txt` (what the export is, how it goes back in, what it left out). The selection and the permission are the bundle's; pages with a password are left out and their subpages move up.
+* **Transport block** at the end of each page, in the German labels the import reads: page type, slug, role, topic, audiences, parent, order, excerpt, last update, last review, review interval.
+* **`Export\MarkdownWriter`** turns the HTML of a page's blocks into Markdown written for the way back: text that Markdown would read as syntax is escaped, collapsible sections stay `<details>` with their summary, a line break is a backslash, tables are pipe tables, code is a fence. A Mermaid block becomes a `mermaid` fence; the plugin's other blocks are left out and named per page. A link to another exported page becomes a relative `.md` path with its anchor.
+* **Roundtrip test:** export, read the ZIP, build the specs from the `mkdocs.yml`, create every page as the import screen does, postprocess, and compare title, structure, order, slug, classification, review data, excerpt, text, image and link. The German app handbook, loaded and exported this way, comes out as its own source files, apart from list markers, indentation, table separators and the paths of the images.
+* **Docs:** a page on the Markdown export in the app handbook, a section in the technical import page, both languages.
+
+### Changed
+
+* `HandbookExport::target()` checks the chosen handbook and area for both downloads, and `HandbookExport::export_set()` gives both exports the same pages.
+
+### Deviations from E-0083
+
+* The report is `EXPORT.txt`, not `EXPORT.md`: a `.md` file would become a page when the ZIP is imported without its `mkdocs.yml`.
+* Only the first topic of a page travels, because the transport block carries one.
+
 ## [0.79.0] - 2026-11-09
 
 File protection as decided in E-0076 and planned in Konzept 10, and the plugin version where it helps, as decided in E-0082. Until now the plugin guarded every way into a page, but the web server handed out its files to anyone with the address.

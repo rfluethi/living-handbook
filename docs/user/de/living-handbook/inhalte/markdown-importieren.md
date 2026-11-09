@@ -82,6 +82,7 @@ Ein zweiter Import derselben Quelle legt keine Kopien an. Er aktualisiert die be
 * [Inhalte schreiben](inhalte-schreiben.md)
 * [GitHub-Synchronisation](github-synchronisation.md)
 * [Handbuch umziehen](handbuch-umziehen.md)
+* [Handbuch als Markdown exportieren](handbuch-als-markdown-exportieren.md): der Rückweg, als ZIP-Datei, die dieser Import wieder einliest
 * [Technische Details in der Entwickler-Dokumentation](https://github.com/rfluethi/living-handbook/blob/main/docs/technical/de/living-handbook-technical/import-und-sync.md)
 
 ## Transport-Metadaten
@@ -92,6 +93,6 @@ Ein zweiter Import derselben Quelle legt keine Kopien an. Er aktualisiert die be
 * Eltern-Seite: Inhalte
 * Reihenfolge: 2
 * Textauszug: Diese Anleitung übernimmt fertige Markdown-Texte als Seiten in dein Handbuch: eingefügt, als ZIP-Datei oder von einer GitHub-Adresse.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-11-09T13:36:27+00:00\n"
+"POT-Creation-Date: 2026-11-09T14:51:57+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -238,10 +238,11 @@ msgstr "Alle Handbuch-Seiten anzeigen, älteste Prüfung zuerst"
 
 # Post type and taxonomies
 #: src/Admin/Maintenance.php:268 src/Admin/Maintenance.php:272
-#: src/Export/SiteRenderer.php:288 src/Export/StaticSite.php:1250
-#: src/Import/HandbookExport.php:141 src/PostType/Handbook.php:123
-#: src/PostType/Handbook.php:125 src/Privacy/Privacy.php:209
-#: src/Setup/Onboarding.php:148 src/Taxonomy/Taxonomies.php:271
+#: src/Export/MarkdownExport.php:88 src/Export/SiteRenderer.php:288
+#: src/Export/StaticSite.php:1250 src/Import/HandbookExport.php:142
+#: src/PostType/Handbook.php:123 src/PostType/Handbook.php:125
+#: src/Privacy/Privacy.php:209 src/Setup/Onboarding.php:148
+#: src/Taxonomy/Taxonomies.php:271
 msgid "Handbook"
 msgstr "Handbuch"
 
@@ -706,6 +707,126 @@ msgstr "Quelldatei ansehen"
 msgid "(opens in a new tab)"
 msgstr "(öffnet in einem neuen Tab)"
 
+#: src/Export/MarkdownExport.php:78
+msgid "Export as Markdown"
+msgstr "Als Markdown exportieren"
+
+#: src/Export/MarkdownExport.php:79
+msgid ""
+"A ZIP of Markdown files with their images and a mkdocs.yml, to keep, to put "
+"into a repository, or to import again under Handbook, Import. Each page "
+"carries its metadata in its transport block. Blocks of the plugin that have "
+"no Markdown form, learning paths and pages with a password are left out; "
+"EXPORT.txt in the ZIP names them."
+msgstr ""
+"Eine ZIP-Datei mit Markdown-Dateien, ihren Bildern und einer mkdocs.yml, zum "
+"Aufbewahren, für ein Repository oder um sie unter Handbuch → Import wieder "
+"einzulesen. Jede Seite trägt ihre Angaben in den Transport-Metadaten. Blöcke "
+"des Plugins ohne Markdown-Form, Lernpfade und Seiten mit Passwort fehlen; "
+"EXPORT.txt in der ZIP-Datei nennt sie."
+
+#: src/Export/MarkdownExport.php:81
+msgid ""
+"The files have no access rules. They contain every page you can read in the "
+"handbook you choose, protected files included, and whoever holds the ZIP can "
+"read all of it."
+msgstr ""
+"Die Dateien haben keinen Zugriffsschutz. Sie enthalten jede Seite des "
+"gewählten Handbuchs, die du lesen darfst, auch geschützte Dateien, und wer "
+"die ZIP-Datei hat, kann alles darin lesen."
+
+#: src/Export/MarkdownExport.php:91 src/Export/StaticSite.php:1253
+#: src/Import/HandbookExport.php:145 src/Import/MarkdownImportPage.php:1202
+msgid "— select a handbook —"
+msgstr "— Handbuch wählen —"
+
+#: src/Export/MarkdownExport.php:99 src/Export/StaticSite.php:1263
+#: src/Import/HandbookExport.php:155
+msgid "What to export"
+msgstr "Was exportieren"
+
+#: src/Export/MarkdownExport.php:101 src/Export/MarkdownExport.php:102
+#: src/Export/StaticSite.php:1265 src/Export/StaticSite.php:1266
+#: src/Import/HandbookExport.php:157 src/Import/HandbookExport.php:158
+msgid "— the whole handbook —"
+msgstr "— das ganze Handbuch —"
+
+#: src/Export/MarkdownExport.php:107
+msgid "Export Markdown"
+msgstr "Markdown exportieren"
+
+#: src/Export/MarkdownExport.php:119 src/Export/StaticSite.php:1158
+#: src/Import/HandbookExport.php:269
+msgid "You are not allowed to export handbooks."
+msgstr "Du darfst keine Handbücher exportieren."
+
+#: src/Export/MarkdownExport.php:131 src/Git/ArchiveSource.php:106
+#: src/Git/ArchiveSource.php:140 src/Import/HandbookExport.php:286
+#: src/Import/HandbookImport.php:205 src/Import/MarkdownImportPage.php:296
+#: src/Import/MarkdownImportPage.php:390
+msgid "ZipArchive is not available on the server."
+msgstr "ZipArchive ist auf dem Server nicht verfügbar."
+
+#: src/Export/MarkdownExport.php:140
+msgid "The Markdown export could not be created."
+msgstr "Der Markdown-Export konnte nicht erstellt werden."
+
+#. translators: 1: handbook name, 2: date and time of the export, 3: version of the plugin.
+#: src/Export/MarkdownExport.php:714
+#, php-format
+msgid ""
+"Markdown export of the handbook \"%1$s\", made on %2$s with Living Handbook "
+"%3$s."
+msgstr ""
+"Markdown-Export des Handbuchs «%1$s», erstellt am %2$s mit Living Handbook "
+"%3$s."
+
+#. translators: %s: title of the area page.
+#: src/Export/MarkdownExport.php:722
+#, php-format
+msgid "Only the area \"%s\" with its pages."
+msgstr "Nur der Bereich «%s» mit seinen Seiten."
+
+#. translators: %d: number of pages.
+#: src/Export/MarkdownExport.php:728
+#, php-format
+msgid "%d page is in the folder docs/, its images in docs/assets/."
+msgid_plural "%d pages are in the folder docs/, their images in docs/assets/."
+msgstr[0] "%d Seite liegt im Ordner docs/, ihre Bilder in docs/assets/."
+msgstr[1] "%d Seiten liegen im Ordner docs/, ihre Bilder in docs/assets/."
+
+#: src/Export/MarkdownExport.php:732
+msgid ""
+"To import it again: Handbook, Import, tab ZIP file, upload this ZIP. The "
+"mkdocs.yml gives the structure, titles and order, the transport block at the "
+"end of each page its metadata. Images come back into the media library; "
+"links to other files point into this folder and have to be set again."
+msgstr ""
+"Zum erneuten Import: Handbuch → Import, Reiter ZIP-Datei, diese ZIP-Datei "
+"hochladen. Die mkdocs.yml gibt Gliederung, Titel und Reihenfolge vor, die "
+"Transport-Metadaten am Ende jeder Seite ihre Angaben. Bilder kommen zurück "
+"in die Mediathek; Links auf andere Dateien zeigen in diesen Ordner und "
+"müssen neu gesetzt werden."
+
+#: src/Export/MarkdownExport.php:733
+msgid "Learning paths are not part of a Markdown export."
+msgstr "Lernpfade gehören nicht zu einem Markdown-Export."
+
+#: src/Export/MarkdownExport.php:737
+msgid "Blocks of the plugin without a Markdown form, left out:"
+msgstr "Weggelassene Blöcke des Plugins ohne Markdown-Form:"
+
+#: src/Export/MarkdownExport.php:744
+msgid "Pages with a password, not exported:"
+msgstr "Nicht exportierte Seiten mit Passwort:"
+
+#: src/Export/MarkdownExport.php:751
+msgid ""
+"Pages synced from GitHub, exported as they are stored here. Their source:"
+msgstr ""
+"Seiten aus der GitHub-Synchronisation, exportiert im hier gespeicherten "
+"Stand. Ihre Quelle:"
+
 #. translators: 1: number of pages, 2: date of the export.
 #: src/Export/SiteRenderer.php:222
 #, php-format
@@ -850,7 +971,7 @@ msgid "You cannot read this handbook, so you cannot export it either."
 msgstr ""
 "Du darfst dieses Handbuch nicht lesen und deshalb auch nicht exportieren."
 
-#: src/Export/StaticSite.php:278 src/Import/HandbookExport.php:302
+#: src/Export/StaticSite.php:278 src/Import/HandbookExport.php:357
 msgid "That area cannot be exported."
 msgstr "Dieser Bereich kann nicht exportiert werden."
 
@@ -863,10 +984,6 @@ msgstr ""
 #: src/Export/StaticSite.php:456
 msgid "The export file could not be written on this server."
 msgstr "Die Export-Datei konnte auf diesem Server nicht geschrieben werden."
-
-#: src/Export/StaticSite.php:1158 src/Import/HandbookExport.php:258
-msgid "You are not allowed to export handbooks."
-msgstr "Du darfst keine Handbücher exportieren."
 
 #: src/Export/StaticSite.php:1169
 msgid ""
@@ -900,20 +1017,6 @@ msgstr ""
 "Eine statische Kopie hat keine Zugriffsregeln. Sie enthält jede Seite, die "
 "du im gewählten Handbuch lesen darfst, und wer die Datei hat, liest alles "
 "davon. Ausserdem veraltet sie ab dem Moment, in dem sie entsteht."
-
-#: src/Export/StaticSite.php:1253 src/Import/HandbookExport.php:144
-#: src/Import/MarkdownImportPage.php:1202
-msgid "— select a handbook —"
-msgstr "— Handbuch wählen —"
-
-#: src/Export/StaticSite.php:1263 src/Import/HandbookExport.php:154
-msgid "What to export"
-msgstr "Was exportieren"
-
-#: src/Export/StaticSite.php:1265 src/Export/StaticSite.php:1266
-#: src/Import/HandbookExport.php:156 src/Import/HandbookExport.php:157
-msgid "— the whole handbook —"
-msgstr "— das ganze Handbuch —"
 
 #: src/Export/StaticSite.php:1271
 msgid "Look"
@@ -1390,12 +1493,6 @@ msgstr ""
 "Ein einzelner Lernpfad: Navigation links, der eigene Text und die geordneten "
 "Lektionen in der Mitte."
 
-#: src/Git/ArchiveSource.php:106 src/Git/ArchiveSource.php:140
-#: src/Import/HandbookExport.php:306 src/Import/HandbookImport.php:205
-#: src/Import/MarkdownImportPage.php:296 src/Import/MarkdownImportPage.php:390
-msgid "ZipArchive is not available on the server."
-msgstr "ZipArchive ist auf dem Server nicht verfügbar."
-
 #: src/Git/ArchiveSource.php:145
 msgid "The downloaded repository archive is gone."
 msgstr "Das heruntergeladene Repository-Archiv ist nicht mehr da."
@@ -1854,17 +1951,17 @@ msgstr "Technische Dokumentation (Englisch)"
 msgid "That handbook is not available in this build."
 msgstr "Dieses Handbuch ist in dieser Fassung nicht enthalten."
 
-#: src/Import/HandbookExport.php:104
+#: src/Import/HandbookExport.php:105
 msgid "Export handbooks"
 msgstr "Handbücher exportieren"
 
 # Handbook export (bundle). Source strings live in
 # src/Import/HandbookExport.php and MarkdownImportPage.php.
-#: src/Import/HandbookExport.php:105 src/Import/HandbookExport.php:130
+#: src/Import/HandbookExport.php:106 src/Import/HandbookExport.php:131
 msgid "Export"
 msgstr "Export"
 
-#: src/Import/HandbookExport.php:131
+#: src/Import/HandbookExport.php:132
 msgid ""
 "Download a handbook, or a single area within it, as a bundle: one ZIP with "
 "its pages, learning paths, configuration and media. Import it on another "
@@ -1874,11 +1971,11 @@ msgstr ""
 "ein ZIP mit den Seiten, den Lernpfaden, der Konfiguration und den Medien. "
 "Importiere es auf einer anderen Seite mit dem Plugin."
 
-#: src/Import/HandbookExport.php:134
+#: src/Import/HandbookExport.php:135
 msgid "There are no handbooks yet, so there is nothing to export."
 msgstr "Es gibt noch keine Handbücher, also nichts zu exportieren."
 
-#: src/Import/HandbookExport.php:159
+#: src/Import/HandbookExport.php:160
 msgid ""
 "Lists the areas of the handbook chosen above. An area is a top-level page; "
 "it exports with its subpages."
@@ -1886,25 +1983,25 @@ msgstr ""
 "Zeigt die Bereiche des oben gewählten Handbuchs. Ein Bereich ist eine "
 "oberste Seite; er wird mit seinen Unterseiten exportiert."
 
-#: src/Import/HandbookExport.php:163
+#: src/Import/HandbookExport.php:164
 msgid "Export bundle"
 msgstr "Bündel exportieren"
 
-#: src/Import/HandbookExport.php:279
+#: src/Import/HandbookExport.php:296
+msgid "The export bundle could not be created."
+msgstr "Das Export-Bündel konnte nicht erstellt werden."
+
+#: src/Import/HandbookExport.php:334
 msgid "That page is not in a handbook."
 msgstr "Diese Seite gehört keinem Handbuch an."
 
-#: src/Import/HandbookExport.php:291
+#: src/Import/HandbookExport.php:346
 msgid "Choose what to export."
 msgstr "Wähle, was exportiert werden soll."
 
-#: src/Import/HandbookExport.php:295
+#: src/Import/HandbookExport.php:350
 msgid "You are not allowed to export this handbook."
 msgstr "Du darfst dieses Handbuch nicht exportieren."
-
-#: src/Import/HandbookExport.php:316
-msgid "The export bundle could not be created."
-msgstr "Das Export-Bündel konnte nicht erstellt werden."
 
 #: src/Import/HandbookImport.php:187
 msgid "Skip pages that already exist (never overwrite)"
@@ -2653,7 +2750,7 @@ msgstr "— Keine Änderung —"
 msgid "Empty fields are left as they are on each page."
 msgstr "Leere Felder bleiben auf jeder Seite so, wie sie sind."
 
-#: src/Plugin.php:322
+#: src/Plugin.php:324
 msgid ""
 "Living Handbook cannot be activated for the whole network. Activate it on "
 "each site that needs a handbook instead."
@@ -2661,7 +2758,7 @@ msgstr ""
 "Living Handbook kann nicht für das ganze Netzwerk aktiviert werden. "
 "Aktiviere es stattdessen auf jeder Website, die ein Handbuch braucht."
 
-#: src/Plugin.php:323
+#: src/Plugin.php:325
 msgid "Network activation not supported"
 msgstr "Netzwerkaktivierung nicht unterstützt"
 

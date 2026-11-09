@@ -5,11 +5,13 @@ Du willst ein Handbuch jemandem geben, der kein WordPress hat und keinen Zugang 
 <details>
 <summary>Konzept: Der Unterschied zum Bündel</summary>
 
-Es gibt zwei Exporte, und sie haben verschiedene Ziele.
+Es gibt drei Exporte, und sie haben verschiedene Ziele.
 
 Das **Bündel** bringt ein Handbuch auf eine andere WordPress-Website, wo Living Handbook läuft. Es trägt die Seiten als Daten, samt Schlagworten, Prüfdaten und Sichtbarkeit, damit dort wieder ein lebendiges Handbuch daraus wird. Siehe [Handbuch umziehen](handbuch-umziehen.md).
 
 Die **Website** ist eine Momentaufnahme zum Lesen. Sie trägt fertige Seiten, keine Daten: eine Datei je Seite, die Bilder daneben, eine Seitenliste und eine Suche. Zurück in ein Handbuch verwandeln lässt sie sich nicht.
+
+Der **Markdown-Export** gibt die Seiten als Textdateien heraus, die der Markdown-Import wieder einliest. Siehe [Handbuch als Markdown exportieren](handbuch-als-markdown-exportieren.md).
 
 Typische Fälle: eine Prüfung oder ein Audit, das eine Fassung zum Stichtag will; ein externes Team, dem du kein Konto geben willst; eine Ablage fürs Archiv; ein Laptop ohne Netz.
 

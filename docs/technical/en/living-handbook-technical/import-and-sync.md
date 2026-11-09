@@ -91,6 +91,23 @@ Four decisions are worth knowing when reading the code (`Export/StaticSite.php`,
 
 Left out, and each for a reason: comments and the "Was this helpful?" prompt need a server; the facet filters need queries; and names and avatars are dropped from the page footer because the file leaves the building.
 
+## Exporting a handbook as Markdown
+
+The third export under **Handbook → Export**, **Export as Markdown** (`Export\MarkdownExport`, decision E-0083), writes a handbook or an area as a ZIP that the Markdown import reads back. Permission and selection are the bundle's (`HandbookExport::target()` and `export_set()`): `edit_others_posts`, a handbook the person may read, and every page of it they may see. Pages with a password are left out; their subpages move up to the nearest exported ancestor.
+
+Layout of the ZIP, under a folder named after the handbook's slug (for an area with the area's slug appended):
+
+- `mkdocs.yml` with `site_name`, `docs_dir: docs` and `nav` in the handbook's order (`menu_order`, then title). Every string is written as a JSON string, which YAML reads as a double-quoted string.
+- `docs/`: a page with subpages becomes a folder with `README.md`, every other page a `.md` file. The file name comes from the slug, ASCII, unique per folder; `assets`, `readme` and `index` are taken at the top.
+- `docs/assets/`: every file from the uploads folder a page refers to as an image or a link, after the same path check as in the website export, with a unique name, because the import matches images by file name.
+- `EXPORT.txt`: handbook, date, plugin version, how the import works, and what is missing: blocks left out per page, pages with a password, the GitHub source of synced pages. As `.txt`, so an import without `mkdocs.yml` does not create a page from it.
+
+Each page starts with `# Title` and ends with the `## Transport-Metadaten` block: Seitentyp, Slug, Verantwortliche Rolle, Thema (only the first, the import knows one), Zielgruppe, Eltern-Seite (`oberste Ebene` at the top), Reihenfolge, Textauszug, Letzte Aktualisierung, Letzte Prüfung, Prüfintervall. The labels are German, as the import reads them. Empty lines are left out.
+
+`Export\MarkdownWriter` writes the text from the HTML of the blocks (`render_block()` per block, not `the_content`, so no filter writes in between). It escapes text that Markdown would read as syntax, keeps `<details>` with `<summary>`, writes line breaks as a backslash, tables as pipe tables and code as a fence. A Mermaid block becomes a `mermaid` fence; the plugin's other blocks are left out and listed in `EXPORT.txt`. A link to another exported page becomes a relative `.md` path with its anchor, which the import's postprocessor points at the page again.
+
+The roundtrip is pinned in a test: export, `read_zip()`, `MkDocsImport::build_specs()`, creating each page as the import screen does, postprocessing. Title, structure, order, slug, classification, review data, excerpt, text, image and link come back the same. What does not come back: the status (the import creates drafts), design and the plugin's blocks except Mermaid, learning paths, and files other than images, because the ZIP import takes only images into the media library.
+
 ## Importing a bundle
 
 On the import screen, the **Bundle** tab takes a bundle exported from another site. Upload the ZIP and choose what should happen when a page already exists:

@@ -90,6 +90,23 @@ Vier Entscheidungen sollte kennen, wer den Code liest (`Export/StaticSite.php`, 
 
 Weggelassen, jedes mit Grund: Kommentare und die Frage «War das hilfreich?» brauchen einen Server, die Facettenfilter brauchen Abfragen, und Namen und Profilbilder fallen aus der Fußzeile, weil die Datei das Haus verlässt.
 
+## Ein Handbuch als Markdown exportieren
+
+Der dritte Export unter **Handbuch → Export**, **Als Markdown exportieren** (`Export\MarkdownExport`, Entscheid E-0083), schreibt ein Handbuch oder einen Bereich als ZIP, das der Markdown-Import wieder einliest. Recht und Auswahl sind die des Bündels (`HandbookExport::target()` und `export_set()`): `edit_others_posts`, ein Handbuch, das die Person lesen darf, und davon jede Seite, die sie sehen darf. Seiten mit Passwort fehlen, ihre Unterseiten rücken zum nächsten exportierten Vorfahren auf.
+
+Aufbau des ZIP, unter einem Ordner mit dem Slug des Handbuchs (beim Bereich mit angehängtem Slug des Bereichs):
+
+- `mkdocs.yml` mit `site_name`, `docs_dir: docs` und `nav` in der Reihenfolge des Handbuchs (`menu_order`, dann Titel). Alle Zeichenketten stehen als JSON-Strings da, die YAML als Strings in doppelten Anführungszeichen liest.
+- `docs/`: eine Seite mit Unterseiten wird ein Ordner mit `README.md`, jede andere eine `.md`-Datei. Der Dateiname kommt aus dem Slug, ASCII, eindeutig pro Ordner; `assets`, `readme` und `index` sind oben vergeben.
+- `docs/assets/`: jede Datei aus dem Upload-Ordner, auf die eine Seite als Bild oder Link verweist, nach derselben Pfadprüfung wie beim Website-Export, mit eindeutigem Namen, denn der Import ordnet Bilder über den Dateinamen zu.
+- `EXPORT.txt`: Handbuch, Datum, Plugin-Version, wie der Import geht, und was fehlt: weggelassene Blöcke pro Seite, Seiten mit Passwort, die GitHub-Quelle synchronisierter Seiten. Als `.txt`, damit ein Import ohne `mkdocs.yml` sie nicht als Seite anlegt.
+
+Jede Seite beginnt mit `# Titel` und endet mit dem Block `## Transport-Metadaten`: Seitentyp, Slug, Verantwortliche Rolle, Thema (nur das erste, der Import kennt eines), Zielgruppe, Eltern-Seite (`oberste Ebene` oben), Reihenfolge, Textauszug, Letzte Aktualisierung, Letzte Prüfung, Prüfintervall. Die Bezeichnungen sind deutsch, wie der Import sie liest. Leere Zeilen fehlen.
+
+Den Text schreibt `Export\MarkdownWriter` aus dem HTML der Blöcke (`render_block()` je Block, nicht `the_content`, damit kein Filter dazwischen schreibt). Er maskiert Text, den Markdown als Syntax läse, behält `<details>` mit `<summary>`, schreibt Zeilenumbrüche als Backslash, Tabellen als Pipe-Tabellen und Code als Fence. Ein Mermaid-Block wird zum Fence `mermaid`, die übrigen Blöcke des Plugins fallen weg und stehen in `EXPORT.txt`. Ein Link auf eine andere exportierte Seite wird zum relativen `.md`-Pfad mit Anker, den der Nachbearbeiter des Imports wieder auf die Seite richtet.
+
+Der Roundtrip ist im Test festgehalten: Export, `read_zip()`, `MkDocsImport::build_specs()`, Anlegen jeder Seite wie auf dem Import-Bildschirm, Nachbearbeiten. Titel, Gliederung, Reihenfolge, Slug, Einordnung, Prüfdaten, Textauszug, Text, Bild und Link kommen gleich zurück. Was nicht zurückkommt: der Status (der Import legt Entwürfe an), Gestaltung und Blöcke des Plugins außer Mermaid, Lernpfade, und Dateien außer Bildern, denn der ZIP-Import nimmt nur Bilder in die Mediathek.
+
 ## Ein Bündel importieren
 
 Auf dem Import-Bildschirm nimmt der Reiter **Bündel** eine Datei entgegen, die auf einer anderen Seite exportiert wurde. Lade das ZIP hoch und wähle, was passieren soll, wenn eine Seite schon existiert:
