@@ -42,6 +42,10 @@ Gilt für einen einzelnen Lernpfad und existiert als erreichbare Seite nur, sola
 
 Eine Inhaltsverzeichnis-Spalte gibt es bewusst nicht: ein Pfad ist eine Liste, und eine Liste seiner eigenen Überschriften wäre eine Liste einer Liste. Die Lernpfad-Leiste fehlt hier aus demselben Grund, aus dem sie auf jeder Lektion steht: wer den Pfad ansieht, ist noch nicht in ihm drin.
 
+## Startmuster für den Inhalt
+
+Die Templates ordnen, was um eine Seite herum steht. Womit eine neue Seite beginnt, ist ein Pattern: Das Plugin registriert sieben, eines pro mitgeliefertem Seitentyp, in der Pattern-Kategorie **Living Handbook** (`src/Blocks/Patterns.php`). Sie tragen `core/post-content` in ihren Blocktypen und den Handbuch-Beitragstyp in `postTypes`, deshalb bietet der Block-Editor sie an, wenn eine neue, leere Handbuchseite geöffnet wird. Sie enthalten nur die Gliederung, Überschriften, geschlossene Aufklappbereiche und leere Absätze und Listenpunkte mit Platzhalter, und die Wahl eines Patterns setzt den Seitentyp nicht (Entscheid E-0080). `PatternsTest` hält sie daran fest.
+
 ## Umstellen
 
 Das sind gewöhnliche Block-Vorlagen, du kannst sie im Site-Editor also umstellen: die Navigation nach rechts verschieben, das Desktop-Inhaltsverzeichnis weglassen, den Inhalt verbreitern und so weiter. Die Blöcke sind eigenständig und rendern dort, wo du sie platzierst, solange sie in ihrem vorgesehenen Zusammenhang bleiben (siehe „Erscheint auf" in [bloecke.md](bloecke.md)).

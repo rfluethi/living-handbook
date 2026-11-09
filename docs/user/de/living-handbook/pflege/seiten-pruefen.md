@@ -17,6 +17,22 @@ Diese Anleitung zeigt die praktische Prüfarbeit: einzelne Seiten bestätigen, m
 3. Stimmt der Inhalt noch? Dann setze im Kasten **Handbuch-Wartung** unten im Editor das Prüfdatum auf heute. Stimmt er nicht mehr? Dann korrigiere zuerst den Inhalt.
 4. Aktualisiere die Seite.
 
+## Eine Seite direkt auf der Website bestätigen
+
+Liest du eine Seite ohnehin gerade auf der Website und sie stimmt noch, geht es ohne Umweg über den Editor:
+
+1. Scrolle ans Ende der Seite zu den Angaben zur Seite.
+2. Klicke neben **Letzte Prüfung** auf **Geprüft, Stand aktuell**.
+
+Das Prüfdatum springt auf heute, du stehst als prüfende Person da, und das Abzeichen wechselt auf „Geprüft“, ohne dass die Seite neu lädt. Den Knopf sieht nur, wer die Seite bearbeiten darf. Der Inhalt und „Letzte Aktualisierung“ bleiben, wie sie sind, denn an der Seite hat sich nichts geändert.
+
+<details>
+<summary>Hinweis: Seiten aus GitHub</summary>
+
+Bei einer Seite, die mit GitHub abgeglichen wird, steht statt des Knopfs „Prüfdatum steht in der Quelldatei“. Ihr Prüfdatum kommt bei jedem Abgleich aus dem Transport-Block der Datei, ein Klick wäre beim nächsten Abgleich wieder weg. Setze das Datum dort in der Zeile „Letzte Prüfung“.
+
+</details>
+
 ## Mehrere Seiten schnell prüfen
 
 Für den häufigen Fall „gelesen, stimmt noch“ musst du die Seite gar nicht öffnen:
@@ -54,6 +70,6 @@ Alle Seiten tragen ein aktuelles Prüfdatum. Der Kasten auf dem Dashboard ist le
 * Eltern-Seite: Pflege
 * Reihenfolge: 2
 * Textauszug: Die praktische Prüfarbeit: einzelne Seiten bestätigen, mehrere schnell abarbeiten und die überfälligen zuverlässig finden.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

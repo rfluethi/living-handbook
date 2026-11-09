@@ -6,6 +6,22 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.78.0] - 2026-11-09
+
+The two smallest pieces of Konzept 11 that pay straight into the plugin's promise, decided as E-0079 and E-0080: reviewing a page takes one click, and a new page starts with the outline of its type.
+
+### Added
+
+* **One-click review confirmation** (`Frontend\ReviewConfirm`). Whoever may edit a page (`edit_post`) sees **Reviewed, still current** next to the review date in the page footer. A click (`POST /living-handbook/v1/review`, with the REST nonce) sets the review date to today and the reviewer to the person who clicked, and nothing else: the page is not saved, so "last updated", the content and the revisions stay. Setting the date without the person would leave the footer naming someone who did not review. The footer's review entry is replaced from the answer and a status line announces it. The shared cache version is bumped, so cards and previews show the new status.
+* A page synced from GitHub shows "Review date is kept in the source file" instead, and the route answers 409: each sync writes the review date from the file's transport block and would undo a click. The static export leaves the button out (`StaticSite::is_rendering()`), because it renders as the exporting person, who may well edit the page.
+* **Seven start patterns** (`Blocks\Patterns`), one per seeded page type: guide, process description, tool overview, role / organisation, background / concept, FAQ, area overview, in the pattern category "Living Handbook". `core/post-content` in their block types and the handbook post type in `postTypes` make them start patterns, which the block editor offers when a new, empty handbook page opens (from WordPress 6.8). They hold the outline of the team's writing guide only: headings, closed details blocks titled "Category: what it is about", empty paragraphs and list items with a placeholder. Choosing one does not set the page type. The markup is built with core's serializer; the block validator of `@wordpress/blocks` 12.1 found all seven valid without a fix.
+* **Docs:** confirming a review on the website and the start patterns, in the app handbook and the technical documentation, both languages.
+
+### Changed
+
+* `PageMeta::reviewed_html()` builds the footer's review entry, shared by the footer and the review route.
+* The German pattern headings use the words of the team's templates (Schritte, Ergebnis, Auslöser, Beteiligte Rollen and so on).
+
 ## [0.77.0] - 2026-11-09
 
 AI access as decided in E-0056, with the count of failed searches decided in E-0078. Seven reading abilities, one access rule for all of them, and the first table of the plugin's own.

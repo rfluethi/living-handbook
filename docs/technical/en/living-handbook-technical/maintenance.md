@@ -31,6 +31,8 @@ Open a page and find the **Handbook maintenance** meta box at the bottom of the 
 
 For the common case, "I reviewed this today", you do not need to open the page: use **Quick Edit** in the handbook list (hover a row, then Quick Edit). It offers the last review date, the reviewer and the review interval inline, prefilled with the current values, so you can update the review of several pages quickly.
 
+And on the website itself: whoever may edit a page sees **Reviewed, still current** next to the review date in the page footer. A click sets the review date to today and the reviewer to the person who clicked (`ReviewConfirm`, route `POST /living-handbook/v1/review`), and nothing else: the page is not saved, so "Last updated" and the revisions stay as they are. A page synced from GitHub shows a note instead, because each sync writes the review date from the file's transport block and would undo the click. The static export leaves the button out (decision E-0079).
+
 On import, the review date and interval travel in the Markdown transport block (`Letzte Prüfung`, `Prüfintervall`) and are written into these fields. See [import and sync](import-and-sync.md).
 
 ## Finding pages in the list

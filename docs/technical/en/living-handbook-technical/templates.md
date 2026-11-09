@@ -44,6 +44,10 @@ Applies to a single learning path, and only exists as a reachable page while the
 
 There is deliberately no table of contents column: a path is a list, and a list of its own headings would be a list of a list. The path bar is not here either, for the same reason it is on every lesson: you are not inside the path yet while you are looking at it.
 
+## Start patterns for the content
+
+The templates arrange what is around a page. What a new page starts with is a pattern: the plugin registers seven, one per seeded page type, in the pattern category **Living Handbook** (`src/Blocks/Patterns.php`). They carry `core/post-content` in their block types and the handbook post type in `postTypes`, so the block editor offers them when a new, empty handbook page is opened. They hold the outline only, headings, closed details blocks and empty paragraphs and list items with a placeholder, and choosing one does not set the page type (decision E-0080). `PatternsTest` holds them to that.
+
 ## Rearranging
 
 These are ordinary block templates, so you can rearrange them in the Site Editor: move the navigation to the right, drop the desktop table of contents, widen the content, and so on. The blocks are self-contained and render wherever you place them, as long as they stay in their intended context (see "Renders on" in [blocks.md](blocks.md)).

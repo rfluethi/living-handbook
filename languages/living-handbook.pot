@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Living Handbook 0.76.0\n"
+"Project-Id-Version: Living Handbook 0.77.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-09T09:37:07+00:00\n"
+"POT-Creation-Date: 2026-11-09T10:50:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: living-handbook\n"
@@ -18,6 +18,7 @@ msgstr ""
 #: living-handbook.php
 #: src/Abilities/Abilities.php:81
 #: src/Blocks/Blocks.php:126
+#: src/Blocks/Patterns.php:67
 #: src/Privacy/Privacy.php:103
 #: src/Privacy/Privacy.php:369
 msgid "Living Handbook"
@@ -161,7 +162,7 @@ msgstr ""
 #: src/Admin/Maintenance.php:268
 #: src/Admin/Maintenance.php:272
 #: src/Export/SiteRenderer.php:288
-#: src/Export/StaticSite.php:1211
+#: src/Export/StaticSite.php:1250
 #: src/Import/HandbookExport.php:141
 #: src/PostType/Handbook.php:123
 #: src/PostType/Handbook.php:125
@@ -172,7 +173,7 @@ msgid "Handbook"
 msgstr ""
 
 #: src/Admin/Maintenance.php:275
-#: src/Frontend/PageMeta.php:96
+#: src/Frontend/PageMeta.php:84
 #: src/Meta/Metadata.php:277
 #: src/Meta/Metadata.php:409
 #: src/Meta/Metadata.php:458
@@ -261,6 +262,323 @@ msgstr ""
 msgid "Search this handbook …"
 msgstr ""
 
+#: src/Blocks/Patterns.php:68
+msgid "Outlines for handbook pages, one per page type."
+msgstr ""
+
+#: src/Blocks/Patterns.php:94
+msgid "Related pages"
+msgstr ""
+
+#: src/Blocks/Patterns.php:95
+msgid "Link to a related page"
+msgstr ""
+
+#: src/Blocks/Patterns.php:99
+#: src/Setup/Seeder.php:38
+msgid "Guide"
+msgstr ""
+
+#: src/Blocks/Patterns.php:100
+msgid "A task, step by step: steps and result in view, concept, prerequisites and pitfalls folded away."
+msgstr ""
+
+#: src/Blocks/Patterns.php:101
+msgid "What this guide achieves, and for whom, in one to three sentences."
+msgstr ""
+
+#: src/Blocks/Patterns.php:102
+msgid "Concept: what it is about"
+msgstr ""
+
+#: src/Blocks/Patterns.php:102
+msgid "How the task fits into the whole. Leave out if not needed."
+msgstr ""
+
+#: src/Blocks/Patterns.php:103
+msgid "Prerequisites: what you need"
+msgstr ""
+
+#: src/Blocks/Patterns.php:103
+msgid "What must be done first, which access is needed."
+msgstr ""
+
+#: src/Blocks/Patterns.php:104
+msgid "Steps"
+msgstr ""
+
+#: src/Blocks/Patterns.php:105
+msgid "First step, as an instruction"
+msgstr ""
+
+#: src/Blocks/Patterns.php:105
+msgid "Next step"
+msgstr ""
+
+#: src/Blocks/Patterns.php:106
+#: src/Blocks/Patterns.php:121
+msgid "Result"
+msgstr ""
+
+#: src/Blocks/Patterns.php:107
+msgid "How you can tell the task is done."
+msgstr ""
+
+#: src/Blocks/Patterns.php:108
+msgid "Pitfalls: what it is about"
+msgstr ""
+
+#: src/Blocks/Patterns.php:108
+msgid "What goes wrong, and what newcomers should know."
+msgstr ""
+
+#: src/Blocks/Patterns.php:112
+#: src/Setup/Seeder.php:39
+msgid "Process description"
+msgstr ""
+
+#: src/Blocks/Patterns.php:113
+msgid "A process across several roles: trigger, roles, sequence and result."
+msgstr ""
+
+#: src/Blocks/Patterns.php:114
+msgid "Which process this is, when it starts and what it leads to."
+msgstr ""
+
+#: src/Blocks/Patterns.php:115
+msgid "Trigger"
+msgstr ""
+
+#: src/Blocks/Patterns.php:116
+msgid "What starts this process."
+msgstr ""
+
+#: src/Blocks/Patterns.php:117
+msgid "Roles involved"
+msgstr ""
+
+#: src/Blocks/Patterns.php:118
+msgid "Role: its task in this process"
+msgstr ""
+
+#: src/Blocks/Patterns.php:119
+msgid "Sequence"
+msgstr ""
+
+#: src/Blocks/Patterns.php:120
+msgid "Step: which role does what"
+msgstr ""
+
+#: src/Blocks/Patterns.php:122
+msgid "What exists at the end."
+msgstr ""
+
+#: src/Blocks/Patterns.php:123
+msgid "Background: why the process works this way"
+msgstr ""
+
+#: src/Blocks/Patterns.php:123
+msgid "The reasons behind the sequence. Leave out if not needed."
+msgstr ""
+
+#: src/Blocks/Patterns.php:127
+#: src/Setup/Seeder.php:40
+msgid "Tool overview"
+msgstr ""
+
+#: src/Blocks/Patterns.php:128
+msgid "One tool as the team uses it: who, access, conventions and documentation."
+msgstr ""
+
+#: src/Blocks/Patterns.php:129
+msgid "What the team uses this tool for."
+msgstr ""
+
+#: src/Blocks/Patterns.php:130
+msgid "Background: what the tool is"
+msgstr ""
+
+#: src/Blocks/Patterns.php:130
+msgid "The tool in one sentence, and where you meet it day to day."
+msgstr ""
+
+#: src/Blocks/Patterns.php:131
+msgid "Who uses it"
+msgstr ""
+
+#: src/Blocks/Patterns.php:132
+msgid "Which roles need access."
+msgstr ""
+
+#: src/Blocks/Patterns.php:133
+msgctxt "heading in the tool overview pattern: how to get access to the tool"
+msgid "Access"
+msgstr ""
+
+#: src/Blocks/Patterns.php:134
+msgid "How to get access, and which role grants it."
+msgstr ""
+
+#: src/Blocks/Patterns.php:135
+msgid "Our conventions"
+msgstr ""
+
+#: src/Blocks/Patterns.php:136
+msgid "Naming, structure, labels"
+msgstr ""
+
+#: src/Blocks/Patterns.php:136
+msgid "What is allowed and what is not"
+msgstr ""
+
+#: src/Blocks/Patterns.php:137
+msgid "Official documentation"
+msgstr ""
+
+#: src/Blocks/Patterns.php:138
+msgid "Link to the vendor documentation"
+msgstr ""
+
+#: src/Blocks/Patterns.php:139
+msgid "Guides for this tool"
+msgstr ""
+
+#: src/Blocks/Patterns.php:140
+msgid "Link to a guide in this handbook"
+msgstr ""
+
+#: src/Blocks/Patterns.php:143
+#: src/Setup/Seeder.php:41
+msgid "Role / Organisation"
+msgstr ""
+
+#: src/Blocks/Patterns.php:144
+msgid "A role or a unit: responsibilities, authority and interfaces."
+msgstr ""
+
+#: src/Blocks/Patterns.php:145
+msgid "What this role covers, in one or two sentences."
+msgstr ""
+
+#: src/Blocks/Patterns.php:146
+msgid "Background: where you meet this role"
+msgstr ""
+
+#: src/Blocks/Patterns.php:146
+msgid "How this role shows up in daily work."
+msgstr ""
+
+#: src/Blocks/Patterns.php:147
+msgid "Responsibilities"
+msgstr ""
+
+#: src/Blocks/Patterns.php:148
+msgid "A responsibility"
+msgstr ""
+
+#: src/Blocks/Patterns.php:149
+msgid "Authority"
+msgstr ""
+
+#: src/Blocks/Patterns.php:150
+msgid "What this role may decide"
+msgstr ""
+
+#: src/Blocks/Patterns.php:151
+msgid "Interfaces"
+msgstr ""
+
+#: src/Blocks/Patterns.php:152
+msgid "Works with: other roles"
+msgstr ""
+
+#: src/Blocks/Patterns.php:152
+msgid "Reports to: a role"
+msgstr ""
+
+#: src/Blocks/Patterns.php:155
+#: src/Setup/Seeder.php:42
+msgid "Background / Concept"
+msgstr ""
+
+#: src/Blocks/Patterns.php:156
+msgid "An explanation: what it is about, why it is done this way, and what that means for the work."
+msgstr ""
+
+#: src/Blocks/Patterns.php:157
+msgid "Which question this page answers."
+msgstr ""
+
+#: src/Blocks/Patterns.php:158
+msgid "What it is about"
+msgstr ""
+
+#: src/Blocks/Patterns.php:159
+msgid "The explanation."
+msgstr ""
+
+#: src/Blocks/Patterns.php:160
+msgid "Why we do it this way"
+msgstr ""
+
+#: src/Blocks/Patterns.php:161
+msgid "The reasons."
+msgstr ""
+
+#: src/Blocks/Patterns.php:162
+msgid "What it means for our work"
+msgstr ""
+
+#: src/Blocks/Patterns.php:163
+msgid "The concrete consequences."
+msgstr ""
+
+#: src/Blocks/Patterns.php:167
+#: src/Setup/Seeder.php:43
+msgid "FAQ"
+msgstr ""
+
+#: src/Blocks/Patterns.php:168
+msgid "Frequent questions, each folded away, each answer pointing to the page that holds the details."
+msgstr ""
+
+#: src/Blocks/Patterns.php:169
+msgid "Frequent questions about this area. Each answer points to the page that holds the details."
+msgstr ""
+
+#: src/Blocks/Patterns.php:170
+msgid "A question, in the words people ask it"
+msgstr ""
+
+#: src/Blocks/Patterns.php:170
+msgid "A short answer in one to three sentences, and a link to the page with the details."
+msgstr ""
+
+#: src/Blocks/Patterns.php:171
+msgid "Another question"
+msgstr ""
+
+#: src/Blocks/Patterns.php:171
+msgid "A short answer, and a link."
+msgstr ""
+
+#: src/Blocks/Patterns.php:175
+#: src/Setup/Seeder.php:44
+msgid "Area overview"
+msgstr ""
+
+#: src/Blocks/Patterns.php:176
+msgid "The start of an area: what it covers and which page answers what."
+msgstr ""
+
+#: src/Blocks/Patterns.php:177
+msgid "What this area covers, and for whom."
+msgstr ""
+
+#: src/Blocks/Patterns.php:178
+msgid "Link to a page: what you know or can do afterwards"
+msgstr ""
+
 #: src/Blocks/SourceNoteBlock.php:79
 #: assets/js/git-source-note-block.js:16
 msgid "This page is maintained on GitHub and updated automatically."
@@ -317,17 +635,17 @@ msgid "On this page"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:555
-#: src/Frontend/FrontendRenderer.php:139
+#: src/Frontend/FrontendRenderer.php:141
 msgid "Enlarge"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:556
-#: src/Frontend/FrontendRenderer.php:138
+#: src/Frontend/FrontendRenderer.php:140
 msgid "Close"
 msgstr ""
 
 #: src/Export/SiteRenderer.php:557
-#: src/Frontend/FrontendRenderer.php:140
+#: src/Frontend/FrontendRenderer.php:142
 msgid "Enlarged diagram"
 msgstr ""
 
@@ -385,84 +703,84 @@ msgstr ""
 msgid "Paper, for printing"
 msgstr ""
 
-#: src/Export/StaticSite.php:222
+#: src/Export/StaticSite.php:229
 msgid "This server has no ZIP support (the PHP zip extension), so an export cannot be packed."
 msgstr ""
 
-#: src/Export/StaticSite.php:233
+#: src/Export/StaticSite.php:240
 msgid "This export has expired or belongs to somebody else. Start it again."
 msgstr ""
 
-#: src/Export/StaticSite.php:245
+#: src/Export/StaticSite.php:252
 #: assets/js/static-export.js:189
 msgid "Choose a handbook to export."
 msgstr ""
 
-#: src/Export/StaticSite.php:252
+#: src/Export/StaticSite.php:259
 msgid "You cannot read this handbook, so you cannot export it either."
 msgstr ""
 
-#: src/Export/StaticSite.php:271
+#: src/Export/StaticSite.php:278
 #: src/Import/HandbookExport.php:302
 msgid "That area cannot be exported."
 msgstr ""
 
-#: src/Export/StaticSite.php:278
+#: src/Export/StaticSite.php:285
 msgid "There is nothing to export: this handbook has no pages you can read."
 msgstr ""
 
-#: src/Export/StaticSite.php:449
+#: src/Export/StaticSite.php:456
 msgid "The export file could not be written on this server."
 msgstr ""
 
-#: src/Export/StaticSite.php:1119
+#: src/Export/StaticSite.php:1158
 #: src/Import/HandbookExport.php:258
 msgid "You are not allowed to export handbooks."
 msgstr ""
 
-#: src/Export/StaticSite.php:1130
+#: src/Export/StaticSite.php:1169
 msgid "This file has already been downloaded, or the export has expired. Build the website again if you need another copy."
 msgstr ""
 
-#: src/Export/StaticSite.php:1203
+#: src/Export/StaticSite.php:1242
 msgid "Export as a website"
 msgstr ""
 
-#: src/Export/StaticSite.php:1204
+#: src/Export/StaticSite.php:1243
 msgid "A ZIP of plain HTML files: the pages, their images, a page list and a search. It opens by double-clicking index.html, with no server and no internet connection. For readers who have no access to this site at all."
 msgstr ""
 
-#: src/Export/StaticSite.php:1206
+#: src/Export/StaticSite.php:1245
 msgid "A static copy has no access rules. It contains every page you can read in the handbook you choose, and whoever holds the file can read all of it. It also stops being current the moment it is made."
 msgstr ""
 
-#: src/Export/StaticSite.php:1214
+#: src/Export/StaticSite.php:1253
 #: src/Import/HandbookExport.php:144
 #: src/Import/MarkdownImportPage.php:1202
 msgid "— select a handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:1224
+#: src/Export/StaticSite.php:1263
 #: src/Import/HandbookExport.php:154
 msgid "What to export"
 msgstr ""
 
-#: src/Export/StaticSite.php:1226
-#: src/Export/StaticSite.php:1227
+#: src/Export/StaticSite.php:1265
+#: src/Export/StaticSite.php:1266
 #: src/Import/HandbookExport.php:156
 #: src/Import/HandbookExport.php:157
 msgid "— the whole handbook —"
 msgstr ""
 
-#: src/Export/StaticSite.php:1232
+#: src/Export/StaticSite.php:1271
 msgid "Look"
 msgstr ""
 
-#: src/Export/StaticSite.php:1239
+#: src/Export/StaticSite.php:1278
 msgid "\"Like this site\" takes your theme along: its palette, its fonts, its spacing, plus what you set under Appearance. The other looks leave all of that behind and bring their own, which is often the better choice for a copy that goes outside the team."
 msgstr ""
 
-#: src/Export/StaticSite.php:1244
+#: src/Export/StaticSite.php:1283
 msgid "Build the website"
 msgstr ""
 
@@ -605,8 +923,8 @@ msgstr ""
 #: src/Frontend/Entry.php:174
 #: src/Frontend/Entry.php:176
 #: src/Frontend/Entry.php:290
-#: src/Frontend/FrontendRenderer.php:377
-#: src/Frontend/FrontendRenderer.php:437
+#: src/Frontend/FrontendRenderer.php:379
+#: src/Frontend/FrontendRenderer.php:439
 #: src/Taxonomy/Taxonomies.php:270
 #: src/Taxonomy/Taxonomies.php:272
 #: src/Taxonomy/Taxonomies.php:273
@@ -654,27 +972,31 @@ msgstr ""
 msgid "Handbook pages"
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:133
+#: src/Frontend/FrontendRenderer.php:134
 msgid "Thanks for your feedback."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:134
+#: src/Frontend/FrontendRenderer.php:135
 msgid "Your feedback could not be sent. Please try again."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:135
-msgid "The list could not be updated. Please reload the page."
-msgstr ""
-
 #: src/Frontend/FrontendRenderer.php:136
-msgid "No matches."
+msgid "The review could not be recorded. Please try again."
 msgstr ""
 
 #: src/Frontend/FrontendRenderer.php:137
+msgid "The list could not be updated. Please reload the page."
+msgstr ""
+
+#: src/Frontend/FrontendRenderer.php:138
+msgid "No matches."
+msgstr ""
+
+#: src/Frontend/FrontendRenderer.php:139
 msgid "The search failed. Please reload the page."
 msgstr ""
 
-#: src/Frontend/FrontendRenderer.php:145
+#: src/Frontend/FrontendRenderer.php:147
 msgid "Continue"
 msgstr ""
 
@@ -704,20 +1026,36 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:92
-msgid "never"
-msgstr ""
-
-#: src/Frontend/PageMeta.php:94
+#: src/Frontend/PageMeta.php:81
 msgid "Created"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:95
+#: src/Frontend/PageMeta.php:82
 msgid "Last updated"
 msgstr ""
 
-#: src/Frontend/PageMeta.php:103
+#: src/Frontend/PageMeta.php:93
 msgid "Responsible role"
+msgstr ""
+
+#: src/Frontend/PageMeta.php:122
+msgid "never"
+msgstr ""
+
+#: src/Frontend/ReviewConfirm.php:109
+msgid "The review date of this page is kept in its source file on GitHub."
+msgstr ""
+
+#: src/Frontend/ReviewConfirm.php:119
+msgid "Review confirmed."
+msgstr ""
+
+#: src/Frontend/ReviewConfirm.php:165
+msgid "Review date is kept in the source file"
+msgstr ""
+
+#: src/Frontend/ReviewConfirm.php:172
+msgid "Reviewed, still current"
 msgstr ""
 
 #: src/Frontend/Templates.php:55
@@ -1698,11 +2036,11 @@ msgstr ""
 msgid "Empty fields are left as they are on each page."
 msgstr ""
 
-#: src/Plugin.php:301
+#: src/Plugin.php:305
 msgid "Living Handbook cannot be activated for the whole network. Activate it on each site that needs a handbook instead."
 msgstr ""
 
-#: src/Plugin.php:302
+#: src/Plugin.php:306
 msgid "Network activation not supported"
 msgstr ""
 
@@ -1880,34 +2218,6 @@ msgid "%d handbook page is not assigned to a handbook, so it stays invisible on 
 msgid_plural "%d handbook pages are not assigned to a handbook, so they stay invisible on the front end. Open them and pick a handbook in the sidebar."
 msgstr[0] ""
 msgstr[1] ""
-
-#: src/Setup/Seeder.php:38
-msgid "Guide"
-msgstr ""
-
-#: src/Setup/Seeder.php:39
-msgid "Process description"
-msgstr ""
-
-#: src/Setup/Seeder.php:40
-msgid "Tool overview"
-msgstr ""
-
-#: src/Setup/Seeder.php:41
-msgid "Role / Organisation"
-msgstr ""
-
-#: src/Setup/Seeder.php:42
-msgid "Background / Concept"
-msgstr ""
-
-#: src/Setup/Seeder.php:43
-msgid "FAQ"
-msgstr ""
-
-#: src/Setup/Seeder.php:44
-msgid "Area overview"
-msgstr ""
 
 #: src/Setup/Seeder.php:52
 msgid "Content creators"

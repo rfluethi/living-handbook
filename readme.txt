@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.77.0
+Stable tag: 0.78.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,8 @@ Core features:
 
 * A dedicated handbook content type with structured page types (Diataxis plus FAQ).
 * Ownership per page: assign a responsible role to every page, and a reviewer as a WordPress user.
-* Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue.
+* Freshness tracking: per-page review dates and intervals, an overdue dashboard, and escalation for pages whose review is overdue. Whoever may edit a page confirms its review with one click in the page footer.
+* Start patterns: a new handbook page is offered the outline of its page type (guide, process, tool, role, concept, FAQ, area overview), headings and folded sections with placeholders, nothing that would publish by accident.
 * Access per handbook: public, all members, or restricted to specific roles and/or people, on the site and in wp-admin. Administrators read every handbook; editors read what a handbook grants them, so a handbook can be kept to administrators.
 * Several handbooks side by side, each with its own access group, its own entry page, and its own navigation.
 * An entry page per handbook with full-text search, taxonomy filters that apply without a reload, area tiles and recently updated pages.
@@ -116,6 +117,10 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 
 == Changelog ==
 
+= 0.78.0 =
+* New: "Reviewed, still current" in the page footer. Whoever may edit the page sets the review date to today and themselves as reviewer with one click, without saving the page. Not on pages synced from GitHub, whose review date comes from the file, and not in the website export.
+* New: seven start patterns, one per page type. A new handbook page offers them; they bring the outline only and do not set the page type.
+
 = 0.77.0 =
 * New: access for AI tools. On WordPress 6.9 and later, seven read-only abilities (list handbooks, structure, search, read a page, pages due for review, unhelpful pages, failed searches) work with the MCP Adapter plugin. Each answer follows the access rules of the signed-in account, leaves out pages excluded from AI use and pages with a password, and names the page address and its review status. The app handbook explains how to connect a tool.
 * New: searches that find nothing are counted per term, handbook and week, without anything about the person, and deleted after 90 days. On by default, switchable under Settings, Feedback.
@@ -174,6 +179,9 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 Older versions are listed in [CHANGELOG.md on GitHub](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 0.78.0 =
+One-click review confirmation in the page footer for whoever may edit the page, and start patterns for new handbook pages.
 
 = 0.77.0 =
 Adds read-only access for AI tools through the MCP Adapter (WordPress 6.9 and later) and a count of searches that find nothing, without personal data. Review the new paragraph of the suggested privacy policy.

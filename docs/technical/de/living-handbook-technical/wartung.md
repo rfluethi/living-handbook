@@ -29,6 +29,8 @@ Der Badge arbeitet nicht mit Farbe allein: Jeder Zustand hat eine eigene Form un
 
 Für den häufigen Fall „ich habe das heute geprüft" musst du die Seite nicht öffnen: Nutze **QuickEdit** in der Handbuch-Liste (auf eine Zeile zeigen, dann QuickEdit). Dort stehen Prüfdatum, Prüfer und Prüfintervall direkt in der Liste, vorbelegt mit den aktuellen Werten, sodass du die Prüfung mehrerer Seiten zügig nachtragen kannst.
 
+Und auf der Website selbst: Wer eine Seite bearbeiten darf, sieht in der Fußzeile neben dem Prüfdatum **Geprüft, Stand aktuell**. Ein Klick setzt das Prüfdatum auf heute und die prüfende Person auf die klickende (`ReviewConfirm`, Route `POST /living-handbook/v1/review`), sonst nichts: Die Seite wird nicht gespeichert, „Letzte Aktualisierung“ und die Revisionen bleiben also. Eine mit GitHub abgeglichene Seite zeigt stattdessen einen Hinweis, weil jeder Abgleich das Prüfdatum aus dem Transport-Block der Datei schreibt und den Klick aufheben würde. Der Website-Export lässt den Knopf weg (Entscheid E-0079).
+
 Beim Import reisen Prüfdatum und Intervall im Markdown-Transport-Block mit (`Letzte Prüfung`, `Prüfintervall`) und werden in diese Felder geschrieben. Siehe [Import und Sync](import-und-sync.md).
 
 ## Seiten in der Liste finden

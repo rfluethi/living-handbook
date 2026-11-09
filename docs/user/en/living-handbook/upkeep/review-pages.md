@@ -17,6 +17,22 @@ This guide shows the practical review work: confirming single pages, working thr
 3. Does the content still hold? Then set the review date to today in the **Handbook maintenance** box at the bottom of the editor. Does it no longer hold? Then fix the content first.
 4. Update the page.
 
+## Confirming a page right on the website
+
+If you are reading a page on the website anyway and it still holds, there is no detour through the editor:
+
+1. Scroll to the end of the page, to the page details.
+2. Next to **Last reviewed**, click **Reviewed, still current**.
+
+The review date jumps to today, you are named as the reviewer, and the badge switches to "Reviewed" without reloading the page. Only whoever may edit the page sees the button. The content and "Last updated" stay as they are, because nothing in the page changed.
+
+<details>
+<summary>Note: Pages from GitHub</summary>
+
+On a page synced with GitHub, the button is replaced by "Review date is kept in the source file". Its review date comes from the file's transport block on every sync, so a click would be gone at the next one. Set the date there, in the "Letzte Prüfung" line.
+
+</details>
+
 ## Reviewing many pages quickly
 
 For the common case "read it, still holds" you do not even have to open the page:
@@ -54,6 +70,6 @@ All pages carry a current review date. The box on the dashboard is empty. The ba
 * Eltern-Seite: Upkeep
 * Reihenfolge: 2
 * Textauszug: The practical review work: confirming single pages, working through many quickly, and reliably finding the overdue ones.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

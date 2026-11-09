@@ -41,8 +41,9 @@ The modules under `src/`:
   - `Navigation.php` builds the page tree for one handbook, the collapsible sidebar.
   - `PageTree.php` loads all published pages of one handbook in a single query and groups them by parent, so the navigation and the area tiles build their hierarchy from the same map instead of querying per branch.
   - `PageMeta.php` builds the "was this helpful?" prompt and the metadata footer.
+  - `ReviewConfirm.php` is the "Reviewed, still current" button in that footer and the route behind it.
   - `FreshnessStatus.php` works out the reviewed / due / overdue state and its label.
-- **`Blocks/`** registers the plugin's blocks. `Blocks.php` registers most of them and renders them on the server; `MermaidBlock.php` and `SourceNoteBlock.php` are two special ones (a live diagram, and a note shown only on GitHub-synced pages). The blocks call into `Frontend/` to produce their HTML.
+- **`Blocks/`** registers the plugin's blocks. `Blocks.php` registers most of them and renders them on the server; `MermaidBlock.php` and `SourceNoteBlock.php` are two special ones (a live diagram, and a note shown only on GitHub-synced pages). `Patterns.php` registers the seven start patterns a new handbook page is offered, one per page type. The blocks call into `Frontend/` to produce their HTML.
 - **`Feedback/`** handles the "was this helpful?" votes and their counters (`Feedback.php`).
 - **`Privacy/`** connects the plugin to the WordPress privacy tools (`Privacy.php`): the personal data export and erasure, the privacy policy guide, and the clean-up when an account is deleted. It covers the voter lists, the reviewer and the access lists of handbooks; the eraser keeps the reviewer and the access lists and reports them, and a deleted account leaves every voter list and access list.
 - **`Abilities/`** is the AI access (`Abilities.php` and one class per ability): seven reading abilities for the Abilities API of WordPress 6.9 and later, which the MCP Adapter turns into tools of an AI client. Every page they hand out goes through one check in `Pages.php`. See [ai-access.md](ai-access.md).
