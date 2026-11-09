@@ -15,6 +15,7 @@ use LivingHandbook\Admin\Maintenance;
 use LivingHandbook\Admin\MoveToHandbook;
 use LivingHandbook\Blocks\Blocks;
 use LivingHandbook\Blocks\MermaidBlock;
+use LivingHandbook\Blocks\Patterns;
 use LivingHandbook\Blocks\SourceNoteBlock;
 use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Feedback\Feedback;
@@ -119,6 +120,7 @@ final class Plugin {
 		( new Settings() )->register();
 		( new Blocks() )->register();
 		( new MermaidBlock() )->register();
+		( new Patterns() )->register();
 		( new SourceNoteBlock() )->register();
 		( new Onboarding() )->register();
 		( new Privacy() )->register();
