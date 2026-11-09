@@ -17,6 +17,7 @@ use LivingHandbook\Blocks\Blocks;
 use LivingHandbook\Blocks\MermaidBlock;
 use LivingHandbook\Blocks\Patterns;
 use LivingHandbook\Blocks\SourceNoteBlock;
+use LivingHandbook\Export\MarkdownExport;
 use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Feedback\Feedback;
 use LivingHandbook\Files\FileDelivery;
@@ -120,6 +121,7 @@ final class Plugin {
 		( new MarkdownImportPage() )->register();
 		( new HandbookExport() )->register();
 		( new StaticSite() )->register();
+		( new MarkdownExport() )->register();
 		( new HandbookImport() )->register();
 		( new GitSync() )->register();
 		( new Settings() )->register();

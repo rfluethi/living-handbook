@@ -205,6 +205,7 @@
 	window.wp.domReady( () => {
 		wireAreas( 'lh-export-handbook', 'lh-export-area' );
 		wireAreas( 'lh-site-handbook', 'lh-site-area' );
+		wireAreas( 'lh-md-handbook', 'lh-md-area' );
 		wireStaticExport();
 	} );
 } )();

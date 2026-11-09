@@ -11,6 +11,7 @@ namespace LivingHandbook\Import;
 
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Git\GitSync;
+use LivingHandbook\Export\MarkdownExport;
 use LivingHandbook\Export\StaticSite;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
@@ -175,6 +176,16 @@ final class HandbookExport {
 					)
 				)
 			);
+			MarkdownExport::render_form(
+				array_values(
+					array_filter(
+						$handbooks,
+						static function ( $term ) {
+							return $term instanceof WP_Term;
+						}
+					)
+				)
+			);
 			?>
 		</div>
 		<?php
@@ -266,6 +277,50 @@ final class HandbookExport {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
 		$area_id = isset( $_POST['area'] ) ? absint( wp_unslash( $_POST['area'] ) ) : 0;
 
+		$target    = self::target( $handbook_id, $area_id );
+		$term      = $target['term'];
+		$root_id   = $target['root_id'];
+		$root_slug = $target['root_slug'];
+
+		if ( ! class_exists( 'ZipArchive' ) ) {
+			wp_die( esc_html__( 'ZipArchive is not available on the server.', 'living-handbook' ), '', array( 'response' => 501 ) );
+		}
+
+		// A download that broke off ends the request before the file is deleted
+		// below. The export runs in one request, so a bundle older than an hour
+		// belongs to nobody; this is the next moment that notices.
+		TempFiles::sweep( 'lh-export', HOUR_IN_SECONDS );
+
+		$path = $this->build_zip( $term, $root_id );
+		if ( '' === $path ) {
+			wp_die( esc_html__( 'The export bundle could not be created.', 'living-handbook' ), '', array( 'response' => 500 ) );
+		}
+
+		$base     = '' !== $term->slug ? $term->slug : 'handbook';
+		$suffix   = '' !== $root_slug ? '-' . $root_slug : '';
+		$filename = 'living-handbook-' . $base . $suffix . '-' . gmdate( 'Y-m-d' ) . '.zip';
+
+		nocache_headers();
+		header( 'Content-Type: application/zip' );
+		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename ) . '"' );
+		header( 'Content-Length: ' . (string) filesize( $path ) );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- streaming a generated file to the browser.
+		readfile( $path );
+		wp_delete_file( $path );
+		exit;
+	}
+
+	/**
+	 * What a download asks to export, checked: the handbook, and the area page
+	 * when one is chosen. Ends the request with an error when the choice is
+	 * missing or not the current user's to export. Shared by the bundle and
+	 * the Markdown export.
+	 *
+	 * @param int $handbook_id Chosen handbook.
+	 * @param int $area_id     Chosen area page, or 0.
+	 * @return array{term: WP_Term, root_id: int, root_slug: string}
+	 */
+	public static function target( int $handbook_id, int $area_id ): array {
 		$term      = null;
 		$root_id   = 0;
 		$root_slug = '';
@@ -302,32 +357,11 @@ final class HandbookExport {
 			wp_die( esc_html__( 'That area cannot be exported.', 'living-handbook' ), '', array( 'response' => 403 ) );
 		}
 
-		if ( ! class_exists( 'ZipArchive' ) ) {
-			wp_die( esc_html__( 'ZipArchive is not available on the server.', 'living-handbook' ), '', array( 'response' => 501 ) );
-		}
-
-		// A download that broke off ends the request before the file is deleted
-		// below. The export runs in one request, so a bundle older than an hour
-		// belongs to nobody; this is the next moment that notices.
-		TempFiles::sweep( 'lh-export', HOUR_IN_SECONDS );
-
-		$path = $this->build_zip( $term, $root_id );
-		if ( '' === $path ) {
-			wp_die( esc_html__( 'The export bundle could not be created.', 'living-handbook' ), '', array( 'response' => 500 ) );
-		}
-
-		$base     = '' !== $term->slug ? $term->slug : 'handbook';
-		$suffix   = '' !== $root_slug ? '-' . $root_slug : '';
-		$filename = 'living-handbook-' . $base . $suffix . '-' . gmdate( 'Y-m-d' ) . '.zip';
-
-		nocache_headers();
-		header( 'Content-Type: application/zip' );
-		header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $filename ) . '"' );
-		header( 'Content-Length: ' . (string) filesize( $path ) );
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- streaming a generated file to the browser.
-		readfile( $path );
-		wp_delete_file( $path );
-		exit;
+		return array(
+			'term'      => $term,
+			'root_id'   => $root_id,
+			'root_slug' => $root_slug,
+		);
 	}
 
 	/**
@@ -397,53 +431,10 @@ final class HandbookExport {
 		}
 		$roles = array_values( array_filter( array_map( 'strval', (array) get_term_meta( $term->term_id, Handbooks::META_ROLES, true ) ) ) );
 
-		$posts = get_posts(
-			array(
-				'post_type'      => Handbook::POST_TYPE,
-				'post_status'    => HandbookImport::STATUSES,
-				'posts_per_page' => -1,
-				'orderby'        => 'menu_order',
-				'order'          => 'ASC',
-				'no_found_rows'  => true,
-				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One query per export; the handbook is what is exported.
-					array(
-						'taxonomy'         => Handbooks::TAXONOMY,
-						'field'            => 'term_id',
-						'terms'            => $term->term_id,
-						'include_children' => false,
-					),
-				),
-			)
-		);
-
-		// Every page is asked, as the website export and the learning paths of
-		// this bundle are. get_posts() runs without the result filter, and the
-		// query layer narrows by handbook only, so up to 0.75.1 a site that
-		// narrowed access through living_handbook_can_view_post found the page it
-		// had just hidden in the next bundle.
-		$user_id = get_current_user_id();
-		$all     = array();
-		foreach ( $posts as $post ) {
-			if ( $post instanceof WP_Post && AccessController::can_view_post( $post->ID, $user_id ) ) {
-				$all[ $post->ID ] = $post;
-			}
-		}
-
-		// For an area export, keep only the chosen top page and its descendants.
-		// Keys and parents are then computed against that reduced set, so the area
-		// root becomes top-level in the bundle.
-		$exported = $all;
-		if ( $root_id > 0 && isset( $all[ $root_id ] ) ) {
-			$subtree  = $this->subtree_ids( $root_id, $all );
-			$exported = array();
-			foreach ( $all as $id => $post ) {
-				if ( isset( $subtree[ $id ] ) ) {
-					$exported[ $id ] = $post;
-				}
-			}
-		} else {
-			$root_id = 0;
-		}
+		$set      = $this->export_set( $term, $root_id );
+		$all      = $set['all'];
+		$exported = $set['exported'];
+		$root_id  = $set['root_id'];
 
 		$pages     = array();
 		$id_to_key = array();
@@ -493,6 +484,74 @@ final class HandbookExport {
 			// that does not exist and would not stop an older plugin either.
 			'paths'    => $paths,
 			'media'    => $this->media_manifest( $media ),
+		);
+	}
+
+	/**
+	 * The pages an export of a handbook or an area carries: every page of the
+	 * handbook the current user may view, narrowed to the area's subtree when
+	 * one is given. Shared by the bundle and the Markdown export (E-0083).
+	 *
+	 * A root id that is not among the viewable pages comes back as 0, and the
+	 * whole handbook is in the set.
+	 *
+	 * @param WP_Term $term    Handbook term.
+	 * @param int     $root_id Area root page ID, or 0.
+	 * @return array{all: array<int, WP_Post>, exported: array<int, WP_Post>, root_id: int}
+	 */
+	public function export_set( WP_Term $term, int $root_id = 0 ): array {
+		$posts = get_posts(
+			array(
+				'post_type'      => Handbook::POST_TYPE,
+				'post_status'    => HandbookImport::STATUSES,
+				'posts_per_page' => -1,
+				'orderby'        => 'menu_order',
+				'order'          => 'ASC',
+				'no_found_rows'  => true,
+				'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One query per export; the handbook is what is exported.
+					array(
+						'taxonomy'         => Handbooks::TAXONOMY,
+						'field'            => 'term_id',
+						'terms'            => $term->term_id,
+						'include_children' => false,
+					),
+				),
+			)
+		);
+
+		// Every page is asked, as the website export and the learning paths of
+		// this bundle are. get_posts() runs without the result filter, and the
+		// query layer narrows by handbook only, so up to 0.75.1 a site that
+		// narrowed access through living_handbook_can_view_post found the page it
+		// had just hidden in the next bundle.
+		$user_id = get_current_user_id();
+		$all     = array();
+		foreach ( $posts as $post ) {
+			if ( $post instanceof WP_Post && AccessController::can_view_post( $post->ID, $user_id ) ) {
+				$all[ $post->ID ] = $post;
+			}
+		}
+
+		// For an area export, keep only the chosen top page and its descendants.
+		// Keys and parents are then computed against that reduced set, so the area
+		// root becomes top-level in the bundle.
+		$exported = $all;
+		if ( $root_id > 0 && isset( $all[ $root_id ] ) ) {
+			$subtree  = $this->subtree_ids( $root_id, $all );
+			$exported = array();
+			foreach ( $all as $id => $post ) {
+				if ( isset( $subtree[ $id ] ) ) {
+					$exported[ $id ] = $post;
+				}
+			}
+		} else {
+			$root_id = 0;
+		}
+
+		return array(
+			'all'      => $all,
+			'exported' => $exported,
+			'root_id'  => $root_id,
 		);
 	}
 
