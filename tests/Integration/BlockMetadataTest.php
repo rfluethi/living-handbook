@@ -108,12 +108,43 @@ final class BlockMetadataTest extends WP_UnitTestCase {
 	/**
 	 * A dynamic block rendered from post content with an anchor carries it as id.
 	 *
+	 * The markup is serialised by core, as the editor and the import write it:
+	 * core encodes the Mermaid arrow (-->) in the attributes. Written by hand,
+	 * the arrow closes the HTML comment, and the block parser of WordPress 7.2
+	 * (WP_Block_Processor) then rightly sees no block at all.
+	 *
 	 * @return void
 	 */
 	public function test_the_anchor_reaches_the_rendered_markup(): void {
-		$html = do_blocks( '<!-- wp:living-handbook/mermaid {"code":"graph TD; A-->B;","anchor":"flow"} /-->' );
+		$html = do_blocks(
+			get_comment_delimited_block_content(
+				'living-handbook/mermaid',
+				array(
+					'code'   => 'graph TD; A-->B;',
+					'anchor' => 'flow',
+				),
+				''
+			)
+		);
 
 		$this->assertStringContainsString( 'id="flow"', $html );
+	}
+
+	/**
+	 * A Mermaid block as the Markdown import writes it still parses.
+	 *
+	 * markdown-import.js encodes <, > and & but not the dashes, so an arrow
+	 * arrives as --\u003e. That must stay a block on every supported version,
+	 * WordPress 7.2 with its stricter block parser included.
+	 *
+	 * @return void
+	 */
+	public function test_a_mermaid_block_written_by_the_import_parses(): void {
+		$markup = '<!-- wp:living-handbook/mermaid {"code":"graph TD; A--\\u003eB"} /-->';
+		$blocks = parse_blocks( $markup );
+
+		$this->assertSame( 'living-handbook/mermaid', $blocks[0]['blockName'] );
+		$this->assertSame( 'graph TD; A-->B', $blocks[0]['attrs']['code'] );
 	}
 
 	/**

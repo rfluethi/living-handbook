@@ -72,7 +72,17 @@ final class ContentBlockCallbacksTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_the_block_class_reaches_the_markup_in_a_render(): void {
-		$out = do_blocks( '<!-- wp:living-handbook/mermaid {"code":"graph TD; A-->B","className":"is-wide"} /-->' );
+		// Serialised by core, see BlockMetadataTest::test_the_anchor_reaches_the_rendered_markup.
+		$out = do_blocks(
+			get_comment_delimited_block_content(
+				'living-handbook/mermaid',
+				array(
+					'code'      => 'graph TD; A-->B',
+					'className' => 'is-wide',
+				),
+				''
+			)
+		);
 
 		$this->assertStringContainsString( 'wp-block-living-handbook-mermaid', $out );
 		$this->assertStringContainsString( 'is-wide', $out );
