@@ -28,7 +28,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Export;
 
 use LivingHandbook\Access\AccessController;
-use LivingHandbook\Frontend\Headings;
+use LivingHandbook\Frontend\RenderedContent;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Support\TempFiles;
@@ -742,38 +742,13 @@ final class StaticSite {
 
 	/**
 	 * Returns the rendered content of a page, as the front end would show it.
-	 *
-	 * The content filters (the_content) run with the page set up as the current
-	 * post, so the filters that build the reading experience see what they
-	 * expect.
+	 * See RenderedContent, which the get-page ability shares.
 	 *
 	 * @param WP_Post $post The page.
 	 * @return string
 	 */
 	private static function render_content( WP_Post $post ): string {
-		global $wp_query;
-
-		$previous_post  = $GLOBALS['post'] ?? null;
-		$previous_query = $wp_query;
-
-		$GLOBALS['post'] = $post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restored below; the content filters read it.
-		setup_postdata( $post );
-
-		try {
-			$content = (string) apply_filters( 'the_content', $post->post_content ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core hook, applied on purpose.
-
-			// The anchors are added explicitly, because the filter that normally
-			// does it asks whether it is inside the loop of a handbook page, and
-			// this is a back-end request. Without them the table of contents would
-			// list headings it cannot point at.
-			$content = Headings::anchor( $content );
-		} finally {
-			wp_reset_postdata();
-			$wp_query        = $previous_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
-			$GLOBALS['post'] = $previous_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restoring what was there.
-		}
-
-		return $content;
+		return RenderedContent::of( $post );
 	}
 
 	/**

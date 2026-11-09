@@ -251,7 +251,8 @@ final class Filters {
 	 * on the way is markup.
 	 *
 	 * The post is the one that already passed the access check in the caller.
-	 * Reading its content anywhere else would have to repeat that check.
+	 * Public since 0.77.0 for the search ability, which checks access itself;
+	 * every caller has to.
 	 *
 	 * A password-protected page the visitor has not unlocked is quoted from
 	 * nowhere: core's search finds it for a signed-in reader by its content, and
@@ -262,7 +263,7 @@ final class Filters {
 	 * @param string  $search The search words.
 	 * @return array<int, array{text:string, mark:bool}>
 	 */
-	private static function snippet( WP_Post $post, string $search ): array {
+	public static function snippet( WP_Post $post, string $search ): array {
 		if ( post_password_required( $post ) ) {
 			return array();
 		}

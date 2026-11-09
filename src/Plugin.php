@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace LivingHandbook;
 
+use LivingHandbook\Abilities\Abilities;
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Admin\Maintenance;
 use LivingHandbook\Admin\MoveToHandbook;
@@ -120,6 +121,7 @@ final class Plugin {
 		( new Onboarding() )->register();
 		( new Privacy() )->register();
 		( new SearchLog() )->register();
+		( new Abilities() )->register();
 
 		// After an update the migrations have to run before anything relies on
 		// them. This used to hang on admin_init, which left it to the next visit
