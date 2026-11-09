@@ -25,6 +25,8 @@ graph TD;
 
 The search and the filters narrow the page list down without reloading the page. Filtering works by page type, topics, responsibility and audiences, with the same labels as in the settings. Without JavaScript, both keep working as an ordinary form. The area tiles are the top-level pages, see [Organise pages](../getting-started/organise-pages.md).
 
+Whoever is signed in sees the plugin version at the very bottom, for instance "Living Handbook 0.79.0". It helps when you ask a question about the plugin. Logged-out visitors do not see it, because a public version number tells attackers which known holes to try.
+
 ## The single page
 
 ![Layout sketch of the single page: navigation and search field on the left, in the middle title, content, feedback prompt, source note, badges and page-details footer, on the right the table of contents](../assets/einzelseite-aufbau.webp)
@@ -81,6 +83,6 @@ The plugin ships sixteen blocks of its own, from the handbook overview to the Me
 * Eltern-Seite: Interface
 * Reihenfolge: 1
 * Textauszug: On the website a handbook consists of three kinds of pages: the overview, the entry page and the single page; this page explains all three.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

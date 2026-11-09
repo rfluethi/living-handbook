@@ -26,7 +26,7 @@ Auch die [Lernpfade](lernpfade-anlegen.md) des Handbuchs reisen mit. Auf der Zie
    * **Aktualisieren:** Vorhandene Seiten werden aus dem Bündel aufgefrischt.
    * **Immer neu anlegen:** Jede Seite im Bündel wird eine neue Seite. Das eignet sich zum Klonen.
 4. Wähle unter **Importieren nach**, in welches Handbuch die Seiten kommen. Zur Wahl stehen die Handbücher, die du lesen darfst. Ohne Auswahl entsteht das Handbuch aus dem Bündel neu.
-5. Starte den Import und lies den Bericht. Er zählt auf, was angelegt, aktualisiert oder übersprungen wurde, für Seiten und Lernpfade getrennt.
+5. Starte den Import und lies den Bericht. Er zählt auf, was angelegt, aktualisiert oder übersprungen wurde, für Seiten und Lernpfade getrennt, und nennt die Version des Plugins, mit der das Bündel entstand.
 
 ## Ergebnis
 
@@ -37,6 +37,7 @@ Die Seiten und die Lernpfade stehen auf der Ziel-Website. Links zwischen den Sei
 
 * **Ein importiertes Handbuch startet immer mit der Sichtbarkeit „Alle Mitglieder“.** Das gilt auch, wenn es auf der alten Website öffentlich war. Ein Import soll nie versehentlich etwas veröffentlichen. Stelle die Sichtbarkeit danach von Hand um.
 * **Einzeln freigegebene Personen musst du neu eintragen.** Sie reisen nicht mit.
+* **Die Dateien gehören danach zu ihren Seiten.** Jede Datei aus dem Bündel hängt an der ersten importierten Seite, die sie zeigt. Ist das Handbuch nicht öffentlich, liegt sie damit gleich im geschützten Ordner, siehe [Dateien schützen](../zugriff/dateien-schuetzen.md).
 * **In ein Handbuch, das du nicht lesen darfst, importierst du nicht.** Gibt es das Handbuch aus dem Bündel auf der Ziel-Website schon und darfst du es dort nicht lesen, bricht der Import mit „Du darfst nicht in dieses Handbuch importieren.“ ab, bevor er eine Seite anfasst. Ein Aktualisieren würde sonst Seiten überschreiben, die du nicht sehen darfst. Wähle ein anderes Ziel oder bitte jemanden, der das Handbuch lesen darf.
 * **Eine vorhandene Seite, die du nicht bearbeiten darfst, bleibt unangetastet**, auch bei **Aktualisieren**. Sie dient auch nicht als Eltern-Seite oder Lektion. Der Bericht nennt die Anzahl, für Lernpfade ebenso.
 * **Auch ein Import als gewöhnliche WordPress-Seiten folgt der Laufregel.** Ein späterer Lauf findet seine Seiten wieder und überspringt oder aktualisiert sie, statt neue Entwürfe anzulegen. Er erkennt sie an ihrer Herkunft aus dem Bündel, nicht am Namen: Eine andere Seite, die zufällig gleich heißt, bleibt in Ruhe.
@@ -61,6 +62,6 @@ Die Seiten und die Lernpfade stehen auf der Ziel-Website. Links zwischen den Sei
 * Eltern-Seite: Inhalte
 * Reihenfolge: 4
 * Textauszug: Ein Handbuch lässt sich als Bündel exportieren und auf einer anderen Website wieder importieren; so gehst du vor.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

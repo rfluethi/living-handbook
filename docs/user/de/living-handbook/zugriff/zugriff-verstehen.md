@@ -57,11 +57,12 @@ Die zentrale Prüfung ist filterbar. So bekommt zum Beispiel ein Dienstkonto Les
 
 Ein Bild, das zu einer Handbuch-Seite gehört, erbt deren Zugriff: Es taucht weder in der Medien-Schnittstelle noch in der Mediathek der Verwaltung auf, und wer die Seite nicht öffnen darf, bekommt auch den Eintrag des Bildes nicht.
 
-Die Datei selbst ist nicht geschützt, und kein Plugin kann sie schützen. WordPress legt Uploads in `wp-content/uploads` ab, und dieser Ordner wird vom Webserver direkt ausgeliefert, ohne dass WordPress gefragt wird. Wer die Adresse der Datei kennt, kann sie öffnen. Für die meisten Handbücher ist das vertretbar, weil eine solche Adresse kaum zu erraten ist. Enthält dein Handbuch Bilder, die das Team nicht verlassen dürfen, lass den Upload-Ordner auf dem Server schützen, zum Beispiel mit einer Regel in `wp-content/uploads/.htaccess` bei Apache oder einem `location`-Block bei nginx.
+Auch die Datei selbst ist geschützt, sobald ihr Handbuch nicht öffentlich ist. Living Handbook legt sie dann in einen eigenen Ordner und gibt sie nur heraus, wenn die Person die Seite lesen darf. Wer das nicht darf, bekommt sie auch mit der Adresse nicht. Damit das greift, braucht der Webserver eine Regel. Wie du prüfst, ob sie greift, steht unter [Dateien schützen](dateien-schuetzen.md).
 
 ## Verwandte Seiten
 
 * [Sichtbarkeit einstellen](sichtbarkeit-einstellen.md)
+* [Dateien schützen](dateien-schuetzen.md)
 * [Häufige Fragen](../haeufige-fragen.md)
 
 ## Transport-Metadaten
@@ -72,6 +73,6 @@ Die Datei selbst ist nicht geschützt, und kein Plugin kann sie schützen. WordP
 * Eltern-Seite: Zugriff
 * Reihenfolge: 2
 * Textauszug: Living Handbook versteckt im Zweifel lieber, als versehentlich etwas preiszugeben; diese Seite erklärt das Fail-closed-Prinzip.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 365 Tage

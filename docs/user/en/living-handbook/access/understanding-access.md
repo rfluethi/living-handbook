@@ -57,11 +57,12 @@ The central check is filterable, for example to give a service account read acce
 
 An image that belongs to a handbook page inherits that page's access: it is listed neither in the media endpoint nor in the admin's media library, and someone who may not open the page cannot read its entry either.
 
-The file itself is not protected, and no plugin can protect it. WordPress keeps uploads in `wp-content/uploads`, and the web server hands that folder out directly, without asking WordPress first. Anyone with the file's address can open it. For most handbooks that is acceptable, because an address is hard to guess. If your handbook holds images that must not leave the team, ask whoever runs the server to protect the uploads folder, for example with a rule in `wp-content/uploads/.htaccess` on Apache or a `location` block on nginx.
+The file itself is protected too, as soon as its handbook is not public. Living Handbook then keeps it in a folder of its own and hands it out only to someone who may read the page; anyone else does not get it, even with the address. For that to work the web server needs a rule. How to check that it works is described in [Protect files](protect-files.md).
 
 ## Related pages
 
 * [Set visibility](set-visibility.md)
+* [Protect files](protect-files.md)
 * [Frequently asked questions](../faq.md)
 
 ## Transport-Metadaten
@@ -72,6 +73,6 @@ The file itself is not protected, and no plugin can protect it. WordPress keeps 
 * Eltern-Seite: Access
 * Reihenfolge: 2
 * Textauszug: Living Handbook rather hides than gives something away by accident; this page explains the fail-closed principle.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 365 Tage

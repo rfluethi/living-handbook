@@ -6,6 +6,33 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.79.0] - 2026-11-09
+
+File protection as decided in E-0076 and planned in Konzept 10, and the plugin version where it helps, as decided in E-0082. Until now the plugin guarded every way into a page, but the web server handed out its files to anyone with the address.
+
+### Added
+
+* **Protected folder** (`Files\ProtectedFiles`). A file whose parent is a handbook page or learning path in a handbook that is not public, or in no handbook yet, lives in `wp-content/uploads/living-handbook-protected/YYYY/MM/`, with every image size and the original of a scaled image. It moves on upload, when it gets another parent, when its page changes handbook and when the handbook's visibility changes, and after the update once for every existing file, through a queue worked off in cron passes under a lock. All files of an attachment are renamed together or none. The addresses in handbook pages and learning paths follow, `srcset` and root-relative ones included, written straight to the database without a revision, because the address changed and not the text; content outside the handbooks gets the old address replaced on output.
+* **Delivery** (`Files\FileDelivery`). A server rule sends every request for the folder to `index.php?lh_file=…`. The path is taken from the request address, confined with `realpath()` to the folder and answered only for a file that belongs to an attachment. Access is the page's: `can_view_post()` of the parent, `read_post` for a page that is not published, nothing for a page with a password, and always for whoever may edit the attachment. A guest opening a file directly goes to the login, everyone else refused gets 403. Responses are `private`, with `ETag`, 304 and ranges; SVG and HTML come sandboxed. The filter `living_handbook_protected_files_handoff` hands the sending to nginx (`X-Accel-Redirect`), Apache with `mod_xsendfile` or LiteSpeed.
+* **Server rules and self-test** (`Files\ServerRules`, `Files\ProtectionAdmin`). The plugin writes the `.htaccess` for Apache and LiteSpeed (locked entirely without `mod_rewrite`) and shows the block for nginx. **Test the protection** on the Access tab requests a test file without cookies and tells protected, open, locked and unreachable apart. The tab counts the files that wait to move, with **Move now**, and warns when the uploads come from another host.
+* **WP-CLI:** `wp living-handbook protect-files [--dry-run]`.
+* **Plugin version** (E-0082): below the entry page for people who are signed in, never for guests; in the footer of every page of the website export; and in the bundle import report, from `exported.plugin_version` of the manifest.
+* **Docs:** a page on protecting files in the app handbook, a page on the protected folder in the technical documentation, the new filters in the hooks, both languages.
+
+### Changed
+
+* The bundle import attaches each imported file to the first imported page that shows it, so a file of an internal handbook lands in the protected folder. A file already attached elsewhere keeps its page.
+* A new file name is kept free in the protected folder too, so two uploads called `plan.jpg` in the same month do not collide.
+* Deleting the plugin with "remove everything" first moves protected files back to the normal uploads folder and removes the rule; an ordinary uninstall and deactivating leave them locked.
+
+### Deviations from Konzept 10
+
+* Files move after core made the image sizes (`wp_generate_attachment_metadata`), not through `upload_dir`: that filter does not know the page an upload belongs to, and every upload path (media modal, REST, sideload, imports) would need its own way to tell it.
+* The hand-off to the web server is switched on by a filter, not detected: PHP cannot see whether nginx has the internal location, and a header the server does not understand is a broken file.
+* "Move now" is one pass per click instead of a progress bar.
+* No admin notice while the plugin is deactivated, because nothing of the plugin runs then; the Access tab says beforehand what deactivating does.
+* Checked on Apache 2.4 and nginx with PHP-FPM; not yet on LiteSpeed.
+
 ## [0.78.0] - 2026-11-09
 
 The two smallest pieces of Konzept 11 that pay straight into the plugin's promise, decided as E-0079 and E-0080: reviewing a page takes one click, and a new page starts with the outline of its type.

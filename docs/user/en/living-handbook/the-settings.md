@@ -47,9 +47,11 @@ A page carries up to three of these small badges, and they are told apart by col
 
 **No-access page:** Where a signed-in person lands who opens a handbook they may not read. The default is the built-in message (**Use the built-in message**): "No access to this handbook", with the name of the signed-in person. Choose a page of your own here if you want to explain in your own words who grants access, with a contact form for instance. Use an ordinary WordPress page for it. If you choose a handbook page or a learning path, saving shows an error message and the setting stays empty. Logged-out visitors still go to the login screen and on to the address they asked for.
 
+**Protected files:** Shows whether the protection of the files of internal handbooks works on your server. **Test the protection** requests a test file without signing in for that. When files wait to be moved, their number and the **Move now** button appear here. On nginx the rule for the server configuration is shown here too. Details: [Protect files](access/protect-files.md).
+
 ## Uninstall
 
-**When the plugin is deleted:** By default, deleting the plugin keeps all handbooks and pages. Only the plugin's settings and caches are removed. An accidental delete therefore never costs you the handbook. Only when you tick **"Also delete all handbook pages, handbooks and their data"** does deleting clear away everything the plugin created, including templates edited in the Site Editor. The files in the media library stay, though, including the images and files uploaded to handbook pages. If you no longer need them, delete them in the media library.
+**When the plugin is deleted:** By default, deleting the plugin keeps all handbooks and pages. Only the plugin's settings and caches are removed. An accidental delete therefore never costs you the handbook. Only when you tick **"Also delete all handbook pages, handbooks and their data"** does deleting clear away everything the plugin created, including templates edited in the Site Editor. The files in the media library stay, though, including the images and files uploaded to handbook pages. Protected files move back to the normal uploads folder first. If you no longer need them, delete them in the media library. Without the box, protected files stay locked, as when the plugin is deactivated.
 
 > **Note:** Only administrators can open this settings screen.
 
@@ -65,7 +67,7 @@ A page carries up to three of these small badges, and they are told apart by col
 * Zielgruppe: Tech
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
-* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, classification, learning paths, text size, colours and custom CSS, public feedback, failed searches, the no-access page and the uninstall behaviour.
+* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, classification, learning paths, text size, colours and custom CSS, public feedback, failed searches, the no-access page, protected files and the uninstall behaviour.
 * Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

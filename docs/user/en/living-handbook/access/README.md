@@ -1,12 +1,13 @@
 # Access
 
-This area covers the most important question of an internal handbook: who may read what? The first page shows how you set the visibility. The second explains the principle behind it. With that, the plugin's behaviour never surprises you. The third shows how an AI tool keeps to the same rule.
+This area covers the most important question of an internal handbook: who may read what? The first page shows how you set the visibility. The second explains the principle behind it. With that, the plugin's behaviour never surprises you. The third shows how an AI tool keeps to the same rule, the fourth how the files of internal handbooks stay protected.
 
 | Page | What you know afterwards |
 |---|---|
 | [Set visibility](set-visibility.md) | How to make a handbook public, restrict it to members, or grant access selectively. |
 | [Understanding access](understanding-access.md) | Why the plugin hides rather than shows when in doubt, and what that means for you. |
 | [Connect an AI tool](connect-an-ai-tool.md) | How an AI tool such as Claude reads your handbooks, with source and review status, and what it does not see. |
+| [Protect files](protect-files.md) | How images and files of internal handbooks reach only those who may read them, and how to check that on your server. |
 
 ## Transport-Metadaten
 * Seitentyp: Area overview

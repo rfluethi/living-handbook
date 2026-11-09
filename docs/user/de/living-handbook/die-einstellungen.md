@@ -47,9 +47,11 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 
 **Seite bei fehlendem Zugriff:** Wohin eine angemeldete Person kommt, die ein Handbuch öffnet, das sie nicht lesen darf. Standard ist die eingebaute Meldung (**Eingebaute Meldung verwenden**): „Kein Zugriff auf dieses Handbuch“, mit dem Namen der angemeldeten Person. Wähle hier eine eigene Seite, wenn du in eigenen Worten erklären willst, wer den Zugriff vergibt, etwa mit einem Kontaktformular. Nimm dafür eine gewöhnliche WordPress-Seite. Wählst du eine Handbuch-Seite oder einen Lernpfad, erscheint beim Speichern eine Fehlermeldung, und die Einstellung bleibt leer. Abgemeldete Besucherinnen und Besucher gehen weiterhin zur Anmeldung und danach auf die gewünschte Adresse.
 
+**Geschützte Dateien:** Zeigt, ob der Schutz der Dateien interner Handbücher auf deinem Server greift. **Schutz testen** ruft dafür eine Testdatei ohne Anmeldung ab. Warten Dateien darauf, verschoben zu werden, stehen hier ihre Anzahl und der Button **Jetzt verschieben**. Auf nginx steht hier auch die Regel für die Serverkonfiguration. Details: [Dateien schützen](zugriff/dateien-schuetzen.md).
+
 ## Deinstallation
 
-**Beim Löschen des Plugins:** Standardmäßig bleiben beim Löschen alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen und Zwischenspeicher des Plugins. Ein versehentliches Löschen kostet dich so nie das Handbuch. Erst wenn du hier das Häkchen **„Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen“** setzt, räumt das Löschen alles weg, was das Plugin angelegt hat, auch im Website-Editor bearbeitete Templates. Die Dateien in der Mediathek bleiben aber stehen, auch die Bilder und Dateien, die zu Handbuch-Seiten hochgeladen wurden. Brauchst du sie nicht mehr, löschst du sie in der Mediathek.
+**Beim Löschen des Plugins:** Standardmäßig bleiben beim Löschen alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen und Zwischenspeicher des Plugins. Ein versehentliches Löschen kostet dich so nie das Handbuch. Erst wenn du hier das Häkchen **„Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen“** setzt, räumt das Löschen alles weg, was das Plugin angelegt hat, auch im Website-Editor bearbeitete Templates. Die Dateien in der Mediathek bleiben aber stehen, auch die Bilder und Dateien, die zu Handbuch-Seiten hochgeladen wurden. Geschützte Dateien wandern dabei zurück in den normalen Upload-Ordner. Brauchst du sie nicht mehr, löschst du sie in der Mediathek. Ohne das Häkchen bleiben geschützte Dateien gesperrt, wie beim Deaktivieren.
 
 > **Hinweis:** Diese Einstellungs-Seite können nur Administratorinnen und Administratoren öffnen.
 
@@ -65,7 +67,7 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 * Zielgruppe: Technik
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
-* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Sync, Einordnung, Lernpfade, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Suchen ohne Treffer, Seite bei fehlendem Zugriff und das Verhalten bei der Deinstallation.
+* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Sync, Einordnung, Lernpfade, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Suchen ohne Treffer, Seite bei fehlendem Zugriff, geschützte Dateien und das Verhalten bei der Deinstallation.
 * Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

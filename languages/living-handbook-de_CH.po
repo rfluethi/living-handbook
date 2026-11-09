@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Living Handbook 0.63.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/living-handbook\n"
-"POT-Creation-Date: 2026-11-09T10:50:57+00:00\n"
+"POT-Creation-Date: 2026-11-09T13:36:27+00:00\n"
 "PO-Revision-Date: 2026-08-02T00:00:00+00:00\n"
 "Language-Team: German (Switzerland)\n"
 "Language: de_CH\n"
@@ -251,7 +251,7 @@ msgstr "Handbuch"
 msgid "Last reviewed"
 msgstr "Zuletzt geprüft"
 
-#: src/Admin/Maintenance.php:276 src/Setup/Settings.php:59
+#: src/Admin/Maintenance.php:276 src/Setup/Settings.php:60
 msgid "Feedback"
 msgstr "Feedback"
 
@@ -740,51 +740,57 @@ msgstr ""
 "Exportiert aus einem Living Handbook am %s. Diese Kopie wird nicht "
 "aktualisiert."
 
-#: src/Export/SiteRenderer.php:398 src/Training/PathView.php:155
+#. translators: %s: version number of the plugin.
+#: src/Export/SiteRenderer.php:307 src/Frontend/Entry.php:260
+#, php-format
+msgid "Living Handbook %s"
+msgstr "Living Handbook %s"
+
+#: src/Export/SiteRenderer.php:404 src/Training/PathView.php:155
 msgid "Start"
 msgstr "Start"
 
 # On this page (table of contents)
-#: src/Export/SiteRenderer.php:530
+#: src/Export/SiteRenderer.php:536
 msgid "On this page"
 msgstr "Auf dieser Seite"
 
-#: src/Export/SiteRenderer.php:555 src/Frontend/FrontendRenderer.php:141
+#: src/Export/SiteRenderer.php:561 src/Frontend/FrontendRenderer.php:141
 msgid "Enlarge"
 msgstr "Vergrössern"
 
-#: src/Export/SiteRenderer.php:556 src/Frontend/FrontendRenderer.php:140
+#: src/Export/SiteRenderer.php:562 src/Frontend/FrontendRenderer.php:140
 msgid "Close"
 msgstr "Schliessen"
 
-#: src/Export/SiteRenderer.php:557 src/Frontend/FrontendRenderer.php:142
+#: src/Export/SiteRenderer.php:563 src/Frontend/FrontendRenderer.php:142
 msgid "Enlarged diagram"
 msgstr "Vergrössertes Diagramm"
 
 #. translators: %d: number of results.
 #. translators: %d: number of matching pages.
-#: src/Export/SiteRenderer.php:816 src/Frontend/Filters.php:776
+#: src/Export/SiteRenderer.php:822 src/Frontend/Filters.php:776
 #, php-format
 msgid "%d page found"
 msgid_plural "%d pages found"
 msgstr[0] "%d Seite gefunden"
 msgstr[1] "%d Seiten gefunden"
 
-#: src/Export/SiteRenderer.php:821
+#: src/Export/SiteRenderer.php:827
 msgid "Nothing found."
 msgstr "Nichts gefunden."
 
-#: src/Export/SiteRenderer.php:824
+#: src/Export/SiteRenderer.php:830
 msgid "Clear the search"
 msgstr "Suche zurücksetzen"
 
 #. translators: %s: date of the export.
-#: src/Export/SiteRenderer.php:847
+#: src/Export/SiteRenderer.php:853
 #, php-format
 msgid "A copy of a handbook, exported on %s."
 msgstr "Eine Kopie eines Handbuchs, exportiert am %s."
 
-#: src/Export/SiteRenderer.php:851
+#: src/Export/SiteRenderer.php:857
 msgid ""
 "Open index.html in a browser. No server, no installation and no internet "
 "connection are needed."
@@ -792,7 +798,7 @@ msgstr ""
 "Öffne index.html in einem Browser. Es braucht keinen Server, keine "
 "Installation und keine Internetverbindung."
 
-#: src/Export/SiteRenderer.php:853
+#: src/Export/SiteRenderer.php:859
 msgid ""
 "This copy is not kept up to date, and it carries no access rules: whoever "
 "holds this folder can read every page in it. Pass it on accordingly."
@@ -801,7 +807,7 @@ msgstr ""
 "diesen Ordner hat, liest jede Seite darin. Gib sie entsprechend weiter."
 
 #. translators: %s: source site URL.
-#: src/Export/SiteRenderer.php:857
+#: src/Export/SiteRenderer.php:863
 #, php-format
 msgid "Source: %s"
 msgstr "Quelle: %s"
@@ -928,6 +934,127 @@ msgstr ""
 #: src/Export/StaticSite.php:1283
 msgid "Build the website"
 msgstr "Website erzeugen"
+
+#: src/Files/ProtectionAdmin.php:53 src/Files/ProtectionAdmin.php:67
+#: src/Git/GitSync.php:2354
+msgid "You are not allowed to do this."
+msgstr "Dazu bist du nicht berechtigt."
+
+#: src/Files/ProtectionAdmin.php:102
+msgid ""
+"The protection holds: a file in the protected folder was refused to a "
+"visitor who is not signed in."
+msgstr ""
+"Der Schutz greift: Eine Datei im geschützten Ordner wurde ohne Anmeldung "
+"verweigert."
+
+#: src/Files/ProtectionAdmin.php:106
+msgid ""
+"The protection does not hold: the protected folder hands out its files to "
+"anyone. Add the rule below to the server, or ask your host to."
+msgstr ""
+"Der Schutz greift nicht: Der geschützte Ordner gibt seine Dateien an alle "
+"heraus. Ergänze die Regel unten auf dem Server oder bitte dein Hosting darum."
+
+#: src/Files/ProtectionAdmin.php:110
+msgid ""
+"The folder is locked, but the files do not reach anyone: the server refuses "
+"them before WordPress sees the request. On Apache this means mod_rewrite is "
+"missing or the .htaccess may not use it (AllowOverride)."
+msgstr ""
+"Der Ordner ist gesperrt, aber die Dateien kommen nicht an: Der Server "
+"verweigert sie, bevor WordPress die Anfrage sieht. Auf Apache fehlt dann "
+"mod_rewrite, oder die .htaccess darf es nicht nutzen (AllowOverride)."
+
+#. translators: %s: error message of the request.
+#: src/Files/ProtectionAdmin.php:115
+#, php-format
+msgid ""
+"The test could not reach the site: %s. Until it passes, treat the protection "
+"as not set up."
+msgstr ""
+"Der Test hat die Website nicht erreicht: %s. Bis er besteht, gilt der Schutz "
+"als nicht eingerichtet."
+
+#: src/Files/ProtectionAdmin.php:119
+msgid ""
+"Not tested yet. Until the test passes, treat the protection as not set up."
+msgstr ""
+"Noch nicht getestet. Bis der Test besteht, gilt der Schutz als nicht "
+"eingerichtet."
+
+#. translators: %s: date and time of the last test.
+#: src/Files/ProtectionAdmin.php:125
+#, php-format
+msgid "Last tested: %s"
+msgstr "Zuletzt getestet: %s"
+
+#: src/Files/ProtectionAdmin.php:129
+msgid ""
+"The uploads are served from another address than the site, probably by an "
+"offload plugin or a CDN. Their copies are not protected by this folder."
+msgstr ""
+"Die Uploads kommen von einer anderen Adresse als die Website, vermutlich "
+"über ein Offload-Plugin oder ein CDN. Deren Kopien schützt dieser Ordner "
+"nicht."
+
+#: src/Files/ProtectionAdmin.php:132
+msgid ""
+"Files of pages in handbooks that are not public live in a protected folder, "
+"and the plugin hands them out only to whoever may read the page. Public "
+"files stay where they are."
+msgstr ""
+"Dateien von Seiten aus nicht öffentlichen Handbüchern liegen in einem "
+"geschützten Ordner, und das Plugin gibt sie nur heraus, wenn die Person die "
+"Seite lesen darf. Öffentliche Dateien bleiben, wo sie sind."
+
+#: src/Files/ProtectionAdmin.php:135
+msgid "Test the protection"
+msgstr "Schutz testen"
+
+#. translators: %d: number of files that wait to be moved.
+#: src/Files/ProtectionAdmin.php:140
+#, php-format
+msgid ""
+"%d file waits to be moved. This happens in the background; you can also move "
+"now."
+msgid_plural ""
+"%d files wait to be moved. This happens in the background; you can also move "
+"now."
+msgstr[0] ""
+"%d Datei wartet darauf, verschoben zu werden. Das geschieht im Hintergrund; "
+"du kannst auch jetzt verschieben."
+msgstr[1] ""
+"%d Dateien warten darauf, verschoben zu werden. Das geschieht im "
+"Hintergrund; du kannst auch jetzt verschieben."
+
+#: src/Files/ProtectionAdmin.php:141
+msgid "Move now"
+msgstr "Jetzt verschieben"
+
+#: src/Files/ProtectionAdmin.php:145
+msgid "nginx reads no .htaccess. Add this to the server block of the site:"
+msgstr "nginx liest keine .htaccess. Ergänze dies im server-Block der Website:"
+
+#: src/Files/ProtectionAdmin.php:148
+msgid ""
+"A protected file shown on a public page appears there only to whoever may "
+"read its handbook."
+msgstr ""
+"Eine geschützte Datei auf einer öffentlichen Seite erscheint dort nur für "
+"Personen, die ihr Handbuch lesen dürfen."
+
+#: src/Files/ProtectionAdmin.php:149
+msgid ""
+"Deactivating the plugin keeps these files locked: the rule stays, and "
+"without the plugin nothing answers it. Deleting the plugin with \"Also "
+"delete all handbook pages, handbooks and their data\" ticked moves them back "
+"first."
+msgstr ""
+"Beim Deaktivieren des Plugins bleiben diese Dateien gesperrt: Die Regel "
+"bleibt, und ohne Plugin beantwortet sie niemand. Löschst du das Plugin mit "
+"dem Häkchen ‹Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen›, "
+"wandern sie vorher zurück in den normalen Ordner."
 
 #: src/Frontend/Appearance.php:80
 msgid "Surface"
@@ -1092,25 +1219,25 @@ msgid "No handbooks available."
 msgstr "Keine Handbücher verfügbar."
 
 #: src/Frontend/Entry.php:174 src/Frontend/Entry.php:176
-#: src/Frontend/Entry.php:290 src/Frontend/FrontendRenderer.php:379
+#: src/Frontend/Entry.php:314 src/Frontend/FrontendRenderer.php:379
 #: src/Frontend/FrontendRenderer.php:439 src/Taxonomy/Taxonomies.php:270
 #: src/Taxonomy/Taxonomies.php:272 src/Taxonomy/Taxonomies.php:273
 msgid "Handbooks"
 msgstr "Handbücher"
 
-#: src/Frontend/Entry.php:271
+#: src/Frontend/Entry.php:295
 msgid "Areas"
 msgstr "Bereiche"
 
-#: src/Frontend/Entry.php:276
+#: src/Frontend/Entry.php:300
 msgid "Recently updated"
 msgstr "Zuletzt aktualisiert"
 
-#: src/Frontend/Entry.php:294
+#: src/Frontend/Entry.php:318
 msgid "This handbook has no pages yet."
 msgstr "Dieses Handbuch hat noch keine Seiten."
 
-#: src/Frontend/Entry.php:299
+#: src/Frontend/Entry.php:323
 msgid "Log in to see more."
 msgstr "Melde dich an, um mehr zu sehen."
 
@@ -1577,10 +1704,6 @@ msgid_plural "… and %d more."
 msgstr[0] "… und %d weitere."
 msgstr[1] "… und %d weitere."
 
-#: src/Git/GitSync.php:2354
-msgid "You are not allowed to do this."
-msgstr "Dazu bist du nicht berechtigt."
-
 # GitHub sync: status messages
 #: src/Git/GitSync.php:2458
 msgid "Error: CommonMark is not installed."
@@ -1648,7 +1771,7 @@ msgstr "Kommagetrennte Benutzernamen oder IDs."
 msgid "Comments"
 msgstr "Kommentare"
 
-#: src/Handbook/HandbookAdmin.php:153 src/Setup/Settings.php:60
+#: src/Handbook/HandbookAdmin.php:153 src/Setup/Settings.php:61
 msgid "Access"
 msgstr "Zugriff"
 
@@ -1854,8 +1977,14 @@ msgstr "Du darfst nicht in dieses Handbuch importieren."
 msgid "The bundle names no handbook."
 msgstr "Das Bündel nennt kein Handbuch."
 
+#. translators: %s: version number of the plugin that made the bundle.
+#: src/Import/HandbookImport.php:460
+#, php-format
+msgid "The bundle was made with Living Handbook %s."
+msgstr "Das Bündel wurde mit Living Handbook %s erstellt."
+
 #. translators: %d: number of pages.
-#: src/Import/HandbookImport.php:492
+#: src/Import/HandbookImport.php:505
 #, php-format
 msgid ""
 "%d page of the bundle already exists on this site, but you may not edit it, "
@@ -1871,7 +2000,7 @@ msgstr[1] ""
 "nicht bearbeiten; sie wurden nicht angetastet."
 
 #. translators: %d: number of learning paths.
-#: src/Import/HandbookImport.php:505
+#: src/Import/HandbookImport.php:518
 #, php-format
 msgid ""
 "%d learning path of the bundle already exists on this site, but you may not "
@@ -1886,7 +2015,7 @@ msgstr[1] ""
 "%d Lernpfade des Bündels gibt es auf dieser Website bereits, du darfst sie "
 "aber nicht bearbeiten; sie wurden nicht angetastet."
 
-#: src/Import/HandbookImport.php:556
+#: src/Import/HandbookImport.php:602
 msgid ""
 "The learning paths in the bundle were not imported: they need handbook "
 "pages, and this import created ordinary WordPress pages."
@@ -1894,7 +2023,7 @@ msgstr ""
 "Die Lernpfade im Bündel wurden nicht importiert: Sie brauchen "
 "Handbuchseiten, und dieser Import hat normale WordPress-Seiten erstellt."
 
-#: src/Import/HandbookImport.php:571
+#: src/Import/HandbookImport.php:617
 msgid ""
 "Learning paths are switched off on this site. The imported paths are kept "
 "and appear once learning paths are switched on in the settings."
@@ -1904,7 +2033,7 @@ msgstr ""
 "eingeschaltet werden."
 
 #. translators: 1: number of lessons, 2: learning path title.
-#: src/Import/HandbookImport.php:667
+#: src/Import/HandbookImport.php:713
 #, php-format
 msgid ""
 "Learning path \"%2$s\": %1$d lesson is not among the pages of the bundle and "
@@ -1919,7 +2048,7 @@ msgstr[1] ""
 "Lernpfad «%2$s»: %1$d Lektionen sind nicht unter den Seiten des Bündels und "
 "wurden weggelassen."
 
-#: src/Import/HandbookImport.php:698
+#: src/Import/HandbookImport.php:744
 msgid ""
 "The pages went into the handbook you chose; its access configuration was "
 "left unchanged."
@@ -1927,14 +2056,14 @@ msgstr ""
 "Die Seiten gingen in das von dir gewählte Handbuch; dessen Zugriffs-"
 "Konfiguration blieb unverändert."
 
-#: src/Import/HandbookImport.php:715
+#: src/Import/HandbookImport.php:761
 msgid ""
 "An existing handbook was reused; its access configuration was left unchanged."
 msgstr ""
 "Ein vorhandenes Handbuch wurde wiederverwendet; seine Zugriffs-Konfiguration "
 "blieb unverändert."
 
-#: src/Import/HandbookImport.php:726
+#: src/Import/HandbookImport.php:772
 msgid ""
 "The handbook was created with visibility \"members\". Raise it by hand if "
 "the content really should be public."
@@ -1942,7 +2071,7 @@ msgstr ""
 "Das Handbuch wurde mit der Sichtbarkeit „Mitglieder“ angelegt. Stelle sie "
 "von Hand höher, wenn der Inhalt wirklich öffentlich sein soll."
 
-#: src/Import/HandbookImport.php:744
+#: src/Import/HandbookImport.php:790
 msgid ""
 "The bundle carried a list of individually allowed users. It was not applied; "
 "set the people by hand if the handbook should be restricted."
@@ -1952,7 +2081,7 @@ msgstr ""
 "beschränkt sein soll."
 
 #. translators: %s: list of file names.
-#: src/Import/HandbookImport.php:801
+#: src/Import/HandbookImport.php:847
 #, php-format
 msgid ""
 "This file from the bundle was not imported, because its type is not "
@@ -1974,7 +2103,7 @@ msgstr[1] ""
 "weiterhin auf die alte Website."
 
 #. translators: %s: list of file names.
-#: src/Import/HandbookImport.php:814
+#: src/Import/HandbookImport.php:860
 #, php-format
 msgid ""
 "This file from the bundle was not imported, because it is too large for the "
@@ -1993,7 +2122,7 @@ msgstr[1] ""
 "verweisen weiterhin auf die alte Website."
 
 #. translators: %s: list of file names.
-#: src/Import/HandbookImport.php:827
+#: src/Import/HandbookImport.php:873
 #, php-format
 msgid ""
 "This file is listed in the bundle but missing from it: %s. Pages that use it "
@@ -2009,19 +2138,19 @@ msgstr[1] ""
 "sie verwenden, verweisen weiterhin auf die alte Website."
 
 #. translators: %s: list of page counts, such as "3 pages created and 1 page updated".
-#: src/Import/HandbookImport.php:1169
+#: src/Import/HandbookImport.php:1215
 #, php-format
 msgid "Bundle imported: %s."
 msgstr "Bündel importiert: %s."
 
 #. translators: %s: list of learning path counts, such as "1 learning path created and 2 learning paths updated".
-#: src/Import/HandbookImport.php:1181
+#: src/Import/HandbookImport.php:1227
 #, php-format
 msgid "Learning paths: %s."
 msgstr "Lernpfade: %s."
 
 #. translators: %d: number of pages.
-#: src/Import/HandbookImport.php:1217
+#: src/Import/HandbookImport.php:1263
 #, php-format
 msgid "%d page created"
 msgid_plural "%d pages created"
@@ -2029,7 +2158,7 @@ msgstr[0] "%d Seite angelegt"
 msgstr[1] "%d Seiten angelegt"
 
 #. translators: %d: number of pages.
-#: src/Import/HandbookImport.php:1219
+#: src/Import/HandbookImport.php:1265
 #, php-format
 msgid "%d page updated"
 msgid_plural "%d pages updated"
@@ -2037,7 +2166,7 @@ msgstr[0] "%d Seite aktualisiert"
 msgstr[1] "%d Seiten aktualisiert"
 
 #. translators: %d: number of pages.
-#: src/Import/HandbookImport.php:1221
+#: src/Import/HandbookImport.php:1267
 #, php-format
 msgid "%d page skipped"
 msgid_plural "%d pages skipped"
@@ -2045,7 +2174,7 @@ msgstr[0] "%d Seite übersprungen"
 msgstr[1] "%d Seiten übersprungen"
 
 #. translators: %d: number of pages.
-#: src/Import/HandbookImport.php:1223
+#: src/Import/HandbookImport.php:1269
 #, php-format
 msgid "%d page protected"
 msgid_plural "%d pages protected"
@@ -2053,7 +2182,7 @@ msgstr[0] "%d Seite geschützt"
 msgstr[1] "%d Seiten geschützt"
 
 #. translators: %d: number of learning paths.
-#: src/Import/HandbookImport.php:1243
+#: src/Import/HandbookImport.php:1289
 #, php-format
 msgid "%d learning path created"
 msgid_plural "%d learning paths created"
@@ -2061,7 +2190,7 @@ msgstr[0] "%d Lernpfad angelegt"
 msgstr[1] "%d Lernpfade angelegt"
 
 #. translators: %d: number of learning paths.
-#: src/Import/HandbookImport.php:1245
+#: src/Import/HandbookImport.php:1291
 #, php-format
 msgid "%d learning path updated"
 msgid_plural "%d learning paths updated"
@@ -2069,7 +2198,7 @@ msgstr[0] "%d Lernpfad aktualisiert"
 msgstr[1] "%d Lernpfade aktualisiert"
 
 #. translators: %d: number of learning paths.
-#: src/Import/HandbookImport.php:1247
+#: src/Import/HandbookImport.php:1293
 #, php-format
 msgid "%d learning path skipped"
 msgid_plural "%d learning paths skipped"
@@ -2077,7 +2206,7 @@ msgstr[0] "%d Lernpfad übersprungen"
 msgstr[1] "%d Lernpfade übersprungen"
 
 #. translators: %d: number of learning paths.
-#: src/Import/HandbookImport.php:1249
+#: src/Import/HandbookImport.php:1295
 #, php-format
 msgid "%d learning path protected"
 msgid_plural "%d learning paths protected"
@@ -2524,7 +2653,7 @@ msgstr "— Keine Änderung —"
 msgid "Empty fields are left as they are on each page."
 msgstr "Leere Felder bleiben auf jeder Seite so, wie sie sind."
 
-#: src/Plugin.php:305
+#: src/Plugin.php:322
 msgid ""
 "Living Handbook cannot be activated for the whole network. Activate it on "
 "each site that needs a handbook instead."
@@ -2532,7 +2661,7 @@ msgstr ""
 "Living Handbook kann nicht für das ganze Netzwerk aktiviert werden. "
 "Aktiviere es stattdessen auf jeder Website, die ein Handbuch braucht."
 
-#: src/Plugin.php:306
+#: src/Plugin.php:323
 msgid "Network activation not supported"
 msgstr "Netzwerkaktivierung nicht unterstützt"
 
@@ -2867,34 +2996,34 @@ msgstr "GitHub-Spezialist"
 msgid "General"
 msgstr "Allgemein"
 
-#: src/Setup/Settings.php:55
+#: src/Setup/Settings.php:56
 msgid "GitHub sync"
 msgstr "GitHub-Sync"
 
-#: src/Setup/Settings.php:56
+#: src/Setup/Settings.php:57
 msgid "Classification"
 msgstr "Einordnung"
 
-#: src/Setup/Settings.php:57 src/Setup/Settings.php:406
+#: src/Setup/Settings.php:58 src/Setup/Settings.php:407
 #: src/Training/PathView.php:225 src/Training/Training.php:135
 #: src/Training/Training.php:137 src/Training/Training.php:138
 msgid "Learning paths"
 msgstr "Lernpfade"
 
-#: src/Setup/Settings.php:58
+#: src/Setup/Settings.php:59
 msgid "Appearance"
 msgstr "Darstellung"
 
-#: src/Setup/Settings.php:61
+#: src/Setup/Settings.php:62
 msgid "Uninstall"
 msgstr "Deinstallation"
 
-#: src/Setup/Settings.php:173 src/Setup/Settings.php:174
-#: src/Setup/Settings.php:868
+#: src/Setup/Settings.php:174 src/Setup/Settings.php:175
+#: src/Setup/Settings.php:876
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: src/Setup/Settings.php:235
+#: src/Setup/Settings.php:236
 msgid ""
 "Add CSS that loads on the handbook pages only. It is stored with the plugin "
 "and removed when you delete the plugin, unlike CSS kept in the theme."
@@ -2903,57 +3032,61 @@ msgstr ""
 "Plugin und wird beim Löschen des Plugins mit entfernt, anders als CSS im "
 "Theme."
 
-#: src/Setup/Settings.php:236
+#: src/Setup/Settings.php:237
 msgid ""
 "Target the plugin classes and the --lh-* custom properties. For example:"
 msgstr "Passe die Plugin-Klassen und die --lh-*-Variablen an. Zum Beispiel:"
 
 #. translators: %s: link to the customization documentation.
-#: src/Setup/Settings.php:240
+#: src/Setup/Settings.php:241
 #, php-format
 msgid "The full reference of variables and class names is in the %s."
 msgstr ""
 "Die vollständige Übersicht der Variablen und Klassennamen findest du in der "
 "%s."
 
-#: src/Setup/Settings.php:241
+#: src/Setup/Settings.php:242
 msgid "customization documentation"
 msgstr "Anpassungs-Dokumentation"
 
-#: src/Setup/Settings.php:246 src/Setup/Settings.php:387
+#: src/Setup/Settings.php:247 src/Setup/Settings.php:388
 msgid "Custom CSS"
 msgstr "Eigenes CSS"
 
-#: src/Setup/Settings.php:352
+#: src/Setup/Settings.php:353
 msgid "Automatic sync"
 msgstr "Automatischer Sync"
 
-#: src/Setup/Settings.php:363
+#: src/Setup/Settings.php:364
 msgid "Text size"
 msgstr "Schriftgrösse"
 
-#: src/Setup/Settings.php:397
+#: src/Setup/Settings.php:398
 msgid "What pages are classified by"
 msgstr "Wonach Seiten eingeordnet werden"
 
 # Public feedback setting and per-page reset
-#: src/Setup/Settings.php:415
+#: src/Setup/Settings.php:416
 msgid "Public feedback"
 msgstr "Öffentliches Feedback"
 
-#: src/Setup/Settings.php:422
+#: src/Setup/Settings.php:423
 msgid "Failed searches"
 msgstr "Suchen ohne Treffer"
 
-#: src/Setup/Settings.php:431
+#: src/Setup/Settings.php:432
 msgid "No-access page"
 msgstr "Seite bei fehlendem Zugriff"
 
-#: src/Setup/Settings.php:441
+#: src/Setup/Settings.php:440
+msgid "Protected files"
+msgstr "Geschützte Dateien"
+
+#: src/Setup/Settings.php:449
 msgid "When the plugin is deleted"
 msgstr "Beim Löschen des Plugins"
 
-#: src/Setup/Settings.php:478
+#: src/Setup/Settings.php:486
 msgid ""
 "The page for visitors without access was not saved. It has to be a published "
 "ordinary page, not a handbook page or a learning path, so the built-in "
@@ -2963,11 +3096,11 @@ msgstr ""
 "veröffentlichte normale Seite sein, keine Handbuchseite und kein Lernpfad. "
 "Deshalb wird die eingebaute Meldung verwendet."
 
-#: src/Setup/Settings.php:509
+#: src/Setup/Settings.php:517
 msgid "Use the built-in message"
 msgstr "Eingebaute Meldung verwenden"
 
-#: src/Setup/Settings.php:531
+#: src/Setup/Settings.php:539
 msgid ""
 "Where a signed-in visitor lands when they open a handbook they may not read. "
 "Leave this on the built-in message unless you want to explain in your own "
@@ -2977,7 +3110,7 @@ msgstr ""
 "sie nicht lesen dürfen. Lass die eingebaute Meldung stehen, ausser du willst "
 "mit eigenen Worten erklären, wer den Zugriff vergibt."
 
-#: src/Setup/Settings.php:541
+#: src/Setup/Settings.php:549
 msgid ""
 "The page chosen earlier is no longer a published ordinary page, so visitors "
 "see the built-in message. Choose another page and save."
@@ -2986,7 +3119,7 @@ msgstr ""
 "deshalb sehen Besucher die eingebaute Meldung. Wähle eine andere Seite und "
 "speichere."
 
-#: src/Setup/Settings.php:635
+#: src/Setup/Settings.php:643
 msgid ""
 "Leave the colour fields empty and the handbook follows your theme, which is "
 "what it is built to do. Fill one in only where the theme gets it wrong. The "
@@ -2996,11 +3129,11 @@ msgstr ""
 "gebaut. Fülle ein Feld nur dort aus, wo das Theme danebenliegt. Die "
 "Farbtupfer unter jedem Feld sind die Palette deines Themes."
 
-#: src/Setup/Settings.php:654
+#: src/Setup/Settings.php:662
 msgid "percent"
 msgstr "Prozent"
 
-#: src/Setup/Settings.php:657
+#: src/Setup/Settings.php:665
 msgid ""
 "The size of the handbook's own text: navigation, table of contents, badges, "
 "cards and the page details. It does not touch the text of a page itself, "
@@ -3014,11 +3147,11 @@ msgstr ""
 "Plugin entworfen ist. Erhöhe den Wert, wenn dein Theme grösseren Text setzt "
 "und das Handbuch daneben klein wirkt."
 
-#: src/Setup/Settings.php:682
+#: src/Setup/Settings.php:690
 msgid "Empty: the theme decides"
 msgstr "Leer: das Theme entscheidet"
 
-#: src/Setup/Settings.php:702
+#: src/Setup/Settings.php:710
 msgid ""
 "CSS added on the handbook pages only, stored with the plugin. See the Help "
 "tab (top right) for examples."
@@ -3026,7 +3159,7 @@ msgstr ""
 "CSS, das nur auf den Handbuch-Seiten geladen und beim Plugin gespeichert "
 "wird. Beispiele findest du im Hilfe-Tab (oben rechts)."
 
-#: src/Setup/Settings.php:717
+#: src/Setup/Settings.php:725
 msgid ""
 "What kind of page this is, which tells a reader how to read it: guide, "
 "process description, background, FAQ, area overview. One per page."
@@ -3034,7 +3167,7 @@ msgstr ""
 "Welche Art von Seite das ist, und damit, wie man sie liest: Anleitung, "
 "Prozessbeschreibung, Hintergrund, FAQ, Bereichsübersicht. Eine je Seite."
 
-#: src/Setup/Settings.php:718
+#: src/Setup/Settings.php:726
 msgid ""
 "What the page is about, in your own words: onboarding, invoicing, security. "
 "This is the one you fill yourself, and the one people filter by most."
@@ -3043,7 +3176,7 @@ msgstr ""
 "Rechnungsstellung, Sicherheit. Diese Gruppe füllt ihr selbst, und nach ihr "
 "wird am meisten gefiltert."
 
-#: src/Setup/Settings.php:719
+#: src/Setup/Settings.php:727
 msgid ""
 "Which role keeps the page current: handbook editors, GitHub specialist. A "
 "function, not a person, so it survives someone leaving."
@@ -3051,7 +3184,7 @@ msgstr ""
 "Welche Rolle die Seite aktuell hält: Handbuch-Redaktion, GitHub-Spezialist. "
 "Eine Funktion, keine Person, damit die Angabe einen Weggang übersteht."
 
-#: src/Setup/Settings.php:720
+#: src/Setup/Settings.php:728
 msgid ""
 "Who the page is written for: all members, content creators, coordination, "
 "tech. It says who should read it, not who may: that is the handbook's access "
@@ -3062,14 +3195,14 @@ msgstr ""
 "regelt der Zugriff am Handbuch."
 
 #. translators: %d: number of terms in this group.
-#: src/Setup/Settings.php:742
+#: src/Setup/Settings.php:750
 #, php-format
 msgid "(%d term)"
 msgid_plural "(%d terms)"
 msgstr[0] "(%d Begriff)"
 msgstr[1] "(%d Begriffe)"
 
-#: src/Setup/Settings.php:751
+#: src/Setup/Settings.php:759
 msgid ""
 "All four are on by default. Switching one off hides it: the column and the "
 "filter in the page list, the facet on a handbook's entry page, the badge on "
@@ -3081,7 +3214,7 @@ msgstr ""
 "eines Handbuchs, das Abzeichen auf Seite und Karte, und das Feld in der "
 "Editor-Seitenleiste. Auch ein Import liest die zugehörige Zeile nicht mehr."
 
-#: src/Setup/Settings.php:752
+#: src/Setup/Settings.php:760
 msgid ""
 "Nothing is deleted. The terms stay, the pages keep them, and switching one "
 "back on brings every assignment back exactly as it was. A bundle export "
@@ -3093,7 +3226,7 @@ msgstr ""
 "Ein Bündel-Export nimmt ohnehin alle vier mit, damit beim Umzug auf eine "
 "andere Website nichts verloren geht, was diese hier nur ausblendet."
 
-#: src/Setup/Settings.php:753
+#: src/Setup/Settings.php:761
 msgid ""
 "The handbook itself is not in this list and cannot be switched off: access "
 "hangs on it, and a page that belongs to no handbook is invisible on the "
@@ -3103,11 +3236,11 @@ msgstr ""
 "abschalten: an ihm hängt der Zugriff, und eine Seite ohne Handbuch ist im "
 "Frontend unsichtbar."
 
-#: src/Setup/Settings.php:764
+#: src/Setup/Settings.php:772
 msgid "Use learning paths in this handbook installation"
 msgstr "Lernpfade in dieser Handbuch-Installation verwenden"
 
-#: src/Setup/Settings.php:765
+#: src/Setup/Settings.php:773
 msgid ""
 "Off by default. A learning path is an ordered selection of pages that "
 "already exist in a handbook, for onboarding or for a piece of required "
@@ -3119,7 +3252,7 @@ msgstr ""
 "Pflichtlektüre. Die Seiten bleiben, wo sie sind: der Pfad sagt nur, welche "
 "davon in welcher Reihenfolge zu lesen sind."
 
-#: src/Setup/Settings.php:766
+#: src/Setup/Settings.php:774
 msgid ""
 "This first stage keeps no progress on the server. How far somebody has read "
 "is remembered in their browser and nowhere else, so nothing personal is "
@@ -3132,7 +3265,7 @@ msgstr ""
 "gelöscht werden oder das Gerät wechselt. Es ist ein geführter Pfad, kein "
 "Nachweis."
 
-#: src/Setup/Settings.php:767
+#: src/Setup/Settings.php:775
 msgid ""
 "Switching it off hides the learning paths and their menu entry. Nothing is "
 "deleted: the paths, their texts and their lesson lists stay, and switching "
@@ -3142,13 +3275,13 @@ msgstr ""
 "nichts: die Pfade, ihre Texte und ihre Lektionslisten bleiben, und "
 "Einschalten bringt sie unverändert zurück."
 
-#: src/Setup/Settings.php:777
+#: src/Setup/Settings.php:785
 msgid "Show \"Was this helpful?\" to logged-out visitors on public pages"
 msgstr ""
 "«War das hilfreich?» auch nicht angemeldeten Besuchenden auf öffentlichen "
 "Seiten zeigen"
 
-#: src/Setup/Settings.php:778
+#: src/Setup/Settings.php:786
 msgid ""
 "Off by default. When on, anyone can vote on a public page. To keep it "
 "privacy-friendly, votes are not tied to a person: no cookie, no IP and "
@@ -3163,12 +3296,12 @@ msgstr ""
 "Auf internen Seiten stimmen nur angemeldete Personen ab, je eine Stimme, "
 "unabhängig von dieser Einstellung."
 
-#: src/Setup/Settings.php:792
+#: src/Setup/Settings.php:800
 msgid "Count searches that find nothing"
 msgstr "Suchen zählen, die nichts finden"
 
 #. translators: %d: number of days failed searches are kept.
-#: src/Setup/Settings.php:796
+#: src/Setup/Settings.php:804
 #, php-format
 msgid ""
 "On by default. Counts each search term that found no page, per handbook and "
@@ -3184,7 +3317,7 @@ msgstr ""
 "zählen nicht. Die Zählungen werden nach %d Tagen gelöscht, und wenn das "
 "Plugin gelöscht wird."
 
-#: src/Setup/Settings.php:828
+#: src/Setup/Settings.php:836
 msgid ""
 "How often WordPress pulls GitHub pages in the background, in batches. GitHub "
 "pages are always synced when saved and via Sync now, regardless of this "
@@ -3197,20 +3330,20 @@ msgstr ""
 "Cron, der bei Seitenaufrufen feuert."
 
 #. translators: %s: date and time of the next background sync, in the site's formats.
-#: src/Setup/Settings.php:835
+#: src/Setup/Settings.php:843
 #, php-format
 msgid "Next scheduled sync: %s"
 msgstr "Nächster geplanter Sync: %s"
 
-#: src/Setup/Settings.php:840
+#: src/Setup/Settings.php:848
 msgid "No background sync scheduled."
 msgstr "Kein Hintergrund-Sync geplant."
 
-#: src/Setup/Settings.php:851
+#: src/Setup/Settings.php:859
 msgid "Also delete all handbook pages, handbooks and their data"
 msgstr "Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen"
 
-#: src/Setup/Settings.php:852
+#: src/Setup/Settings.php:860
 msgid ""
 "Off by default: your content is kept when the plugin is deleted, only the "
 "plugin settings and caches are removed. Turn this on to remove everything "
@@ -3220,11 +3353,11 @@ msgstr ""
 "nur die Plugin-Einstellungen und Caches werden entfernt. Schalte dies ein, "
 "um alles zu entfernen, was das Plugin erstellt hat."
 
-#: src/Setup/Settings.php:853
+#: src/Setup/Settings.php:861
 msgid "This also removes templates you edited in the Site Editor."
 msgstr "Damit werden auch die im Site-Editor bearbeiteten Vorlagen entfernt."
 
-#: src/Setup/Settings.php:869
+#: src/Setup/Settings.php:877
 msgid "Settings sections"
 msgstr "Abschnitte der Einstellungen"
 

@@ -26,7 +26,7 @@ The handbook's [learning paths](learning-paths.md) travel along too. On the targ
    * **Update:** Existing pages are refreshed from the bundle.
    * **Always create:** Every page in the bundle becomes a new page. Useful for cloning.
 4. Under **Import into**, choose which handbook the pages go to. The handbooks you may read are offered. Without a choice, the handbook from the bundle is created anew.
-5. Start the import and read the report. It lists what was created, updated or skipped, for pages and learning paths separately.
+5. Start the import and read the report. It lists what was created, updated or skipped, for pages and learning paths separately, and names the plugin version the bundle was made with.
 
 ## Result
 
@@ -37,6 +37,7 @@ The pages and the learning paths are on the target site. Links between the pages
 
 * **An imported handbook always starts with visibility "All members".** That holds even if it was public on the old site. An import must never publish anything by accident. Raise the visibility by hand afterwards.
 * **Individually allowed people must be entered again.** They do not travel along.
+* **The files belong to their pages afterwards.** Each file from the bundle is attached to the first imported page that shows it. If the handbook is not public, it lands in the protected folder right away, see [Protect files](../access/protect-files.md).
 * **You do not import into a handbook you may not read.** If the bundle's handbook already exists on the target site and you may not read it there, the import stops with "You are not allowed to import into this handbook." before it touches a page. An update would otherwise overwrite pages you may not see. Choose another target or ask someone who may read that handbook.
 * **An existing page you may not edit is left alone**, even with **Update**. Nor does it serve as a parent or a lesson. The report says how many, for learning paths too.
 * **An import as ordinary WordPress pages follows the run rule too.** A later run finds the pages it created and skips or updates them instead of adding new drafts. It knows them by their origin in the bundle, not by name: another page that happens to share the name is left alone.
@@ -61,6 +62,6 @@ The pages and the learning paths are on the target site. Links between the pages
 * Eltern-Seite: Content
 * Reihenfolge: 4
 * Textauszug: A handbook can be exported as a self-contained bundle and imported again on another website; here is how.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

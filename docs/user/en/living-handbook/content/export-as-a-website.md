@@ -36,6 +36,8 @@ Inside the ZIP sits a complete little website:
 * **`assets/`**: the styling, the images and the search index.
 * **`README.txt`**: a short note saying what the file is, for whoever finds it in a year with no context.
 
+The footer of every page names the date of the export and the plugin version it was made with.
+
 What is inside are the pages **you** may read. Links between handbook pages lead to the files beside them, images travel along, and the search box at the top searches every page in the browser. Links to the outside world stay what they were.
 
 **The pages come out of the same template as on the site.** If you rearranged the handbook page in the Site Editor, moved the navigation or put the badges somewhere else, the export looks the same way. Only what cannot work without a server is taken out first: your theme's header and footer, the feedback prompt, the comments and the quick search in the sidebar. The table of contents is filled during the export rather than in the browser, so it is there without JavaScript and on paper.
@@ -68,6 +70,6 @@ Two more things work as they do on the site: **images and diagrams enlarge on a 
 * Eltern-Seite: Content
 * Reihenfolge: 5
 * Textauszug: Export a handbook as a finished HTML website, for readers who have no WordPress and no access to this site.
-* Letzte Aktualisierung: 2026-11-08
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-08-09
 * Prüfintervall: 180 Tage

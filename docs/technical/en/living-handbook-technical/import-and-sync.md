@@ -111,6 +111,8 @@ The bundle's learning paths are imported too, their lessons pointed at the impor
 
 A short report at the top of the screen says how many pages were created, updated, skipped or protected and how many it was not allowed to touch, the same separately for the learning paths, and lists anything that could not be mapped.
 
+The report also names the plugin version the bundle was made with (`plugin_version` in the manifest), as long as it looks like a version number. The imported files are then attached to the first imported page that shows them; a file already attached to another page keeps it. If the target handbook is not public, they lie in the protected folder as a result (see [protected-files.md](protected-files.md)).
+
 Importing requires `edit_others_posts`, so an editor or above, and a target the person may read. **Import into** offers only such handbooks. A bundle whose own handbook already exists here and is not readable for the person is refused with "You are not allowed to import into this handbook." before any page is touched; an update would otherwise overwrite pages they may not see. A bundle is a file from another site, so its content is treated as external and cleaned on the way in, the same way the Markdown import and the GitHub sync are: scripts, event handlers and unsafe URLs are stripped. The cleaning runs block by block, so the block structure survives untouched. Media is cleaned as well, including SVG. That said, a bundle still brings in content someone else wrote, so it is worth reading before you publish it.
 
 ## The app handbook
@@ -201,7 +203,7 @@ The unauthenticated GitHub API allows about 60 requests per hour. Importing a la
 
 ## Uninstalling
 
-By default, deleting the plugin keeps your content and removes only the plugin's own settings and caches. On **Handbook → Settings** you can opt in to remove everything the plugin created, including handbook pages, handbooks, their metadata, the seeded taxonomy terms and any of the plugin's templates you edited in the Site Editor. The option is off by default on purpose: an accidental delete should not cost you the handbook. Even with it, the files in the media library stay, including the ones uploaded to handbook pages or sideloaded by an import; whoever wants them gone deletes them in the media library. What the plugin noted on those files so that a later import reuses an unchanged image (`_lh_import_file`, `_lh_import_hash`) is removed with it.
+By default, deleting the plugin keeps your content and removes only the plugin's own settings and caches. On **Handbook → Settings** you can opt in to remove everything the plugin created, including handbook pages, handbooks, their metadata, the seeded taxonomy terms and any of the plugin's templates you edited in the Site Editor. The option is off by default on purpose: an accidental delete should not cost you the handbook. Even with it, the files in the media library stay, including the ones uploaded to handbook pages or sideloaded by an import; whoever wants them gone deletes them in the media library. Protected files first move back to the normal uploads folder; without the option they stay locked (see [protected-files.md](protected-files.md)). What the plugin noted on those files so that a later import reuses an unchanged image (`_lh_import_file`, `_lh_import_hash`) is removed with it.
 
 ## Limits
 
@@ -239,4 +241,4 @@ The pages are created as **drafts**, whatever status the bundle carries. A bundl
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 9
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09

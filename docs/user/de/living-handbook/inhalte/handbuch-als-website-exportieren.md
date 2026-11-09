@@ -36,6 +36,8 @@ In der ZIP-Datei liegt eine vollständige kleine Website:
 * **`assets/`**: die Gestaltung, die Bilder und der Suchindex.
 * **`README.txt`**: eine kurze Notiz, was die Datei ist, für den Fall, dass sie in einem Jahr jemand ohne Zusammenhang findet.
 
+Die Fußzeile jeder Seite nennt das Datum des Exports und die Version des Plugins, mit der er entstand.
+
 Enthalten sind die Seiten, die **du** lesen darfst. Links zwischen Handbuch-Seiten führen zu den Dateien daneben, Bilder liegen mit in der ZIP-Datei, und die Suche oben rechts durchsucht alle Seiten im Browser. Links nach draußen bleiben, was sie waren.
 
 **Die Seiten entstehen aus derselben Vorlage wie auf der Website.** Hast du im Website-Editor die Handbuch-Seite umgebaut, etwa die Navigation verschoben oder die Abzeichen woanders hingestellt, sieht der Export genauso aus. Nur was ohne Server nicht funktioniert, fällt vorher heraus: Kopf- und Fußbereich deines Themes, die Feedback-Frage, die Kommentare und die Schnellsuche in der Seitenleiste. Das Inhaltsverzeichnis wird beim Export gefüllt statt im Browser, es steht also auch ohne JavaScript und auf Papier.
@@ -68,6 +70,6 @@ Zwei weitere Dinge funktionieren wie auf der Website: **Bilder und Diagramme ver
 * Eltern-Seite: Inhalte
 * Reihenfolge: 5
 * Textauszug: Ein Handbuch als fertige HTML-Website exportieren, für Leserinnen und Leser ohne WordPress und ohne Zugang zu dieser Website.
-* Letzte Aktualisierung: 2026-11-08
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-08-09
 * Prüfintervall: 180 Tage

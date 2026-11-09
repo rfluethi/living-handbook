@@ -25,6 +25,8 @@ graph TD;
 
 Die Suche und die Filter grenzen die Seitenliste ein, ohne die Seite neu zu laden. Gefiltert wird nach Seitentyp, Themen, Verantwortung und Zielgruppen, mit denselben Bezeichnungen wie in den Einstellungen. Ohne JavaScript funktioniert beides als gewöhnliches Formular weiter. Die Bereichs-Kacheln sind die Seiten der obersten Ebene, siehe [Seiten ordnen](../erste-schritte/seiten-ordnen.md).
 
+Wer angemeldet ist, sieht ganz unten die Version des Plugins, etwa „Living Handbook 0.79.0“. Sie hilft, wenn du eine Frage zum Plugin stellst. Abgemeldete Besucherinnen und Besucher sehen sie nicht, denn eine öffentliche Versionsnummer verrät Angreifern, welche bekannten Lücken sie ausprobieren können.
+
 ## Die Einzelseite
 
 ![Schema der Einzelseite: Navigation und Suchfeld links, in der Mitte Titel, Inhalt, Feedback-Frage, Herkunftshinweis, Abzeichen und Metadaten-Fußzeile, rechts das Inhaltsverzeichnis](../assets/einzelseite-aufbau.webp)
@@ -81,6 +83,6 @@ Das Plugin bringt sechzehn eigene Blöcke mit, von der Handbuch-Übersicht bis z
 * Eltern-Seite: Oberfläche
 * Reihenfolge: 1
 * Textauszug: Ein Handbuch besteht auf der Website aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

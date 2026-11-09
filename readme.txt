@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.78.0
+Stable tag: 0.79.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,7 +55,7 @@ The plugin is built for single-site installations. On a multisite network, activ
 
 = Are images in an internal handbook protected too? =
 
-Their entries are: an image attached to a handbook page inherits that page's visibility, so it is not listed in the media endpoint and cannot be read there by someone who may not open the page. The file itself is a different matter. WordPress stores uploads in wp-content/uploads, and the web server delivers that folder directly, without asking WordPress. Anyone who knows or guesses the URL of the file can open it, and no plugin can change that from inside WordPress. If your handbook contains images that must not leave the team, protect the uploads folder at the server, for example with an Apache rule in wp-content/uploads/.htaccess or an nginx location block that requires authentication.
+Yes. An image or file attached to a page of a handbook that is not public lives in a protected folder, wp-content/uploads/living-handbook-protected, and the plugin hands it out only to someone who may read the page; knowing the address is not enough. On Apache and LiteSpeed the plugin writes the server rule itself; on nginx you add a block it shows you under Handbook, Settings, Access, where a self-test also tells you whether the protection works. Files of public handbooks stay where they are. Deactivating the plugin keeps protected files locked; deleting it with "remove everything" moves them back first.
 
 = Why are my handbook pages not visible? =
 
@@ -79,7 +79,7 @@ Access is set per handbook: public (no login), all logged-in members, or restric
 
 = What happens when I uninstall the plugin? =
 
-By default your content is kept and only the plugin's own settings and caches are removed. On the settings page you can opt in to remove everything the plugin created, including any templates you edited in the Site Editor. Even then, files in the media library stay, including the ones uploaded to handbook pages; delete them in the media library if you no longer want them.
+By default your content is kept and only the plugin's own settings and caches are removed. On the settings page you can opt in to remove everything the plugin created, including any templates you edited in the Site Editor. Even then, files in the media library stay, including the ones uploaded to handbook pages; protected files move back to the normal uploads folder first. Delete them in the media library if you no longer want them.
 
 = What does the plugin store about visitors? =
 
@@ -116,6 +116,11 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.79.0 =
+* New: files of handbooks that are not public are protected. They live in their own folder and reach only those who may read the page, also when someone knows the address. Files move with their page and with the handbook's visibility, in the background, and the addresses in the pages follow. A self-test under Settings, Access shows whether the server rule works; nginx needs a block the tab shows. WP-CLI: wp living-handbook protect-files.
+* New: signed-in people see the plugin version below the entry page; the website export names it in every page, and the bundle import report names the version the bundle was made with.
+* Changed: a bundle import attaches each imported file to the first page that shows it.
 
 = 0.78.0 =
 * New: "Reviewed, still current" in the page footer. Whoever may edit the page sets the review date to today and themselves as reviewer with one click, without saving the page. Not on pages synced from GitHub, whose review date comes from the file, and not in the website export.
@@ -179,6 +184,9 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 Older versions are listed in [CHANGELOG.md on GitHub](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 0.79.0 =
+Protects the files of internal handbooks. After the update, existing files move into the protected folder in the background. On nginx, add the block shown under Handbook, Settings, Access, and run the self-test there.
 
 = 0.78.0 =
 One-click review confirmation in the page footer for whoever may edit the page, and start patterns for new handbook pages.

@@ -110,6 +110,8 @@ Die Lernpfade des Bündels werden mit importiert, ihre Lektionen auf die importi
 
 Ein kurzer Bericht oben auf dem Bildschirm nennt, wie viele Seiten angelegt, aktualisiert, übersprungen oder geschützt wurden und wie viele er nicht anfassen durfte, getrennt davon dasselbe für die Lernpfade, und führt auf, was sich nicht zuordnen ließ.
 
+Der Bericht nennt auch die Plugin-Version, mit der das Bündel entstand (`plugin_version` im Manifest), sofern sie wie eine Versionsnummer aussieht. Die eingespielten Dateien hängen danach an der ersten importierten Seite, die sie zeigt; eine Datei, die schon an einer anderen Seite hängt, behält diese. Ist das Ziel-Handbuch nicht öffentlich, liegen sie damit im Schutzordner (siehe [dateischutz.md](dateischutz.md)).
+
 Der Import verlangt `edit_others_posts`, also Redaktion oder höher, und ein Ziel, das die Person lesen darf. Unter **Importieren nach** stehen nur solche Handbücher zur Wahl. Ein Bündel, dessen eigenes Handbuch hier schon existiert und für die Person nicht lesbar ist, wird mit „Du darfst nicht in dieses Handbuch importieren." abgelehnt, bevor eine Seite angefasst wird; ein Update würde sonst Seiten überschreiben, die sie nicht sehen darf. Ein Bündel ist eine Datei von einer anderen Seite, sein Inhalt gilt deshalb als fremd und wird beim Einlesen gereinigt, genau wie beim Markdown-Import und beim GitHub-Sync: Skripte, Event-Handler und unsichere URLs werden entfernt. Die Reinigung läuft Block für Block, die Blockstruktur bleibt also unangetastet. Auch Medien werden gereinigt, SVG eingeschlossen. Trotzdem bringt ein Bündel Inhalte mit, die jemand anderes geschrieben hat, es lohnt sich also, sie vor dem Veröffentlichen zu lesen.
 
 ## Ein Bündel als normale WordPress-Seiten importieren
@@ -210,7 +212,7 @@ Die nicht angemeldete GitHub-API erlaubt etwa 60 Anfragen pro Stunde. Ein große
 
 ## Deinstallieren
 
-Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur die eigenen Einstellungen und Caches des Plugins. Unter **Handbuch → Einstellungen** kannst du dich dafür entscheiden, alles zu entfernen, was das Plugin angelegt hat, einschließlich Handbuch-Seiten, Handbüchern, deren Metadaten, der angelegten Taxonomie-Begriffe und aller plugin-eigenen Templates, die du im Site-Editor bearbeitet hast. Die Option ist bewusst standardmäßig aus: Ein versehentliches Löschen soll dich nicht das Handbuch kosten. Auch mit ihr bleiben die Dateien der Mediathek stehen, die zu Handbuch-Seiten hochgeladen oder beim Import eingespielt wurden eingeschlossen; wer sie loswerden will, löscht sie in der Mediathek. Was das Plugin an diesen Dateien vermerkt hat, damit ein erneuter Import ein unverändertes Bild wiederverwendet (`_lh_import_file`, `_lh_import_hash`), entfernt es dabei.
+Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur die eigenen Einstellungen und Caches des Plugins. Unter **Handbuch → Einstellungen** kannst du dich dafür entscheiden, alles zu entfernen, was das Plugin angelegt hat, einschließlich Handbuch-Seiten, Handbüchern, deren Metadaten, der angelegten Taxonomie-Begriffe und aller plugin-eigenen Templates, die du im Site-Editor bearbeitet hast. Die Option ist bewusst standardmäßig aus: Ein versehentliches Löschen soll dich nicht das Handbuch kosten. Auch mit ihr bleiben die Dateien der Mediathek stehen, die zu Handbuch-Seiten hochgeladen oder beim Import eingespielt wurden eingeschlossen; wer sie loswerden will, löscht sie in der Mediathek. Geschützte Dateien wandern vorher zurück in den normalen Upload-Ordner, ohne die Option bleiben sie gesperrt (siehe [dateischutz.md](dateischutz.md)). Was das Plugin an diesen Dateien vermerkt hat, damit ein erneuter Import ein unverändertes Bild wiederverwendet (`_lh_import_file`, `_lh_import_hash`), entfernt es dabei.
 
 ## Grenzen
 
@@ -226,4 +228,4 @@ Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur 
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 8
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09
