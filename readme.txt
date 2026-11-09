@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.76.0
+Stable tag: 0.77.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,7 @@ Core features:
 * Learning paths (optional, off by default): put existing handbook pages in an order for onboarding or required reading, with a numbered lesson list, a Next button and a mark for what has been read. Progress is kept in the reader's browser only; nothing personal is stored on the server.
 * Two exports: a bundle that moves a handbook, with its learning paths, to another site running the plugin, and a static website (a ZIP of plain HTML with the pages, their images, a page list, a search and a look you pick) for readers who have no access to your site at all. Both work on a single area too.
 * The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and shipped inside the plugin. One click on the import screen loads it into the site, in English or German, always matching the installed version; the living_handbook_app_handbook_url filter points it at your own GitHub repository instead.
+* Access for AI tools (WordPress 6.9 and later): seven read-only abilities let an AI tool such as Claude, connected through the MCP Adapter plugin, list the handbooks, read their structure, search and read pages, always with the page address and its review status, and only what the signed-in account may read. Editors also get the pages due for review, the pages readers found unhelpful and the searches that found nothing.
 * Fully translatable (English source), with a German and a Swiss German translation included.
 * No external WordPress plugin is required; a block theme is. The import and sync require three Composer libraries (league/commonmark, symfony/yaml, enshrined/svg-sanitize), shipped in vendor/ together with their own dependencies. Mermaid diagrams are rendered by mermaid.js, bundled in assets/js/. All bundled code is under GPL-compatible licenses; see the FAQ for the third-party disclosure.
 
@@ -83,6 +84,8 @@ By default your content is kept and only the plugin's own settings and caches ar
 
 Very little. The "Was this helpful?" feedback records which logged-in users voted on a page (their user IDs) so it can count one vote per user. By default it accepts no vote from logged-out visitors. If you switch on Public feedback under Handbook, Settings, Feedback, logged-out visitors can vote on pages of public handbooks; such a vote stores no cookie, no IP address and no identifier, it only raises the page's counter. To keep a script from filling that counter, anonymous votes are counted per page and hour in a transient (lh_fb_ followed by the page ID and the hour) that expires after two hours, and a page accepts 200 of them per hour by default. The counts and the voter list are stored as post meta in your own database and are removed with the content option when you delete the plugin.
 
+When a search finds no page, the search term is counted, so editors see what readers miss: the term in lower case, the handbook, the calendar week and whether the search came from the site or from the search ability, nothing about the person (no user ID, no IP address, no time of day, no cookie). Terms shorter than three or longer than 100 characters are not stored. The counts sit in the plugin's own table, are deleted after 90 days and whenever the plugin is deleted, and can be switched off under Handbook, Settings, Feedback.
+
 Learning paths remember which lessons someone has read in that person's browser (localStorage), never on the server. The page footer shows avatars, which WordPress may load from Gravatar; see External services.
 
 == External services ==
@@ -112,6 +115,11 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.77.0 =
+* New: access for AI tools. On WordPress 6.9 and later, seven read-only abilities (list handbooks, structure, search, read a page, pages due for review, unhelpful pages, failed searches) work with the MCP Adapter plugin. Each answer follows the access rules of the signed-in account, leaves out pages excluded from AI use and pages with a password, and names the page address and its review status. The app handbook explains how to connect a tool.
+* New: searches that find nothing are counted per term, handbook and week, without anything about the person, and deleted after 90 days. On by default, switchable under Settings, Feedback.
+* Updated: league/commonmark 2.10.7.
 
 = 0.76.0 =
 * Security: comments can only be written by people who may read the page; previous/next links, attachment pages, cards and search snippets respect access rules and passwords.
@@ -166,6 +174,9 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 Older versions are listed in [CHANGELOG.md on GitHub](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 0.77.0 =
+Adds read-only access for AI tools through the MCP Adapter (WordPress 6.9 and later) and a count of searches that find nothing, without personal data. Review the new paragraph of the suggested privacy policy.
 
 = 0.76.0 =
 Closes an independent review: access on comments, attachments and protected pages, safer imports, privacy tools, learning paths in bundles, and authors can edit their own pages again. Editors now read only the restricted handbooks that name them: check the roles of each one.

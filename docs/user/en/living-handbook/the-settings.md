@@ -41,6 +41,8 @@ A page carries up to three of these small badges, and they are told apart by col
 
 **Public feedback:** Off by default. When on, logged-out visitors also see the question "Was this helpful?" on public pages and can vote. To protect privacy, such a vote is linked to no person: no cookie, no IP address, nothing personal. In return there is no one-vote limit there; the same person can vote again after reloading. A ceiling of 200 anonymous votes per page and hour only keeps scripts from filling the counter. On internal pages, independently of this, only logged-in people vote, one vote each. How you read and reset the votes is under [Reading feedback](upkeep/reading-feedback.md).
 
+**Failed searches:** On by default. When a search in a handbook finds no page, the plugin counts the search term, so the editors see what readers look for in vain. Only the term in lower case, the handbook, the calendar week and whether the search came from the website or from an AI tool are stored: no account, no IP address, no time of day, no cookie. Searches with a filter selected are not counted. The counts are deleted after 90 days and when the plugin is deleted. They are read through an [AI tool](access/connect-an-ai-tool.md).
+
 ## Access
 
 **No-access page:** Where a signed-in person lands who opens a handbook they may not read. The default is the built-in message (**Use the built-in message**): "No access to this handbook", with the name of the signed-in person. Choose a page of your own here if you want to explain in your own words who grants access, with a contact form for instance. Use an ordinary WordPress page for it. If you choose a handbook page or a learning path, saving shows an error message and the setting stays empty. Logged-out visitors still go to the login screen and on to the address they asked for.
@@ -63,7 +65,7 @@ A page carries up to three of these small badges, and they are told apart by col
 * Zielgruppe: Tech
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
-* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, classification, learning paths, text size, colours and custom CSS, public feedback, the no-access page and the uninstall behaviour.
-* Letzte Aktualisierung: 2026-10-27
+* Textauszug: Every option of the plugin at a glance: automatic GitHub sync, classification, learning paths, text size, colours and custom CSS, public feedback, failed searches, the no-access page and the uninstall behaviour.
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

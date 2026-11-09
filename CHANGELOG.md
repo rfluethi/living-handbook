@@ -6,6 +6,27 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.77.0] - 2026-11-09
+
+AI access as decided in E-0056, with the count of failed searches decided in E-0078. Seven reading abilities, one access rule for all of them, and the first table of the plugin's own.
+
+### Added
+
+* **Seven abilities** for the Abilities API (WordPress 6.9 and later), in the category `living-handbook`: `list-handbooks`, `get-structure`, `search`, `get-page`, and for whoever has `edit_others_posts` `list-due-pages`, `list-feedback` and `list-failed-searches`. Each carries `public`, `show_in_rest` and `mcp.public` together, so the MCP Adapter's default server offers them as tools on 6.9 and on 7.1 alike, and the annotations read-only, not destructive, idempotent. On 6.8 nothing is registered and nothing else changes.
+* **One access rule for all of them** (`Abilities\Pages`): a page is handed out only when it is published, has no password, `AccessController::can_view_post()` allows it and it is not marked `living_handbook_ai_exclude`. A missing handbook or page and one the account may not read give the same error. Every page in an answer carries its address and its review status (Konzept 04, precaution 3).
+* **`get-page`** returns the rendered content as Markdown-like text (`Abilities\TextConverter`): headings, nested lists, pipe tables, collapsible sections opened, Mermaid as a fenced block, the heading anchors left out. Outside public handbooks the addresses of uploaded files are left out, because until the file protection of E-0076 exists such an address opens the file for anyone.
+* **Count of failed searches** (`Search\SearchLog`, table `{prefix}living_handbook_failed_searches`): term, handbook, calendar week, source (`site` or `ai`) and a count, nothing else. Counted are an empty quick search, an empty entry-page search on the first page without a facet, and an empty search ability without a filter. Terms of 3 to 100 characters, at most 500 distinct terms per handbook and week, counted in one `INSERT … ON DUPLICATE KEY UPDATE`. A daily cron run deletes weeks older than the retention period (90 days, filter `living_handbook_search_log_retention_days`, held between 7 and 365). Switch under **Settings → Feedback**, on by default. The uninstall drops the table every time. The suggested privacy policy has a paragraph on it.
+* **Docs:** a technical page on AI access in both languages, and an app handbook page "Connect an AI tool" / "KI-Werkzeug anbinden" under Access.
+
+### Changed
+
+* `Frontend\RenderedContent` renders a page's content outside its own request; the static export and `get-page` share it. `Filters::snippet()` is public for the search ability.
+* `league/commonmark` 2.10.7 (Dependabot, merged after 0.76.0) ships with this version.
+
+### Fixed
+
+* Two integration tests failed against WordPress trunk (7.2): they rendered a Mermaid block from hand-written markup with a literal `-->` in its attributes, which ends the HTML comment, and the block parser of 7.2 (`WP_Block_Processor`) rightly sees no block there. Core and the Markdown import both write the arrow encoded, so real content was never affected. The tests now use markup serialised by core, and a new test holds the import's encoding on every version.
+
 ## [0.76.0] - 2026-10-27
 
 The rest of the independent review of 0.75.0: every finding that needed no product decision, and the decisions taken on 2026-10-27 for the ones that did. Each code fix comes with a test that fails against 0.75.1; those were run against the old code one at a time. The commits carry the reasoning for each one; this entry is the map.

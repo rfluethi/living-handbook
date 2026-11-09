@@ -42,8 +42,12 @@ The plugin does not only register routes, it also narrows and extends core ones.
 - **`/wp/v2/media`** and **`/wp/v2/comments`**: an attachment or a comment on a page the caller may not read is left out of collections and answers 404 on its own.
 - **`/oembed/1.0/embed`** answers nothing for a handbook page the caller may not read.
 
+## Abilities
+
+From WordPress 6.9 the plugin's seven abilities are also reachable through the core routes of the Abilities API: `GET /wp-abilities/v1/abilities` lists them, `GET /wp-abilities/v1/abilities/living-handbook/<name>/run` runs one, with the input as the `input` query parameter (they are annotated read-only, so the run route takes GET). The same rule decides what they return as through MCP; see [ai-access.md](ai-access.md). The quick search and the entry page's filter route count a search that found nothing, see there too.
+
 ## Transport-Metadaten
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 12
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09

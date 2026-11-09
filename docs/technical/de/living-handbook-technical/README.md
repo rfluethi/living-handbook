@@ -16,6 +16,7 @@ Für alle, die das Plugin installieren, gestalten oder erweitern. Die englische 
 10. [Meta-Felder](meta-felder.md): jedes Custom Field, das das Plugin liest oder schreibt, mit Typ, Herkunft und Sichtbarkeit.
 11. [REST-Routen](rest-routen.md): jede Route unter `living-handbook/v1`, mit Methode, Berechtigung und Parametern, und was das Plugin an den Routen von WordPress ändert.
 12. [Bündelformat](bundle-format.md): das Bündel, das ein Handbuch-Export schreibt und ein Import liest: Manifest, Abgleich und was mitreist.
+13. [KI-Zugang](ki-zugang.md): die sieben lesenden Abilities für KI-Werkzeuge, die Zugriffsregel, die sie teilen, und die Zählung erfolgloser Suchen.
 
 ## Die eine Regel
 
@@ -25,4 +26,4 @@ Jedes Lesen von Handbuch-Inhalt geht durch `AccessController::can_view_post()`. 
 * Seitentyp: Bereichs-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 1
-* Letzte Aktualisierung: 2026-11-08
+* Letzte Aktualisierung: 2026-11-09

@@ -41,6 +41,8 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 
 **Öffentliches Feedback:** Standardmäßig aus. Ist es an, sehen auch abgemeldete Besucherinnen und Besucher die Frage „War das hilfreich?“ auf öffentlichen Seiten und können abstimmen. Zum Schutz der Privatsphäre wird eine solche Stimme keiner Person zugeordnet: kein Cookie, keine IP, nichts anderes Persönliches. Dafür gibt es dort keine Begrenzung auf eine Stimme, dieselbe Person kann nach dem Neuladen erneut abstimmen. Eine Obergrenze von 200 anonymen Stimmen je Seite und Stunde hält bloß Skripte davon ab, den Zähler zu füllen. Auf internen Seiten stimmen unabhängig davon nur angemeldete Personen ab, je eine Stimme. Wie du die Stimmen auswertest und zurücksetzt, steht unter [Feedback auswerten](pflege/feedback-auswerten.md).
 
+**Suchen ohne Treffer:** Standardmäßig an. Findet eine Suche in einem Handbuch keine Seite, zählt das Plugin den Suchbegriff, damit die Redaktion sieht, wonach Leserinnen und Leser vergeblich suchen. Gespeichert werden nur der Begriff in Kleinbuchstaben, das Handbuch, die Kalenderwoche und ob die Suche von der Website oder von einem KI-Werkzeug kam: kein Konto, keine IP, keine Uhrzeit, kein Cookie. Suchen mit gewähltem Filter zählen nicht. Nach 90 Tagen und beim Löschen des Plugins werden die Zählungen gelöscht. Ausgewertet werden sie über ein [KI-Werkzeug](zugriff/ki-werkzeug-anbinden.md).
+
 ## Zugriff
 
 **Seite bei fehlendem Zugriff:** Wohin eine angemeldete Person kommt, die ein Handbuch öffnet, das sie nicht lesen darf. Standard ist die eingebaute Meldung (**Eingebaute Meldung verwenden**): „Kein Zugriff auf dieses Handbuch“, mit dem Namen der angemeldeten Person. Wähle hier eine eigene Seite, wenn du in eigenen Worten erklären willst, wer den Zugriff vergibt, etwa mit einem Kontaktformular. Nimm dafür eine gewöhnliche WordPress-Seite. Wählst du eine Handbuch-Seite oder einen Lernpfad, erscheint beim Speichern eine Fehlermeldung, und die Einstellung bleibt leer. Abgemeldete Besucherinnen und Besucher gehen weiterhin zur Anmeldung und danach auf die gewünschte Adresse.
@@ -63,7 +65,7 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 * Zielgruppe: Technik
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
-* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Sync, Einordnung, Lernpfade, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Seite bei fehlendem Zugriff und das Verhalten bei der Deinstallation.
-* Letzte Aktualisierung: 2026-10-27
+* Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Sync, Einordnung, Lernpfade, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Suchen ohne Treffer, Seite bei fehlendem Zugriff und das Verhalten bei der Deinstallation.
+* Letzte Aktualisierung: 2026-11-09
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

@@ -42,8 +42,12 @@ Das Plugin registriert nicht nur Routen, es engt auch solche von WordPress ein u
 - **`/wp/v2/media`** und **`/wp/v2/comments`**: ein Anhang oder ein Kommentar an einer Seite, die die aufrufende Person nicht lesen darf, fehlt in Sammlungen und antwortet einzeln mit 404.
 - **`/oembed/1.0/embed`** antwortet für eine Handbuchseite, die die aufrufende Person nicht lesen darf, mit nichts.
 
+## Abilities
+
+Ab WordPress 6.9 sind die sieben Abilities des Plugins auch über die Routen der Abilities API von WordPress erreichbar: `GET /wp-abilities/v1/abilities` listet sie auf, `GET /wp-abilities/v1/abilities/living-handbook/<name>/run` führt eine aus, mit der Eingabe im Abfrageparameter `input` (sie sind als nur lesend ausgezeichnet, deshalb nimmt die Route GET). Was sie liefern, entscheidet dieselbe Regel wie über MCP; siehe [ki-zugang.md](ki-zugang.md). Die Schnellsuche und die Filter-Route der Einstiegsseite zählen eine Suche, die nichts gefunden hat, auch dazu dort mehr.
+
 ## Transport-Metadaten
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 11
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-09

@@ -24,6 +24,7 @@ Two audiences share this folder. The first two pages are for anyone running the 
 | [meta-fields.md](meta-fields.md) | Every custom field the plugin reads or writes, with its type, origin and visibility. |
 | [rest-routes.md](rest-routes.md) | Every route under `living-handbook/v1`, with method, permission and parameters, and what the plugin changes on WordPress's own routes. |
 | [bundle-format.md](bundle-format.md) | The bundle a handbook export writes and an import reads: the manifest, matching, and what travels. |
+| [ai-access.md](ai-access.md) | The seven reading abilities for AI tools, the access rule they share, and the count of failed searches. |
 
 ## Where the other documentation lives
 
@@ -37,4 +38,4 @@ These pages are English, because English is the language of the repository. The 
 * Seitentyp: Area overview
 * Zielgruppe: Tech
 * Reihenfolge: 1
-* Letzte Aktualisierung: 2026-11-08
+* Letzte Aktualisierung: 2026-11-09
