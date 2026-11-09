@@ -44,7 +44,7 @@ Eine Inhaltsverzeichnis-Spalte gibt es bewusst nicht: ein Pfad ist eine Liste, u
 
 ## Startmuster für den Inhalt
 
-Die Templates ordnen, was um eine Seite herum steht. Womit eine neue Seite beginnt, ist ein Pattern: Das Plugin registriert sieben, eines pro mitgeliefertem Seitentyp, in der Pattern-Kategorie **Living Handbook** (`src/Blocks/Patterns.php`). Sie tragen `core/post-content` in ihren Blocktypen und den Handbuch-Beitragstyp in `postTypes`, deshalb bietet der Block-Editor sie an, wenn eine neue, leere Handbuchseite geöffnet wird. Sie enthalten nur die Gliederung, Überschriften, geschlossene Aufklappbereiche und leere Absätze und Listenpunkte mit Platzhalter, und die Wahl eines Patterns setzt den Seitentyp nicht (Entscheid E-0080). `PatternsTest` hält sie daran fest.
+Die Templates ordnen, was um eine Seite herum steht. Womit eine neue Seite beginnt, ist ein Pattern: Das Plugin registriert sieben, eines pro mitgeliefertem Seitentyp, in der Pattern-Kategorie **Living Handbook** (`src/Blocks/Patterns.php`). Sie tragen `core/post-content` in ihren Blocktypen und den Inhaltstyp der Handbuchseiten in `postTypes`, deshalb bietet der Block-Editor sie an, wenn eine neue, leere Handbuchseite geöffnet wird. Sie enthalten nur die Gliederung, Überschriften, geschlossene Aufklappbereiche und leere Absätze und Listenpunkte mit Platzhalter, und die Wahl eines Patterns setzt den Seitentyp nicht (Entscheid E-0080). `PatternsTest` hält sie daran fest.
 
 ## Umstellen
 

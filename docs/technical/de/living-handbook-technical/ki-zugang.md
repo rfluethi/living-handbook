@@ -14,13 +14,13 @@ Diese Seite ist für alle, die den Code ändern. Die Entscheide dahinter sind E-
 | `src/Abilities/TextConverter.php` | Gerendertes HTML zu Markdown-artigem Text, für `get-page`. |
 | `src/Abilities/ListHandbooks.php` … `ListFailedSearches.php` | Eine Klasse pro Ability. |
 | `src/Search/SearchLog.php` | Die Tabelle der erfolglosen Suchen: zählen, aufräumen, lesen. |
-| `src/Frontend/RenderedContent.php` | Der Inhalt einer Seite, wie Lesende ihn sehen, gemeinsam mit dem Website-Export. |
+| `src/Frontend/RenderedContent.php` | Der Inhalt einer Seite, wie Leserinnen und Leser ihn sehen, gemeinsam mit dem Website-Export. |
 
 ## Die Abilities
 
 | Ability | Wer | Was sie liefert |
 | --- | --- | --- |
-| `living-handbook/list-handbooks` | angemeldet | Die lesbaren Handbücher mit Name, Slug, Beschreibung, Adresse und Anzahl Seiten. |
+| `living-handbook/list-handbooks` | angemeldet | Die lesbaren Handbücher mit Name, Titelform, Beschreibung, Adresse und Anzahl Seiten. |
 | `living-handbook/get-structure` | angemeldet | Den Seitenbaum eines Handbuchs, flach, in der Reihenfolge der Navigation, mit Tiefe und Eltern-Seite. Höchstens 1000 Seiten, `truncated` sagt, wenn es mehr waren. |
 | `living-handbook/search` | angemeldet | Bis zu 20 Seiten zu einer Volltextsuche, wahlweise in einem Handbuch und nach den vier Einordnungen. |
 | `living-handbook/get-page` | angemeldet | Eine Seite nach ID oder Adresse, ihr Text als Markdown mit Überschriften, Listen und Tabellen. Höchstens 100 000 Zeichen. |
@@ -51,7 +51,7 @@ Der Aufbau folgt der Navigation: Eine Seite, die das Konto nicht lesen darf, ste
 `Abilities::meta()` gibt jeder Ability dieselben Metadaten:
 
 - `public`, `show_in_rest` und `mcp.public`, alle `true`. WordPress 7.1 liest `public`, 6.9 nur `show_in_rest`, der MCP Adapter (0.7.1) liest `mcp.public` vor `public`. Zusammen gesetzt, ist die Freigabe überall gleich.
-- Die Annotationen `readonly: true`, `destructive: false`, `idempotent: true`. Die Suche zählt eine Suche ohne Treffer. Das ist Buchhaltung über die Suche, keine Änderung an etwas, das Lesende oder die Redaktion sehen, und es gilt hier nicht als Schreiben.
+- Die Annotationen `readonly: true`, `destructive: false`, `idempotent: true`. Die Suche zählt eine Suche ohne Treffer. Das ist Buchhaltung über die Suche, keine Änderung an etwas, das Leserinnen und Leser oder die Redaktion sehen, und es gilt hier nicht als Schreiben.
 
 ## Die Zählung erfolgloser Suchen
 

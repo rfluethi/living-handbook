@@ -41,7 +41,7 @@ Die Module unter `src/`:
   - `Navigation.php` baut den Seitenbaum eines Handbuchs, die einklappbare Seitenleiste.
   - `PageTree.php` lädt alle veröffentlichten Seiten eines Handbuchs in einer einzigen Abfrage und gruppiert sie nach Elternseite, sodass Navigation und Bereichskacheln ihre Hierarchie aus derselben Karte aufbauen, statt pro Zweig abzufragen.
   - `PageMeta.php` baut die Frage „War das hilfreich?" und die Metadaten-Fußzeile.
-  - `ReviewConfirm.php` ist der Knopf „Geprüft, Stand aktuell“ in dieser Fußzeile und die Route dahinter.
+  - `ReviewConfirm.php` ist der Button „Geprüft, Stand aktuell“ in diesem Footer und die Route dahinter.
   - `FreshnessStatus.php` ermittelt den Zustand geprüft, fällig, überfällig oder nicht geprüft und dessen Beschriftung.
 - **`Blocks/`** registriert die Blöcke des Plugins. `Blocks.php` registriert die meisten und rendert sie auf dem Server; `MermaidBlock.php` und `SourceNoteBlock.php` sind zwei besondere (ein lebendiges Diagramm, und ein Hinweis, der nur auf Seiten mit GitHub-Abgleich erscheint). `Patterns.php` registriert die sieben Startmuster, die eine neue Handbuchseite angeboten bekommt, eines pro Seitentyp. Die Blöcke rufen für ihr HTML nach `Frontend/`.
 - **`Feedback/`** behandelt die Stimmen zu „War das hilfreich?" und ihre Zähler (`Feedback.php`).
