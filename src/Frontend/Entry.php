@@ -235,8 +235,32 @@ final class Entry {
 		$out .= '<p class="living-handbook-visually-hidden living-handbook-entry__status" role="status"></p>';
 		$out .= '<div class="living-handbook-main">';
 		$out .= self::main_body( $term, $selections, $search, $paged );
+		$out .= '</div>';
 
-		return $out . '</div></div>';
+		return $out . self::version_line() . '</div>';
+	}
+
+	/**
+	 * The plugin version below the entry page, for people who are signed in
+	 * (E-0082).
+	 *
+	 * Not for guests: a public version tells an attacker which known holes to
+	 * try. Not in the website export, which writes the line into every page
+	 * itself.
+	 *
+	 * @return string
+	 */
+	private static function version_line(): string {
+		if ( ! is_user_logged_in() || \LivingHandbook\Export\StaticSite::is_rendering() ) {
+			return '';
+		}
+		return '<p class="living-handbook-version">' . esc_html(
+			sprintf(
+				/* translators: %s: version number of the plugin. */
+				__( 'Living Handbook %s', 'living-handbook' ),
+				LIVING_HANDBOOK_VERSION
+			)
+		) . '</p>';
 	}
 
 	/**

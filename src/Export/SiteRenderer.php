@@ -301,6 +301,12 @@ final class SiteRenderer {
 				__( 'Exported from a Living Handbook on %s. This copy is not kept up to date.', 'living-handbook' ),
 				(string) $site['generated']
 			)
+		) . '</p><p class="lh-version">' . esc_html(
+			sprintf(
+				/* translators: %s: version number of the plugin. */
+				__( 'Living Handbook %s', 'living-handbook' ),
+				LIVING_HANDBOOK_VERSION
+			)
 		) . '</p></footer>' . "\n";
 
 		// The labels the plugin's frontend script reads for the enlarged-image

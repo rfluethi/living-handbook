@@ -453,6 +453,15 @@ final class HandbookImport {
 			}
 		}
 
+		$made_with = isset( $manifest['exported']['plugin_version'] ) && is_string( $manifest['exported']['plugin_version'] ) ? $manifest['exported']['plugin_version'] : '';
+		if ( 1 === preg_match( '/^\d+\.\d+\.\d+[0-9A-Za-z.\-]*$/', $made_with ) ) {
+			$report['notes'][] = sprintf(
+				/* translators: %s: version number of the plugin that made the bundle. */
+				__( 'The bundle was made with Living Handbook %s.', 'living-handbook' ),
+				$made_with
+			);
+		}
+
 		$media_map = $this->import_media( $manifest, $media_reader, $report );
 
 		$pages = isset( $manifest['pages'] ) && is_array( $manifest['pages'] ) ? $manifest['pages'] : array();

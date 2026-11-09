@@ -186,6 +186,7 @@ final class BundleMediaTest extends WP_UnitTestCase {
 			);
 			$zip->close();
 			$this->assertSame( 1, $report['created'], (string) wp_json_encode( $report ) );
+			$this->assertContains( 'The bundle was made with Living Handbook ' . LIVING_HANDBOOK_VERSION . '.', $report['notes'], 'A real bundle names its version.' );
 			$pages = get_posts(
 				array(
 					'post_type'   => 'handbook',
