@@ -1046,6 +1046,42 @@ html:not(.living-handbook-js) .living-handbook-nav:not(.living-handbook-nav--js)
 	color: var(--lh-muted);
 }
 
+/* ---------- Single page: review confirmation ---------- */
+
+/* For whoever may edit the page only (E-0079). Sized like the feedback
+ * buttons: at least 24px high (WCAG 2.5.8). */
+.living-handbook-review-confirm {
+	min-height: 24px;
+	margin-inline-start: 0.4rem;
+	border: 1px solid var(--lh-border-strong, #6b7784);
+	background: transparent;
+	color: inherit;
+	border-radius: 5px;
+	padding: 0.1rem 0.55rem;
+	cursor: pointer;
+	font-size: calc(var(--lh-base, 1rem) * 0.72);
+	font-weight: 400;
+}
+
+.living-handbook-review-confirm:hover,
+.living-handbook-review-confirm:focus-visible {
+	border-color: var(--lh-accent);
+	color: var(--lh-accent);
+}
+
+.living-handbook-review-confirm:disabled {
+	cursor: progress;
+	opacity: 0.6;
+}
+
+/* On a page synced from GitHub, where the date lives in the source file. */
+.living-handbook-review-note {
+	margin-inline-start: 0.4rem;
+	font-size: calc(var(--lh-base, 1rem) * 0.72);
+	font-weight: 400;
+	color: var(--lh-muted);
+}
+
 /* ---------- Single page: feedback ---------- */
 
 .living-handbook-feedback {

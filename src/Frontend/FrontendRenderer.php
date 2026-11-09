@@ -122,6 +122,7 @@ final class FrontendRenderer {
 			'livingHandbook',
 			array(
 				'rest'            => esc_url_raw( rest_url( Filters::REST_NAMESPACE . '/feedback' ) ),
+				'review'          => esc_url_raw( rest_url( Filters::REST_NAMESPACE . ReviewConfirm::REST_ROUTE ) ),
 				'filter'          => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE ) ),
 				'search'          => esc_url_raw( rest_url( Filters::REST_NAMESPACE . Filters::REST_ROUTE_SEARCH ) ),
 				// Only for a signed-in reader. Core checks a nonce that is sent even
@@ -132,6 +133,7 @@ final class FrontendRenderer {
 				'nonce'           => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 				'thanks'          => __( 'Thanks for your feedback.', 'living-handbook' ),
 				'feedbackError'   => __( 'Your feedback could not be sent. Please try again.', 'living-handbook' ),
+				'reviewError'     => __( 'The review could not be recorded. Please try again.', 'living-handbook' ),
 				'filterError'     => __( 'The list could not be updated. Please reload the page.', 'living-handbook' ),
 				'searchEmpty'     => __( 'No matches.', 'living-handbook' ),
 				'searchError'     => __( 'The search failed. Please reload the page.', 'living-handbook' ),

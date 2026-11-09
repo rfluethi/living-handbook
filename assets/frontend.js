@@ -1468,6 +1468,83 @@
 		}
 	}
 
+	/* ---------- Single page: review confirmation ---------- */
+
+	/**
+	 * Confirms the review of a page and puts the new review entry in place.
+	 *
+	 * The server answers with the footer's review entry as it now reads: the
+	 * date, the badge, the button and the reviewer. It is markup the plugin
+	 * rendered and escaped, as the filtered result list is. The sentence that
+	 * the review was recorded goes to a status line beside the entry, which
+	 * stays when the entry is replaced, so a screen reader announces it.
+	 *
+	 * @param {HTMLButtonElement} button The review button, carrying data-post.
+	 * @return {void}
+	 */
+	function confirmReview( button ) {
+		if ( ! settings.review ) {
+			return;
+		}
+		const entry = button.closest( '.living-handbook-metagrid__date' );
+		const item = entry ? entry.parentElement : null;
+		if ( ! entry || ! item ) {
+			return;
+		}
+		let status = item.querySelector( '.living-handbook-review-status' );
+		if ( ! status ) {
+			status = document.createElement( 'span' );
+			status.className =
+				'living-handbook-review-status living-handbook-visually-hidden';
+			status.setAttribute( 'role', 'status' );
+			item.appendChild( status );
+		}
+
+		button.disabled = true;
+		restFetch( settings.review, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify( {
+				post_id: parseInt( button.getAttribute( 'data-post' ), 10 ),
+				people: '1' === button.getAttribute( 'data-people' ),
+			} ),
+		} )
+			.then( ( response ) => {
+				if ( ! response.ok ) {
+					throw new Error( 'HTTP ' + response.status );
+				}
+				return response.json();
+			} )
+			.then( ( data ) => {
+				if ( data && typeof data.html === 'string' ) {
+					entry.innerHTML = data.html;
+				}
+				status.textContent = ( data && data.message ) || '';
+			} )
+			.catch( () => {
+				button.disabled = false;
+				status.textContent =
+					settings.reviewError || 'Please try again.';
+			} );
+	}
+
+	/**
+	 * Connects the review buttons, also the ones a confirmation puts in place.
+	 *
+	 * @return {void}
+	 */
+	function wireReviewConfirm() {
+		document.addEventListener( 'click', ( event ) => {
+			const button =
+				event.target instanceof Element
+					? event.target.closest( '.living-handbook-review-confirm' )
+					: null;
+			if ( button && ! button.disabled ) {
+				confirmReview( button );
+			}
+		} );
+	}
+
 	/* ---------- Init ---------- */
 
 	document.addEventListener( 'DOMContentLoaded', () => {
@@ -1482,5 +1559,6 @@
 			.querySelectorAll( '.living-handbook-page-search' )
 			.forEach( wirePageSearch );
 		wireFeedback();
+		wireReviewConfirm();
 	} );
 } )();

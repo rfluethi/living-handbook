@@ -70,30 +70,20 @@ final class PageMeta {
 	 * @return string
 	 */
 	public static function render_meta( int $post_id, bool $show_people = true ): string {
-		$updated  = (string) get_post_meta( $post_id, Metadata::UPDATED, true );
-		$reviewed = (string) get_post_meta( $post_id, Metadata::REVIEWED, true );
+		$updated = (string) get_post_meta( $post_id, Metadata::UPDATED, true );
 
-		// All four states are shown, the fourth one included: a page nobody has
-		// reviewed says so, instead of leaving the reader to guess whether the
-		// blank means fresh or forgotten.
-		$status = FreshnessStatus::for_post( $post_id );
-		$label  = FreshnessStatus::label( $status );
-		$badge  = '';
-		if ( '' !== $label ) {
-			$badge = ' <span class="living-handbook-badge living-handbook-badge--' . esc_attr( $status ) . '">' . esc_html( $label ) . '</span>';
-		}
+		$author_id = (int) get_post_field( 'post_author', $post_id );
+		$editor_id = (int) get_post_meta( $post_id, '_edit_last', true );
 
-		$author_id   = (int) get_post_field( 'post_author', $post_id );
-		$editor_id   = (int) get_post_meta( $post_id, '_edit_last', true );
-		$reviewer_id = (int) get_post_meta( $post_id, Metadata::REVIEWER, true );
-
-		$created_value  = esc_html( (string) get_the_date( '', $post_id ) );
-		$updated_value  = '' !== $updated ? esc_html( self::format_date( $updated ) ) : '—';
-		$reviewed_value = '' !== $reviewed ? esc_html( self::format_date( $reviewed ) ) : esc_html__( 'never', 'living-handbook' );
+		$created_value = esc_html( (string) get_the_date( '', $post_id ) );
+		$updated_value = '' !== $updated ? esc_html( self::format_date( $updated ) ) : '—';
 
 		$items  = self::item( __( 'Created', 'living-handbook' ), $created_value, self::person( $author_id, $show_people ) );
 		$items .= self::item( __( 'Last updated', 'living-handbook' ), $updated_value, self::person( $editor_id, $show_people ) );
-		$items .= self::item( __( 'Last reviewed', 'living-handbook' ), $reviewed_value . $badge, self::person( $reviewer_id, $show_people ) );
+		$items .= '<div class="living-handbook-metagrid__item">'
+			. '<dt class="living-handbook-metagrid__label">' . esc_html__( 'Last reviewed', 'living-handbook' ) . '</dt>'
+			. '<dd class="living-handbook-metagrid__date living-handbook-metagrid__date--reviewed">' . self::reviewed_html( $post_id, $show_people ) . '</dd>'
+			. '</div>';
 
 		// Like the badges, the cards and the facets: a taxonomy the site has
 		// switched off is not shown, though its terms stay on the page.
@@ -104,6 +94,34 @@ final class PageMeta {
 		}
 
 		return '<footer class="living-handbook-meta"><dl class="living-handbook-metagrid">' . $items . '</dl></footer>';
+	}
+
+	/**
+	 * The content of the footer's review entry: date, status badge, the
+	 * review button for whoever may edit the page (ReviewConfirm), and the
+	 * reviewer.
+	 *
+	 * All four states are shown, the fourth one included: a page nobody has
+	 * reviewed says so, instead of leaving the reader to guess whether the
+	 * blank means fresh or forgotten. Shared with the review route, which
+	 * answers with this markup after a click.
+	 *
+	 * @param int  $post_id     Post ID.
+	 * @param bool $show_people Whether to show the person (avatar and name).
+	 * @return string Escaped markup.
+	 */
+	public static function reviewed_html( int $post_id, bool $show_people = true ): string {
+		$reviewed = (string) get_post_meta( $post_id, Metadata::REVIEWED, true );
+		$status   = FreshnessStatus::for_post( $post_id );
+		$label    = FreshnessStatus::label( $status );
+		$badge    = '';
+		if ( '' !== $label ) {
+			$badge = ' <span class="living-handbook-badge living-handbook-badge--' . esc_attr( $status ) . '">' . esc_html( $label ) . '</span>';
+		}
+
+		$value = '' !== $reviewed ? esc_html( self::format_date( $reviewed ) ) : esc_html__( 'never', 'living-handbook' );
+
+		return $value . $badge . ReviewConfirm::control( $post_id, $show_people ) . self::person( (int) get_post_meta( $post_id, Metadata::REVIEWER, true ), $show_people );
 	}
 
 	/**

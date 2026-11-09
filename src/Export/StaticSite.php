@@ -70,6 +70,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class StaticSite {
 
 	/**
+	 * Set while a page is rendered for the export, see is_rendering().
+	 *
+	 * @var bool
+	 */
+	private static bool $rendering = false;
+
+	/**
 	 * Handle of the export screen's script (assets/js/static-export.js). The
 	 * bundle export (Import\HandbookExport) passes its area list to the same
 	 * script.
@@ -542,6 +549,19 @@ final class StaticSite {
 	}
 
 	/**
+	 * Whether a page is being rendered for the export right now.
+	 *
+	 * The export renders as the person who runs it. Parts of a page that are
+	 * only for that person, such as the review button (ReviewConfirm), ask
+	 * here and stay out of the file.
+	 *
+	 * @return bool
+	 */
+	public static function is_rendering(): bool {
+		return self::$rendering;
+	}
+
+	/**
 	 * Render one page into the archive.
 	 *
 	 * @param ZipArchive            $zip   The open archive.
@@ -552,6 +572,25 @@ final class StaticSite {
 	 * @return void
 	 */
 	private static function add_page( ZipArchive $zip, WP_Post $post, array &$state, array $links ): void {
+		self::$rendering = true;
+		try {
+			self::add_page_now( $zip, $post, $state, $links );
+		} finally {
+			self::$rendering = false;
+		}
+	}
+
+	/**
+	 * The work of add_page().
+	 *
+	 * @param ZipArchive            $zip   The open archive.
+	 * @param WP_Post               $post  The page.
+	 * @param array<string, mixed>  $state Job state, updated in place.
+	 * @param array<string, string> $links Exported addresses to their file, from link_targets().
+	 * @phpstan-param StaticJob $state
+	 * @return void
+	 */
+	private static function add_page_now( ZipArchive $zip, WP_Post $post, array &$state, array $links ): void {
 		$index = (array) $state['index'];
 		$path  = SiteRenderer::path_for( (int) $post->ID, $index );
 

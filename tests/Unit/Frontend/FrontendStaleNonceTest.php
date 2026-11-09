@@ -61,7 +61,7 @@ final class FrontendStaleNonceTest extends TestCase {
 		$script = (string) file_get_contents( $this->script() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- reading a plugin file.
 
 		$this->assertSame( 1, preg_match_all( '/(?<![A-Za-z_])fetch\(/', $script ), 'Only restFetch() calls fetch().' );
-		$this->assertSame( 3, substr_count( $script, 'restFetch( settings.' ), 'Filter, quick search and feedback use restFetch().' );
+		$this->assertSame( 4, substr_count( $script, 'restFetch( settings.' ), 'Filter, quick search, feedback and the review confirmation use restFetch().' );
 	}
 
 	/**
