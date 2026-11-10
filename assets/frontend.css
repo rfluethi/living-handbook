@@ -1547,3 +1547,15 @@ html:not(.living-handbook-js) .living-handbook-nav:not(.living-handbook-nav--js)
 	color: var(--lh-muted);
 	font-size: calc(var(--lh-base, 1rem) * 0.8125);
 }
+
+/* The version of the handbook below the entry page (E-0084), for every
+   reader. A line of its own, above the plugin version. */
+.living-handbook-handbook-version {
+	margin-block-start: 2rem;
+	color: var(--lh-muted);
+	font-size: calc(var(--lh-base, 1rem) * 0.8125);
+}
+
+.living-handbook-handbook-version + .living-handbook-version {
+	margin-block-start: 0.25rem;
+}

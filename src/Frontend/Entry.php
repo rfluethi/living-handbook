@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Frontend;
 
 use LivingHandbook\Access\AccessController;
+use LivingHandbook\Handbook\HandbookVersion;
 use LivingHandbook\Handbook\Handbooks;
 use WP_Term;
 
@@ -237,7 +238,22 @@ final class Entry {
 		$out .= self::main_body( $term, $selections, $search, $paged );
 		$out .= '</div>';
 
-		return $out . self::version_line() . '</div>';
+		return $out . self::handbook_version_line( $term ) . self::version_line() . '</div>';
+	}
+
+	/**
+	 * The version of the handbook below the entry page, for every reader and
+	 * without a date (E-0084). A line of its own, apart from the plugin
+	 * version (E-0082). Not in the website export, whose footer carries it.
+	 *
+	 * @param WP_Term $term Handbook.
+	 * @return string
+	 */
+	private static function handbook_version_line( WP_Term $term ): string {
+		if ( \LivingHandbook\Export\StaticSite::is_rendering() ) {
+			return '';
+		}
+		return '<p class="living-handbook-handbook-version">' . esc_html( HandbookVersion::label( (int) $term->term_id ) ) . '</p>';
 	}
 
 	/**

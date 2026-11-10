@@ -36,7 +36,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *     language: string,
  *     generated: string,
  *     source: string,
- *     slug: string
+ *     slug: string,
+ *     version?: string
  * }
  */
 final class SiteRenderer {
@@ -166,7 +167,7 @@ final class SiteRenderer {
 		// The people are left out on purpose: an avatar is a request to an
 		// external service, and this file may end up on a laptop that is offline,
 		// in a mail attachment, or somewhere the names have no business being.
-		$body .= PageMeta::render_meta( (int) $post->ID, false );
+		$body .= PageMeta::render_meta( (int) $post->ID, false, false );
 		$body .= '</article>';
 
 		return self::document( get_the_title( $post ), $body, $prefix, $index, (int) $post->ID, $site, self::has_diagram( $content ) );
@@ -301,7 +302,13 @@ final class SiteRenderer {
 				__( 'Exported from a Living Handbook on %s. This copy is not kept up to date.', 'living-handbook' ),
 				(string) $site['generated']
 			)
-		) . '</p><p class="lh-version">' . esc_html(
+		) . '</p>' . ( '' !== (string) ( $site['version'] ?? '' ) ? '<p class="lh-handbook-version">' . esc_html(
+			sprintf(
+				/* translators: %s: version of the handbook, such as 2.1.14. */
+				__( 'Handbook version %s', 'living-handbook' ),
+				(string) $site['version']
+			)
+		) . '</p>' : '' ) . '<p class="lh-version">' . esc_html(
 			sprintf(
 				/* translators: %s: version number of the plugin. */
 				__( 'Living Handbook %s', 'living-handbook' ),

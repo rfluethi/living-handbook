@@ -12,6 +12,8 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Frontend;
 
+use LivingHandbook\Handbook\HandbookVersion;
+use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\Setup\Settings;
 use LivingHandbook\Taxonomy\Taxonomies;
@@ -65,11 +67,13 @@ final class PageMeta {
 	/**
 	 * Returns the metadata footer markup.
 	 *
-	 * @param int  $post_id     Post ID.
-	 * @param bool $show_people Whether to show the person (avatar and name).
+	 * @param int  $post_id      Post ID.
+	 * @param bool $show_people  Whether to show the person (avatar and name).
+	 * @param bool $show_version Whether to show the handbook version; the
+	 *                           website export writes it into its own footer.
 	 * @return string
 	 */
-	public static function render_meta( int $post_id, bool $show_people = true ): string {
+	public static function render_meta( int $post_id, bool $show_people = true, bool $show_version = true ): string {
 		$updated = (string) get_post_meta( $post_id, Metadata::UPDATED, true );
 
 		$author_id = (int) get_post_field( 'post_author', $post_id );
@@ -91,6 +95,13 @@ final class PageMeta {
 			$role_terms = wp_get_object_terms( $post_id, Taxonomies::ROLE, array( 'fields' => 'names' ) );
 			$role       = ( ! is_wp_error( $role_terms ) && ! empty( $role_terms ) ) ? (string) $role_terms[0] : '—';
 			$items     .= self::item( __( 'Responsible role', 'living-handbook' ), esc_html( $role ), '' );
+		}
+
+		// The version of the handbook, for every reader and without a date
+		// (E-0084). Not the plugin's, which only signed-in people see (E-0082).
+		$term_id = Handbooks::for_post( $post_id );
+		if ( $show_version && $term_id > 0 ) {
+			$items .= self::item( __( 'Handbook version', 'living-handbook' ), esc_html( HandbookVersion::get( $term_id ) ), '' );
 		}
 
 		return '<footer class="living-handbook-meta"><dl class="living-handbook-metagrid">' . $items . '</dl></footer>';

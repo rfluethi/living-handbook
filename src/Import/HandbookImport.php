@@ -11,6 +11,7 @@ namespace LivingHandbook\Import;
 
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Access\AccessController;
+use LivingHandbook\Handbook\HandbookVersion;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -63,6 +64,14 @@ final class HandbookImport {
 	 * Transient prefix of the report shown after the redirect, per user.
 	 */
 	private const NOTICE_TRANSIENT = 'living_handbook_bundle_report_';
+
+	/**
+	 * The handbook this import created, 0 when it imported into an existing
+	 * one. Set by resolve_handbook().
+	 *
+	 * @var int
+	 */
+	private int $created_term = 0;
 
 	/**
 	 * Meta that identifies an imported page across sites.
@@ -498,6 +507,12 @@ final class HandbookImport {
 			self::attach_media( $media_map, array_values( array_unique( array_map( 'intval', $key_to_id ) ) ) );
 		}
 
+		// A handbook this import created takes the bundle's version, after its
+		// pages: publishing them counted, and the bundle says what they are.
+		if ( $term_id > 0 && $this->created_term === $term_id ) {
+			HandbookVersion::adopt( $term_id, $manifest['handbook']['version'] ?? null );
+		}
+
 		$refused = (int) $report['refused'];
 		if ( $refused > 0 ) {
 			$report['notes'][] = sprintf(
@@ -766,7 +781,8 @@ final class HandbookImport {
 		if ( is_wp_error( $created ) ) {
 			return 0;
 		}
-		$term_id = (int) $created['term_id'];
+		$term_id            = (int) $created['term_id'];
+		$this->created_term = $term_id;
 
 		update_term_meta( $term_id, Handbooks::META_VISIBILITY, Handbooks::VISIBILITY_MEMBERS );
 		$report['notes'][] = __( 'The handbook was created with visibility "members". Raise it by hand if the content really should be public.', 'living-handbook' );

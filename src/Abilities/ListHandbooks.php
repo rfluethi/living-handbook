@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace LivingHandbook\Abilities;
 
+use LivingHandbook\Handbook\HandbookVersion;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -36,7 +38,7 @@ final class ListHandbooks extends Ability {
 	 * {@inheritDoc}
 	 */
 	public function description(): string {
-		return __( 'Lists the handbooks you may read, with name, slug, description, address and number of pages. Start here to know where to search.', 'living-handbook' );
+		return __( 'Lists the handbooks you may read, with name, slug, description, address, number of pages and version. Start here to know where to search.', 'living-handbook' );
 	}
 
 	/**
@@ -58,6 +60,10 @@ final class ListHandbooks extends Ability {
 		$handbook                              = self::handbook_schema();
 		$handbook['properties']['description'] = array( 'type' => 'string' );
 		$handbook['properties']['pages']       = array( 'type' => 'integer' );
+		$handbook['properties']['version']     = array(
+			'type'        => 'string',
+			'description' => 'Version of the handbook\'s content, such as 2.1.14 (not the plugin version).',
+		);
 
 		return array(
 			'type'       => 'object',
@@ -85,6 +91,7 @@ final class ListHandbooks extends Ability {
 			$entry                = Pages::handbook_reference( $term );
 			$entry['description'] = wp_strip_all_tags( (string) $term->description );
 			$entry['pages']       = count( Pages::tree( (int) $term->term_id ) );
+			$entry['version']     = HandbookVersion::get( (int) $term->term_id );
 			$out[]                = $entry;
 		}
 

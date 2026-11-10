@@ -32,6 +32,7 @@ use LivingHandbook\Frontend\ReviewConfirm;
 use LivingHandbook\Frontend\Templates;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Handbook\HandbookAdmin;
+use LivingHandbook\Handbook\HandbookVersion;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Import\HandbookExport;
 use LivingHandbook\Import\HandbookImport;
@@ -108,6 +109,7 @@ final class Plugin {
 		( new Taxonomies() )->register();
 		( new Handbooks() )->register();
 		( new HandbookAdmin() )->register();
+		( new HandbookVersion() )->register();
 		( new AccessController() )->register();
 		( new Metadata() )->register();
 		( new Feedback() )->register();

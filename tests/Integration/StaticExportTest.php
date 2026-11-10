@@ -192,6 +192,9 @@ final class StaticExportTest extends WP_UnitTestCase {
 		$start = (string) $zip->getFromName( 'index.html' );
 		$this->assertStringContainsString( 'Review pages', $start, 'The start page lists the whole handbook.' );
 		$this->assertStringContainsString( 'Living Handbook ' . LIVING_HANDBOOK_VERSION, (string) $zip->getFromName( 'upkeep/review-pages.html' ), 'Every page names the plugin version (E-0082).' );
+		$page = (string) $zip->getFromName( 'upkeep/review-pages.html' );
+		$this->assertSame( 1, substr_count( $page, 'Handbook version ' . \LivingHandbook\Handbook\HandbookVersion::get( (int) $term ) ), 'Every page names the handbook version once, in the footer (E-0084).' );
+		$this->assertStringContainsString( 'Handbook version ', $start );
 		$this->assertMatchesRegularExpression( "#classList\\.add\\('living-handbook-js'\\);</script>\\s*</head>#", $start, 'The navigation is marked before the page is painted.' );
 	}
 

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Git;
 
 use LivingHandbook\Access\AccessController;
+use LivingHandbook\Handbook\HandbookVersion;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Import\HtmlSanitizer;
 use LivingHandbook\Import\ImageRefs;
@@ -2441,6 +2442,10 @@ final class GitSync {
 			}
 		} else {
 			update_option( self::OPTION_CRON_OFFSET, 0 );
+			// The pass is complete: the handbooks whose version follows a GitHub
+			// tag look for a new one, once per pass and after the pages, so the
+			// content of a new tag starts its edition at 0 (E-0084).
+			HandbookVersion::refresh_tags();
 		}
 	}
 

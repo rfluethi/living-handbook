@@ -141,6 +141,81 @@ final class HandbookAdmin {
 			</td>
 		</tr>
 		<?php
+		self::version_fields( $term );
+	}
+
+	/**
+	 * The version fields of a handbook (E-0084): the current version, the
+	 * edition by hand or from the GitHub tag, and the repository.
+	 *
+	 * @param WP_Term $term Handbook.
+	 * @return void
+	 */
+	private static function version_fields( WP_Term $term ): void {
+		$term_id = (int) $term->term_id;
+		$source  = HandbookVersion::source( $term_id );
+		$repos   = HandbookVersion::repositories( $term_id );
+		$chosen  = (string) get_term_meta( $term_id, HandbookVersion::META_REPO, true );
+		$tag     = (string) get_term_meta( $term_id, HandbookVersion::META_TAG, true );
+		$error   = (string) get_term_meta( $term_id, HandbookVersion::META_ERROR, true );
+		$github  = HandbookVersion::SOURCE_GITHUB === $source && array() !== $repos;
+		?>
+		<tr class="form-field">
+			<th scope="row"><label for="living_handbook_version_edition"><?php esc_html_e( 'Version', 'living-handbook' ); ?></label></th>
+			<td>
+				<p><strong><?php echo esc_html( HandbookVersion::get( $term_id ) ); ?></strong></p>
+				<p>
+					<label for="living_handbook_version_edition"><?php esc_html_e( 'Edition', 'living-handbook' ); ?></label>
+					<input type="text" name="living_handbook_version_edition" id="living_handbook_version_edition" value="<?php echo esc_attr( HandbookVersion::edition( $term_id ) ); ?>" class="small-text" pattern="\d{1,6}(\.\d{1,6}){0,2}" inputmode="decimal"<?php disabled( $github ); ?>>
+				</p>
+				<p class="description"><?php esc_html_e( 'The version is the edition and a count that goes up by one on every day the published content of the handbook changes. A new edition starts the count again at 0. Readers see the version on the entry page, below every page and in the exports, without a date.', 'living-handbook' ); ?></p>
+				<?php if ( array() !== $repos ) : ?>
+					<p>
+						<label for="living_handbook_version_source"><?php esc_html_e( 'Edition comes', 'living-handbook' ); ?></label>
+						<select name="living_handbook_version_source" id="living_handbook_version_source">
+							<option value="<?php echo esc_attr( HandbookVersion::SOURCE_MANUAL ); ?>"<?php selected( $source, HandbookVersion::SOURCE_MANUAL ); ?>><?php esc_html_e( 'by hand', 'living-handbook' ); ?></option>
+							<option value="<?php echo esc_attr( HandbookVersion::SOURCE_GITHUB ); ?>"<?php selected( $source, HandbookVersion::SOURCE_GITHUB ); ?>><?php esc_html_e( 'from the GitHub tag', 'living-handbook' ); ?></option>
+						</select>
+						<?php if ( count( $repos ) > 1 ) : ?>
+							<label for="living_handbook_version_repo" class="screen-reader-text"><?php esc_html_e( 'Repository', 'living-handbook' ); ?></label>
+							<select name="living_handbook_version_repo" id="living_handbook_version_repo">
+								<?php foreach ( array_keys( $repos ) as $repo ) : ?>
+									<option value="<?php echo esc_attr( $repo ); ?>"<?php selected( $chosen, $repo ); ?>><?php echo esc_html( $repo ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						<?php endif; ?>
+					</p>
+					<p class="description"><?php esc_html_e( 'From the GitHub tag: the highest tag that names a version, such as v2.1, becomes the edition. If the pages follow such a tag, it counts directly; otherwise the scheduled sync asks GitHub once per pass.', 'living-handbook' ); ?></p>
+					<?php if ( $github && '' !== $tag ) : ?>
+						<p class="description">
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %s: name of the tag on GitHub. */
+									__( 'The edition comes from the tag %s.', 'living-handbook' ),
+									$tag
+								)
+							);
+							?>
+						</p>
+					<?php endif; ?>
+					<?php if ( $github && '' !== $error ) : ?>
+						<div class="notice notice-warning inline"><p>
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %s: why the tags could not be read. */
+									__( 'The tag could not be read: %s The edition stays as it was.', 'living-handbook' ),
+									$error
+								)
+							);
+							?>
+						</p></div>
+					<?php endif; ?>
+				<?php endif; ?>
+			</td>
+		</tr>
+		<?php
 	}
 
 	/**
@@ -150,7 +225,8 @@ final class HandbookAdmin {
 	 * @return array<string, string>
 	 */
 	public function access_column( array $columns ): array {
-		$columns['lh_access'] = __( 'Access', 'living-handbook' );
+		$columns['lh_access']  = __( 'Access', 'living-handbook' );
+		$columns['lh_version'] = __( 'Version', 'living-handbook' );
 		return $columns;
 	}
 
@@ -163,6 +239,9 @@ final class HandbookAdmin {
 	 * @return string
 	 */
 	public function access_column_value( string $content, string $column, int $term_id ): string {
+		if ( 'lh_version' === $column ) {
+			return esc_html( HandbookVersion::get( $term_id ) );
+		}
 		if ( 'lh_access' !== $column ) {
 			return $content;
 		}
@@ -341,5 +420,50 @@ final class HandbookAdmin {
 			$comments = Handbooks::COMMENTS_INHERIT;
 		}
 		update_term_meta( $term_id, Handbooks::META_COMMENTS, $comments );
+
+		self::save_version( $term_id );
+	}
+
+	/**
+	 * Saves the version fields. The nonce and the right are checked in save().
+	 *
+	 * @param int $term_id Handbook.
+	 * @return void
+	 */
+	private static function save_version( int $term_id ): void {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- verified in save().
+		$source = isset( $_POST['living_handbook_version_source'] ) && HandbookVersion::SOURCE_GITHUB === sanitize_key( wp_unslash( $_POST['living_handbook_version_source'] ) )
+			? HandbookVersion::SOURCE_GITHUB
+			: HandbookVersion::SOURCE_MANUAL;
+		$repos  = HandbookVersion::repositories( $term_id );
+		if ( array() === $repos ) {
+			$source = HandbookVersion::SOURCE_MANUAL;
+		}
+		$was = HandbookVersion::source( $term_id );
+		update_term_meta( $term_id, HandbookVersion::META_SOURCE, $source );
+
+		if ( HandbookVersion::SOURCE_GITHUB === $source ) {
+			$repo = isset( $_POST['living_handbook_version_repo'] ) ? sanitize_text_field( wp_unslash( $_POST['living_handbook_version_repo'] ) ) : '';
+			if ( ! isset( $repos[ $repo ] ) ) {
+				$repo = (string) array_key_first( $repos );
+			}
+			$changed = get_term_meta( $term_id, HandbookVersion::META_REPO, true ) !== $repo;
+			update_term_meta( $term_id, HandbookVersion::META_REPO, $repo );
+			// Switched on or to another repository: ask now, so the edit screen
+			// shows the result instead of waiting for the next sync pass.
+			if ( $changed || HandbookVersion::SOURCE_GITHUB !== $was ) {
+				HandbookVersion::refresh_tag( $term_id );
+			}
+			return;
+		}
+
+		delete_term_meta( $term_id, HandbookVersion::META_ERROR );
+		if ( isset( $_POST['living_handbook_version_edition'] ) ) {
+			$edition = trim( sanitize_text_field( wp_unslash( $_POST['living_handbook_version_edition'] ) ) );
+			if ( HandbookVersion::valid_edition( $edition ) ) {
+				HandbookVersion::set_edition( $term_id, $edition );
+			}
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 }

@@ -13,6 +13,7 @@ use LivingHandbook\Access\AccessController;
 use LivingHandbook\Git\GitSync;
 use LivingHandbook\Export\MarkdownExport;
 use LivingHandbook\Export\StaticSite;
+use LivingHandbook\Handbook\HandbookVersion;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\PostType\Handbook;
@@ -470,6 +471,9 @@ final class HandbookExport {
 				'name'       => $term->name,
 				'visibility' => $visibility,
 				'roles'      => $roles,
+				// Edition and count (E-0084). A handbook the import creates starts
+				// with them; an existing one keeps counting its own.
+				'version'    => HandbookVersion::for_bundle( (int) $term->term_id ),
 				// The per-user allowlist is deliberately not exported. It is personal
 				// data (e-mail addresses) in a file that gets downloaded and passed
 				// around, and it would not apply on the target anyway: a handbook

@@ -29,6 +29,7 @@ namespace LivingHandbook\Export;
 
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Frontend\RenderedContent;
+use LivingHandbook\Handbook\HandbookVersion;
 use LivingHandbook\Handbook\Handbooks;
 use LivingHandbook\PostType\Handbook;
 use LivingHandbook\Support\TempFiles;
@@ -397,6 +398,9 @@ final class StaticSite {
 				'generated'   => (string) wp_date( (string) get_option( 'date_format' ) ),
 				'source'      => (string) home_url( '/' ),
 				'slug'        => (string) $term->slug,
+				// The version at the start of the export: every page of it carries
+				// the same one, even when the handbook changes while it runs.
+				'version'     => HandbookVersion::get( (int) $term->term_id ),
 			),
 		);
 	}

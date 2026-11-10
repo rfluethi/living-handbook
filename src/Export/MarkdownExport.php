@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace LivingHandbook\Export;
 
 use LivingHandbook\Git\GitSync;
+use LivingHandbook\Handbook\HandbookVersion;
 use LivingHandbook\Import\HandbookExport;
 use LivingHandbook\Meta\Metadata;
 use LivingHandbook\Support\TempFiles;
@@ -653,6 +654,10 @@ final class MarkdownExport {
 	private static function mkdocs( WP_Term $term, array $pages, array $paths ): string {
 		$out  = 'site_name: ' . self::yaml_string( $term->name ) . "\n";
 		$out .= "docs_dir: docs\n";
+		// MkDocs passes extra on to the theme; the import ignores it. The
+		// version of the handbook (E-0084) travels here for whoever builds a
+		// site from the files.
+		$out .= "extra:\n  handbook_version: " . self::yaml_string( HandbookVersion::get( (int) $term->term_id ) ) . "\n";
 		$out .= "nav:\n";
 		$out .= self::nav_level( self::children( $pages ), 0, $pages, $paths, 1 );
 		return $out;
@@ -716,6 +721,7 @@ final class MarkdownExport {
 			wp_date( (string) get_option( 'date_format' ) . ' ' . (string) get_option( 'time_format' ) ),
 			LIVING_HANDBOOK_VERSION
 		);
+		$lines[] = HandbookVersion::label( (int) $term->term_id ) . '.';
 		if ( $root_id > 0 ) {
 			$lines[] = sprintf(
 				/* translators: %s: title of the area page. */
