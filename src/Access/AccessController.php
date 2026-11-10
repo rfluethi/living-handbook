@@ -1515,7 +1515,9 @@ final class AccessController {
 	 * @return bool
 	 */
 	public static function can_view_term( int $term_id, int $user_id ): bool {
-		$cache_key = $term_id . ':' . $user_id;
+		// The site belongs in the key: term IDs repeat across a network, and
+		// switch_to_blog() moves between them within one request.
+		$cache_key = get_current_blog_id() . ':' . $term_id . ':' . $user_id;
 		if ( isset( self::$term_cache[ $cache_key ] ) ) {
 			return self::$term_cache[ $cache_key ];
 		}
@@ -1549,6 +1551,14 @@ final class AccessController {
 		// follow one rule, reads_everything().
 		if ( self::reads_everything( $user_id ) ) {
 			return true;
+		}
+		// In a network, being signed in is not being a member: a person is
+		// signed in on every site, but a member only of the sites they have an
+		// account on (E-0085). Without an account here, neither "members" nor a
+		// name on the list of a restricted handbook lets them in; a super admin
+		// passed above.
+		if ( is_multisite() && ! is_user_member_of_blog( $user_id ) ) {
+			return false;
 		}
 		if ( Handbooks::VISIBILITY_MEMBERS === $visibility ) {
 			return true;

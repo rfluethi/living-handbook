@@ -433,14 +433,7 @@ final class FileDelivery {
 
 		switch ( $way ) {
 			case 'x-accel-redirect':
-				/**
-				 * Filters the internal nginx location that holds the protected
-				 * folder, for X-Accel-Redirect.
-				 *
-				 * @param string $path Location, with leading and trailing slash.
-				 */
-				$internal                                = (string) apply_filters( 'living_handbook_protected_files_internal_path', '/lh-protected-internal/' );
-				$response['headers']['X-Accel-Redirect'] = trailingslashit( $internal ) . str_replace( '%2F', '/', rawurlencode( $relative ) );
+				$response['headers']['X-Accel-Redirect'] = ServerRules::internal_path() . str_replace( '%2F', '/', rawurlencode( $relative ) );
 				break;
 			case 'x-sendfile':
 				$response['headers']['X-Sendfile'] = $real;

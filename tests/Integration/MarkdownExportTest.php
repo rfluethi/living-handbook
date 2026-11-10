@@ -370,7 +370,9 @@ final class MarkdownExportTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( '<summary>Hinweis: Wann prüfen</summary>', $content );
 		$this->assertStringContainsString( '<td>a | b</td>', $content );
 		$this->assertStringContainsString( 'language-mermaid', $content );
-		$this->assertStringContainsString( 'href="' . esc_url( (string) get_permalink( $single ) . '#team' ) . '"', $content, 'The link points at the imported page.' );
+		// Without unfiltered_html (in a network everyone but a super admin) kses
+		// writes the ampersand as &amp; instead of &#038;.
+		$this->assertStringContainsString( 'href="' . str_replace( '&#038;', '&amp;', esc_url( (string) get_permalink( $single ) . '#team' ) ) . '"', str_replace( '&#038;', '&amp;', $content ), 'The link points at the imported page.' );
 		$this->assertStringContainsString( (string) $image_map['canola.jpg'], (string) get_post_field( 'post_content', $second ) );
 	}
 

@@ -76,11 +76,15 @@ final class ServerRules {
 	 */
 	public static function htaccess(): string {
 		$index = self::index_path();
+		// B escapes the path for the query string. A redirect escapes the
+		// target once more on its way out, so NE keeps it from being escaped
+		// twice (2026%252f11 instead of 2026%2f11).
+		$flags = self::redirects() ? 'R=302,NE,L,QSA,B' : 'L,QSA,B';
 		return self::MARKER . "\n"
 			. "Options -Indexes\n"
 			. "<IfModule mod_rewrite.c>\n"
 			. "RewriteEngine On\n"
-			. 'RewriteRule ^(.*)$ ' . $index . '?' . FileDelivery::QUERY_VAR . "=$1 [L,QSA,B]\n"
+			. 'RewriteRule ^(.*)$ ' . $index . '?' . FileDelivery::QUERY_VAR . '=$1 [' . $flags . "]\n"
 			. "</IfModule>\n"
 			. "<IfModule !mod_rewrite.c>\n"
 			. "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n"
@@ -99,18 +103,83 @@ final class ServerRules {
 	 */
 	public static function nginx(): string {
 		$folder = ProtectedFiles::folder();
-		$url    = untrailingslashit( (string) wp_parse_url( $folder['url'], PHP_URL_PATH ) );
+		$url    = self::folder_path( (string) wp_parse_url( $folder['url'], PHP_URL_PATH ) );
 		$index  = self::index_path();
+		$flag   = self::redirects() ? 'redirect' : 'last';
 
 		return "# Living Handbook: protected files\n"
 			. 'location ^~ ' . $url . "/ {\n"
-			. '    rewrite ^' . preg_quote( $url, '#' ) . '/(.*)$ ' . $index . '?' . FileDelivery::QUERY_VAR . "=\$1 last;\n"
+			. '    rewrite ^' . preg_quote( $url, '#' ) . '/(.*)$ ' . $index . '?' . FileDelivery::QUERY_VAR . '=$1 ' . $flag . ";\n"
 			. "}\n"
 			. "# Only with the X-Accel-Redirect handoff:\n"
-			. "location /lh-protected-internal/ {\n"
+			. 'location ' . self::internal_path() . " {\n"
 			. "    internal;\n"
 			. '    alias ' . trailingslashit( $folder['path'] ) . ";\n"
 			. "}\n";
+	}
+
+	/**
+	 * The path of the protected folder below the document root, without a
+	 * trailing slash.
+	 *
+	 * On a site of a network with subdirectories the address of a file
+	 * carries the site's path (/team-b/wp-content/uploads/sites/2/...), but
+	 * the file lies at /wp-content/uploads/sites/2/... and answers there too.
+	 * The multisite rules of nginx rewrite the first to the second before a
+	 * location is chosen, so the location guards the second, or the file
+	 * would be served by its address without the site's path (E-0085).
+	 *
+	 * @param string $path Path of the folder's address.
+	 * @return string
+	 */
+	private static function folder_path( string $path ): string {
+		$path = untrailingslashit( $path );
+		if ( ! self::redirects() ) {
+			return $path;
+		}
+		$site    = (string) get_blog_details()->path;
+		$network = (string) get_network()->path;
+		if ( '' !== $site && str_starts_with( $path . '/', $site ) ) {
+			$path = untrailingslashit( $network . substr( $path, strlen( $site ) ) );
+		}
+		return $path;
+	}
+
+	/**
+	 * Whether the rule sends the browser on instead of WordPress: a site of a
+	 * network with subdirectories, other than the main site (E-0085).
+	 *
+	 * WordPress tells the sites of such a network apart by the path of the
+	 * address, and the files of /team-b/ lie under /wp-content/uploads/sites/2/,
+	 * outside that path. Handed over internally, the request would reach the
+	 * main site, which does not know the file and may not even run the plugin.
+	 * Sent on to /team-b/index.php, it reaches the right site; an image or a
+	 * download follows the redirect at the cost of one round trip.
+	 *
+	 * @return bool
+	 */
+	public static function redirects(): bool {
+		return is_multisite() && ! is_subdomain_install() && ! is_main_site();
+	}
+
+	/**
+	 * The internal nginx location of the protected folder, for X-Accel-Redirect,
+	 * with a leading and a trailing slash. Each site of a network has its own,
+	 * because each has its own folder.
+	 *
+	 * @return string
+	 */
+	public static function internal_path(): string {
+		$default = is_multisite() && ! is_main_site() ? '/lh-protected-internal-' . get_current_blog_id() . '/' : '/lh-protected-internal/';
+
+		/**
+		 * Filters the internal nginx location that holds the protected
+		 * folder, for X-Accel-Redirect.
+		 *
+		 * @param string $path Location, with leading and trailing slash.
+		 */
+		$path = (string) apply_filters( 'living_handbook_protected_files_internal_path', $default );
+		return '/' . trim( $path, '/' ) . '/';
 	}
 
 	/**
@@ -162,7 +231,9 @@ final class ServerRules {
 			$folder['url'] . '/' . FileDelivery::SELFTEST,
 			array(
 				'timeout'     => 10,
-				'redirection' => 0,
+				// One: a site of a network with subdirectories answers with a
+				// redirect to its own address (redirects()).
+				'redirection' => 1,
 				'cookies'     => array(),
 				'sslverify'   => (bool) apply_filters( 'https_local_ssl_verify', false ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core's own filter for requests to the site itself.
 			)

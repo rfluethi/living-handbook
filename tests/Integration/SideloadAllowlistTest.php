@@ -42,7 +42,12 @@ final class SideloadAllowlistTest extends WP_UnitTestCase {
 	 */
 	public function set_up(): void {
 		parent::set_up();
-		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
+		$user = (int) self::factory()->user->create( array( 'role' => 'administrator' ) );
+		// In a network only a super admin holds unfiltered_html.
+		if ( is_multisite() ) {
+			grant_super_admin( $user );
+		}
+		wp_set_current_user( $user );
 		$this->assertTrue( current_user_can( 'unfiltered_html' ), 'The test needs a user the core upload rules let HTML through for.' );
 	}
 

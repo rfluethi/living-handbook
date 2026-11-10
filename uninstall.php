@@ -21,9 +21,12 @@
  * edited, moved or built on, so it is only removed with the content option, and
  * only if it is still the page this plugin created.
  *
- * This cleanup runs on the current site only. The plugin is built for
- * single-site installations and is not network (multisite) aware, so on a
- * network install it must be uninstalled per site.
+ * On a network (multisite) WordPress deletes a plugin once, for every site,
+ * and runs this file once, on the main site. So the cleanup goes through
+ * every site and cleans each one that carries the plugin's version option,
+ * with that site's own choice of "remove everything" (E-0085). The light part
+ * costs milliseconds a site; only a site that removes its content takes
+ * longer, as on a single site.
  *
  * @package LivingHandbook
  */
@@ -35,7 +38,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 /**
- * Runs the uninstall cleanup.
+ * Runs the uninstall cleanup, on every site of a network.
  *
  * Kept in a function so its variables stay local; the file body runs in the
  * global scope, where locals would collide with WordPress globals.
@@ -43,12 +46,59 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  * @return void
  */
 function living_handbook_run_uninstall(): void {
-	global $wpdb;
-
 	// Load the plugin so the autoloader and the option-name constants are
 	// available. Requiring the file only defines constants and registers the
 	// autoloader; the plugins_loaded bootstrap does not fire during uninstall.
 	require_once __DIR__ . '/living-handbook.php';
+
+	if ( ! is_multisite() ) {
+		living_handbook_uninstall_site();
+		return;
+	}
+
+	$site_ids = get_sites(
+		array(
+			'fields' => 'ids',
+			'number' => 0,
+		)
+	);
+	foreach ( $site_ids as $site_id ) {
+		switch_to_blog( (int) $site_id );
+		// Only where the plugin was active: its version option is written on
+		// activation and on every update. A site that never had it is left
+		// alone, untouched rows and all.
+		if ( false !== get_option( LivingHandbook\Plugin::DB_VERSION_OPTION, false ) ) {
+			living_handbook_uninstall_site();
+		}
+		restore_current_blog();
+	}
+
+	// The count of failed searches of a site deleted while the plugin was not
+	// active where it was deleted: WordPress drops a site's tables only from
+	// a list the plugin adds to when it is loaded (SearchLog::drop_with_site()).
+	global $wpdb;
+	$suffix = LivingHandbook\Search\SearchLog::TABLE;
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Leftover tables of deleted sites, once, at uninstall.
+	$tables = (array) $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->base_prefix ) . '%' . $wpdb->esc_like( '_' . $suffix ) ) );
+	foreach ( $tables as $table ) {
+		$table = (string) $table;
+		if ( 1 !== preg_match( '/^' . preg_quote( $wpdb->base_prefix, '/' ) . '(\d+)_' . preg_quote( $suffix, '/' ) . '$/', $table, $match ) ) {
+			continue;
+		}
+		if ( null === get_site( (int) $match[1] ) ) {
+			$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table ) );
+		}
+	}
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+}
+
+/**
+ * Cleans the current site.
+ *
+ * @return void
+ */
+function living_handbook_uninstall_site(): void {
+	global $wpdb;
 
 	// Read the choices before the options are deleted below.
 	$remove_content   = (bool) get_option( LivingHandbook\Git\GitSync::OPTION_UNINSTALL, false );

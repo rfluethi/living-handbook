@@ -103,6 +103,31 @@ final class SearchLog {
 	 */
 	public function register(): void {
 		add_action( self::CRON_HOOK, array( $this, 'run_cleanup' ) );
+		add_filter( 'wpmu_drop_tables', array( self::class, 'drop_with_site' ), 10, 2 );
+	}
+
+	/**
+	 * Puts the table on the list WordPress drops with a deleted site of a
+	 * network (E-0085). The name comes from the site's own prefix rather than
+	 * the current one: WordPress switches to the site before it asks, but a
+	 * caller of the filter need not.
+	 *
+	 * The filter runs where the site is deleted, usually the network admin of
+	 * the main site; where the plugin is not active there, the table stays
+	 * until the plugin is deleted, and uninstall.php drops it then.
+	 *
+	 * @param mixed $tables  Tables to drop.
+	 * @param int   $site_id Site being deleted.
+	 * @return mixed
+	 */
+	public static function drop_with_site( $tables, $site_id = 0 ) {
+		global $wpdb;
+		if ( ! is_array( $tables ) ) {
+			return $tables;
+		}
+		$site_id  = (int) $site_id;
+		$tables[] = $site_id > 0 ? $wpdb->get_blog_prefix( $site_id ) . self::TABLE : self::table();
+		return $tables;
 	}
 
 	/**

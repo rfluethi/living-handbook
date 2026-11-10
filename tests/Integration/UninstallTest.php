@@ -45,10 +45,16 @@ final class UninstallTest extends WP_UnitTestCase {
 	 *
 	 * The file calls its function on include, so the first run happens there and
 	 * every later one calls the function directly. Both are the same code path.
+	 * Several tests run it twice, so the version option is written first.
 	 *
 	 * @return void
 	 */
 	private function uninstall(): void {
+		// The plugin was active on this site: in a network, the uninstall
+		// cleans only the sites that carry its version option, and the run
+		// before deleted it (E-0085).
+		update_option( \LivingHandbook\Plugin::DB_VERSION_OPTION, LIVING_HANDBOOK_VERSION );
+
 		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 			define( 'WP_UNINSTALL_PLUGIN', 'living-handbook/living-handbook.php' );
 		}

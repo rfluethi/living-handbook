@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   integration:
-    name: Integration tests (WordPress ${{ matrix.wordpress }})
+    name: Integration tests (WordPress ${{ matrix.wordpress }}${{ matrix.multisite && ', multisite' || '' }})
     runs-on: ubuntu-latest
 
     services:
@@ -56,11 +56,19 @@ jobs:
         # Move the numbers when a release or a maintenance release comes out;
         # git ls-remote --tags https://github.com/WordPress/WordPress.git lists
         # them.
+        #
+        # The multisite row runs the whole suite in a network with
+        # subdirectories (E-0085); MultisiteTest runs only there.
         wordpress: [ '6.8.11', '7.1.3' ]
         experimental: [ false ]
+        multisite: [ false ]
         include:
           - wordpress: trunk
             experimental: true
+            multisite: false
+          - wordpress: '7.1.3'
+            experimental: false
+            multisite: true
 
     steps:
       - name: Checkout
@@ -112,5 +120,6 @@ jobs:
       - name: Run integration tests
         env:
           LH_INTEGRATION: 1
+          WP_MULTISITE: ${{ matrix.multisite && '1' || '0' }}
           WP_TESTS_CONFIG_FILE_PATH: ${{ github.workspace }}/wp-tests-config.php
         run: vendor/bin/phpunit --testsuite integration
