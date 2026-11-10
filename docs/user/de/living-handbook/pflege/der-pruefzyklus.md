@@ -58,6 +58,7 @@ Die Seiten leben in WordPress. Die WordPress-Revisionen sind darum die Versionsg
 
 * [Seiten prüfen](seiten-pruefen.md)
 * [Feedback auswerten](feedback-auswerten.md)
+* [Die Version eines Handbuchs](die-version-eines-handbuchs.md)
 
 ## Transport-Metadaten
 * Seitentyp: Hintergrund / Konzept
@@ -67,6 +68,6 @@ Die Seiten leben in WordPress. Die WordPress-Revisionen sind darum die Versionsg
 * Eltern-Seite: Pflege
 * Reihenfolge: 1
 * Textauszug: Jede Seite trägt Prüfdatum und Prüfintervall; daraus entsteht sichtbar, wie verlässlich eine Seite gerade ist.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

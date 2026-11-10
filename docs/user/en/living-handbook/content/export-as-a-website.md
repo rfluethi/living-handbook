@@ -38,7 +38,7 @@ Inside the ZIP sits a complete little website:
 * **`assets/`**: the styling, the images and the search index.
 * **`README.txt`**: a short note saying what the file is, for whoever finds it in a year with no context.
 
-The footer of every page names the date of the export and the plugin version it was made with.
+The footer of every page names the date of the export, the version of the handbook at that moment and the plugin version it was made with.
 
 What is inside are the pages **you** may read. Links between handbook pages lead to the files beside them, images travel along, and the search box at the top searches every page in the browser. Links to the outside world stay what they were.
 
@@ -72,6 +72,6 @@ Two more things work as they do on the site: **images and diagrams enlarge on a 
 * Eltern-Seite: Content
 * Reihenfolge: 5
 * Textauszug: Export a handbook as a finished HTML website, for readers who have no WordPress and no access to this site.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-08-09
 * Prüfintervall: 180 Tage

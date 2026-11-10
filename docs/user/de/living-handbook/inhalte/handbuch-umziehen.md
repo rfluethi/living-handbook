@@ -32,6 +32,8 @@ Auch die [Lernpfade](lernpfade-anlegen.md) des Handbuchs reisen mit. Auf der Zie
 
 Die Seiten und die Lernpfade stehen auf der Ziel-Website. Links zwischen den Seiten führen zu den neuen Seiten. Zwei Schutzregeln gelten immer: Gelöscht wird nie. Und eine Seite, die auf der Ziel-Website als geschützt markiert ist, wird nie überschrieben.
 
+Legt der Import ein neues Handbuch an, übernimmt es die Version aus dem Bündel. Ein bestehendes Handbuch zählt seine eigene Version weiter, siehe [Die Version eines Handbuchs](../pflege/die-version-eines-handbuchs.md).
+
 <details>
 <summary>Stolpersteine: Sicherheit geht vor Bequemlichkeit</summary>
 
@@ -62,6 +64,6 @@ Die Seiten und die Lernpfade stehen auf der Ziel-Website. Links zwischen den Sei
 * Eltern-Seite: Inhalte
 * Reihenfolge: 4
 * Textauszug: Ein Handbuch lässt sich als Bündel exportieren und auf einer anderen Website wieder importieren; so gehst du vor.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

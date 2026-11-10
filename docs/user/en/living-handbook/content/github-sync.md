@@ -49,6 +49,7 @@ WordPress actively asks GitHub whether the file still exists and what it contain
 
 ## Related pages
 
+* [The version of a handbook](../upkeep/the-version-of-a-handbook.md): take the edition from a tag of the repository
 * [Import Markdown](import-markdown.md)
 * [Writing content](writing-content.md)
 
@@ -60,6 +61,6 @@ WordPress actively asks GitHub whether the file still exists and what it contain
 * Eltern-Seite: Content
 * Reihenfolge: 3
 * Textauszug: A page can stay permanently connected to a Markdown file on GitHub; this guide sets that up.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

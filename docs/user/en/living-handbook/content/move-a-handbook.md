@@ -32,6 +32,8 @@ The handbook's [learning paths](learning-paths.md) travel along too. On the targ
 
 The pages and the learning paths are on the target site. Links between the pages lead to the new pages. Two protection rules always hold: nothing is ever deleted. And a page marked as protected on the target site is never overwritten.
 
+If the import creates a new handbook, it takes the version from the bundle. An existing handbook keeps counting its own version, see [The version of a handbook](../upkeep/the-version-of-a-handbook.md).
+
 <details>
 <summary>Pitfalls: Safety beats convenience</summary>
 
@@ -62,6 +64,6 @@ The pages and the learning paths are on the target site. Links between the pages
 * Eltern-Seite: Content
 * Reihenfolge: 4
 * Textauszug: A handbook can be exported as a self-contained bundle and imported again on another website; here is how.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

@@ -49,6 +49,7 @@ WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinste
 
 ## Verwandte Seiten
 
+* [Die Version eines Handbuchs](../pflege/die-version-eines-handbuchs.md): die Ausgabe aus einem Tag des Repositorys nehmen
 * [Markdown importieren](markdown-importieren.md)
 * [Inhalte schreiben](inhalte-schreiben.md)
 
@@ -60,6 +61,6 @@ WordPress fragt bei GitHub aktiv nach, ob es die Datei noch gibt und was drinste
 * Eltern-Seite: Inhalte
 * Reihenfolge: 3
 * Textauszug: Eine Seite kann dauerhaft mit einer Markdown-Datei auf GitHub verbunden bleiben; diese Anleitung richtet das ein.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

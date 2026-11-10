@@ -25,7 +25,7 @@ graph TD;
 
 The search and the filters narrow the page list down without reloading the page. Filtering works by page type, topics, responsibility and audiences, with the same labels as in the settings. Without JavaScript, both keep working as an ordinary form. The area tiles are the top-level pages, see [Organise pages](../getting-started/organise-pages.md).
 
-Whoever is signed in sees the plugin version at the very bottom, for instance "Living Handbook 0.79.0". It helps when you ask a question about the plugin. Logged-out visitors do not see it, because a public version number tells attackers which known holes to try.
+At the very bottom everyone sees the version of the handbook, for instance "Handbook version 2.1.14", see [The version of a handbook](../upkeep/the-version-of-a-handbook.md). Whoever is signed in sees the plugin version below it, for instance "Living Handbook 0.81.0". It helps when you ask a question about the plugin. Logged-out visitors do not see it, because a public version number tells attackers which known holes to try.
 
 ## The single page
 
@@ -33,7 +33,7 @@ Whoever is signed in sees the plugin version at the very bottom, for instance "L
 
 The page itself comes first: title, then content. Everything that tells you about the page follows underneath: the feedback prompt, the source note on GitHub-backed pages, the badges and the page-details footer. The handbook search sits on the left, under the navigation.
 
-The table of contents on the right builds itself from the page's headings. While you read, it highlights the current section. On narrow screens it appears above the content instead. The footer shows Created, Last updated, Last reviewed and the responsible role. Next to it sits the [review-status badge](../upkeep/the-review-cycle.md).
+The table of contents on the right builds itself from the page's headings. While you read, it highlights the current section. On narrow screens it appears above the content instead. The footer shows Created, Last updated, Last reviewed, the responsible role and the version of the handbook. Next to it sits the [review-status badge](../upkeep/the-review-cycle.md).
 
 ## Searching and finding
 
@@ -83,6 +83,6 @@ The plugin ships sixteen blocks of its own, from the handbook overview to the Me
 * Eltern-Seite: Interface
 * Reihenfolge: 1
 * Textauszug: On the website a handbook consists of three kinds of pages: the overview, the entry page and the single page; this page explains all three.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

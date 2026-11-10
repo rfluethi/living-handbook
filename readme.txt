@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.80.0
+Stable tag: 0.81.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,7 @@ Core features:
 * Markdown import: paste a document, upload a ZIP, or point at a GitHub file or folder; a folder is read with its subfolders and the folder structure becomes the page hierarchy. A MkDocs project (mkdocs.yml) keeps its page structure, titles and order. Transport metadata and README are applied, internal .md links and their titles are resolved, and Mermaid and collapsible details are converted to blocks. Re-importing the same source refreshes the pages instead of duplicating them.
 * GitHub sync: a page can be sourced from a Markdown URL. It is pulled on save, on demand and on a configurable schedule; its editor is locked, the page overview shows the source, and a block marks the public page.
 * Learning paths (optional, off by default): put existing handbook pages in an order for onboarding or required reading, with a numbered lesson list, a Next button and a mark for what has been read. Progress is kept in the reader's browser only; nothing personal is stored on the server.
+* A version for every handbook, such as 2.1.14: an edition set by hand or taken from the GitHub tag, and a count of the days its published content changed. Readers see it, without a date; the exports carry it.
 * Three exports: a bundle that moves a handbook, with its learning paths, to another site running the plugin; a static website (a ZIP of plain HTML with the pages, their images, a page list, a search and a look you pick) for readers who have no access to your site at all; and Markdown files with a mkdocs.yml that the Markdown import reads back. All three work on a single area too.
 * The plugin brings a handbook of its own: the documentation of the app, written as a Living Handbook and shipped inside the plugin. One click on the import screen loads it into the site, in English or German, always matching the installed version; the living_handbook_app_handbook_url filter points it at your own GitHub repository instead.
 * Access for AI tools (WordPress 6.9 and later): seven read-only abilities let an AI tool such as Claude, connected through the MCP Adapter plugin, list the handbooks, read their structure, search and read pages, always with the page address and its review status, and only what the signed-in account may read. Editors also get the pages due for review, the pages readers found unhelpful and the searches that found nothing.
@@ -98,7 +99,7 @@ The plugin connects to two external services. Neither is contacted unless the fe
 Used by the Markdown import from GitHub, by pages whose source is set to "Synced from GitHub", and by the App handbook tab only if a developer has pointed it at a repository with the living_handbook_app_handbook_url filter (by default the app handbook is read from the plugin folder and nothing is fetched).
 
 * raw.githubusercontent.com: the Markdown file of a page and the images it references are downloaded when you import it, when you save a synced page, when you press Sync now, and on the background schedule you choose under Handbook, Settings (weekly by default, or off).
-* api.github.com: when you import a folder, the repository's file list is read in one request, and for a folder of more than about twenty files the address of the repository archive is requested.
+* api.github.com: when you import a folder, the repository's file list is read in one request, and for a folder of more than about twenty files the address of the repository archive is requested. For a handbook whose edition you set to come from the GitHub tag, the repository's tags are read once at the end of each background sync pass and when you switch it on.
 * codeload.github.com: that archive is then downloaded once, instead of one request per file.
 
 What is sent: the repository owner, name, branch and file paths contained in the URLs you enter, and a User-Agent header naming the plugin. No content of your site, no user data and no access token is sent; only public repositories can be read. GitHub's terms of service: https://docs.github.com/en/site-policy/github-terms/github-terms-of-service. GitHub's privacy statement: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement.
@@ -116,6 +117,9 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.81.0 =
+* New: every handbook carries a version, such as 2.1.14: an edition you set on the handbook, or that comes from the highest version tag of its GitHub repository, and a count that goes up by one on every day its published content changes. Readers see it on the entry page and below every page, without a date; the website export, the Markdown export, the bundle and the list-handbooks ability carry it. It is the version of the content, not of the plugin.
 
 = 0.80.0 =
 * New: export a handbook or an area as Markdown, under Handbook, Export. The ZIP holds one file per page in folders that follow the structure, the images, a mkdocs.yml with the navigation and the metadata of each page in its transport block, and the Markdown import reads it back. Blocks of the plugin without a Markdown form, learning paths and pages with a password are left out and named in EXPORT.txt.
@@ -187,6 +191,9 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 Older versions are listed in [CHANGELOG.md on GitHub](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 0.81.0 =
+Adds a version to every handbook. Existing handbooks start at 1.0.
 
 = 0.80.0 =
 Adds a Markdown export that the Markdown import reads back.

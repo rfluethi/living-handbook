@@ -58,6 +58,7 @@ The pages live in WordPress. So the WordPress revisions are the version history:
 
 * [Review pages](review-pages.md)
 * [Reading feedback](reading-feedback.md)
+* [The version of a handbook](the-version-of-a-handbook.md)
 
 ## Transport-Metadaten
 * Seitentyp: Background / Concept
@@ -67,6 +68,6 @@ The pages live in WordPress. So the WordPress revisions are the version history:
 * Eltern-Seite: Upkeep
 * Reihenfolge: 1
 * Textauszug: Every page carries a review date and a review interval; from them it becomes visible how reliable a page currently is.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-08-05
 * Prüfintervall: 180 Tage

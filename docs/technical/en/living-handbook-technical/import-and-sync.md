@@ -198,6 +198,8 @@ There is no webhook. WordPress pulls: on save, on demand (Sync now), and on a ba
 
 A large handbook is synced in batches rather than all at once, so a single request never has to fetch every page.
 
+At the end of each complete pass, `HandbookVersion::refresh_tags()` asks, for every handbook whose edition comes from the GitHub tag, for the tags of the chosen repository (`GET /repos/{owner}/{repo}/tags?per_page=100`, one request per handbook). If its pages follow a version tag themselves, the tag is in their raw address and nothing is asked. After the pages, not before: so the content of a new tag starts its edition at 0 (E-0084).
+
 The pull on save runs inside the save request: saving a GitHub-synced page fetches the source and re-renders it before the save returns, so the new content is visible right away. The trade-off is that the save waits for the network round-trip to GitHub. For normal page sizes this is not noticeable; only if a source were unusually large or the network very slow could a save feel slow. Moving this pull into a background event (so the save returns at once and the content updates a moment later) is noted as a possible future change; it is not done today because it would break the "pulled when you save" behaviour that makes the editor show the fetched content immediately.
 
 ### When a sync fails
@@ -212,7 +214,7 @@ For safety the source URL must point at an allowed host (`raw.githubusercontent.
 
 ## What the plugin sends where
 
-Only what you ask it to fetch, from GitHub. A `github.com` URL is only parsed, never fetched: the import and the sync read files from `raw.githubusercontent.com`, a folder listing from the Git trees API at `api.github.com`, and for a folder of more than about twenty files the repository archive, whose address `api.github.com` returns and which is downloaded from `codeload.github.com`. They read only from addresses you enter yourself, and they send nothing but those addresses and a User-Agent header. If you use neither feature, none of this happens.
+Only what you ask it to fetch, from GitHub. A `github.com` URL is only parsed, never fetched: the import and the sync read files from `raw.githubusercontent.com`, a folder listing from the Git trees API at `api.github.com`, the tags of a repository for a handbook whose version follows the tag from the same API, and for a folder of more than about twenty files the repository archive, whose address `api.github.com` returns and which is downloaded from `codeload.github.com`. They read only from addresses you enter yourself, and they send nothing but those addresses and a User-Agent header. If you use neither feature, none of this happens.
 
 The other external request does not come from the plugin's code but from WordPress: the page footer (`living-handbook/pagemeta`) shows each person with `get_avatar()`, which loads the image from Gravatar in the reader's browser. Switching off **Show Avatars** under Settings, Discussion, or *Show people (avatar and name)* in the block, removes it. The readme lists both services under *External services*, as the plugin directory requires.
 
@@ -258,4 +260,4 @@ The pages are created as **drafts**, whatever status the bundle carries. A bundl
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 9
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10

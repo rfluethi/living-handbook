@@ -19,7 +19,8 @@ A ZIP file with `manifest.json` in the root and a folder `media/` holding every 
     "name": "Operations handbook",
     "visibility": "members",
     "roles": ["editor"],
-    "users": ["person@example.com"]
+    "users": ["person@example.com"],
+    "version": { "edition": "2.1", "count": 14, "version": "2.1.14" }
   },
   "pages": [
     {
@@ -69,6 +70,10 @@ Matching happens only within the target handbook: primarily by `origin_id`, seco
 
 A path follows the same matching, the same run rules and the same protection switch as a page, and an existing path the importing person may not edit is left alone. The result screen counts paths separately from pages: created, updated, skipped, protected and refused. The export leaves out paths the exporting person may not read, and an area export carries only the paths with at least one lesson in that area. The schema version stays 1: an older plugin ignores `paths`.
 
+## Version of the handbook
+
+`handbook.version` carries edition and count (E-0084); `version` is both together, for reading. If the import creates a new handbook, it takes edition and count over after the pages are created; creating published pages would otherwise already have counted. An existing target handbook keeps its version and counts the import as a change. A bundle without the key, from a version before 0.81.0, starts a new handbook at 1.0. The schema version stays 1.
+
 ## Password-protected pages
 
 A page or path protected by a password carries it in `password`; the key is absent for an unprotected one, so such a bundle looks exactly like one from an older version. The import sets the password on a new post and on an updated one alike. An entry without the key leaves the post data alone, so an update keeps a password set on the target site.
@@ -77,7 +82,7 @@ The protected text travels in the bundle in plain text either way. The password 
 
 ## What travels
 
-The handbook configuration (visibility, roles, users as email or login, best effort), every page with a content snapshot, hierarchy, order, slug and status, the four vocabulary terms, the metadata (review date, interval, reviewer, heading depth, AI exclusion), the per-page source plus the Markdown URL for GitHub pages, the password of protected pages, the learning paths with their lesson order, and the media.
+The handbook configuration (visibility, roles, users as email or login, best effort, and the version of the handbook), every page with a content snapshot, hierarchy, order, slug and status, the four vocabulary terms, the metadata (review date, interval, reviewer, heading depth, AI exclusion), the per-page source plus the Markdown URL for GitHub pages, the password of protected pages, the learning paths with their lesson order, and the media.
 
 GitHub pages carry both the snapshot (which works offline) and the source URL (which lets the target site resume syncing).
 
@@ -119,4 +124,4 @@ Three questions are open and deliberately left out of version 1:
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 13
-* Letzte Aktualisierung: 2026-11-08
+* Letzte Aktualisierung: 2026-11-10

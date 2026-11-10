@@ -10,6 +10,7 @@ Dokumentation ohne Pflege wird falsch. Und falsche Dokumentation ist schlimmer a
 | [Seiten prüfen](seiten-pruefen.md) | Prüfungen erledigen: im Editor, per Schnellbearbeitung oder über das Dashboard. |
 | [Feedback auswerten](feedback-auswerten.md) | Aus „War das hilfreich?“ die Seiten finden, die Arbeit brauchen. |
 | [Einordnung und Rollen pflegen](schlagworte-und-rollen.md) | Wofür die vier Gruppen der Einordnung da sind, wie du sie erweiterst und Rollen sauber verwaltest. |
+| [Die Version eines Handbuchs](die-version-eines-handbuchs.md) | Die Version eines Handbuchs lesen und ihre Ausgabe von Hand oder aus einem GitHub-Tag setzen. |
 
 ## Transport-Metadaten
 * Seitentyp: Bereichs-Übersicht
@@ -20,6 +21,6 @@ Dokumentation ohne Pflege wird falsch. Und falsche Dokumentation ist schlimmer a
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 7
 * Textauszug: Living Handbook ist um die Pflege gebaut: der Prüfzyklus, die tägliche Prüfarbeit und das Leser-Feedback.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

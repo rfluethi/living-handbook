@@ -77,8 +77,15 @@ All three are removed by the row action **Reset feedback** in the page list. Ano
 | `living_handbook_roles` | array of role slugs | no | The handbook edit screen; a bundle import | The roles a restricted handbook admits. |
 | `living_handbook_users` | array of user IDs | no | The handbook edit screen; `Privacy::forget_deleted_user()` takes a deleted account out | The people a restricted handbook admits on top of the roles. Never exported in a bundle and never imported. The personal data export names the handbooks whose list holds the person; the eraser keeps the entry and reports it. |
 | `living_handbook_comments` | string: `inherit`, `open`, `closed` | no | The handbook edit screen | Comments for the whole handbook: leave them to each page, or force them on or off. |
+| `living_handbook_version_edition` | string, one to three numbers with dots | no | The handbook edit screen; `HandbookVersion::refresh_tag()` from the GitHub tag; a bundle import that creates a handbook | The edition of the handbook version (E-0084). Empty is read as `1`. |
+| `living_handbook_version_count` | int | no | `HandbookVersion::bump()`, at most once a day on a change to published content; 0 on a new edition | The count of the handbook version. |
+| `living_handbook_version_day` | string, `Y-m-d` in the site's time zone | no | `HandbookVersion::bump()`; deleted on a new edition | The day last counted. |
+| `living_handbook_version_source` | string: `manual`, `github` | no | The handbook edit screen | Where the edition comes from. |
+| `living_handbook_version_repo` | string, `owner/repo` | no | The same | The repository whose tags give the edition. |
+| `living_handbook_version_tag` | string | no | `HandbookVersion::refresh_tag()` | The tag the edition last came from, as GitHub names it. |
+| `living_handbook_version_error` | string | no | The same | Why the tags could not be read last time; the edit screen shows it. |
 
-None of the four is readable over the REST API: who may read a handbook is not something to hand out to whoever asks.
+None of these fields is readable over the REST API: who may read a handbook is not something to hand out to whoever asks, and the version is shown by the site, the exports and the `list-handbooks` ability.
 
 ## Older names
 
@@ -88,4 +95,4 @@ Installations from before 0.56.0 carried some of these under other names. `Plugi
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 11
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-10

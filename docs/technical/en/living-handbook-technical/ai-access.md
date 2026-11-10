@@ -20,7 +20,7 @@ This page is for anyone changing the code. The decisions behind it are E-0056 (r
 
 | Ability | Who | What it returns |
 | --- | --- | --- |
-| `living-handbook/list-handbooks` | signed in | The readable handbooks with name, slug, description, address and page count. |
+| `living-handbook/list-handbooks` | signed in | The readable handbooks with name, slug, description, address, page count and handbook version. |
 | `living-handbook/get-structure` | signed in | The page tree of one handbook, flat, in navigation order, with depth and parent. At most 1000 pages, `truncated` says when there were more. |
 | `living-handbook/search` | signed in | Up to 20 pages for a full-text search, optionally in one handbook and by the four classifications. |
 | `living-handbook/get-page` | signed in | One page by id or address, its text as Markdown with headings, lists and tables. At most 100 000 characters. |
@@ -85,4 +85,4 @@ The Abilities API is in WordPress from 6.9. The plugin still runs from 6.8 and s
 * Seitentyp: Background / Concept
 * Zielgruppe: Tech
 * Reihenfolge: 14
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10

@@ -20,7 +20,7 @@ Diese Seite ist für alle, die den Code ändern. Die Entscheide dahinter sind E-
 
 | Ability | Wer | Was sie liefert |
 | --- | --- | --- |
-| `living-handbook/list-handbooks` | angemeldet | Die lesbaren Handbücher mit Name, Titelform, Beschreibung, Adresse und Anzahl Seiten. |
+| `living-handbook/list-handbooks` | angemeldet | Die lesbaren Handbücher mit Name, Titelform, Beschreibung, Adresse, Anzahl Seiten und Version des Handbuchs. |
 | `living-handbook/get-structure` | angemeldet | Den Seitenbaum eines Handbuchs, flach, in der Reihenfolge der Navigation, mit Tiefe und Eltern-Seite. Höchstens 1000 Seiten, `truncated` sagt, wenn es mehr waren. |
 | `living-handbook/search` | angemeldet | Bis zu 20 Seiten zu einer Volltextsuche, wahlweise in einem Handbuch und nach den vier Einordnungen. |
 | `living-handbook/get-page` | angemeldet | Eine Seite nach ID oder Adresse, ihr Text als Markdown mit Überschriften, Listen und Tabellen. Höchstens 100 000 Zeichen. |
@@ -85,4 +85,4 @@ Die Abilities API gibt es in WordPress ab 6.9. Das Plugin läuft weiter ab 6.8 u
 * Seitentyp: Hintergrund / Konzept
 * Zielgruppe: Technik
 * Reihenfolge: 13
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10

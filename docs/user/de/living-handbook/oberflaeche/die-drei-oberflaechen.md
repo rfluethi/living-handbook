@@ -25,7 +25,7 @@ graph TD;
 
 Die Suche und die Filter grenzen die Seitenliste ein, ohne die Seite neu zu laden. Gefiltert wird nach Seitentyp, Themen, Verantwortung und Zielgruppen, mit denselben Bezeichnungen wie in den Einstellungen. Ohne JavaScript funktioniert beides als gewöhnliches Formular weiter. Die Bereichs-Kacheln sind die Seiten der obersten Ebene, siehe [Seiten ordnen](../erste-schritte/seiten-ordnen.md).
 
-Wer angemeldet ist, sieht ganz unten die Version des Plugins, etwa „Living Handbook 0.79.0“. Sie hilft, wenn du eine Frage zum Plugin stellst. Abgemeldete Besucherinnen und Besucher sehen sie nicht, denn eine öffentliche Versionsnummer verrät Angreifern, welche bekannten Lücken sie ausprobieren können.
+Ganz unten steht für alle die Version des Handbuchs, etwa „Handbuch-Version 2.1.14“, siehe [Die Version eines Handbuchs](../pflege/die-version-eines-handbuchs.md). Wer angemeldet ist, sieht darunter die Version des Plugins, etwa „Living Handbook 0.81.0“. Sie hilft, wenn du eine Frage zum Plugin stellst. Abgemeldete Besucherinnen und Besucher sehen sie nicht, denn eine öffentliche Versionsnummer verrät Angreifern, welche bekannten Lücken sie ausprobieren können.
 
 ## Die Einzelseite
 
@@ -33,7 +33,7 @@ Wer angemeldet ist, sieht ganz unten die Version des Plugins, etwa „Living Han
 
 Die Seite selbst kommt zuerst: Titel, dann Inhalt. Alles, was über die Seite Auskunft gibt, steht darunter am Fuß: die Feedback-Frage, bei GitHub-Seiten der Herkunftshinweis, die Abzeichen und die Metadaten-Fußzeile. Die Suche des Handbuchs steht links unter der Navigation.
 
-Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Beim Lesen markiert es den aktuellen Abschnitt. Auf schmalen Bildschirmen erscheint es stattdessen über dem Inhalt. Die Metadaten-Fußzeile zeigt Erstellt, Aktualisiert, Geprüft und die verantwortliche Rolle. Dazu kommt das [Prüfstatus-Abzeichen](../pflege/der-pruefzyklus.md).
+Das Inhaltsverzeichnis rechts baut sich aus den Überschriften der Seite auf. Beim Lesen markiert es den aktuellen Abschnitt. Auf schmalen Bildschirmen erscheint es stattdessen über dem Inhalt. Die Metadaten-Fußzeile zeigt Erstellt, Aktualisiert, Geprüft, die verantwortliche Rolle und die Version des Handbuchs. Dazu kommt das [Prüfstatus-Abzeichen](../pflege/der-pruefzyklus.md).
 
 ## Suchen und Finden
 
@@ -83,6 +83,6 @@ Das Plugin bringt sechzehn eigene Blöcke mit, von der Handbuch-Übersicht bis z
 * Eltern-Seite: Oberfläche
 * Reihenfolge: 1
 * Textauszug: Ein Handbuch besteht auf der Website aus drei Arten von Seiten: der Übersicht, der Einstiegsseite und der Einzelseite; diese Seite erklärt alle drei.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 180 Tage

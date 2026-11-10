@@ -19,7 +19,8 @@ Eine ZIP-Datei mit `manifest.json` im Wurzelverzeichnis und einem Ordner `media/
     "name": "Betriebshandbuch",
     "visibility": "members",
     "roles": ["editor"],
-    "users": ["person@example.com"]
+    "users": ["person@example.com"],
+    "version": { "edition": "2.1", "count": 14, "version": "2.1.14" }
   },
   "pages": [
     {
@@ -69,6 +70,10 @@ Abgeglichen wird nur innerhalb des Ziel-Handbuchs: primär über `origin_id`, er
 
 Ein Pfad folgt demselben Abgleich, denselben Laufregeln und demselben Schutzschalter wie eine Seite, und einen vorhandenen Pfad, den die importierende Person nicht bearbeiten darf, lässt der Import stehen. Der Ergebnisbildschirm zählt Pfade getrennt von Seiten: angelegt, aktualisiert, übersprungen, geschützt und verweigert. Der Export lässt Pfade weg, welche die exportierende Person nicht lesen darf, und ein Bereichs-Export trägt nur Pfade mit mindestens einer Lektion in diesem Bereich. Die Schema-Version bleibt 1: Ältere Plugin-Versionen ignorieren `paths`.
 
+## Version des Handbuchs
+
+`handbook.version` trägt Ausgabe und Zähler (E-0084), `version` ist beides zusammen zum Lesen. Legt der Import ein neues Handbuch an, übernimmt es Ausgabe und Zähler, nachdem die Seiten angelegt sind; das Anlegen veröffentlichter Seiten hätte sonst schon gezählt. Ein bestehendes Ziel-Handbuch behält seine Version und zählt das Einspielen als Änderung. Ein Bündel ohne den Schlüssel, aus einer Version vor 0.81.0, lässt ein neues Handbuch bei 1.0 beginnen. Die Schema-Version bleibt 1.
+
 ## Passwortgeschützte Seiten
 
 Eine Seite oder ein Pfad mit Passwort trägt es in `password`; bei ungeschützten fehlt der Schlüssel, ein solches Bündel sieht also genau aus wie eines aus einer älteren Version. Der Import setzt das Passwort bei einem neuen und bei einem aktualisierten Beitrag gleichermaßen. Ein Eintrag ohne den Schlüssel lässt die Beitragsdaten in Ruhe, ein Aktualisieren behält also ein auf der Zielseite gesetztes Passwort.
@@ -77,7 +82,7 @@ Der geschützte Text reist ohnehin im Klartext im Bündel. Das Passwort macht di
 
 ## Was mitreist
 
-Die Handbuch-Konfiguration (Sichtbarkeit, Rollen, Benutzer als E-Mail oder Login, best effort), alle Seiten mit Inhalts-Snapshot, Hierarchie, Reihenfolge, Slug und Status, die vier Vokabular-Terms, die Metadaten (Prüfdatum, Intervall, Prüfer, Überschriftentiefe, KI-Ausschluss), die Quelle je Seite samt Markdown-URL bei GitHub-Seiten, das Passwort geschützter Seiten, die Lernpfade mit der Reihenfolge ihrer Lektionen, und die Medien.
+Die Handbuch-Konfiguration (Sichtbarkeit, Rollen, Benutzer als E-Mail oder Login, best effort, dazu die Version des Handbuchs), alle Seiten mit Inhalts-Snapshot, Hierarchie, Reihenfolge, Slug und Status, die vier Vokabular-Terms, die Metadaten (Prüfdatum, Intervall, Prüfer, Überschriftentiefe, KI-Ausschluss), die Quelle je Seite samt Markdown-URL bei GitHub-Seiten, das Passwort geschützter Seiten, die Lernpfade mit der Reihenfolge ihrer Lektionen, und die Medien.
 
 GitHub-Seiten tragen sowohl den Snapshot, der offline funktioniert, als auch die Quell-URL, mit der die Zielseite den Sync wieder aufnimmt.
 
@@ -119,4 +124,4 @@ Drei Fragen sind offen und in Version 1 bewusst ausgeklammert:
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 12
-* Letzte Aktualisierung: 2026-11-08
+* Letzte Aktualisierung: 2026-11-10

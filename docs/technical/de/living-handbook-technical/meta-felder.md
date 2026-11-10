@@ -77,8 +77,15 @@ Alle drei entfernt die Zeilenaktion **Feedback zurücksetzen** in der Seitenlist
 | `living_handbook_roles` | Array von Rollen-Slugs | nein | Die Bearbeitungsseite des Handbuchs; ein Bündel-Import | Die Rollen, die ein eingeschränktes Handbuch zulässt. |
 | `living_handbook_users` | Array von Benutzer-IDs | nein | Die Bearbeitungsseite des Handbuchs; `Privacy::forget_deleted_user()` nimmt ein gelöschtes Konto heraus | Die Personen, die ein eingeschränktes Handbuch zusätzlich zu den Rollen zulässt. Nie in einem Bündel exportiert und nie importiert. Der Export personenbezogener Daten nennt die Handbücher, deren Liste die Person enthält; die Löschung lässt den Eintrag stehen und meldet ihn. |
 | `living_handbook_comments` | string: `inherit`, `open`, `closed` | nein | Die Bearbeitungsseite des Handbuchs | Kommentare für das ganze Handbuch: jeder Seite überlassen, oder für alle ein- oder ausgeschaltet. |
+| `living_handbook_version_edition` | string, eine bis drei Zahlen mit Punkt | nein | Die Bearbeitungsseite des Handbuchs; `HandbookVersion::refresh_tag()` aus dem GitHub-Tag; ein Bündel-Import, der ein Handbuch anlegt | Die Ausgabe der Handbuch-Version (E-0084). Leer wird als `1` gelesen. |
+| `living_handbook_version_count` | int | nein | `HandbookVersion::bump()`, höchstens einmal pro Tag bei einer Änderung an veröffentlichtem Inhalt; 0 bei einer neuen Ausgabe | Der Zähler der Handbuch-Version. |
+| `living_handbook_version_day` | string, `Y-m-d` in der Zeitzone der Website | nein | `HandbookVersion::bump()`; gelöscht bei einer neuen Ausgabe | Der Tag, der zuletzt gezählt wurde. |
+| `living_handbook_version_source` | string: `manual`, `github` | nein | Die Bearbeitungsseite des Handbuchs | Woher die Ausgabe kommt. |
+| `living_handbook_version_repo` | string, `owner/repo` | nein | Ebenso | Das Repository, dessen Tags die Ausgabe geben. |
+| `living_handbook_version_tag` | string | nein | `HandbookVersion::refresh_tag()` | Der Tag, aus dem die Ausgabe zuletzt kam, so wie GitHub ihn nennt. |
+| `living_handbook_version_error` | string | nein | Ebenso | Warum die Tags zuletzt nicht gelesen werden konnten; die Bearbeitungsseite zeigt es. |
 
-Keines der vier ist über die REST-API lesbar: wer ein Handbuch lesen darf, gibt man nicht jedem heraus, der fragt.
+Keines dieser Felder ist über die REST-API lesbar: wer ein Handbuch lesen darf, gibt man nicht jedem heraus, der fragt, und die Version zeigen Website, Exporte und die Ability `list-handbooks`.
 
 ## Ältere Namen
 
@@ -88,4 +95,4 @@ Installationen von vor 0.56.0 trugen einige dieser Felder unter anderen Namen. `
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 10
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-10

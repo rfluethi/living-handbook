@@ -10,6 +10,7 @@ Documentation without upkeep goes wrong. And wrong documentation is worse than n
 | [Review pages](review-pages.md) | Get reviews done: in the editor, via Quick Edit, or through the dashboard. |
 | [Reading feedback](reading-feedback.md) | Use "Was this helpful?" to find the pages that need work. |
 | [Classification and roles](tags-and-roles.md) | What the four groups of the classification are for, how you extend them and manage roles cleanly. |
+| [The version of a handbook](the-version-of-a-handbook.md) | Read the version of a handbook, and set its edition by hand or from a GitHub tag. |
 
 ## Transport-Metadaten
 * Seitentyp: Area overview
@@ -20,6 +21,6 @@ Documentation without upkeep goes wrong. And wrong documentation is worse than n
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 7
 * Textauszug: Living Handbook is built around upkeep: the review cycle, the day-to-day review work and the reader feedback.
-* Letzte Aktualisierung: 2026-08-05
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 180 Tage

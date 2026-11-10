@@ -207,6 +207,8 @@ Es gibt keinen Webhook. WordPress holt aktiv: beim Speichern, auf Zuruf (Jetzt s
 
 Ein großes Handbuch wird in Teilmengen synchronisiert statt auf einmal, eine einzelne Anfrage muss also nie jede Seite holen.
 
+Am Ende jedes vollständigen Durchgangs fragt `HandbookVersion::refresh_tags()` für jedes Handbuch, dessen Ausgabe aus dem GitHub-Tag kommt, nach den Tags des gewählten Repositorys (`GET /repos/{owner}/{repo}/tags?per_page=100`, eine Anfrage pro Handbuch). Folgen dessen Seiten selbst einem Versions-Tag, steht er in ihrer Rohadresse, und es wird nicht gefragt. Nach den Seiten, nicht davor: so beginnt der Inhalt eines neuen Tags seine Ausgabe bei 0 (E-0084).
+
 Das Holen beim Speichern läuft innerhalb der Speicher-Anfrage: Beim Speichern einer aus GitHub synchronisierten Seite wird die Quelle geholt und neu gerendert, bevor das Speichern zurückkehrt, der neue Inhalt ist also sofort sichtbar. Der Preis dafür ist, dass das Speichern auf den Netzwerk-Umlauf zu GitHub wartet. Bei normalen Seitengrößen fällt das nicht auf; nur wenn eine Quelle ungewöhnlich groß oder das Netz sehr langsam wäre, könnte sich ein Speichern zäh anfühlen. Dieses Holen in ein Hintergrund-Ereignis zu verlegen (das Speichern kehrte sofort zurück, der Inhalt aktualisierte sich einen Moment später) ist als mögliche künftige Änderung vermerkt; heute ist es nicht so, weil es das Verhalten „geholt, wenn du speicherst" bräche, das den Editor den geholten Inhalt sofort zeigen lässt.
 
 ### Wenn ein Sync fehlschlägt
@@ -221,7 +223,7 @@ Aus Sicherheitsgründen muss die Quell-URL über https auf einen erlaubten Host 
 
 ## Was das Plugin wohin sendet
 
-Nur das, was du abrufen lässt, von GitHub. Eine `github.com`-URL wird nur zerlegt, nie abgerufen: Import und Sync lesen Dateien von `raw.githubusercontent.com`, eine Ordnerliste von der Git-Trees-API unter `api.github.com`, und bei einem Ordner mit mehr als etwa zwanzig Dateien das Repository-Archiv, dessen Adresse `api.github.com` liefert und das von `codeload.github.com` geladen wird. Gelesen wird ausschließlich von Adressen, die du selbst einträgst, und gesendet werden nur diese Adressen und eine User-Agent-Kopfzeile. Nutzt du keine der Funktionen, geschieht nichts davon.
+Nur das, was du abrufen lässt, von GitHub. Eine `github.com`-URL wird nur zerlegt, nie abgerufen: Import und Sync lesen Dateien von `raw.githubusercontent.com`, eine Ordnerliste von der Git-Trees-API unter `api.github.com`, die Tags eines Repositorys für ein Handbuch, dessen Version dem Tag folgt, von derselben API, und bei einem Ordner mit mehr als etwa zwanzig Dateien das Repository-Archiv, dessen Adresse `api.github.com` liefert und das von `codeload.github.com` geladen wird. Gelesen wird ausschließlich von Adressen, die du selbst einträgst, und gesendet werden nur diese Adressen und eine User-Agent-Kopfzeile. Nutzt du keine der Funktionen, geschieht nichts davon.
 
 Die andere externe Anfrage kommt nicht aus dem Code des Plugins, sondern von WordPress: die Fußzeile einer Seite (`living-handbook/pagemeta`) zeigt jede Person mit `get_avatar()`, und das lädt das Bild im Browser der Lesenden von Gravatar. Das Abschalten von **Avatare anzeigen** unter Einstellungen, Diskussion, oder von *Personen anzeigen (Avatar und Name)* im Block, entfernt sie. Die Readme führt beide Dienste unter *External services* auf, wie es das Plugin-Verzeichnis verlangt.
 
@@ -245,4 +247,4 @@ Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur 
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 8
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10

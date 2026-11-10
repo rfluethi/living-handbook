@@ -6,6 +6,17 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.81.0] - 2026-11-10
+
+The version of each handbook as decided in E-0084: it is always clear which state of a handbook is on the site, in an export or in a bundle. This is the version of the content; the plugin version (E-0082) stays apart.
+
+### Added
+
+* **Handbook version** (`Handbook\HandbookVersion`), such as "2.1.14": an edition and a count. The edition is set on the handbook's edit screen, one to three numbers; the count goes up by one on every day the published content of the handbook changes: a page published, changed in title or text, taken back, moved to another handbook or deleted. Drafts, excerpts, order, review confirmations and addresses the file protection corrects do not count. A new edition starts the count at 0, and the next change counts even on the same day. Existing handbooks start at 1.0.
+* **Edition from the GitHub tag**, chosen per handbook when it has pages from GitHub, with the repository to follow when there are several. If the pages follow a version tag, the tag in their raw address is the edition without asking GitHub; otherwise the scheduled sync reads the repository's tags once at the end of each pass, and the highest tag that names a version (`v2.1` becomes `2.1`) wins. While the tag decides, the edition field is locked. When GitHub does not answer, the edition stays and the edit screen says why.
+* **Where it shows:** below the entry page and in the footer of every page, for every reader and without a date, on a line apart from the plugin version; in the footer of every page of the website export, as it was when the export started; in `EXPORT.txt` and `mkdocs.yml` (`extra.handbook_version`) of the Markdown export; in the bundle (`handbook.version`), which a new handbook created by the import takes over; in the `list-handbooks` ability; in a Version column of the handbook list.
+* **Docs:** a page on the version of a handbook in the app handbook, the term meta, the bundle field and the tag request in the technical documentation, both languages.
+
 ## [0.80.0] - 2026-11-09
 
 The Markdown export as decided in E-0083: the way out of the plugin and back in. A handbook is no longer only portable to another WordPress site (bundle) or readable without one (website); it can leave as text files and come back from them.
