@@ -9,6 +9,12 @@ declare( strict_types=1 );
 
 namespace LivingHandbook;
 
+// Before the imports: Plugin Check looks for the guard in the first 50 lines
+// when a namespace hides it from its parser, and the list of imports grows.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use LivingHandbook\Abilities\Abilities;
 use LivingHandbook\Access\AccessController;
 use LivingHandbook\Admin\Maintenance;
@@ -48,10 +54,6 @@ use LivingHandbook\Support\Lock;
 use LivingHandbook\Taxonomy\Taxonomies;
 use LivingHandbook\Training\LessonPicker;
 use LivingHandbook\Training\Training;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
 
 /**
  * Central plugin class. Modules are wired up in boot().
