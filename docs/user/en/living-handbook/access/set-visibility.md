@@ -7,7 +7,7 @@ Visibility is controlled per handbook, not per page. This guide sets who may rea
 1. Open **Handbook → Handbooks** and edit the handbook.
 2. Choose one of the three levels:
    * **Public:** Everyone can read, even without logging in.
-   * **All members (logged in):** Only people logged in to the website can read. This is the default for every new handbook.
+   * **All members (logged in):** Only people logged in to the website can read. This is the default for every new handbook. In a network of several sites, the person also needs an account on this site; an account on another site of the network is not enough.
    * **Restricted:** Only specific user roles and/or individually named people can read.
 3. For **Restricted**: pick the roles. Add individual people if needed.
 4. Save.
@@ -51,6 +51,6 @@ The same rule holds in the WordPress admin. Other people's pages in a handbook s
 * Eltern-Seite: Access
 * Reihenfolge: 1
 * Textauszug: Visibility is controlled per handbook; this guide sets who may read a handbook on the website.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

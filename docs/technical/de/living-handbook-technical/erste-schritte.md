@@ -6,7 +6,7 @@ Von der frischen Installation bis zur ersten Seite, die Besucherinnen wirklich s
 
 - **WordPress 6.8 oder neuer, mit einem Block-Theme.** Einstiegsseite, Einzelseite und Navigation bestehen aus Block-Vorlagen, ein klassisches Theme rendert sie deshalb nicht.
 - **PHP 8.1 oder neuer.**
-- **Eine Einzelinstallation.** Living Handbook ist für eine Seite gebaut; die netzwerkweite Aktivierung in einem Multisite wird nicht unterstützt. In einem Netzwerk aktivierst du es pro Seite.
+- **Eine Website oder eine Website eines Netzwerks.** In einem Multisite aktivierst du es auf jeder Website, die es braucht; die netzwerkweite Aktivierung wird nicht unterstützt (E-0085). Jede Website behält ihre eigenen Handbücher, Einstellungen, ihre Tabelle der erfolglosen Suchen und ihren Schutzordner.
 
 ## 1. Installieren und aktivieren
 

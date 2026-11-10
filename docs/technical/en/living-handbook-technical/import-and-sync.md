@@ -224,6 +224,8 @@ The unauthenticated GitHub API allows about 60 requests per hour. Importing a la
 
 By default, deleting the plugin keeps your content and removes only the plugin's own settings and caches. On **Handbook → Settings** you can opt in to remove everything the plugin created, including handbook pages, handbooks, their metadata, the seeded taxonomy terms and any of the plugin's templates you edited in the Site Editor. The option is off by default on purpose: an accidental delete should not cost you the handbook. Even with it, the files in the media library stay, including the ones uploaded to handbook pages or sideloaded by an import; whoever wants them gone deletes them in the media library. Protected files first move back to the normal uploads folder; without the option they stay locked (see [protected-files.md](protected-files.md)). What the plugin noted on those files so that a later import reuses an unchanged image (`_lh_import_file`, `_lh_import_hash`) is removed with it.
 
+On a multisite network the plugin is deleted in the network admin, and `uninstall.php` walks every site (`get_sites()`, `switch_to_blog()`). It cleans a site only when the site carries the option `living_handbook_db_version`, which the plugin writes when it first runs there; a site that never ran it is left alone. Each site follows its own setting, so one keeps its handbooks while another removes everything. A site deleted while the plugin runs where it is deleted takes its table of failed searches along (filter `wpmu_drop_tables`); a table left behind by a site deleted elsewhere goes at the uninstall, when its site no longer exists. On a test network of 50 sites with about 1000 pages, a third of them removing everything, the uninstall took under 4 seconds; with many large handbooks set to "remove everything" it can come close to the PHP time limit of the request, and WP-CLI (`wp plugin uninstall living-handbook`) has none (E-0085).
+
 ## Limits
 
 - A folder import covers subfolders, but at most 200 files in one go. If the limit is hit, import the remaining subfolders separately.
@@ -232,7 +234,7 @@ By default, deleting the plugin keeps your content and removes only the plugin's
 - The transport marker and its field labels are German.
 - Synced content is stored as rendered HTML, not editable blocks, because a cron job has no browser to convert HTML into blocks.
 - MkDocs admonitions (`!!! note`, `??? tip`) are converted to a blockquote led by the title, so the note stays set apart instead of collapsing into stray text. Other MkDocs-specific syntax still degrades to plain text: pymdownx tabs, for one, are not part of GitHub Flavored Markdown, so the converter does not understand them.
-- Living Handbook is built for single-site installations; on a multisite network, import per site.
+- On a multisite network every site has its own handbooks, so import into each site separately.
 
 ## Moving existing WordPress pages into a handbook
 

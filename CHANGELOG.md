@@ -6,6 +6,27 @@ From 0.60.0 on, a new entry groups its bullets under **Added**, **Changed**, **F
 
 Dates come from the release tag where there is one, otherwise from the commit that raised the version. Four early entries (0.7.0, 0.8.0, 0.10.0 and 0.39.0) carry no date, because the repository's history does not record one and a plausible date is worse than none.
 
+## [0.82.0] - 2026-11-10
+
+Multisite per site as decided in E-0085: Living Handbook runs on any site of a network that activates it, each site with its own handbooks, settings, failed searches and protected files. Network-wide activation stays refused, because the setup belongs to one site.
+
+### Added
+
+* **Uninstall across the network.** `uninstall.php` walks every site (`get_sites()`, `switch_to_blog()`) and cleans those that carry `living_handbook_db_version`, each by its own "remove everything" setting; a site that never ran the plugin is left alone. Tables of failed searches whose site no longer exists are dropped at the end. On a test network of 50 sites with about 1000 pages it took under 4 seconds.
+* **A deleted site takes its table along:** `SearchLog::drop_with_site()` on `wpmu_drop_tables`, named from the deleted site's own prefix. When the plugin does not run where the site is deleted, the uninstall drops the table later.
+* **Protected files on a network with subdirectories:** on every site but the main site the rule sends the browser to the site's own `index.php` (`R=302,NE`), because the folder lies outside the site's path and an internal rewrite would reach the main site. On nginx the rule ends with `redirect`, guards the folder below the document root rather than the address with the site's path, and each site has its own internal location `/lh-protected-internal-<ID>/`. Checked on Apache and nginx, with subdirectories and with subdomains.
+* **Tests:** `MultisiteTest` (membership, the rule of a site in a subdirectory, the table of a deleted site, the uninstall across sites, orphaned tables), and a CI row that runs the whole integration suite on a network (WordPress 7.1.3, `WP_MULTISITE=1`).
+* **Docs:** multisite in the installation, visibility, settings and file protection pages of the app handbook, and in the technical pages on access, protected files, uninstalling and hooks, both languages.
+
+### Changed
+
+* **"All members" on a network means members of the site.** `AccessController::evaluate_term()` asks `is_user_member_of_blog()` right after `reads_everything()`: an account on another site of the network no longer opens a handbook, nor does a name on a restricted handbook without an account on the site. Super admins read everything as before. The cache of `can_view_term()` is keyed by site as well.
+* **The X-Accel-Redirect header** takes its location from `ServerRules::internal_path()`.
+
+### Fixed
+
+* **Plugin Check** found no direct-access guard in `src/Plugin.php`: it reads the first 50 lines of a file with a namespace, and the guard stood below the imports. It now stands right after the namespace, and `DirectAccessGuardTest` checks every shipped file for it in its first 50 lines.
+
 ## [0.81.0] - 2026-11-10
 
 The version of each handbook as decided in E-0084: it is always clear which state of a handbook is on the site, in an export or in a bundle. This is the version of the content; the plugin version (E-0082) stays apart.

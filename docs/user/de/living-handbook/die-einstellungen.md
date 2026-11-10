@@ -53,6 +53,8 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 
 **Beim Löschen des Plugins:** Standardmäßig bleiben beim Löschen alle Handbücher und Seiten erhalten. Entfernt werden nur die Einstellungen und Zwischenspeicher des Plugins. Ein versehentliches Löschen kostet dich so nie das Handbuch. Erst wenn du hier das Häkchen **„Auch alle Handbuch-Seiten, Handbücher und ihre Daten löschen“** setzt, räumt das Löschen alles weg, was das Plugin angelegt hat, auch im Website-Editor bearbeitete Templates. Die Dateien in der Mediathek bleiben aber stehen, auch die Bilder und Dateien, die zu Handbuch-Seiten hochgeladen wurden. Geschützte Dateien wandern dabei zurück in den normalen Upload-Ordner. Brauchst du sie nicht mehr, löschst du sie in der Mediathek. Ohne das Häkchen bleiben geschützte Dateien gesperrt, wie beim Deaktivieren.
 
+**In einem Netzwerk aus mehreren Websites** löschst du das Plugin in der Netzwerkverwaltung. Jede Website, auf der es lief, wird dann nach ihrer eigenen Einstellung aufgeräumt: Die eine behält ihre Handbücher, die andere entfernt alles.
+
 > **Hinweis:** Diese Einstellungs-Seite können nur Administratorinnen und Administratoren öffnen.
 
 ## Verwandte Seiten
@@ -68,6 +70,6 @@ Eine Seite trägt bis zu drei dieser kleinen Abzeichen, und sie sind mit Absicht
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
 * Textauszug: Alle Optionen des Plugins auf einen Blick: automatischer GitHub-Sync, Einordnung, Lernpfade, Schriftgröße, Farben und eigenes CSS, öffentliches Feedback, Suchen ohne Treffer, Seite bei fehlendem Zugriff, geschützte Dateien und das Verhalten bei der Deinstallation.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

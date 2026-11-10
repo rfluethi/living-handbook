@@ -4,7 +4,7 @@ Tags: handbook, documentation, knowledge base, internal, maintenance
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.81.0
+Stable tag: 0.82.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,7 +42,7 @@ Core features:
 2. Activate it through the Plugins screen in WordPress.
 3. Activation creates a page called "Handbook" at /handbooks/ holding the overview block, and a notice points you to the next step. Deactivate and reactivate once, or visit Settings then Permalinks, if the handbook URLs do not work yet.
 4. Create a handbook under Handbook, Handbooks, set who may read it, and assign your pages to it. A page without a handbook stays invisible on the front end.
-5. Living Handbook is built for single-site installations. On a multisite network, activate and uninstall it per site; network-wide activation is not supported.
+5. On a multisite network, activate Living Handbook on each site that needs a handbook. Every site keeps its own handbooks, settings and protected files. Network-wide activation is not supported.
 
 == Frequently Asked Questions ==
 
@@ -52,7 +52,7 @@ No. The plugin works on its own; it only expects a block theme.
 
 = Does it work on multisite? =
 
-The plugin is built for single-site installations. On a multisite network, activate and uninstall it on each site individually; network-wide activation is not supported, because the one-time setup (the starter terms, the overview page, the rewrite rules) and the uninstall cleanup run on the current site only.
+Yes, per site. Activate it on each site that needs a handbook; network-wide activation is not supported, because the setup (the starter terms, the overview page, the rewrite rules, the protected folder) belongs to one site. Every site keeps its own handbooks, settings and protected files. On a network, "All members" means people with an account on that site: an account on another site of the network is not enough, and super admins read every handbook. Deleting the plugin in the network admin cleans every site that ran it, each by its own uninstall setting. On a network with subdirectories, the address of a protected file of a site other than the main site answers with a redirect to that site first; on nginx each site needs its own block.
 
 = Are images in an internal handbook protected too? =
 
@@ -76,7 +76,7 @@ All of these licenses are compatible with the plugin's GPL-2.0-or-later. Apache-
 
 = Who can see a handbook? =
 
-Access is set per handbook: public (no login), all logged-in members, or restricted to specific roles and/or people. It is enforced on the entry page and on single pages, in the search, the filters, the menu and the REST API. Two exceptions apply. Administrators read every handbook in full, restricted ones included; Editors read what a handbook grants them like everybody else, so a handbook can be kept to administrators, and in wp-admin other people's pages of such a handbook, its files and its settings stay closed to them. And anyone who may edit a page under the WordPress rules may also open it in the block editor, preview it and read it on the site, even when its handbook otherwise excludes them; for Authors that means their own pages, for Contributors their own drafts. Other people's pages, lists, search and navigation still follow the handbook's rules.
+Access is set per handbook: public (no login), all logged-in members of the site, or restricted to specific roles and/or people. It is enforced on the entry page and on single pages, in the search, the filters, the menu and the REST API. Two exceptions apply. Administrators read every handbook in full, restricted ones included; Editors read what a handbook grants them like everybody else, so a handbook can be kept to administrators, and in wp-admin other people's pages of such a handbook, its files and its settings stay closed to them. And anyone who may edit a page under the WordPress rules may also open it in the block editor, preview it and read it on the site, even when its handbook otherwise excludes them; for Authors that means their own pages, for Contributors their own drafts. Other people's pages, lists, search and navigation still follow the handbook's rules.
 
 = What happens when I uninstall the plugin? =
 
@@ -117,6 +117,12 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 5. The Markdown and GitHub import screen.
 
 == Changelog ==
+
+= 0.82.0 =
+* New: multisite networks are supported per site. Each site that runs the plugin keeps its own handbooks, settings, failed searches and protected files. Deleting the plugin cleans every site of the network that ran it, each by its own uninstall setting, and a deleted site takes its table of failed searches along.
+* Changed: on a network, "All members" means people with an account on the site. An account on another site of the network no longer opens a handbook; super admins still read every handbook.
+* New: on a network with subdirectories, the rule of the protected folder sends the browser to the site's own index.php, because the folder lies outside the site's path. On nginx each site has its own internal location for the X-Accel-Redirect hand-off.
+* Fixed: Plugin Check found the direct-access guard of src/Plugin.php below its first 50 lines.
 
 = 0.81.0 =
 * New: every handbook carries a version, such as 2.1.14: an edition you set on the handbook, or that comes from the highest version tag of its GitHub repository, and a count that goes up by one on every day its published content changes. Readers see it on the entry page and below every page, without a date; the website export, the Markdown export, the bundle and the list-handbooks ability carry it. It is the version of the content, not of the plugin.
@@ -191,6 +197,9 @@ The page footer of a handbook page (the Handbook page meta block) shows the peop
 Older versions are listed in [CHANGELOG.md on GitHub](https://github.com/rfluethi/living-handbook/blob/main/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 0.82.0 =
+On a multisite network, a handbook set to All members now closes to people without an account on that site. Add them to the site if they should keep reading. On nginx with subdirectories, replace the block under Settings, Access.
 
 = 0.81.0 =
 Adds a version to every handbook. Existing handbooks start at 1.0.

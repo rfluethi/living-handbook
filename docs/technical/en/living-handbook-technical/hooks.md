@@ -457,7 +457,7 @@ Filters the internal nginx location that holds the protected folder for `X-Accel
 
 Parameters:
 
-- `string $path` The location, with a leading and a trailing slash. Default `'/lh-protected-internal/'`.
+- `string $path` The location, with a leading and a trailing slash. Default `'/lh-protected-internal/'`, on a site of a network other than the main site `'/lh-protected-internal-<site ID>/'`, so the sites of one `server` block do not share a location.
 
 Return a string.
 
@@ -469,4 +469,4 @@ _None. A hook is a commitment whose signature cannot be changed later without br
 * Seitentyp: Tool overview
 * Zielgruppe: Tech
 * Reihenfolge: 8
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10

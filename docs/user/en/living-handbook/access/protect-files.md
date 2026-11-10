@@ -20,6 +20,7 @@ A file follows the page it was uploaded to. When a page moves to another handboo
 * You are signed in as an administrator.
 * On Apache and LiteSpeed nothing else is needed: the plugin writes the rule itself, as long as the server allows rules in `.htaccess`.
 * On nginx the rule has to go into the server configuration. The plugin shows it ready to copy. If you cannot change the configuration yourself, give it to your host.
+* In a network of several sites, every site has its own folder and its own rule. On nginx, add the block of every site that runs the plugin; each site's **Access** tab shows its own.
 
 ## Steps
 
@@ -70,6 +71,6 @@ The rule for nginx, moving through WP-CLI (`wp living-handbook protect-files`) a
 * Eltern-Seite: Access
 * Reihenfolge: 4
 * Textauszug: How Living Handbook protects the files of internal handbooks, and how to check that the protection works on your server.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-11-09
 * Prüfintervall: 180 Tage

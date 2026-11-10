@@ -90,6 +90,22 @@ location /lh-protected-internal/ {
 
 Checked on Apache 2.4 with and without `mod_rewrite` and with `AllowOverride None`, and on nginx with and without the block, each with PHP-FPM. Not yet checked on LiteSpeed.
 
+## In a network
+
+On multisite every site that runs the plugin has its own protected folder, `wp-content/uploads/sites/<ID>/living-handbook-protected/`, with its own `.htaccess`, its own self-test and its own queue (E-0085).
+
+**Subdomains** (`b.example.org`): the rule works as on a single site, because the host tells WordPress which site is meant.
+
+**Subdirectories** (`example.org/team-b/`): WordPress tells the sites apart by the path of the address, and the folder of `/team-b/` lies outside that path. An internal rewrite to `/index.php` would reach the main site, which does not know the file and may not run the plugin at all. So on every site other than the main site the rule sends the browser on, to that site's own `index.php` (`ServerRules::redirects()`):
+
+```apache
+RewriteRule ^(.*)$ /team-b/index.php?lh_file=$1 [R=302,NE,L,QSA,B]
+```
+
+`NE` keeps the path escaped by `B` from being escaped a second time on its way out. An image or a download follows the redirect at the cost of one round trip; the access check is the same. On nginx the rule ends with `redirect` instead of `last`, and its `location` guards the folder below the document root, `/wp-content/uploads/sites/<ID>/…`, not the address with `/team-b/`: the multisite rules of nginx rewrite the address with the site's path to the one without it before a location is chosen, and the file answers at both. Each site has its own internal location, `/lh-protected-internal-<ID>/` (filter `living_handbook_protected_files_internal_path`), so the blocks of all sites fit into one `server` block side by side. Add the block of every site that runs the plugin.
+
+Checked on a network with subdirectories and one with subdomains, each on Apache 2.4 and on nginx with PHP-FPM: the self-test, a reader with an account on the site, a person signed in on another site of the network (403), the address with and without the site's path, and the X-Accel-Redirect hand-off.
+
 ## WP-CLI
 
 ```bash
@@ -102,7 +118,7 @@ The first lists every file that is not where it belongs, with ID, direction (`pr
 ## Deactivating and uninstalling
 
 - **Deactivating:** the rule stays, the files stay locked (fail-closed). Without the plugin nothing answers the rule, so images of internal handbooks are missing everywhere. An admin notice is no longer possible then; the **Access** tab says so beforehand.
-- **Uninstalling:** queue, address map, self-test and lock always go. With "Remove everything" every file first moves back to the normal folder (`ProtectedFiles::release_all()`), because the media library stays (E-0074), and the rule and empty folders go. Without the box, files and rule stay.
+- **Uninstalling:** queue, address map, self-test and lock always go. With "Remove everything" every file first moves back to the normal folder (`ProtectedFiles::release_all()`), because the media library stays (E-0074), and the rule and empty folders go. Without the box, files and rule stay. In a network this happens on every site that ran the plugin, each by its own setting.
 
 ## Limits
 
@@ -116,4 +132,4 @@ The first lists every file that is not where it belongs, with ID, direction (`pr
 * Seitentyp: Background / Concept
 * Zielgruppe: Tech
 * Reihenfolge: 14
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10

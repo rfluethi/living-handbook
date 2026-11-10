@@ -7,7 +7,7 @@ Die Sichtbarkeit wird pro Handbuch geregelt, nicht pro Seite. Diese Anleitung st
 1. Öffne **Handbuch → Handbücher** und bearbeite das Handbuch.
 2. Wähle eine der drei Stufen:
    * **Öffentlich:** Alle können lesen, auch ohne Anmeldung.
-   * **Alle Mitglieder (angemeldet):** Nur wer auf der Website angemeldet ist, kann lesen. Das ist die Voreinstellung für jedes neue Handbuch.
+   * **Alle Mitglieder (angemeldet):** Nur wer auf der Website angemeldet ist, kann lesen. Das ist die Voreinstellung für jedes neue Handbuch. In einem Netzwerk aus mehreren Websites braucht die Person zudem ein Konto auf dieser Website; ein Konto auf einer anderen Website des Netzwerks genügt nicht.
    * **Eingeschränkt:** Nur bestimmte Benutzerrollen und/oder einzeln benannte Personen können lesen.
 3. Bei **Eingeschränkt**: Wähle die Rollen aus. Ergänze bei Bedarf einzelne Personen.
 4. Speichere.
@@ -51,6 +51,6 @@ Dieselbe Regel gilt in der WordPress-Verwaltung. Seiten anderer Personen in eine
 * Eltern-Seite: Zugriff
 * Reihenfolge: 1
 * Textauszug: Die Sichtbarkeit wird pro Handbuch geregelt; diese Anleitung stellt ein, wer ein Handbuch auf der Website lesen darf.
-* Letzte Aktualisierung: 2026-10-27
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-23
 * Prüfintervall: 90 Tage

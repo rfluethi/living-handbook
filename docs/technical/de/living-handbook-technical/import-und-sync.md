@@ -233,6 +233,8 @@ Die nicht angemeldete GitHub-API erlaubt etwa 60 Anfragen pro Stunde. Ein große
 
 Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur die eigenen Einstellungen und Caches des Plugins. Unter **Handbuch → Einstellungen** kannst du dich dafür entscheiden, alles zu entfernen, was das Plugin angelegt hat, einschließlich Handbuch-Seiten, Handbüchern, deren Metadaten, der angelegten Taxonomie-Begriffe und aller plugin-eigenen Templates, die du im Site-Editor bearbeitet hast. Die Option ist bewusst standardmäßig aus: Ein versehentliches Löschen soll dich nicht das Handbuch kosten. Auch mit ihr bleiben die Dateien der Mediathek stehen, die zu Handbuch-Seiten hochgeladen oder beim Import eingespielt wurden eingeschlossen; wer sie loswerden will, löscht sie in der Mediathek. Geschützte Dateien wandern vorher zurück in den normalen Upload-Ordner, ohne die Option bleiben sie gesperrt (siehe [dateischutz.md](dateischutz.md)). Was das Plugin an diesen Dateien vermerkt hat, damit ein erneuter Import ein unverändertes Bild wiederverwendet (`_lh_import_file`, `_lh_import_hash`), entfernt es dabei.
 
+In einem Multisite-Netzwerk wird das Plugin in der Netzwerkverwaltung gelöscht, und `uninstall.php` geht über jede Website (`get_sites()`, `switch_to_blog()`). Es räumt eine Website nur auf, wenn sie die Option `living_handbook_db_version` trägt, die das Plugin beim ersten Lauf dort schreibt; eine Website, auf der es nie lief, bleibt unberührt. Jede Website folgt ihrer eigenen Einstellung, die eine behält also ihre Handbücher, während die andere alles entfernt. Eine Website, die gelöscht wird, während das Plugin dort läuft, wo gelöscht wird, nimmt ihre Tabelle der erfolglosen Suchen mit (Filter `wpmu_drop_tables`); eine Tabelle, die eine anderswo gelöschte Website zurücklässt, geht bei der Deinstallation, wenn es ihre Website nicht mehr gibt. In einem Testnetzwerk mit 50 Websites und rund 1000 Seiten, von denen ein Drittel alles entfernte, dauerte die Deinstallation unter 4 Sekunden; mit vielen großen Handbüchern auf „Alles entfernen“ kann sie an das PHP-Zeitlimit der Anfrage kommen, WP-CLI (`wp plugin uninstall living-handbook`) hat keines (E-0085).
+
 ## Grenzen
 
 - Der Ordner-Import erfasst Unterordner, aber höchstens 200 Dateien auf einmal. Ist die Grenze erreicht, importierst du die übrigen Unterordner einzeln.
@@ -241,7 +243,7 @@ Standardmäßig behält das Löschen des Plugins deine Inhalte und entfernt nur 
 - Die Transport-Markierung und ihre Feldbeschriftungen sind deutsch.
 - Synchronisierter Inhalt wird als gerendertes HTML gespeichert, nicht als bearbeitbare Blöcke, weil ein Cron-Lauf keinen Browser hat, um HTML in Blöcke zu wandeln.
 - MkDocs-Admonitions (`!!! note`, `??? tip`) werden in einen Zitatblock mit vorangestelltem Titel gewandelt, der Hinweis bleibt also abgesetzt, statt in losen Text zu zerfallen. Andere MkDocs-eigene Syntax fällt weiterhin auf reinen Text zurück: pymdownx-Tabs etwa gehören nicht zu GitHub Flavored Markdown, der Konverter versteht sie also nicht.
-- Living Handbook ist für Einzelinstallationen gebaut; in einem Multisite-Netzwerk importierst du pro Seite.
+- In einem Multisite-Netzwerk hat jede Website ihre eigenen Handbücher; du importierst also in jede Website einzeln.
 
 ## Transport-Metadaten
 * Seitentyp: Tool-Übersicht

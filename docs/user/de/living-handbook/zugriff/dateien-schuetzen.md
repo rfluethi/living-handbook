@@ -20,6 +20,7 @@ Die Datei folgt der Seite, an die sie hochgeladen wurde. Wechselt eine Seite in 
 * Du bist als Administratorin oder Administrator angemeldet.
 * Auf Apache und LiteSpeed braucht es nichts weiter: Das Plugin schreibt die Regel selbst, sofern der Server Regeln in `.htaccess` zulässt.
 * Auf nginx muss die Regel in die Serverkonfiguration. Das Plugin zeigt sie dir zum Kopieren. Kannst du die Konfiguration nicht selbst ändern, gib sie deinem Hosting.
+* In einem Netzwerk aus mehreren Websites hat jede Website ihren eigenen Ordner und ihre eigene Regel. Auf nginx trägst du den Block jeder Website ein, auf der das Plugin läuft; der Tab **Zugriff** jeder Website zeigt ihren eigenen.
 
 ## Schritte
 
@@ -70,6 +71,6 @@ Die Regel für nginx, das Verschieben über WP-CLI (`wp living-handbook protect-
 * Eltern-Seite: Zugriff
 * Reihenfolge: 4
 * Textauszug: Wie Living Handbook die Dateien interner Handbücher schützt und wie du prüfst, dass der Schutz auf deinem Server greift.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-11-09
 * Prüfintervall: 180 Tage

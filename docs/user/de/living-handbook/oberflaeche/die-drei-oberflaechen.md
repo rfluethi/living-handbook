@@ -25,7 +25,7 @@ graph TD;
 
 Die Suche und die Filter grenzen die Seitenliste ein, ohne die Seite neu zu laden. Gefiltert wird nach Seitentyp, Themen, Verantwortung und Zielgruppen, mit denselben Bezeichnungen wie in den Einstellungen. Ohne JavaScript funktioniert beides als gewöhnliches Formular weiter. Die Bereichs-Kacheln sind die Seiten der obersten Ebene, siehe [Seiten ordnen](../erste-schritte/seiten-ordnen.md).
 
-Ganz unten steht für alle die Version des Handbuchs, etwa „Handbuch-Version 2.1.14“, siehe [Die Version eines Handbuchs](../pflege/die-version-eines-handbuchs.md). Wer angemeldet ist, sieht darunter die Version des Plugins, etwa „Living Handbook 0.81.0“. Sie hilft, wenn du eine Frage zum Plugin stellst. Abgemeldete Besucherinnen und Besucher sehen sie nicht, denn eine öffentliche Versionsnummer verrät Angreifern, welche bekannten Lücken sie ausprobieren können.
+Ganz unten steht für alle die Version des Handbuchs, etwa „Handbuch-Version 2.1.14“, siehe [Die Version eines Handbuchs](../pflege/die-version-eines-handbuchs.md). Wer angemeldet ist, sieht darunter die Version des Plugins, etwa „Living Handbook 0.82.0“. Sie hilft, wenn du eine Frage zum Plugin stellst. Abgemeldete Besucherinnen und Besucher sehen sie nicht, denn eine öffentliche Versionsnummer verrät Angreifern, welche bekannten Lücken sie ausprobieren können.
 
 ## Die Einzelseite
 

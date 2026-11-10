@@ -427,7 +427,7 @@ Filtert den internen nginx-Ort, unter dem der Schutzordner für `X-Accel-Redirec
 
 Parameter:
 
-- `string $path` Der Ort, mit Schrägstrich vorne und hinten. Standard `'/lh-protected-internal/'`.
+- `string $path` Der Ort, mit Schrägstrich vorne und hinten. Standard `'/lh-protected-internal/'`, auf einer Website eines Netzwerks außer der Hauptwebsite `'/lh-protected-internal-<Website-ID>/'`, damit sich die Websites eines `server`-Blocks keinen Ort teilen.
 
 Gib eine Zeichenkette zurück.
 
@@ -439,4 +439,4 @@ _Keine. Ein Hook ist eine Zusage, deren Signatur sich später nicht ändern läs
 * Seitentyp: Tool-Übersicht
 * Zielgruppe: Technik
 * Reihenfolge: 7
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10

@@ -12,7 +12,7 @@ Die Version hat zwei Teile:
 
 Als Änderung zählt, wenn eine Seite veröffentlicht, im Text oder im Titel geändert, zurückgezogen, in ein anderes Handbuch verschoben oder gelöscht wird. Mehrere Änderungen am selben Tag ergeben eine einzige Nummer. Nicht gezählt werden Entwürfe, ein neuer Textauszug, eine andere Reihenfolge und das Bestätigen einer Prüfung: Das ändert nicht, was Leserinnen und Leser lesen.
 
-Die Version ist nicht die Version des Plugins. Die steht, nur für Angemeldete, als „Living Handbook 0.81.0“ in einer eigenen Zeile.
+Die Version ist nicht die Version des Plugins. Die steht, nur für Angemeldete, als „Living Handbook 0.82.0“ in einer eigenen Zeile.
 
 </details>
 

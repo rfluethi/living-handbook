@@ -53,6 +53,8 @@ A page carries up to three of these small badges, and they are told apart by col
 
 **When the plugin is deleted:** By default, deleting the plugin keeps all handbooks and pages. Only the plugin's settings and caches are removed. An accidental delete therefore never costs you the handbook. Only when you tick **"Also delete all handbook pages, handbooks and their data"** does deleting clear away everything the plugin created, including templates edited in the Site Editor. The files in the media library stay, though, including the images and files uploaded to handbook pages. Protected files move back to the normal uploads folder first. If you no longer need them, delete them in the media library. Without the box, protected files stay locked, as when the plugin is deactivated.
 
+**In a network of several sites** the plugin is deleted in the network admin. Every site that ran it is then cleaned by its own setting: one site keeps its handbooks, another removes everything.
+
 > **Note:** Only administrators can open this settings screen.
 
 ## Related pages
@@ -68,6 +70,6 @@ A page carries up to three of these small badges, and they are told apart by col
 * Eltern-Seite: Living Handbook
 * Reihenfolge: 8
 * Textauszug: Every option of the plugin at a glance: automatic GitHub sync, classification, learning paths, text size, colours and custom CSS, public feedback, failed searches, the no-access page, protected files and the uninstall behaviour.
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
 * Letzte Prüfung: 2026-07-27
 * Prüfintervall: 90 Tage

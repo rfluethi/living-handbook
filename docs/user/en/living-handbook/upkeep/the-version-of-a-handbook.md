@@ -12,7 +12,7 @@ The version has two parts:
 
 A change is a page that is published, changed in its text or title, taken back, moved to another handbook or deleted. Several changes on the same day make a single number. Drafts, a new excerpt, another order and confirming a review do not count: they do not change what readers read.
 
-The version is not the plugin's. That one appears, for signed-in people only, as "Living Handbook 0.81.0" on a line of its own.
+The version is not the plugin's. That one appears, for signed-in people only, as "Living Handbook 0.82.0" on a line of its own.
 
 </details>
 

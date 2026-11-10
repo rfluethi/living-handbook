@@ -90,6 +90,22 @@ location /lh-protected-internal/ {
 
 Geprüft auf Apache 2.4 mit und ohne `mod_rewrite` und mit `AllowOverride None`, und auf nginx mit und ohne den Block, je mit PHP-FPM. Auf LiteSpeed ist es noch nicht geprüft.
 
+## In einem Netzwerk
+
+In einem Multisite hat jede Website, auf der das Plugin läuft, ihren eigenen Schutzordner, `wp-content/uploads/sites/<ID>/living-handbook-protected/`, mit eigener `.htaccess`, eigenem Selbsttest und eigener Warteschlange (E-0085).
+
+**Subdomains** (`b.example.org`): Die Regel wirkt wie auf einer einzelnen Website, weil der Host WordPress sagt, welche Website gemeint ist.
+
+**Unterverzeichnisse** (`example.org/team-b/`): WordPress unterscheidet die Websites am Pfad der Adresse, und der Ordner von `/team-b/` liegt außerhalb dieses Pfads. Eine interne Umleitung auf `/index.php` käme bei der Hauptwebsite an, die die Datei nicht kennt und das Plugin vielleicht gar nicht ausführt. Auf jeder Website außer der Hauptwebsite schickt die Regel den Browser deshalb weiter, an die `index.php` dieser Website (`ServerRules::redirects()`):
+
+```apache
+RewriteRule ^(.*)$ /team-b/index.php?lh_file=$1 [R=302,NE,L,QSA,B]
+```
+
+`NE` verhindert, dass der von `B` maskierte Pfad auf dem Weg hinaus ein zweites Mal maskiert wird. Ein Bild oder ein Download folgt der Weiterleitung zum Preis eines Umlaufs; die Zugriffsprüfung ist dieselbe. Auf nginx endet die Regel mit `redirect` statt `last`, und ihre `location` schützt den Ordner unter dem Wurzelverzeichnis, `/wp-content/uploads/sites/<ID>/…`, nicht die Adresse mit `/team-b/`: Die Multisite-Regeln von nginx schreiben die Adresse mit dem Pfad der Website auf die ohne ihn um, bevor eine `location` gewählt wird, und die Datei antwortet unter beiden. Jede Website hat ihren eigenen internen Ort, `/lh-protected-internal-<ID>/` (Filter `living_handbook_protected_files_internal_path`), so passen die Blöcke aller Websites nebeneinander in einen `server`-Block. Trag den Block jeder Website ein, auf der das Plugin läuft.
+
+Geprüft in einem Netzwerk mit Unterverzeichnissen und einem mit Subdomains, je auf Apache 2.4 und auf nginx mit PHP-FPM: der Selbsttest, eine Person mit Konto auf der Website, eine Person, die auf einer anderen Website des Netzwerks angemeldet ist (403), die Adresse mit und ohne Pfad der Website und die Übergabe per X-Accel-Redirect.
+
 ## WP-CLI
 
 ```bash
@@ -102,7 +118,7 @@ Der erste Aufruf listet jede Datei, die nicht liegt, wo sie hingehört, mit ID, 
 ## Deaktivieren und Deinstallieren
 
 - **Deaktivieren:** Die Regel bleibt, die Dateien bleiben gesperrt (fail-closed). Ohne Plugin beantwortet niemand die Regel, Bilder interner Handbücher fehlen also überall. Ein Hinweis im Admin ist dann nicht mehr möglich, der Reiter **Zugriff** sagt es vorher.
-- **Deinstallieren:** Warteschlange, Adresskarte, Selbsttest und Sperre gehen immer. Mit „Alles entfernen“ wandern vorher alle Dateien zurück in den normalen Ordner (`ProtectedFiles::release_all()`), weil die Mediathek bleibt (E-0074), und Regel und leere Ordner gehen. Ohne das Häkchen bleiben Dateien und Regel.
+- **Deinstallieren:** Warteschlange, Adresskarte, Selbsttest und Sperre gehen immer. Mit „Alles entfernen“ wandern vorher alle Dateien zurück in den normalen Ordner (`ProtectedFiles::release_all()`), weil die Mediathek bleibt (E-0074), und Regel und leere Ordner gehen. Ohne das Häkchen bleiben Dateien und Regel. In einem Netzwerk geschieht das auf jeder Website, auf der das Plugin lief, nach ihrer eigenen Einstellung.
 
 ## Grenzen
 
@@ -116,4 +132,4 @@ Der erste Aufruf listet jede Datei, die nicht liegt, wo sie hingehört, mit ID, 
 * Seitentyp: Hintergrund / Konzept
 * Zielgruppe: Technik
 * Reihenfolge: 14
-* Letzte Aktualisierung: 2026-11-09
+* Letzte Aktualisierung: 2026-11-10
